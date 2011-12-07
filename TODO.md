@@ -7,6 +7,7 @@
  - Logger with switchable backends (file, redis, dbus).
  - vapi for mongo-glib
  - vapi for guile
+ - integrate [javascriptcore] (http://gitorious.org/seed-vapi) as scripting engine
  - better (automagical) build system
  
 Random links:
