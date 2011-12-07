@@ -1,0 +1,34 @@
+#!/bin/sh
+
+set -x
+
+case $1 in
+    watch)
+        killall app.valium
+        make
+        ./bin/app.valium > log/development.log &
+        echo "Started app... Waiting for changes."
+        
+        inotifywait \
+            -m -r --format '%f' \
+            --excludei ".*\.(c|h|o|valium|log|pid)" \
+            --excludei "\..*" \
+            -e modify \
+            -e move \
+            -e create \
+            -e delete . | while read line; do
+	    echo "Changed $line"
+            killall app.valium
+            make
+            ./bin/app.valium > log/development.log &
+        done
+        
+        ;;
+    new)
+        echo "FAKE: Creating new app..."
+        ;;
+    *)
+        echo "Available commands: "
+        echo "  - watch"
+        ;;
+esac

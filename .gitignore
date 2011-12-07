@@ -1,0 +1,10 @@
+tmp/*
+log/*.log
+vendor/*
+bin/app.valum
+*~
+*.o
+*.c
+*.h
+.\#*
+*.swp
