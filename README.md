@@ -6,7 +6,12 @@ Valum is a web framework written in Vala.
 
 Debian/Ubuntu:
 
-    sudo apt-get install git-core build-essential valac-0.14 libgee-dev libsoup2.4-dev libjson-glib-dev
+    sudo apt-get install git-core build-essential valac-0.14 libgee-dev \
+         libsoup2.4-dev libjson-glib-dev memcached libmemcached-dev \
+         libluajit-5.1-dev
+
+
+    git clone git://github.com/antono/valum.git
     cd valum && make run
 
 Visit http://localhost:3000/
