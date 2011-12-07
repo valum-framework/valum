@@ -4,10 +4,10 @@
  - Avahi support for Zeroconf local
    addresses like http://cool-app.local
  - Some examples for [json generation](http://www.valadoc.org/Json-1.0/index.htm)
- - Logger with switchable backends (file, redis, dbus).
+ - Logger with switchable (build time) backends (file, redis, dbus).
  - vapi for mongo-glib
  - vapi for guile
- - integrate [javascriptcore] (http://gitorious.org/seed-vapi) as scripting engine
+ - integrate [javascriptcore] (http://gitorious.org/seed-vapi) or [V8](https://github.com/crystalnix/vala-v8/blob/master/vala-test/vala_getting_started.vala) as (java)scripting engine. see valum/script/lua.vala for details
  - better (automagical) build system
  
 Random links:
