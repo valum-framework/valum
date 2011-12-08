@@ -171,3 +171,4 @@ https://code.launchpad.net/~adiroiban/couchdb-glib/vala-bindings
  - Mailing list: [vala](https://mail.gnome.org/mailman/listinfo/vala-list).
  - IRC channel: #vala at irc.gimp.net
  - [Google+ page for Vala](https://plus.google.com/115393489934129239313/)
+ - Issues at [github] (https://github.com/antono/valum/issues)
