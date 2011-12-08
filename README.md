@@ -14,9 +14,12 @@ Debian/Ubuntu:
     git clone git://github.com/antono/valum.git
     cd valum && make run
 
-Visit http://localhost:3000/
-Play with app in VALUM_ROOT/app/app.vala
 
+Visit http://localhost:3000/
+
+Search for other routes in ./app/app.vala
+
+# Examples
 
 ## Setup application
    
@@ -162,3 +165,9 @@ https://code.launchpad.net/~adiroiban/couchdb-glib/vala-bindings
  - code
  - make pull request
  - enjoy :)
+
+# Discussions and help
+
+ - Mailing list: [vala](https://mail.gnome.org/mailman/listinfo/vala-list).
+ - IRC channel: #vala at irc.gimp.net
+ - [Google+ page for Vala](https://plus.google.com/115393489934129239313/)
