@@ -1,22 +1,52 @@
+# View Engines
 
- - [CTPL](http://ctpl.tuxfamily.org/) − C Template (Parser) Library integration (antono)
+ - Simple view engine based on [CTPL](http://ctpl.tuxfamily.org/). (antono)
+ - Define View engine interface (antono)
+ - JSON view engine. See [json generation in Vala](http://www.valadoc.org/Json-1.0/index.htm)
+ - [CTPP2](http://ctpp.havoc.ru/en/) integration
+   ([need patching](https://mail.gnome.org/archives/vala-list/2011-December/msg00022.html) CTPP2)
+ - [Clearsilver](http://www.clearsilver.net/) integration
+   (see [post](https://mail.gnome.org/archives/vala-list/2011-December/msg00019.html))
+
+# Server Adapters
+
+ - define Request and Response as interfaces
  - [fcgi](https://github.com/apmasell/vapis/blob/master/fcgi.vapi) adapter
+ - [uwsgi](http://projects.unbit.it/uwsgi/) adapter
+
+# Dev tools
+
  - Avahi support for Zeroconf local
    addresses like http://cool-app.local
- - Some examples for [json generation](http://www.valadoc.org/Json-1.0/index.htm)
- - Logger with switchable (build time) backends (file, redis, dbus).
- - vapi for mongo-glib
- - vapi for guile
- - integrate [javascriptcore] (http://gitorious.org/seed-vapi) or [V8](https://github.com/crystalnix/vala-v8/blob/master/vala-test/vala_getting_started.vala) as (java)scripting engine. see valum/script/lua.vala for details
- - better (automagical) build system
- 
-Random links:
+ - Logger with switchable (build time) backends (file, redis, dbus for ide integration).
+ - automagical build system for app develpers (autotools is too complex)
+
+# Storage engines
+
+ - integrate [libgda](http://www.gnome-db.org/)
+   (see [post](https://mail.gnome.org/archives/vala-list/2011-December/msg00015.html))
+ - vapi for [mongo-glib](https://github.com/chergert/mongo-glib)
+ - integrate
+   [couchdb-glib](https://code.launchpad.net/~adiroiban/couchdb-glib/vala-bindings)
+ - vapi for [hiredis](https://github.com/antirez/hiredis)
+ - [charango](https://github.com/ssssam/charango) RDF storage via Tracker
+ - [midgard2](http://new.midgard-project.org/) integration
+
+# Scripting engines
+
+ - (lua) make luapanic safe for app
+   (occurs in luajit under heavy load)
+ - (scheme) vapi for [guile](http://www.gnu.org/software/guile/manual/html_node/Initialization.html#Initialization)
+ - (javascript) integrate [javascriptcore](http://gitorious.org/seed-vapi) or [V8](https://github.com/crystalnix/vala-v8/blob/master/vala-test/vala_getting_started.vala) as (java)scripting engine. see valum/script/lua.vala for details
+ - [ruby] try to make it working with ruby.vapi
+
+# Random links:
 
 * http://ctpl.tuxfamily.org/
 * https://github.com/apmasell/vapis/blob/master/fcgi.vapi
 * http://code.google.com/p/sqlheavy/wiki/UserGuide
 * https://gitorious.org/libpeas-vapi ?
 * https://github.com/apmasell/vapis
-* https://github.com/crystalnix/vala-v8/blob/master/vala-test/vala_getting_started.vala
 * https://github.com/gorilla3d/Pawalicious/blob/master/server.vala
 * https://github.com/lgunsch/zmq-vala
+* https://github.com/fengy-research/libyaml-glib
