@@ -16,10 +16,14 @@
 
 # Dev tools
 
- - Avahi support for Zeroconf local
+ - Avahi support for mdns local
    addresses like http://cool-app.local
- - Logger with switchable (build time) backends (file, redis, dbus for ide integration).
- - automagical build system for app develpers (autotools is too complex)
+ - Logger with switchable backends (file, redis, dbus for ide integration).
+ - Automagical configuration and build system for app
+   develpers (autotools is too complex)
+ - Integration with [Nemiver](http://projects.gnome.org/nemiver/)
+ - Integration with [Perfkit](https://github.com/chergert/perfkit)
+ - Integrate somehow with [Valgrind](https://live.gnome.org/Valgrind)
 
 # Storage engines
 
@@ -38,7 +42,14 @@
    (occurs in luajit under heavy load)
  - (scheme) vapi for [guile](http://www.gnu.org/software/guile/manual/html_node/Initialization.html#Initialization)
  - (javascript) integrate [javascriptcore](http://gitorious.org/seed-vapi) or [V8](https://github.com/crystalnix/vala-v8/blob/master/vala-test/vala_getting_started.vala) as (java)scripting engine. see valum/script/lua.vala for details
- - [ruby] try to make it working with ruby.vapi
+ - (ruby) try to make it working with ruby.vapi
+
+
+# Things to track
+
+ - On migration of MainLoop to epoll
+   - https://bugzilla.gnome.org/show_bug.cgi?id=156048
+   - https://mail.gnome.org/archives/gtk-devel-list/2011-August/msg00059.html
 
 # Random links:
 
