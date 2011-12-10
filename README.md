@@ -8,7 +8,7 @@ Debian/Ubuntu:
 
     sudo apt-get install git-core build-essential valac-0.14 libgee-dev \
          libsoup2.4-dev libjson-glib-dev memcached libmemcached-dev \
-         libluajit-5.1-dev
+         libluajit-5.1-dev libctpl-dev
 
 
     git clone git://github.com/antono/valum.git
