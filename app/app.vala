@@ -1,9 +1,30 @@
 var app = new Valum.App();
 var lua = new Valum.Script.Lua();
+var tpl = new Valum.View.Tpl();
 var mcd = new Valum.NoSQL.Mcached();
 
 mcd.add_server("127.0.0.1", 11211);
 app.port = 3000;
+
+app.get("ctpl", (req, res) => {
+
+	tpl.from_string("""
+	   <p> hello {foo} </p>
+	   <p> hello {bar} </p>
+	""");
+
+	res.vars["foo"] = "world";
+	res.vars["bar"] = "ctpl";
+
+	res.append(tpl.render(res.vars));
+});
+
+// Just sample to benchmark against node
+app.get("node.js.vs.valum", (req, res) => {
+	res.mime = "text/plain";
+	res.append("Hello world\n");
+});
+
 
 app.get("users/:id/:action", (req, res) => {
 	var id   = req.params["id"];
