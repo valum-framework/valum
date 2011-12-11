@@ -35,6 +35,7 @@
  - vapi for [hiredis](https://github.com/antirez/hiredis)
  - [charango](https://github.com/ssssam/charango) RDF storage via Tracker
  - [midgard2](http://new.midgard-project.org/) integration
+ - [GObject Content Repository](https://github.com/midgardproject/GICR)
 
 # Scripting engines
 
