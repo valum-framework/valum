@@ -5,16 +5,14 @@ var mcd = new Valum.NoSQL.Mcached();
 
 mcd.add_server("127.0.0.1", 11211);
 app.port = 3000;
+tpl.from_string("""
+   <p> hello {foo} </p>
+   <p> hello {bar} </p>
+""");
 
-app.get("ctpl", (req, res) => {
-
-	tpl.from_string("""
-	   <p> hello {foo} </p>
-	   <p> hello {bar} </p>
-	""");
-
-	res.vars["foo"] = "world";
-	res.vars["bar"] = "ctpl";
+app.get("ctpl/:foo/:bar", (req, res) => {
+	res.vars["foo"] = req.params["foo"];
+	res.vars["bar"] = req.params["bar"];
 
 	res.append(tpl.render(res.vars));
 });
