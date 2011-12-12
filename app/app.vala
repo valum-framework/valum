@@ -5,17 +5,31 @@ var mcd = new Valum.NoSQL.Mcached();
 
 mcd.add_server("127.0.0.1", 11211);
 app.port = 3000;
+
 tpl.from_string("""
    <p> hello {foo} </p>
    <p> hello {bar} </p>
+   <ul>
+	 { for el in arr }
+	   <li> { el } </li>
+	 { end }
+   </ul>
 """);
 
 app.get("ctpl/:foo/:bar", (req, res) => {
+
+	var arr = new Gee.ArrayList<Value?>();
+	arr.add("omg");
+	arr.add("typed hell");
+
 	res.vars["foo"] = req.params["foo"];
 	res.vars["bar"] = req.params["bar"];
+	res.vars["arr"] = arr;
+	res.vars["int"] = 1;
 
 	res.append(tpl.render(res.vars));
 });
+
 
 // Just sample to benchmark against node
 app.get("node.js.vs.valum", (req, res) => {
