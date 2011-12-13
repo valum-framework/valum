@@ -36,7 +36,7 @@ app.listen();
 
 
 ```vala
-app.get('hello', (req, res) => {
+app.get("hello", (req, res) => {
   res.status = 200;
   res.mime = "text/plain";
   res.headers["Hello"] = "Browser";
@@ -60,7 +60,7 @@ app.scope("admin", (admin) => {
 ## Simple POST request (TODO)
 
 ```vala
-app.post("/form", (req, res) => {
+app.post("form", (req, res) => {
   req.params["title"]; // NOT YET IMPLEMENTED
 });
 ```
@@ -138,7 +138,7 @@ Scheme code:
 var mc = new Valum.NoSQL.Memcached();
 
 // GET /hello
-app.get('hello', (req, res) => {
+app.get("hello", (req, res) => {
   var value = mc.get("hello");
   res.append(value);
   mc.set("hello", @"Updated $value");
@@ -152,7 +152,7 @@ We need vapi for hiredis: https://github.com/antirez/hiredis
 ```vala
 var redis = new Valum.NoSQL.Redis();
 
-app.get('hello', (req, res) => {
+app.get("hello", (req, res) => {
   var value = redis.get("hello");
   res.append(value);
   redis.set("hello", @"Updated $value");
@@ -169,8 +169,8 @@ vala is on the way: https://github.com/chergert/mongo-glib
 var mongo = new Valum.NoSQL.Mongo();
 
 // GET /hello.json
-app.get('hello.json', (req, res) => {
-  res.mime = 'application/json';
+app.get("hello.json", (req, res) => {
+  res.mime = "application/json";
   res.append(mongo.find("hello"));
 });
 ```
