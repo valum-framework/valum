@@ -29,6 +29,7 @@
 
  - integrate [libgda](http://www.gnome-db.org/)
    (see [post](https://mail.gnome.org/archives/vala-list/2011-December/msg00015.html))
+ - [U1DB](https://launchpad.net/shardbridge)
  - vapi for [mongo-glib](https://github.com/chergert/mongo-glib)
  - integrate
    [couchdb-glib](https://code.launchpad.net/~adiroiban/couchdb-glib/vala-bindings)
