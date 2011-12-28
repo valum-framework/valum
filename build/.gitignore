@@ -1,0 +1,4 @@
+*.vapi
+*.gir
+*.so
+*.valum
