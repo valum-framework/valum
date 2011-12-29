@@ -2,9 +2,9 @@ using Gee;
 
 namespace Valum {
 
-	public class App {
-
-		public const string NAME = "Valum/0.0.1";
+	public const string APP_NAME = "Valum/0.1";
+	
+	public class Router {
 		
 		private HashMap<string, ArrayList<Route>> routes;
 		private Soup.Server _server;
@@ -13,9 +13,9 @@ namespace Valum {
 		public uint16 port;
 		public string host;
 
-		public delegate void Router(Valum.App app);
+		public delegate void NestedRouter(Valum.Router app);
 
-		public App() {
+		public Router() {
 			this.port = 7777;
 			this.host = "localhost";
 			this.create_routes();
@@ -82,7 +82,7 @@ namespace Valum {
 		//
 		// Routing helpers
 		//
-		public void scope(string fragment, Router router) {
+		public void scope(string fragment, NestedRouter router) {
 			this._scope += fragment;
 			router(this);
 			this._scope = this._scope[0:-1];

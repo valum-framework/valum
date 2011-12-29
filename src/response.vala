@@ -22,7 +22,7 @@ namespace Valum {
 			this.mime = "text/html";
 			this.status = 200;
 			this.headers = new HashMap<string, string>();
-			this.message.response_headers.append("Server", Valum.App.NAME);
+			this.message.response_headers.append("Server", Valum.APP_NAME);
 			this.vars = new Gee.HashMap<string, Value?>();
 		}
 

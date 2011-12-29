@@ -27,7 +27,7 @@ Search for other routes in ./app/app.vala
 Somwhere in app/myfile.vala
 
 ```vala
-var app  = new Valum.App();
+var app  = new Valum.Router();
 app.port = 8080;
 app.listen();
 ```
@@ -72,7 +72,7 @@ app.post("form", (req, res) => {
 Currently it works this way:
 
 ```vala
-var app = new Valum.App();
+var app = new Valum.Router();
 var lua = new Valum.Script.Lua();
 
 // GET /lua

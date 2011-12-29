@@ -1,4 +1,4 @@
-var app = new Valum.App();
+var app = new Valum.Router();
 var lua = new Valum.Script.Lua();
 var tpl = new Valum.View.Tpl();
 var mcd = new Valum.NoSQL.Mcached();
