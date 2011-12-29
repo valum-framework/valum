@@ -1,4 +1,4 @@
-VER    := 0.0.1
+VER    := 0.1
 CC     := gcc
 VALAC  := valac-0.14
 
@@ -21,8 +21,8 @@ PKGS   := --pkg gio-2.0 --pkg json-glib-1.0 --pkg gee-1.0 \
 	  --pkg libsoup-2.4 --pkg libmemcached --pkg luajit \
 	  --pkg ctpl
 
-LSRC   := $(shell find 'valum/' -type f -name "*.vala")
-CSRC   := $(shell find 'valum/' -type f -name "*.c")
+LSRC   := $(shell find 'src/' -type f -name "*.vala")
+CSRC   := $(shell find 'src/' -type f -name "*.c")
 ASRC   := $(shell find 'app/' -type f -name "*.vala")
 
 
