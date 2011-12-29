@@ -2,7 +2,7 @@ using Gee;
 
 namespace Valum {
 	
-	public class Route {
+	public class Route : Object {
 		public  string rule;
 		private string route;
 		private Regex regex;

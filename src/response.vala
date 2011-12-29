@@ -1,7 +1,7 @@
 using Gee;
 
 namespace Valum {
-	public class Response {
+	public class Response : Object {
 
 		public HashMap<string, string> headers;
 		public Gee.HashMap<string, Value?> vars;
