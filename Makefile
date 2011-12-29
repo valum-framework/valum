@@ -4,7 +4,7 @@ VALAC  := valac-0.14
 
 EXE   := ./build/app.valum
 LIB   := ./build/libvalum_$(VER).so
-GIR   := ./build/Valum-$(VER).gir
+GIR   := Valum-$(VER).gir
 HDR   := ./build/valum_$(VER).h
 VAPI  := ./vapi/valum-$(VER)
 
@@ -44,11 +44,10 @@ vdrun: debug
 	@`which nemiver` --log-debugger-output $(EXE)
 
 valgrind: debug
-	G_SLICE=always-malloc G_DEBUG=gc-friendly  $(shell which valgrind) --tool=memcheck --leak-check=full \
+	G_SLICE=always-malloc G_DEBUG=gc-friendly $(shell which valgrind) --tool=memcheck --leak-check=full \
 	--leak-resolution=high --num-callers=20 --log-file=vgdump $(EXE)
 
-
-debug:
+debug: clean
 	@$(MAKE) "FLAGS=$(FLAGS) --debug --save-temps"
 
 genc:
