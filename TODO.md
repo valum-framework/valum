@@ -10,9 +10,7 @@
 
 # Server Adapters
 
- - define Request and Response as interfaces
- - [fcgi](https://github.com/apmasell/vapis/blob/master/fcgi.vapi) adapter
- - [uwsgi](http://projects.unbit.it/uwsgi/) adapter
+ - migrate to [vsgi](http://github.com/antono/vsgi)
 
 # Dev tools
 
