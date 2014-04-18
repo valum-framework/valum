@@ -1,6 +1,6 @@
 VER    := 0.1
 CC     := gcc
-VALAC  := valac-0.14
+VALAC  := valac-0.22
 
 EXE   := ./build/app.valum
 LIB   := ./build/libvalum_$(VER).so
@@ -17,7 +17,7 @@ LFLAGS := -X -fPIC -X -shared --gir=$(GIR) --library=$(VAPI) \
 
 AFLAGS := -X $(LIB) -X -I./build/ --output=$(EXE)
 
-PKGS   := --pkg gio-2.0 --pkg json-glib-1.0 --pkg gee-1.0 \
+PKGS   := --pkg gio-2.0 --pkg json-glib-1.0 --pkg gee-0.8 \
 	  --pkg libsoup-2.4 --pkg libmemcached --pkg luajit \
 	  --pkg ctpl
 
