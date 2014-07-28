@@ -178,7 +178,7 @@ app.get("hello.json", (req, res) => {
 
 # Contributing
 
- - fork reository
+ - fork repository
  - pick one task from TODO.md
  - and add your name after it in TODO
  - code
