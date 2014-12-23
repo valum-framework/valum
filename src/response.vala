@@ -31,7 +31,7 @@ namespace Valum {
 		}
 
 		public void append(string str) {
-			this.message.response_body.append(Soup.MemoryUse.COPY, str.data);
+			this.message.response_body.append_take(str.data);
 		}
 	}
 }

@@ -120,6 +120,9 @@ namespace Valum {
             timer.reset();
 #endif
             print(@"Not found: $path\n");
+            msg.status_code = 404;
+            msg.response_body.append_take("The requested URL %s was not found.".printf(msg.uri.get_path ()).data);
+            msg.response_body.complete();
 		}
 	}
 
