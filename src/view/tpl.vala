@@ -26,7 +26,7 @@ namespace Valum {
 				}
 			}
 
-			public override string? render () {
+			public override string render () {
 				try {
 					var mem_stream = new MemoryOutputStream (null, realloc, free);
 					var output = new Ctpl.OutputStream (mem_stream);
@@ -35,14 +35,12 @@ namespace Valum {
 						var env = prepare_environment(this.vars);
 						Ctpl.parser_parse(this.tree, env, output);
 					} catch (Error e) {
-						stderr.printf("%s\n", e.message);
-						return null;
+                        return e.message;
 					}
 
 					return (string) mem_stream.get_data();
 				} catch (Error e) {
-					stderr.printf("%s\n", e.message);
-					return null;
+                    return e.message;
 				}
 			}
 

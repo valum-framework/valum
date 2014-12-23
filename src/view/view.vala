@@ -9,7 +9,7 @@ namespace Valum {
             public HashMap<string, Value?> vars = new HashMap<string, Value?> ();
 
             // Renders the view into a string
-			public abstract string? render ();
+			public abstract string render ();
 		}
 	}
 }
