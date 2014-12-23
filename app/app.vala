@@ -24,13 +24,12 @@ app.get("ctpl/:foo/:bar", (req, res) => {
 	arr.add("omg");
 	arr.add("typed hell");
 
-    var vars = new Gee.HashMap<string, Value?> ();
-	vars["foo"] = req.params["foo"];
-	vars["bar"] = req.params["bar"];
-	vars["arr"] = arr;
-	vars["int"] = 1;
+	tpl.vars["foo"] = req.params["foo"];
+	tpl.vars["bar"] = req.params["bar"];
+	tpl.vars["arr"] = arr;
+	tpl.vars["int"] = 1;
 
-	res.append(tpl.render(vars));
+	res.append(tpl.render ());
 });
 
 
@@ -107,7 +106,9 @@ app.get("yay", (req, res) => {
 });
 
 app.get("", (req, res) => {
-	res.append("<h1> Welcome </h1>");
+    var template =  new Valum.View.Tpl();
+    template.from_path("app/templates/home.html");
+	res.append(template.render());
 });
 
 var server = new Soup.Server(Soup.SERVER_SERVER_HEADER, "");

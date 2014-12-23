@@ -2,49 +2,46 @@ using Gee;
 
 namespace Valum {
 	namespace View {
-		public class Tpl : Object, IView {
+		public class Tpl : View {
 
-			public string path { get; set; }
-			public unowned Ctpl.Token tree;
+			private unowned Ctpl.Token tree;
 
 			public Tpl() {
 				this.tree = null;
 			}
 
-			public void read(string? path) {
-				string output = "";
-				ulong len = 0;
-				try {
-					FileUtils.get_contents(path, out output, out len);
-				} catch (FileError e) {
-					print(e.message);
-				}
-			}
+            public void from_path(string path) {
+                try {
+                    this.tree = Ctpl.lexer_lex_path(path);
+                } catch (Error e) {
+                    stderr.printf("%s\n", e.message);
+                }
+            }
 
 			public void from_string(string template) {
 				try {
 					this.tree = Ctpl.lexer_lex_string(template);
 				} catch(Error e) {
-					print(e.message);
+					stderr.printf("%s\n", e.message);
 				}
 			}
 
-			public string? render(HashMap<string, Value?>? vars) {
+			public override string? render () {
 				try {
 					var mem_stream = new MemoryOutputStream (null, realloc, free);
 					var output = new Ctpl.OutputStream (mem_stream);
 
 					try {
-						var env = prepare_environment(vars);
+						var env = prepare_environment(this.vars);
 						Ctpl.parser_parse(this.tree, env, output);
 					} catch (Error e) {
-						print(e.message);
+						stderr.printf("%s\n", e.message);
 						return null;
 					}
 
 					return (string) mem_stream.get_data();
 				} catch (Error e) {
-					print(e.message);
+					stderr.printf("%s\n", e.message);
 					return null;
 				}
 			}
