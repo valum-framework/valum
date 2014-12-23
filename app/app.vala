@@ -1,10 +1,11 @@
+using Soup;
+
 var app = new Valum.Router();
 var lua = new Valum.Script.Lua();
 var tpl = new Valum.View.Tpl();
 var mcd = new Valum.NoSQL.Mcached();
 
 mcd.add_server("127.0.0.1", 11211);
-app.port = 3000;
 
 tpl.from_string("""
    <p> hello {foo} </p>
@@ -107,5 +108,18 @@ app.get("", (req, res) => {
 	res.append("<h1> Welcome </h1>");
 });
 
+var server = new Soup.Server(Soup.SERVER_SERVER_HEADER, "Soup-Server");
 
-app.listen();
+// bind the application to the server
+server.add_handler("/", app.request_handler);
+
+try {
+    server.listen_local(3000, Soup.ServerListenOptions.IPV4_ONLY);
+} catch (Error error) {
+    stderr.printf("%s.\n", error.message);
+}
+
+stdout.printf("Point your browser at http://localhost:3000.\n");
+
+// run the server
+server.run ();

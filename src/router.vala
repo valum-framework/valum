@@ -6,37 +6,16 @@ namespace Valum {
 
 	public class Router {
 
-		private HashMap<string, ArrayList<Route>> routes;
-		private Soup.Server server;
+		private HashMap<string, ArrayList<Route>> routes = new HashMap<string, ArrayList> ();
 		private string[] _scope;
-
-		public uint16 port;
-		public string host;
 
 		public delegate void NestedRouter(Valum.Router app);
 
 		public Router() {
-			this.port = 7777;
-			this.host = "localhost";
-			this.create_routes();
-		}
-
-		private void create_routes() {
-			this.routes = new HashMap<string, ArrayList>();
 			this.routes["GET"]  = new ArrayList<Route>();
 			this.routes["POST"] = new ArrayList<Route>();
 		}
 
-		public int listen() {
-			if (!Thread.supported()) {
-				stderr.printf("Cannot run without threads.\n");
-				return 1;
-			}
-			this.server = new Soup.Server (Soup.SERVER_PORT, this.port);
-			this.server.add_handler ("/", this.request_handler);
-			this.server.run ();
-			return 0;
-		}
 
 		//
 		// HTTP Verbs
@@ -102,7 +81,7 @@ namespace Valum {
 		}
 
 		// Handler code
-		private void request_handler (Soup.Server server,
+		public void request_handler (Soup.Server server,
 									  Soup.Message msg,
 									  string path,
 									  GLib.HashTable? query,
@@ -143,4 +122,7 @@ namespace Valum {
             print(@"Not found: $path\n");
 		}
 	}
+
 }
+
+
