@@ -110,7 +110,7 @@ app.get("", (req, res) => {
 	res.append("<h1> Welcome </h1>");
 });
 
-var server = new Soup.Server(Soup.SERVER_SERVER_HEADER, "Soup-Server");
+var server = new Soup.Server(Soup.SERVER_SERVER_HEADER, "");
 
 // bind the application to the server
 server.add_handler("/", app.request_handler);
