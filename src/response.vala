@@ -3,7 +3,6 @@ using Gee;
 namespace Valum {
 	public class Response : Object {
 
-		public Gee.HashMap<string, Value?> vars;
 		private Soup.Message message;
 
 		public string mime {
@@ -29,7 +28,6 @@ namespace Valum {
 			this.mime = "text/html";
 			this.status = 200;
             this.headers.append("Server", Valum.APP_NAME);
-			this.vars = new Gee.HashMap<string, Value?>();
 		}
 
 		public void append(string str) {

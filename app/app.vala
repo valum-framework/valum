@@ -1,4 +1,5 @@
 using Soup;
+using Valum;
 
 var app = new Valum.Router();
 var lua = new Valum.Script.Lua();
@@ -23,12 +24,13 @@ app.get("ctpl/:foo/:bar", (req, res) => {
 	arr.add("omg");
 	arr.add("typed hell");
 
-	res.vars["foo"] = req.params["foo"];
-	res.vars["bar"] = req.params["bar"];
-	res.vars["arr"] = arr;
-	res.vars["int"] = 1;
+    var vars = new Gee.HashMap<string, Value?> ();
+	vars["foo"] = req.params["foo"];
+	vars["bar"] = req.params["bar"];
+	vars["arr"] = arr;
+	vars["int"] = 1;
 
-	res.append(tpl.render(res.vars));
+	res.append(tpl.render(vars));
 });
 
 
