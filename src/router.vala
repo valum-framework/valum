@@ -3,11 +3,11 @@ using Gee;
 namespace Valum {
 
 	public const string APP_NAME = "Valum/0.1";
-	
+
 	public class Router {
-		
+
 		private HashMap<string, ArrayList<Route>> routes;
-		private Soup.Server _server;
+		private Soup.Server server;
 		private string[] _scope;
 
 		public uint16 port;
@@ -32,9 +32,9 @@ namespace Valum {
 				stderr.printf("Cannot run without threads.\n");
 				return 1;
 			}
-			this._server = new Soup.Server (Soup.SERVER_PORT, this.port);
-			this._server.add_handler ("/", this.request_handler);
-			this._server.run ();
+			this.server = new Soup.Server (Soup.SERVER_PORT, this.port);
+			this.server.add_handler ("/", this.request_handler);
+			this.server.run ();
 			return 0;
 		}
 
@@ -77,7 +77,7 @@ namespace Valum {
 		public void patch(string rule, Route.RequestCallback cb) {
 			this.route("PATCH", rule, cb);
 		}
-		
+
 
 		//
 		// Routing helpers
@@ -112,34 +112,35 @@ namespace Valum {
 			var timer  = new Timer();
 			timer.start();
 #endif
-			
-			var found  = false;
+
 			var routes = this.routes[msg.method];
 
 			foreach (var route in routes) {
 				if (route.matches(path)) {
 					var req = new Request(msg);
 					var res = new Response(msg);
+
+                    // fire the route!
 					route.fire(req, res);
 #if (BENCHMARK)
 					timer.stop();
 					var elapsed = timer.elapsed();
-					res.headers["X-Runtime"] = "%8.6f".printf(elapsed);
+					res.headers.append("X-Runtime", "%8.6f".printf(elapsed));
 #endif
-					res.send();
-					found = true;
-					break;
+
+                    // complete the response body
+                    msg.response_body.complete();
+
+					return;
 				}
 			}
-			
-			
-			if (!found) {
+
+            // No route has matched
 #if (BENCHMARK)
-				timer.stop();
-				timer.reset();
+            timer.stop();
+            timer.reset();
 #endif
-				print(@"Not found: $path\n");
-			}
+            print(@"Not found: $path\n");
 		}
 	}
 }

@@ -95,7 +95,6 @@ app.scope("admin", (adm) => {
 app.get("hello/:id", (req, res) => {
 	res.append("yay");
 	res.append(req.params["id"]);
-	res.send();
 });
 
 app.get("yay", (req, res) => {
