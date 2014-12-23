@@ -3,7 +3,7 @@ using Gee;
 namespace Valum {
 	public class Response : Object {
 
-		private Soup.Message message;
+		public Soup.Message message { construct; get; }
 
 		public string mime {
 			get { return this.message.response_headers.get_content_type(null);}
@@ -24,7 +24,7 @@ namespace Valum {
         }
 
 		public Response(Soup.Message msg) {
-			this.message = msg;
+            Object(message: msg);
 			this.mime = "text/html";
 			this.status = 200;
             this.headers.append("Server", Valum.APP_NAME);

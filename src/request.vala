@@ -1,9 +1,9 @@
 using Gee;
 
 namespace Valum {
-	public class Request {
+	public class Request : Object {
 		public HashMap<string, string> params = new HashMap<string, string> ();
-		private Soup.Message message;
+		public Soup.Message message { construct; get; }
         public string path {
             get { return this.message.uri.get_path(); }
         }
@@ -14,7 +14,7 @@ namespace Valum {
            get { return this.message.request_body; }
         }
 		public Request(Soup.Message msg) {
-			this.message = msg;
+            Object(message: msg);
 		}
 	}
 }
