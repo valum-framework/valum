@@ -11,12 +11,6 @@ namespace Valum {
 
 		public delegate void NestedRouter(Valum.Router app);
 
-		public Router() {
-			this.routes["GET"]  = new ArrayList<Route>();
-			this.routes["POST"] = new ArrayList<Route>();
-		}
-
-
 		//
 		// HTTP Verbs
 		//
@@ -77,6 +71,9 @@ namespace Valum {
 				full_rule += this._scope[seg];
 			}
 			full_rule += "/%s".printf(rule);
+            if (!this.routes.has_key(method)){
+                this.routes[method] = new ArrayList<Route> ();    
+            }
 			this.routes[method].add(new Route(full_rule, cb));
 		}
 
@@ -101,6 +98,7 @@ namespace Valum {
 
                     // fire the route!
 					route.fire(req, res);
+
 #if (BENCHMARK)
 					timer.stop();
 					var elapsed = timer.elapsed();
@@ -115,13 +113,9 @@ namespace Valum {
 			}
 
             // No route has matched
-#if (BENCHMARK)
-            timer.stop();
-            timer.reset();
-#endif
-            print(@"Not found: $path\n");
+            stderr.printf("Could not match %s.\n", path);
             msg.status_code = 404;
-            msg.response_body.append_take("The requested URL %s was not found.".printf(msg.uri.get_path ()).data);
+            msg.response_body.append_take("The requested URL %s was not found.".printf(path).data);
             msg.response_body.complete();
 		}
 	}
