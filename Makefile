@@ -17,7 +17,7 @@ LFLAGS := -X -fPIC -X -shared --gir=$(GIR) --library=$(VAPI) \
 
 AFLAGS := -X $(LIB) -X -I./build/ --output=$(EXE)
 
-PKGS   := --pkg gio-2.0 --pkg json-glib-1.0 --pkg gee-1.0 \
+PKGS   := --pkg gio-2.0 --pkg json-glib-1.0 --pkg gee-0.8 \
 	  --pkg libsoup-2.4 --pkg libmemcached --pkg luajit \
 	  --pkg ctpl
 
@@ -26,10 +26,10 @@ CSRC   := $(shell find 'src/' -type f -name "*.c")
 ASRC   := $(shell find 'app/' -type f -name "*.vala")
 
 
-$(EXE): $(LIB)
+$(EXE): $(LIB) $(ASRC)
 	$(VALAC) $(FLAGS) $(AFLAGS) $(VAPI).vapi $(ASRC) $(PKGS)
 
-$(LIB):
+$(LIB): $(LSRC)
 	$(VALAC) $(FLAGS) $(LFLAGS) $(PKGS) $(LSRC)
 
 all: $(LIB) $(EXE)
