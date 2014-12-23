@@ -1,6 +1,6 @@
 VER    := 0.1
 CC     := gcc
-VALAC  := valac-0.14
+VALAC  := valac
 
 EXE   := ./build/app.valum
 LIB   := ./build/libvalum_$(VER).so
