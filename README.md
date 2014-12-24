@@ -1,6 +1,7 @@
 # Valum Framework. Relax :)
 
-Valum is a web framework written in [Vala](http://en.wikipedia.org/wiki/Vala_(programming_language\)).
+Valum is a web framework written in [Vala](https://wiki.gnome.org/Projects/Vala).
+
 
 # Quickstart
 

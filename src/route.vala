@@ -1,58 +1,61 @@
 using Gee;
 
 namespace Valum {
-	
+
 	public class Route : Object {
-		public  string rule;
-		private string route;
+		public  string rule { construct; get; }
 		private Regex regex;
-		private ArrayList<string> captures;
+		private ArrayList<string> captures = new ArrayList<string> ();
+		private unowned RequestCallback callback;
+
 		public delegate void RequestCallback(Request req, Response res);
-		private unowned RequestCallback cb;
-			
-		public Route(string rule, RequestCallback cb) {
-			this.cb = cb;
-			this.rule = rule;
-			this.captures = new ArrayList<string>();
-				
+
+		public Route(string rule, RequestCallback callback) {
+			Object(rule: rule);
+			this.callback = callback;
+
 			try {
-				Regex param_re = new Regex("(:\\w+)");
-				var params = param_re.split_full(this.rule);
-				
+				Regex param_regex = new Regex("(<((float|int):)?\\w+>)");
+				var params = param_regex.split_full(this.rule);
+
 				StringBuilder route = new StringBuilder("^");
-					
+
 				foreach(var p in params) {
-					if(p[0] != ':') {
-						route.append(p);
+					if(p[0] != '<') {
+						// regular piece of route
+						route.append(Regex.escape_string(p));
 					} else {
-						var cap = p.slice(1, p.length);
-						captures.add(cap);
-						route.append(@"(?<$cap>\\w+)");
+						// parameter
+						var cap = p.slice(1, p.length - 1).split(":", 2);
+						var type = cap.length == 1 ? "string" : cap[0];
+						var key = cap.length == 1 ? cap[0] : cap[1];
+						// TODO: support any type with a HashMap<string, string>
+						var type_re = type == "int" ? "\\d+" : "\\w+";
+						captures.add(key);
+						route.append("(?<%s>%s)".printf(key, type_re));
 					}
 				}
-      
+
 				route.append("$");
-					
-				this.route = route.str;
+				print("%s\n".printf(route.str));
 				this.regex = new Regex(route.str, RegexCompileFlags.OPTIMIZE);
 			} catch(RegexError e) {
 				stderr.printf("Route.new(): %s\n", e.message);
 			}
 		}
-			
+
 		public bool matches(string path) {
 			return this.regex.match(path, 0);
 		}
 
 		public void fire(Request req, Response res) {
 			MatchInfo matchinfo;
-			var result = this.regex.match(req.path, 0, out matchinfo);
-			if(result) {
+			if(this.regex.match(req.path, 0, out matchinfo)) {
 				foreach(var cap in captures) {
 					req.params[cap] = matchinfo.fetch_named(cap);
 				}
 			}
-			this.cb(req, res);
+			this.callback(req, res);
 		}
 	}
 }
