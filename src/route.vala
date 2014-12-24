@@ -15,7 +15,7 @@ namespace Valum {
 			this.callback = callback;
 
 			try {
-				Regex param_regex = new Regex("(<((float|int):)?\\w+>)");
+				Regex param_regex = new Regex("(<(?:(?:float|int):)?\\w+>)");
 				var params = param_regex.split_full(this.rule);
 
 				StringBuilder route = new StringBuilder("^");
@@ -38,7 +38,6 @@ namespace Valum {
 
 				route.append("$");
 				print("%s\n".printf(route.str));
-
 				this.regex = new Regex(route.str, RegexCompileFlags.OPTIMIZE);
 			} catch(RegexError e) {
 				stderr.printf("Route.new(): %s\n", e.message);
