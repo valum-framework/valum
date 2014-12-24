@@ -108,10 +108,15 @@ app.get("yay", (req, res) => {
 app.get("", (req, res) => {
 	var template =  new Valum.View.Tpl();
 	template.from_path("app/templates/home.html");
+
+	template.vars["path"] = req.message.uri.get_path ();
+	template.vars["query"] = req.message.uri.get_query ();
+	template.vars["headers"] = req.headers;
+
 	res.append(template.render());
 });
 
-var server = new Soup.Server(Soup.SERVER_SERVER_HEADER, "");
+var server = new Soup.Server(Soup.SERVER_SERVER_HEADER, Valum.APP_NAME);
 
 // bind the application to the server
 server.add_handler("/", app.request_handler);

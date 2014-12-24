@@ -27,7 +27,6 @@ namespace Valum {
 			Object(message: msg);
 			this.mime = "text/html";
 			this.status = 200;
-			this.headers.append("Server", Valum.APP_NAME);
 		}
 
 		public void append(string str) {
