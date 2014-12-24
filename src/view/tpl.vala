@@ -6,11 +6,7 @@ namespace Valum {
 
 			private unowned Ctpl.Token tree;
 
-			public Tpl() {
-				this.tree = null;
-			}
-
-			public void from_path(string path) {
+			public Tpl.from_path(string path) {
 				try {
 					this.tree = Ctpl.lexer_lex_path(path);
 				} catch (Error e) {
@@ -18,7 +14,7 @@ namespace Valum {
 				}
 			}
 
-			public void from_string(string template) {
+			public Tpl.from_string(string template) {
 				try {
 					this.tree = Ctpl.lexer_lex_string(template);
 				} catch(Error e) {

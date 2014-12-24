@@ -3,12 +3,11 @@ using Valum;
 
 var app = new Valum.Router();
 var lua = new Valum.Script.Lua();
-var tpl = new Valum.View.Tpl();
 var mcd = new Valum.NoSQL.Mcached();
 
 mcd.add_server("127.0.0.1", 11211);
 
-tpl.from_string("""
+var tpl = new Valum.View.Tpl.from_string("""
    <p> hello {foo} </p>
    <p> hello {bar} </p>
    <ul>
@@ -106,8 +105,7 @@ app.get("yay", (req, res) => {
 });
 
 app.get("", (req, res) => {
-	var template =  new Valum.View.Tpl();
-	template.from_path("app/templates/home.html");
+	var template =  new Valum.View.Tpl.from_path("app/templates/home.html");
 
 	template.vars["path"] = req.message.uri.get_path ();
 	template.vars["query"] = req.message.uri.get_query ();
