@@ -92,8 +92,9 @@ app.scope("admin", (adm) => {
 	});
 });
 
-app.get("hello/:id", (req, res) => {
-	res.append("yay");
+app.get("hello/<id>", (req, res) => {
+	res.mime = "text/plain";
+	res.append("");
 	res.append(req.params["id"]);
 	res.send();
 });
