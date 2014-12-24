@@ -16,7 +16,7 @@ tpl.from_string("""
    </ul>
 """);
 
-app.get("ctpl/:foo/:bar", (req, res) => {
+app.get("ctpl/<foo>/<bar>", (req, res) => {
 
 	var arr = new Gee.ArrayList<Value?>();
 	arr.add("omg");
@@ -38,7 +38,7 @@ app.get("node.js.vs.valum", (req, res) => {
 });
 
 
-app.get("users/:id/:action", (req, res) => {
+app.get("users/<int:id>/<action>", (req, res) => {
 	var id   = req.params["id"];
 	var test = req.params["test"];
 	res.append(@"id => $id<br/>");
@@ -58,7 +58,7 @@ app.get("lua.haml", (req, res) => {
 	res.append(lua.run("app/haml.lua"));
 });
 
-app.get("memcached/set/:key/:value", (req, res) => {
+app.get("memcached/set/<key>/<value>", (req, res) => {
 	if (mcd.set(req.params["key"], req.params["value"])) {
 		res.append("Ok! Pushed.");
 	} else {
@@ -66,7 +66,7 @@ app.get("memcached/set/:key/:value", (req, res) => {
 	}
 });
 
-app.get("memcached/get/:key", (req, res) => {
+app.get("memcached/get/<key>", (req, res) => {
 	var value = mcd.get(req.params["key"]);
 	res.append(value);
 });
