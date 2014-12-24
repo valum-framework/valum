@@ -106,8 +106,8 @@ app.get("yay", (req, res) => {
 });
 
 app.get("", (req, res) => {
-    var template =  new Valum.View.Tpl();
-    template.from_path("app/templates/home.html");
+	var template =  new Valum.View.Tpl();
+	template.from_path("app/templates/home.html");
 	res.append(template.render());
 });
 
@@ -117,9 +117,9 @@ var server = new Soup.Server(Soup.SERVER_SERVER_HEADER, "");
 server.add_handler("/", app.request_handler);
 
 try {
-    server.listen_local(3000, Soup.ServerListenOptions.IPV4_ONLY);
+	server.listen_local(3000, Soup.ServerListenOptions.IPV4_ONLY);
 } catch (Error error) {
-    stderr.printf("%s.\n", error.message);
+	stderr.printf("%s.\n", error.message);
 }
 
 stdout.printf("Point your browser at http://localhost:3000.\n");

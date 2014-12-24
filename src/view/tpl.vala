@@ -10,13 +10,13 @@ namespace Valum {
 				this.tree = null;
 			}
 
-            public void from_path(string path) {
-                try {
-                    this.tree = Ctpl.lexer_lex_path(path);
-                } catch (Error e) {
-                    stderr.printf("%s\n", e.message);
-                }
-            }
+			public void from_path(string path) {
+				try {
+					this.tree = Ctpl.lexer_lex_path(path);
+				} catch (Error e) {
+					stderr.printf("%s\n", e.message);
+				}
+			}
 
 			public void from_string(string template) {
 				try {
@@ -35,12 +35,12 @@ namespace Valum {
 						var env = prepare_environment(this.vars);
 						Ctpl.parser_parse(this.tree, env, output);
 					} catch (Error e) {
-                        return e.message;
+						return e.message;
 					}
 
 					return (string) mem_stream.get_data();
 				} catch (Error e) {
-                    return e.message;
+					return e.message;
 				}
 			}
 
@@ -49,18 +49,18 @@ namespace Valum {
 
 				foreach (var e in vars.entries) {
 					switch (e.value.type_name()) {
-					case "gchararray":
-						var val = new Ctpl.Value();
-						val.set_string((string) e.value);
-						env.push((string) e.key, val);
-						break;
-					case "GeeArrayList":
-						var val = array_list_to_ctpl_value ((ArrayList<Value?>) e.value);
-						env.push((string) e.key, val);
-						break;
-					default:
-						// message("Cannot create env var of type %s", e.value.type_name());
-						break;
+						case "gchararray":
+							var val = new Ctpl.Value();
+							val.set_string((string) e.value);
+							env.push((string) e.key, val);
+							break;
+						case "GeeArrayList":
+							var val = array_list_to_ctpl_value ((ArrayList<Value?>) e.value);
+							env.push((string) e.key, val);
+							break;
+						default:
+							// message("Cannot create env var of type %s", e.value.type_name());
+							break;
 					}
 				}
 

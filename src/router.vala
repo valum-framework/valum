@@ -71,18 +71,18 @@ namespace Valum {
 				full_rule += this._scope[seg];
 			}
 			full_rule += "/%s".printf(rule);
-            if (!this.routes.has_key(method)){
-                this.routes[method] = new ArrayList<Route> ();    
-            }
+			if (!this.routes.has_key(method)){
+				this.routes[method] = new ArrayList<Route> ();    
+			}
 			this.routes[method].add(new Route(full_rule, cb));
 		}
 
 		// Handler code
 		public void request_handler (Soup.Server server,
-									  Soup.Message msg,
-									  string path,
-									  GLib.HashTable? query,
-									  Soup.ClientContext client) {
+				Soup.Message msg,
+				string path,
+				GLib.HashTable? query,
+				Soup.ClientContext client) {
 
 #if (BENCHMARK)
 			var timer  = new Timer();
@@ -96,7 +96,7 @@ namespace Valum {
 					var req = new Request(msg);
 					var res = new Response(msg);
 
-                    // fire the route!
+					// fire the route!
 					route.fire(req, res);
 
 #if (BENCHMARK)
@@ -105,18 +105,18 @@ namespace Valum {
 					res.headers.append("X-Runtime", "%8.6f".printf(elapsed));
 #endif
 
-                    // complete the response body
-                    msg.response_body.complete();
+					// complete the response body
+					msg.response_body.complete();
 
 					return;
 				}
 			}
 
-            // No route has matched
-            stderr.printf("Could not match %s.\n", path);
-            msg.status_code = 404;
-            msg.response_body.append_take("The requested URL %s was not found.".printf(path).data);
-            msg.response_body.complete();
+			// No route has matched
+			stderr.printf("Could not match %s.\n", path);
+			msg.status_code = 404;
+			msg.response_body.append_take("The requested URL %s was not found.".printf(path).data);
+			msg.response_body.complete();
 		}
 	}
 

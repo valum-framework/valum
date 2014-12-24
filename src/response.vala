@@ -15,19 +15,19 @@ namespace Valum {
 			set { this.message.set_status(value); }
 		}
 
-        public Soup.MessageBody body {
-            get { return this.message.response_body; }
-        }
+		public Soup.MessageBody body {
+			get { return this.message.response_body; }
+		}
 
-        public Soup.MessageHeaders headers {
-            get { return this.message.response_headers; }
-        }
+		public Soup.MessageHeaders headers {
+			get { return this.message.response_headers; }
+		}
 
 		public Response(Soup.Message msg) {
-            Object(message: msg);
+			Object(message: msg);
 			this.mime = "text/html";
 			this.status = 200;
-            this.headers.append("Server", Valum.APP_NAME);
+			this.headers.append("Server", Valum.APP_NAME);
 		}
 
 		public void append(string str) {
