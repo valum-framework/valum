@@ -115,6 +115,7 @@ namespace Valum {
 			// No route has matched
 			stderr.printf("Could not match %s.\n", path);
 			msg.status_code = 404;
+			msg.response_headers.set_content_type("text/plain", null);
 			msg.response_body.append_take("The requested URL %s was not found.".printf(path).data);
 			msg.response_body.complete();
 		}
