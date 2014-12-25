@@ -1,52 +1,92 @@
-# Valum Framework. Relax :)
+Valum Framework. Relax :)
+=========================
+Valum is a web micro-framework based on libsoup and entirely written in the
+[Vala](https://wiki.gnome.org/Projects/Vala) language.
 
-Valum is a web framework written in [Vala](https://wiki.gnome.org/Projects/Vala).
+Valum ships with a [Ctpl](http://ctpl.tuxfamily.org/), a lightweight and simple
+temlating engine.
+
+Quickstart
+----------
+
+Debian/Ubuntu
+```bash
+sudo apt-get install git-core build-essential valac-0.14 libgee-dev \
+     libsoup2.4-dev libjson-glib-dev memcached libmemcached-dev \
+     libluajit-5.1-dev libctpl-dev
 
 
-# Quickstart
-
-Debian/Ubuntu:
-
-
-    sudo apt-get install git-core build-essential valac-0.14 libgee-dev \
-         libsoup2.4-dev libjson-glib-dev memcached libmemcached-dev \
-         libluajit-5.1-dev libctpl-dev
-
-
-    git clone git://github.com/antono/valum.git
-    cd valum && make run
-
-
-Visit http://localhost:3000/
-
-Search for other routes in ./app/app.vala
-
-# Examples
-
-## Setup application
-
-Somwhere in app/myfile.vala
-
-```vala
-var app  = new Valum.Router();
-app.port = 8080;
-app.listen();
 ```
 
-## Simple GET request
+Fedora
+```
+sudo yum install vala git libgee-devel libsoup-devel libgson-glib-devel
+                 libctpl-devel libmemcached-devel luajit-devel
+```
 
+Clone and start the application!
+```
+git clone git://github.com/antono/valum.git
+cd valum
+make run
+```
 
+Visit [http://localhost:3000/](http://localhost:3000/) and take a look at other
+routes definition in `app/app.vala`.
+
+Features
+--------
+
+  - router with scoping and typed parameters
+  - simple Request-Response based on Soup Message
+  - basic templating engine [Ctpl](http://ctpl.tuxfamily.org/)
+
+Examples
+--------
+
+Setup application
+```vala
+using Soup;
+using Valum;
+
+var app = new Router();
+
+app.get('', (req, res) => {
+    res.append("Hello world!");
+});
+
+var server = new Soup.Server(Soup.SERVER_SERVER_HEADER, Valum.APP_NAME);
+
+// bind the application to the server
+server.add_handler("/", app.request_handler);
+
+try {
+	server.listen_local(3000, Soup.ServerListenOptions.IPV4_ONLY);
+} catch (Error error) {
+	stderr.printf("%s.\n", error.message);
+}
+```
+
+GET request
 ```vala
 app.get("hello", (req, res) => {
   res.status = 200;
   res.mime = "text/plain";
-  res.headers["Hello"] = "Browser";
+  res.headers.append("Hello", "Browser");
   res.append("Hello World!");
 });
 ```
 
-## Route scoping
+POST request (not implemented)
+```vala
+app.post("hello", (req, res) => {
+    var username = req.post["username"];
+    var password = req.post["password"];
+    res.append("You have been authenticated!");
+});
+```
 
+Route scoping
 ```vala
 // GET /admin/user/11
 // GET /admin/user/antono
@@ -58,20 +98,10 @@ app.scope("admin", (admin) => {
 });
 ```
 
-## Simple POST request (TODO)
+Scripting languages!
+--------------------
 
-```vala
-app.post("form", (req, res) => {
-  req.params["title"]; // NOT YET IMPLEMENTED
-});
-```
-
-## Scripting languages!
-
-### Embedded Lua
-
-Currently it works this way:
-
+Embedded Lua
 ```vala
 var app = new Valum.Router();
 var lua = new Valum.Script.Lua();
@@ -88,19 +118,17 @@ app.get("lua", (req, res) => {
 ```
 
 This code works with either Lua or LuaJIT depending
-on --pkg option in Makefile. See ./vapi/lua[jit].vapi for
+on `--pkg` option in `Makefile`. See ./vapi/lua[jit].vapi for
 details.
 
 We are going to implement simplier syntax for lua scripts:
 
 Vala code:
-
 ```vala
 app.get("lua.html", app.lua("hello"));
 ```
 
 Lua code:
-
 ```lua
 -- VALUM_ROOT/scripts/hello.lua
 require 'markdown'
@@ -109,15 +137,11 @@ return markdown("# Hello from Lua!!!")
 ```
 
 Resulted html:
-
 ```html
 <h1> Hello from Lua!!! </h1>
 ```
 
-### Embedded scheme! (TODO)
-
-Vala code:
-
+Embedded scheme! (TODO)
 ```vala
 app.get("hello.scm", app.scm("hello"));
 ```
@@ -131,10 +155,10 @@ Scheme code:
 ;; and appended to response body
 ```
 
-## Persistance
+Persistance
+-----------
 
-### Memcached
-
+Memcached
 ```vala
 var mc = new Valum.NoSQL.Memcached();
 
@@ -146,7 +170,7 @@ app.get("hello", (req, res) => {
 });
 ```
 
-### Redis (TODO)
+Redis (TODO)
 
 We need vapi for hiredis: https://github.com/antirez/hiredis
 
@@ -160,8 +184,7 @@ app.get("hello", (req, res) => {
 });
 ```
 
-
-### MongoDB (TODO)
+MongoDB (TODO)
 
 This is not yet implemented. But mongo client for
 vala is on the way: https://github.com/chergert/mongo-glib
@@ -176,19 +199,20 @@ app.get("hello.json", (req, res) => {
 });
 ```
 
+Contributing
+------------
 
-# Contributing
+ 1. fork repository
+ 2. pick one task from TODO.md or GitHub issues
+ 3. and add your name after it in TODO
+ 4. code
+ 5. make pull request with your amazing changes
+ 6. enjoy :)
 
- - fork repository
- - pick one task from TODO.md
- - and add your name after it in TODO
- - code
- - make pull request
- - enjoy :)
-
-# Discussions and help
+Discussions and help
+--------------------
 
  - Mailing list: [vala-list](https://mail.gnome.org/mailman/listinfo/vala-list).
  - IRC channel: #vala at irc.gimp.net
  - [Google+ page for Vala](https://plus.google.com/115393489934129239313/)
- - Issues at [github] (https://github.com/antono/valum/issues)
+ - Issues on [GitHub](https://github.com/antono/valum/issues)
