@@ -37,7 +37,8 @@ namespace Valum {
 				}
 
 				route.append("$");
-				this.route = route.str;
+				print("%s\n".printf(route.str));
+
 				this.regex = new Regex(route.str, RegexCompileFlags.OPTIMIZE);
 			} catch(RegexError e) {
 				stderr.printf("Route.new(): %s\n", e.message);
