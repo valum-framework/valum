@@ -3,40 +3,13 @@ using Gee;
 namespace Valum {
 
 	public const string APP_NAME = "Valum/0.1";
-	
+
 	public class Router {
-		
-		private HashMap<string, ArrayList<Route>> routes;
-		private Soup.Server _server;
+
+		private HashMap<string, ArrayList<Route>> routes = new HashMap<string, ArrayList> ();
 		private string[] _scope;
 
-		public uint16 port;
-		public string host;
-
 		public delegate void NestedRouter(Valum.Router app);
-
-		public Router() {
-			this.port = 7777;
-			this.host = "localhost";
-			this.create_routes();
-		}
-
-		private void create_routes() {
-			this.routes = new HashMap<string, ArrayList>();
-			this.routes["GET"]  = new ArrayList<Route>();
-			this.routes["POST"] = new ArrayList<Route>();
-		}
-
-		public int listen() {
-			if (!Thread.supported()) {
-				stderr.printf("Cannot run without threads.\n");
-				return 1;
-			}
-			this._server = new Soup.Server (Soup.SERVER_PORT, this.port);
-			this._server.add_handler ("/", this.request_handler);
-			this._server.run ();
-			return 0;
-		}
 
 		//
 		// HTTP Verbs
@@ -77,7 +50,7 @@ namespace Valum {
 		public void patch(string rule, Route.RequestCallback cb) {
 			this.route("PATCH", rule, cb);
 		}
-		
+
 
 		//
 		// Routing helpers
@@ -98,48 +71,56 @@ namespace Valum {
 				full_rule += this._scope[seg];
 			}
 			full_rule += "/%s".printf(rule);
+			if (!this.routes.has_key(method)){
+				this.routes[method] = new ArrayList<Route> ();    
+			}
 			this.routes[method].add(new Route(full_rule, cb));
 		}
 
 		// Handler code
-		private void request_handler (Soup.Server server,
-									  Soup.Message msg,
-									  string path,
-									  GLib.HashTable? query,
-									  Soup.ClientContext client) {
+		public void request_handler (Soup.Server server,
+				Soup.Message msg,
+				string path,
+				GLib.HashTable? query,
+				Soup.ClientContext client) {
 
 #if (BENCHMARK)
 			var timer  = new Timer();
 			timer.start();
 #endif
-			
-			var found  = false;
+
 			var routes = this.routes[msg.method];
 
 			foreach (var route in routes) {
 				if (route.matches(path)) {
 					var req = new Request(msg);
 					var res = new Response(msg);
+
+					// fire the route!
 					route.fire(req, res);
+
 #if (BENCHMARK)
 					timer.stop();
 					var elapsed = timer.elapsed();
-					res.headers["X-Runtime"] = "%8.6f".printf(elapsed);
+					res.headers.append("X-Runtime", "%8.6f".printf(elapsed));
 #endif
-					res.send();
-					found = true;
-					break;
+
+					// complete the response body
+					msg.response_body.complete();
+
+					return;
 				}
 			}
-			
-			
-			if (!found) {
-#if (BENCHMARK)
-				timer.stop();
-				timer.reset();
-#endif
-				print(@"Not found: $path\n");
-			}
+
+			// No route has matched
+			stderr.printf("Could not match %s.\n", path);
+			msg.status_code = 404;
+			msg.response_headers.set_content_type("text/plain", null);
+			msg.response_body.append_take("The requested URL %s was not found.".printf(path).data);
+			msg.response_body.complete();
 		}
 	}
+
 }
+
+

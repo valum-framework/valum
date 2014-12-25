@@ -1,22 +1,15 @@
+using Gee;
+
 namespace Valum {
 	namespace View {
-		public interface IView : Object {
+		// View interface providing rendering abilities.
+		public abstract class View : Object {
 
-			/**
-			 * Path to file containing template
-			 */
-			public abstract string path { get; set; }
+			// Variables for the view
+			public HashMap<string, Value?> vars = new HashMap<string, Value?> ();
 
-			/**
-			 * Renders reads template from path
-			 */
-			public abstract void read(string? path);
-
-			/**
-			 * Renders given template
-			 * Returns: rendered template
-			 */
-			public abstract string? render(Gee.HashMap? vars);
+			// Renders the view into a string
+			public abstract string render ();
 		}
 	}
 }

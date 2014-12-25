@@ -2,7 +2,6 @@
 namespace Valum {
 	namespace Tools {
 		[DBus (name = "info.antono.valum")]
-		public class DBus : Object {
-		}
+		public class DBus : Object {}
 	}
 }

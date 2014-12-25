@@ -2,7 +2,6 @@
 namespace Valum {
 	namespace Tools {
 		[CCode (gir_namespace = "Tools")]
-		public class Cli : Object {
-		}
+		public class Cli : Object {}
 	}
 }

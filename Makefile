@@ -1,6 +1,6 @@
 VER    := 0.1
 CC     := gcc
-VALAC  := valac-0.22
+VALAC  := valac
 
 EXE   := ./build/app.valum
 LIB   := ./build/libvalum_$(VER).so
@@ -26,10 +26,10 @@ CSRC   := $(shell find 'src/' -type f -name "*.c")
 ASRC   := $(shell find 'app/' -type f -name "*.vala")
 
 
-$(EXE): $(LIB)
+$(EXE): $(LIB) $(ASRC)
 	$(VALAC) $(FLAGS) $(AFLAGS) $(VAPI).vapi $(ASRC) $(PKGS)
 
-$(LIB):
+$(LIB): $(LSRC)
 	$(VALAC) $(FLAGS) $(LFLAGS) $(PKGS) $(LSRC)
 
 all: $(LIB) $(EXE)

@@ -1,12 +1,13 @@
+using Soup;
+using Valum;
+
 var app = new Valum.Router();
 var lua = new Valum.Script.Lua();
-var tpl = new Valum.View.Tpl();
 var mcd = new Valum.NoSQL.Mcached();
 
 mcd.add_server("127.0.0.1", 11211);
-app.port = 3000;
 
-tpl.from_string("""
+var tpl = new Valum.View.Tpl.from_string("""
    <p> hello {foo} </p>
    <p> hello {bar} </p>
    <ul>
@@ -22,12 +23,12 @@ app.get("ctpl/<foo>/<bar>", (req, res) => {
 	arr.add("omg");
 	arr.add("typed hell");
 
-	res.vars["foo"] = req.params["foo"];
-	res.vars["bar"] = req.params["bar"];
-	res.vars["arr"] = arr;
-	res.vars["int"] = 1;
+	tpl.vars["foo"] = req.params["foo"];
+	tpl.vars["bar"] = req.params["bar"];
+	tpl.vars["arr"] = arr;
+	tpl.vars["int"] = 1;
 
-	res.append(tpl.render(res.vars));
+	res.append(tpl.render ());
 });
 
 
@@ -96,7 +97,6 @@ app.get("hello/<id>", (req, res) => {
 	res.mime = "text/plain";
 	res.append("");
 	res.append(req.params["id"]);
-	res.send();
 });
 
 app.get("yay", (req, res) => {
@@ -106,8 +106,27 @@ app.get("yay", (req, res) => {
 });
 
 app.get("", (req, res) => {
-	res.append("<h1> Welcome </h1>");
+	var template =  new Valum.View.Tpl.from_path("app/templates/home.html");
+
+	template.vars["path"] = req.message.uri.get_path ();
+	template.vars["query"] = req.message.uri.get_query ();
+	template.vars["headers"] = req.headers;
+
+	res.append(template.render());
 });
 
+var server = new Soup.Server(Soup.SERVER_SERVER_HEADER, Valum.APP_NAME);
 
-app.listen();
+// bind the application to the server
+server.add_handler("/", app.request_handler);
+
+try {
+	server.listen_local(3000, Soup.ServerListenOptions.IPV4_ONLY);
+} catch (Error error) {
+	stderr.printf("%s.\n", error.message);
+}
+
+stdout.printf("Point your browser at http://localhost:3000.\n");
+
+// run the server
+server.run ();
