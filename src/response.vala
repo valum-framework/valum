@@ -25,8 +25,6 @@ namespace Valum {
 
 		public Response(Soup.Message msg) {
 			Object(message: msg);
-			this.mime = "text/html";
-			this.status = 200;
 		}
 
 		public void append(string str) {
