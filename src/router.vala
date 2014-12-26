@@ -9,7 +9,30 @@ namespace Valum {
 		private HashMap<string, ArrayList<Route>> routes = new HashMap<string, ArrayList> ();
 		private string[] _scope;
 
+		// signal called before a request execution starts
+		public signal void before_request (Request req, Response res);
+
+		// signal called after a request has executed
+		public signal void after_request (Request req, Response res);
+
 		public delegate void NestedRouter(Valum.Router app);
+
+		public Router() {
+
+#if (BENCHMARK)
+			var timer  = new Timer();
+
+			this.before_request.connect((req, res) => {
+				timer.start();
+			});
+
+			this.after_request.connect((req, res) => {
+				timer.stop();
+				var elapsed = timer.elapsed();
+				res.headers.append("X-Runtime", "%8.3fms".printf(elapsed * 1000));
+			});
+#endif
+		}
 
 		//
 		// HTTP Verbs
@@ -72,7 +95,7 @@ namespace Valum {
 			}
 			full_rule += "/%s".printf(rule);
 			if (!this.routes.has_key(method)){
-				this.routes[method] = new ArrayList<Route> ();    
+				this.routes[method] = new ArrayList<Route> ();
 			}
 			this.routes[method].add(new Route(full_rule, cb));
 		}
@@ -84,26 +107,20 @@ namespace Valum {
 				GLib.HashTable? query,
 				Soup.ClientContext client) {
 
-#if (BENCHMARK)
-			var timer  = new Timer();
-			timer.start();
-#endif
+			var req = new Request(msg);
+			var res = new Response(msg);
 
 			var routes = this.routes[msg.method];
 
+			this.before_request (req, res);
+
 			foreach (var route in routes) {
 				if (route.matches(path)) {
-					var req = new Request(msg);
-					var res = new Response(msg);
 
 					// fire the route!
 					route.fire(req, res);
 
-#if (BENCHMARK)
-					timer.stop();
-					var elapsed = timer.elapsed();
-					res.headers.append("X-Runtime", "%8.6f".printf(elapsed));
-#endif
+					this.after_request (req, res);
 
 					// complete the response body
 					msg.response_body.complete();
@@ -114,9 +131,13 @@ namespace Valum {
 
 			// No route has matched
 			stderr.printf("Could not match %s.\n", path);
-			msg.status_code = 404;
-			msg.response_headers.set_content_type("text/plain", null);
-			msg.response_body.append_take("The requested URL %s was not found.".printf(path).data);
+			res.status = 404;
+			res.mime = "text/plain";
+			res.append("The requested URL %s was not found.".printf(path));
+
+			this.after_request (req, res);
+
+			// complete the response body
 			msg.response_body.complete();
 		}
 	}
