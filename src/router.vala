@@ -19,6 +19,11 @@ namespace Valum {
 
 		public Router() {
 
+			// complete the response body
+			this.after_request.connect((req, res) => {
+				res.message.response_body.complete ();
+			});
+
 #if (BENCHMARK)
 			var timer  = new Timer();
 
@@ -116,9 +121,9 @@ namespace Valum {
 			var req = new Request(msg);
 			var res = new Response(msg);
 
-			var routes = this.routes[msg.method];
-
 			this.before_request (req, res);
+
+			var routes = this.routes[msg.method];
 
 			foreach (var route in routes) {
 				if (route.matches(path)) {
@@ -127,9 +132,6 @@ namespace Valum {
 					route.fire(req, res);
 
 					this.after_request (req, res);
-
-					// complete the response body
-					msg.response_body.complete();
 
 					return;
 				}
@@ -142,9 +144,6 @@ namespace Valum {
 			res.append("The requested URL %s was not found.".printf(path));
 
 			this.after_request (req, res);
-
-			// complete the response body
-			msg.response_body.complete();
 		}
 	}
 
