@@ -35,6 +35,7 @@ namespace Valum {
 				timer.stop();
 				var elapsed = timer.elapsed();
 				res.headers.append("X-Runtime", "%8.3fms".printf(elapsed * 1000));
+				info("%s computed in %8.3fms", req.path, elapsed * 1000);
 			});
 #endif
 
@@ -138,10 +139,10 @@ namespace Valum {
 			}
 
 			// No route has matched
-			stderr.printf("Could not match %s.\n", path);
+			warning("no routes could not match %s", path);
 			res.status = 404;
 			res.mime = "text/plain";
-			res.append("The requested URL %s was not found.".printf(path));
+			res.append("The requested URL %s was not found".printf(path));
 
 			this.after_request (req, res);
 		}

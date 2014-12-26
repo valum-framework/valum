@@ -10,7 +10,7 @@ namespace Valum {
 				try {
 					this.tree = Ctpl.lexer_lex_path(path);
 				} catch (Error e) {
-					stderr.printf("%s\n", e.message);
+					error(e.message);
 				}
 			}
 
@@ -18,7 +18,7 @@ namespace Valum {
 				try {
 					this.tree = Ctpl.lexer_lex_string(template);
 				} catch(Error e) {
-					stderr.printf("%s\n", e.message);
+					error(e.message);
 				}
 			}
 
@@ -36,6 +36,7 @@ namespace Valum {
 
 					return (string) mem_stream.get_data();
 				} catch (Error e) {
+					warning(e.message);
 					return e.message;
 				}
 			}
