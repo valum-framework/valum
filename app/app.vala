@@ -7,6 +7,59 @@ var mcd = new Valum.NoSQL.Mcached();
 
 mcd.add_server("127.0.0.1", 11211);
 
+// default route
+app.get("", (req, res) => {
+	var template =  new Valum.View.Tpl.from_path("app/templates/home.html");
+
+	template.vars["path"] = req.message.uri.get_path ();
+	template.vars["query"] = req.message.uri.get_query ();
+	template.vars["headers"] = req.headers;
+
+	res.append(template.render());
+});
+
+// hello world! (compare with Node.js!)
+app.get("hello", (req, res) => {
+	res.mime = "text/plain";
+	res.append("Hello world\n");
+});
+
+// hello with a trailing slash
+app.get("hello/", (req, res) => {
+	res.mime = "text/plain";
+	res.append("Hello world\n");
+});
+
+// example using route parameter
+app.get("hello/<id>", (req, res) => {
+	res.mime = "text/plain";
+	res.append("hello %s!".printf(req.params["id"]));
+});
+
+// example using a typed route parameter
+app.get("users/<int:id>/<action>", (req, res) => {
+	var id   = req.params["id"];
+	var test = req.params["action"];
+	res.mime = "text/plain";
+	res.append(@"id\t=> $id\n");
+	res.append(@"action\t=> $test");
+});
+
+// lua scripting
+app.get("lua", (req, res) => {
+	res.append(lua.eval("""
+		require "markdown"
+		return markdown('## Hello from lua.eval!')
+	"""));
+
+	res.append(lua.run("app/hello.lua"));
+});
+
+app.get("lua.haml", (req, res) => {
+	res.append(lua.run("app/haml.lua"));
+});
+
+// precompiled template
 var tpl = new Valum.View.Tpl.from_string("""
    <p> hello {foo} </p>
    <p> hello {bar} </p>
@@ -17,6 +70,7 @@ var tpl = new Valum.View.Tpl.from_string("""
    </ul>
 """);
 
+// Ctpl template rendering
 app.get("ctpl/<foo>/<bar>", (req, res) => {
 
 	var arr = new Gee.ArrayList<Value?>();
@@ -31,45 +85,19 @@ app.get("ctpl/<foo>/<bar>", (req, res) => {
 	res.append(tpl.render ());
 });
 
-
-// Just sample to benchmark against node
-app.get("node.js.vs.valum", (req, res) => {
-	res.mime = "text/plain";
-	res.append("Hello world\n");
+// memcached
+app.get("memcached/get/<key>", (req, res) => {
+	var value = mcd.get(req.params["key"]);
+	res.append(value);
 });
 
-
-app.get("users/<int:id>/<action>", (req, res) => {
-	var id   = req.params["id"];
-	var test = req.params["test"];
-	res.append(@"id => $id<br/>");
-	res.append(@"test => $test<br/>");
-});
-
-app.get("lua", (req, res) => {
-	res.append(lua.eval("""
-		require "markdown"
-		return markdown('## Hello from lua.eval!')
-	"""));
-
-	res.append(lua.run("app/hello.lua"));
-});
-
-app.get("lua.haml", (req, res) => {
-	res.append(lua.run("app/haml.lua"));
-});
-
+// TODO: rewrite using POST
 app.get("memcached/set/<key>/<value>", (req, res) => {
 	if (mcd.set(req.params["key"], req.params["value"])) {
 		res.append("Ok! Pushed.");
 	} else {
 		res.append("Fail! Not Pushed...");
 	}
-});
-
-app.get("memcached/get/<key>", (req, res) => {
-	var value = mcd.get(req.params["key"]);
-	res.append(value);
 });
 
 // FIXME: Optimize routing...
@@ -79,40 +107,19 @@ app.get("memcached/get/<key>", (req, res) => {
 //		app.get(route, (req, res) => { res.append(@"yo 1"); });
 // }
 
+// scoped routing
 app.scope("admin", (adm) => {
 	adm.scope("fun", (fun) => {
 		fun.get("hack", (req, res) => {
-				res.append("no way!");
-				res.append("<br/>");
 				var time = new DateTime.now_utc();
-				res.append(time.format("%H:%M"));
+				res.mime = "text/plain";
+				res.append("It's %s around here!\n".printf(time.format("%H:%M")));
 		});
 		fun.get("heck", (req, res) => {
-				res.append("fuck!");
+				res.mime = "text/plain";
+				res.append("Wuzzup!");
 		});
 	});
-});
-
-app.get("hello/<id>", (req, res) => {
-	res.mime = "text/plain";
-	res.append("");
-	res.append(req.params["id"]);
-});
-
-app.get("yay", (req, res) => {
-	res.append("yay");
-	res.append("<br/>");
-	res.append("hell yeah");
-});
-
-app.get("", (req, res) => {
-	var template =  new Valum.View.Tpl.from_path("app/templates/home.html");
-
-	template.vars["path"] = req.message.uri.get_path ();
-	template.vars["query"] = req.message.uri.get_query ();
-	template.vars["headers"] = req.headers;
-
-	res.append(template.render());
 });
 
 var server = new Soup.Server(Soup.SERVER_SERVER_HEADER, Valum.APP_NAME);
