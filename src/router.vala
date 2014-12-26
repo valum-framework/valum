@@ -32,6 +32,12 @@ namespace Valum {
 				res.headers.append("X-Runtime", "%8.3fms".printf(elapsed * 1000));
 			});
 #endif
+
+			// initialize the Response object
+			this.before_request.connect((req, res) => {
+				res.status = 200;
+				res.mime = "text/html";
+			});
 		}
 
 		//
