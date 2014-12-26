@@ -9,6 +9,12 @@ namespace Valum {
 		private HashMap<string, ArrayList<Route>> routes = new HashMap<string, ArrayList> ();
 		private string[] _scope;
 
+		// signal called before a request execution starts
+		public signal void before_request (Request req, Response res);
+
+		// signal called after a request has executed
+		public signal void after_request (Request req, Response res);
+
 		public delegate void NestedRouter(Valum.Router app);
 
 		//
@@ -87,6 +93,12 @@ namespace Valum {
 #if (BENCHMARK)
 			var timer  = new Timer();
 			timer.start();
+
+			this.after_request.connect((req, res) => {
+				timer.stop();
+				var elapsed = timer.elapsed();
+				res.headers.append("X-Runtime", "%8.6f".printf(elapsed));
+			});
 #endif
 
 			var routes = this.routes[msg.method];
@@ -96,14 +108,12 @@ namespace Valum {
 					var req = new Request(msg);
 					var res = new Response(msg);
 
+					this.before_request (req, res);
+
 					// fire the route!
 					route.fire(req, res);
 
-#if (BENCHMARK)
-					timer.stop();
-					var elapsed = timer.elapsed();
-					res.headers.append("X-Runtime", "%8.6f".printf(elapsed));
-#endif
+					this.after_request (req, res);
 
 					// complete the response body
 					msg.response_body.complete();
