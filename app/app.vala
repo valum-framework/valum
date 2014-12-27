@@ -46,14 +46,16 @@ app.get("users/<int:id>/<action>", (req, res) => {
 });
 
 // serve static resource using a path route parameter
-app.get("static/<path:resource>", (req, res) => {
+app.get("static/<path:resource>.min.<type>", (req, res) => {
 	var resource = req.params["resource"];
+	var type     = req.params["type"];
 	uint8[] contents;
+	bool uncertain;
 
 	// TODO: serve resource asynchronously
 	try {
-		FileUtils.get_data("app/static/%s".printf(resource), out contents);
-		res.mime = "text/css";
+		FileUtils.get_data("app/static/%s.min.%s".printf(resource, type), out contents);
+		res.mime = ContentType.guess("%s.%s".printf(resource, type), contents, out uncertain);
 		res.body.append_take(contents);
 	} catch (FileError fe) {
 		res.status = 404;
