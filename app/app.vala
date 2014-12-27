@@ -45,6 +45,22 @@ app.get("users/<int:id>/<action>", (req, res) => {
 	res.append(@"action\t=> $test");
 });
 
+// serve static resource using a path route parameter
+app.get("static/<path:resource>", (req, res) => {
+	var resource = req.params["resource"];
+	uint8[] contents;
+
+	// TODO: serve resource asynchronously
+	try {
+		FileUtils.get_data("app/static/%s".printf(resource), out contents);
+		res.mime = "text/css";
+		res.body.append_take(contents);
+	} catch (FileError fe) {
+		res.status = 404;
+		res.append(fe.message);
+	}
+});
+
 // lua scripting
 app.get("lua", (req, res) => {
 	res.append(lua.eval("""

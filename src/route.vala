@@ -37,6 +37,7 @@ namespace Valum {
 						types["any"]    = ".+";
 						types["int"]    = "\\d+";
 						types["string"] = "\\w+";
+						types["path"]   = "[\\w/]+";
 
 						captures.add(key);
 						route.append("(?<%s>%s)".printf(key, types[type]));
