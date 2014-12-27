@@ -59,19 +59,19 @@ app.get("lua.haml", (req, res) => {
 	res.append(lua.run("app/haml.lua"));
 });
 
-// precompiled template
-var tpl = new Valum.View.Tpl.from_string("""
-   <p> hello {foo} </p>
-   <p> hello {bar} </p>
-   <ul>
-	 { for el in arr }
-	   <li> { el } </li>
-	 { end }
-   </ul>
-""");
 
 // Ctpl template rendering
 app.get("ctpl/<foo>/<bar>", (req, res) => {
+
+	var tpl = new Valum.View.Tpl.from_string("""
+	   <p> hello {foo} </p>
+	   <p> hello {bar} </p>
+	   <ul>
+		 { for el in arr }
+		   <li> { el } </li>
+		 { end }
+	   </ul>
+	""");
 
 	var arr = new Gee.ArrayList<Value?>();
 	arr.add("omg");
@@ -83,6 +83,14 @@ app.get("ctpl/<foo>/<bar>", (req, res) => {
 	tpl.vars["int"] = 1;
 
 	res.append(tpl.render ());
+});
+
+// streamed Ctpl template
+app.get("ctpl/streamed", (req, res) => {
+
+	var tpl = new Valum.View.Tpl.from_path("app/templates/home.html");
+
+	tpl.stream(new MessageBodyOutputStream (res.body));
 });
 
 // memcached
