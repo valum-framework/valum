@@ -37,10 +37,11 @@ namespace Valum {
 				}
 
 				route.append("$");
-				print("%s\n".printf(route.str));
+				info("registered %s", route.str);
+
 				this.regex = new Regex(route.str, RegexCompileFlags.OPTIMIZE);
 			} catch(RegexError e) {
-				stderr.printf("Route.new(): %s\n", e.message);
+				error(e.message);
 			}
 		}
 

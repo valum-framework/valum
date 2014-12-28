@@ -24,7 +24,7 @@ namespace Valum {
 				if (this.rc == Memcached.Return.SUCCESS) {
 					return (string)str;
 				} else {
-					stderr.printf ("ERROR: Mcached.get: %d\n", this.rc);
+					error("could not get from memcached %d", this.rc);
 					return "";
 				}
 			}
@@ -34,7 +34,7 @@ namespace Valum {
 				if (this.rc == Memcached.Return.SUCCESS) {
 					return true;
 				} else {
-					stderr.printf ("ERROR: Mcached.set: %d\n", this.rc);
+					error("could not set to memcached %d", this.rc);
 					return false;
 				}
 			}
@@ -45,7 +45,7 @@ namespace Valum {
 				if (this.rc == Memcached.Return.STORED) {
 					return result;
 				} else {
-					stderr.printf ("ERROR: Mcached.inc: %d\n", this.rc);
+					error("could not inc to memcached %d", this.rc);
 					return 0;
 				}
 			}
