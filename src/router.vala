@@ -10,19 +10,19 @@ namespace Valum {
 		private string[] _scope;
 
 		// signal called before a request execution starts
-		public signal void before_request (Request req, Response res);
+		public virtual signal void before_request (Request req, Response res) {
+			res.status = 200;
+			res.mime   = "text/html";
+		}
 
 		// signal called after a request has executed
-		public signal void after_request (Request req, Response res);
+		public virtual signal void after_request (Request req, Response res) {
+			res.message.response_body.complete ();
+		}
 
 		public delegate void NestedRouter(Valum.Router app);
 
 		public Router() {
-
-			// complete the response body
-			this.after_request.connect((req, res) => {
-				res.message.response_body.complete ();
-			});
 
 #if (BENCHMARK)
 			var timer  = new Timer();
@@ -38,12 +38,6 @@ namespace Valum {
 				info("%s computed in %8.3fms", req.path, elapsed * 1000);
 			});
 #endif
-
-			// initialize the Response object
-			this.before_request.connect((req, res) => {
-				res.status = 200;
-				res.mime = "text/html";
-			});
 		}
 
 		//
