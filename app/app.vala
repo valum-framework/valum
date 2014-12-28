@@ -128,7 +128,7 @@ var server = new Soup.Server(Soup.SERVER_SERVER_HEADER, Valum.APP_NAME);
 server.add_handler("/", app.request_handler);
 
 try {
-	server.listen_local(3000, Soup.ServerListenOptions.IPV4_ONLY);
+	server.listen_all(3003, Soup.ServerListenOptions.IPV4_ONLY);
 } catch (Error error) {
 	stderr.printf("%s.\n", error.message);
 }

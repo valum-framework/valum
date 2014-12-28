@@ -8,6 +8,8 @@ GIR   := Valum-$(VER).gir
 HDR   := ./build/valum_$(VER).h
 VAPI  := ./vapi/valum-$(VER)
 
+USER  := $(shell echo $(USER))
+
 
 FLAGS  := --enable-experimental --thread --vapidir=./vapi/ \
 	  --cc=$(CC) -D BENCHMARK
@@ -56,4 +58,10 @@ genc:
 clean:
 	rm -f $(CSRC) ./build/* ./vapi/valum-*
 
-.PHONY= all clean run drun vdrun valgrind debug genc
+builddock:
+	docker build -t $(USER)/valum .
+
+rundock:
+	docker run -v $(shell pwd):/src -p 127.0.0.1:3003:3003 $(USER)/valum
+
+.PHONY= all clean run drun vdrun valgrind debug genc dock
