@@ -11,11 +11,9 @@ Quickstart
 
 Debian/Ubuntu
 ```bash
-sudo apt-get install git-core build-essential valac-0.14 libgee-dev \
-     libsoup2.4-dev libjson-glib-dev memcached libmemcached-dev \
-     libluajit-5.1-dev libctpl-dev
-
-
+apt-get install -y git-core build-essential valac libgee-0.8-dev \
+    libsoup2.4-dev libjson-glib-dev memcached libmemcached-dev \
+    libluajit-5.1-dev libctpl-dev
 ```
 
 Fedora
