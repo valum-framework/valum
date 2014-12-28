@@ -1,78 +1,80 @@
 <!DOCTYPE html>
-<head>
-  <title>Valum</title>
-  <meta charset="UTF-8">
-  <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-  <div class="container">
-    <div class="row">
-      <div class="col-md-8 col-md-offset-2" style="margin-top: 60px;">
-        <div class="row">
-          <div class="col-md-12">
-            <h1>Valum <small>Web micro-framework written in Vala</small></h1>
-            <p>
-              Valum is a web micro-framework written in Vala that provides routing
-              and basic request-response mechanism.
-            </p>
+<html>
+  <head>
+    <title>Valum</title>
+    <meta charset="UTF-8">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2" style="margin-top: 60px;">
+          <div class="row">
+            <div class="col-md-12">
+              <h1>Valum <small>Web micro-framework written in Vala</small></h1>
+              <p>
+                Valum is a web micro-framework written in Vala that provides routing
+                and basic request-response mechanism.
+              </p>
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col-md-4">
-            <h3>Documentation</h3>
-            <p>
-              Valum is based on libsoup, so reading about it is a good start.
-            </p>
-            <ul>
-              <li>
-                <a href="http://valadoc.org/">Vala documentation</a>
-                <ul>
-                  <li><a href="http://valadoc.org/#!api=libsoup-2.4/Soup.Message">Soup Message</a></li>
-                </ul>
-              </li>
-            </ul>
+          <div class="row">
+            <div class="col-md-4">
+              <h3>Documentation</h3>
+              <p>
+                Valum is based on libsoup, so reading about it is a good start.
+              </p>
+              <ul>
+                <li>
+                  <a href="http://valadoc.org/">Vala documentation</a>
+                  <ul>
+                    <li><a href="http://valadoc.org/#!api=libsoup-2.4/Soup.Message">Soup Message</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+            <div class="col-md-4">
+              <h3>Examples</h3>
+              <p>
+                This is a real Vala web application and we got real examples!
+              </p>
+              <ul>
+                <li><a href="/hello">Hello world!</a></li>
+                <li><a href="/hello/">Hello world! (with a trailing slash)</a></li>
+                <li><a href="/hello/world">route parameter</a></li>
+                <li><a href="/users/4/edit">typed route parameter</a></li>
+                <li><a href="/admin/fun/hack">scoped routing</a></li>
+                <li><a href="/lua">lua scripting</a></li>
+                <li><a href="/ctpl/foo/bar">Ctpl templating</a></li>
+                <li><a href="/memcached/get/bar">memcached (get value)</a></li>
+                <li><a href="/memcached/set/bar">memcached (set value)</a></li>
+              </ul>
+            </div>
+            <div class="col-md-4">
+              <h3>Contributing</h3>
+              <p>
+                Valum is hosted on GitHub and developed under the LGPL license.
+              </p>
+              <p>
+                Use tabs for indenting and spaces for alignment! For more
+                information, we provide an
+                <a href="http://editorconfig.org">EditorConfig file</a>.
+              </p>
+              <ul>
+                <li><a href="https://github.com/antono/valum">Source</a></li>
+                <li><a href="https://github.com/antono/valum/issues">Issues</a></li>
+              </ul>
+            </div>
           </div>
-          <div class="col-md-4">
-            <h3>Examples</h3>
-            <p>
-              This is a real Vala web application and we got real examples!
-            </p>
-            <ul>
-              <li><a href="/hello">Hello world!</a></li>
-              <li><a href="/hello/">Hello world! (with a trailing slash)</a></li>
-              <li><a href="/hello/world">route parameter</a></li>
-              <li><a href="/users/4/edit">typed route parameter</a></li>
-              <li><a href="/admin/fun/hack">scoped routing</a></li>
-              <li><a href="/lua">lua scripting</a></li>
-              <li><a href="/ctpl/foo/bar">Ctpl templating</a></li>
-              <li><a href="/memcached/get/bar">memcached (get value)</a></li>
-              <li><a href="/memcached/set/bar">memcached (set value)</a></li>
-            </ul>
-          </div>
-          <div class="col-md-4">
-            <h3>Contributing</h3>
-            <p>
-              Valum is hosted on GitHub and developed under the LGPL license.
-            </p>
-            <p>
-              Use tabs for indenting and spaces for alignment! For more
-              information, we provide an
-              <a href="http://editorconfig.org">EditorConfig file</a>.
-            </p>
-            <ul>
-              <li><a href="https://github.com/antono/valum">Source</a></li>
-              <li><a href="https://github.com/antono/valum/issues">Issues</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <p class="text-center">
-              <small>Built by <a href="https://github.com/antono">@antono</a> and the community!</small>
-            </p>
+          <div class="row">
+            <div class="col-md-12">
+              <p class="text-center">
+                <small>Built by <a href="https://github.com/antono">@antono</a> and the community!</small>
+              </p>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</body>
+  </body>
+</html>
