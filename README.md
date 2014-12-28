@@ -29,7 +29,7 @@ cd valum
 make run
 ```
 
-Visit [http://localhost:3000/](http://localhost:3000/) and take a look at other
+Visit [http://localhost:3003/](http://localhost:3003/) and take a look at other
 routes definition in `app/app.vala`.
 
 Features
