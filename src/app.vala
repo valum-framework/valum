@@ -9,7 +9,7 @@ mcd.add_server("127.0.0.1", 11211);
 
 // default route
 app.get("", (req, res) => {
-	var template =  new Valum.View.Tpl.from_path("app/templates/home.html");
+	var template =  new Valum.View.Tpl.from_path("src/templates/home.html");
 
 	template.vars["path"] = req.message.uri.get_path ();
 	template.vars["query"] = req.message.uri.get_query ();
@@ -52,11 +52,11 @@ app.get("lua", (req, res) => {
 		return markdown('## Hello from lua.eval!')
 	"""));
 
-	res.append(lua.run("app/hello.lua"));
+	res.append(lua.run("src/hello.lua"));
 });
 
 app.get("lua.haml", (req, res) => {
-	res.append(lua.run("app/haml.lua"));
+	res.append(lua.run("src/haml.lua"));
 });
 
 // precompiled template
@@ -123,7 +123,7 @@ app.scope("admin", (adm) => {
 });
 
 app.default_request.connect((req, res) => {
-	var template =  new Valum.View.Tpl.from_path("app/templates/404.html");
+	var template =  new Valum.View.Tpl.from_path("src/templates/404.html");
 
 	template.vars["path"] = req.path;
 
