@@ -135,13 +135,11 @@ var server = new Soup.Server(Soup.SERVER_SERVER_HEADER, Valum.APP_NAME);
 // bind the application to the server
 server.add_handler("/", app.request_handler);
 
-try {
-	server.listen_all(3003, Soup.ServerListenOptions.IPV4_ONLY);
-} catch (Error error) {
-	stderr.printf("%s.\n", error.message);
-}
+server.listen_all(3003, Soup.ServerListenOptions.IPV4_ONLY);
 
-stdout.printf("Point your browser at http://localhost:3000.\n");
+foreach (var uri in server.get_uris ()) {
+	message("listening on %s", uri.to_string (false));
+}
 
 // run the server
 server.run ();
