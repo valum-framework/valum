@@ -115,7 +115,7 @@ namespace Valum {
 	}
 
 	// libsoup implementation
-	public class SoupRequest : Request {
+	public class SoupRequest : SGI.Request {
 
 		public Soup.Message message { construct; get; }
 
@@ -126,7 +126,7 @@ namespace Valum {
 		}
 	}
 
-	public class SoupResponse : Response {
+	public class SoupResponse : SGI.Response {
 
 		public Soup.Message message { construct; get; }
 
