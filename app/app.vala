@@ -17,6 +17,15 @@ app.get("", (req, res) => {
 	template.stream (res.body);
 });
 
+app.get("headers", (req, res) => {
+
+	res.mime = "text/plain";
+	req.headers.map_iterator().foreach((name, header) => {
+		res.body.put_string ("%s: %s\n".printf(name, header));
+		return true;
+	});
+});
+
 // hello world! (compare with Node.js!)
 app.get("hello", (req, res) => {
 	res.mime = "text/plain";

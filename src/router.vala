@@ -1,10 +1,11 @@
 using Gee;
+using SGI;
 
 namespace Valum {
 
 	public const string APP_NAME = "Valum/0.1";
 
-	public class Router {
+	public class Router : SGI.Application {
 
 		// list of routes associated to each HTTP method
 		private HashMap<string, ArrayList<Route>> routes = new HashMap<string, ArrayList> ();
@@ -124,7 +125,7 @@ namespace Valum {
 		}
 
 		// handler code
-		public void request_handler (Request req, Response res) {
+		public override void request_handler (Request req, Response res) {
 
 			this.before_request (req, res);
 
@@ -161,16 +162,14 @@ namespace Valum {
 			this.request_handler (req, res);
 		}
 
+		// FastCGI handler
 		//public void fastcgi_request_handler (FastCGI.request request) {
-			// TODO: implementation
+		// TODO: implementation
 
-			//var req = new FastCGIRequest(request);
-			//var res = new FastCGIResponse ();
+		//var req = new FastCGIRequest(request);
+		//var res = new FastCGIResponse ();
 
-			//this.request_handler (req, res);
+		//this.request_handler (req, res);
 		//}
 	}
-
 }
-
-
