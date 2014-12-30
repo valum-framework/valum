@@ -37,7 +37,7 @@ namespace Valum {
 				}
 
 				route.append("$");
-				info("registered %s", route.str);
+				message("registered %s", route.str);
 
 				this.regex = new Regex(route.str, RegexCompileFlags.OPTIMIZE);
 			} catch(RegexError e) {

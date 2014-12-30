@@ -1,34 +1,15 @@
 using Gee;
+using Soup;
 
 namespace Valum {
-	public class Response : Object {
+	public abstract class Response : Object {
 
-		public Soup.Message message { construct; get; }
+		public abstract string mime { get; set; }
 
-		public string mime {
-			get { return this.message.response_headers.get_content_type(null);}
-			set { this.message.response_headers.set_content_type(value, null);}
-		}
+		public abstract uint status { get; set; }
 
-		public uint status {
-			get { return this.message.status_code; }
-			set { this.message.set_status(value); }
-		}
+		public MultiMap<string, string> headers { construct; get; }
 
-		public Soup.MessageBody body {
-			get { return this.message.response_body; }
-		}
-
-		public Soup.MessageHeaders headers {
-			get { return this.message.response_headers; }
-		}
-
-		public Response(Soup.Message msg) {
-			Object(message: msg);
-		}
-
-		public void append(string str) {
-			this.message.response_body.append_take(str.data);
-		}
+		public DataOutputStream body { construct; get; }
 	}
 }
