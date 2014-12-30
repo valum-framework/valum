@@ -2,25 +2,6 @@ using Gee;
 using Soup;
 
 namespace Valum {
-	// Use Soup MessageBody as OutputStream
-	public class MessageBodyOutputStream : OutputStream {
-
-		public MessageBody body { construct; get; }
-
-		public MessageBodyOutputStream(MessageBody body) {
-			Object(body: body);
-		}
-
-		public override bool close(Cancellable? cancellable = null) {
-			this.body.complete();
-			return true;
-		}
-
-		public override ssize_t write(uint8[] buffer, Cancellable? cancellable = null) {
-			this.body.append_take(buffer);
-			return buffer.length;
-		}
-	}
 	namespace View {
 		public class Tpl : View {
 
