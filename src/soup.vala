@@ -2,6 +2,7 @@ using Gee;
 using Soup;
 
 namespace Valum {
+
 	// Adapt Soup.MessageHeaders as a MultiMap
 	class MessageHeadersMultiMap : Object, MultiMap<string, string> {
 		private class MessageHeadersMapIterator : Object, MapIterator <string, string> {
@@ -9,7 +10,7 @@ namespace Valum {
 			private string name;
 			private string header;
 			public bool valid { get { return name != null; } }
-			public bool mutable { get { return true; } }
+	 		public bool mutable { get { return true; } }
 			public bool read_only { get { return false; } }
 			public bool next () {
 				return this.iter.next (out this.name, out this.header);
@@ -119,10 +120,10 @@ namespace Valum {
 
 		public Soup.Message message { construct; get; }
 
-		public SoupRequest(Soup.Message msg) {
+		public SoupRequest(Soup.Message msg, HashMap query) {
 			var headers = new MessageHeadersMultiMap(msg.request_headers);
 			var body = new DataInputStream(new MessageBodyInputStream(msg.request_body));
-			Object(message: msg, path: msg.uri.get_path (), method: msg.method, headers: headers, body: body);
+			Object(message: msg, path: msg.uri.get_path (), query: query, method: msg.method, headers: headers, body: body);
 		}
 	}
 

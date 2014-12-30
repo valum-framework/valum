@@ -130,10 +130,18 @@ namespace Valum {
 		public void soup_handler (Soup.Server server,
 				Soup.Message msg,
 				string path,
-				GLib.HashTable? query,
+				GLib.HashTable<string, string>? query,
 				Soup.ClientContext client) {
 
-			var req = new SoupRequest(msg);
+			var qry = new HashMap<string, string> ();
+
+			if (query != null) {
+				query.foreach((key, value) => {
+					qry[key] = value;
+				});
+			}
+
+			var req = new SoupRequest(msg, qry);
 			var res = new SoupResponse(msg);
 
 			this.handler (req, res);

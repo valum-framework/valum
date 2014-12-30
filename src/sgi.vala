@@ -11,6 +11,8 @@ namespace SGI {
 
 		public Map<string, string> params { get; set; }
 
+		public Map<string, string> query { construct; get; }
+
 		public string path { construct; get; }
 
 		public string method { construct; get; }
