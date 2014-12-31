@@ -35,11 +35,11 @@ namespace Valum {
 			}
 		}
 
-		public MessageHeaders headers { construct; get; }
+		private MessageHeaders headers;
 		public int size { get { return 0; } }
 		public bool read_only { get { return false;} }
 		public MessageHeadersMultiMap(MessageHeaders headers) {
-			Object(headers : headers);
+			this.headers = headers;
 		}
 		public bool contains (string name) {
 			return this.headers.get_one (name) != null;
@@ -78,10 +78,10 @@ namespace Valum {
 	// Use Soup MessageBody as an InputStream
 	class MessageBodyInputStream : InputStream {
 
-		public MessageBody body { construct; get; }
+		private MessageBody body;
 
 		public MessageBodyInputStream(MessageBody body) {
-			Object(body: body);
+			this.body = body;
 		}
 
 		public override bool close(Cancellable? cancellable = null) {
@@ -98,10 +98,10 @@ namespace Valum {
 	// Use Soup MessageBody as OutputStream
 	class MessageBodyOutputStream : OutputStream {
 
-		public MessageBody body { construct; get; }
+		private MessageBody body;
 
 		public MessageBodyOutputStream(MessageBody body) {
-			Object(body: body);
+			this.body = body;
 		}
 
 		public override bool close(Cancellable? cancellable = null) {
@@ -118,18 +118,36 @@ namespace Valum {
 	// libsoup implementation
 	public class SoupRequest : SGI.Request {
 
-		public Soup.Message message { construct; get; }
+		private Soup.Message message;
+		private MessageHeadersMultiMap _headers;
+		private MessageBodyInputStream _body;
+		private HashMap<string, string> _query;
+		private string _method;
 
-		public SoupRequest(Soup.Message msg, HashMap query) {
-			var headers = new MessageHeadersMultiMap(msg.request_headers);
-			var body = new DataInputStream(new MessageBodyInputStream(msg.request_body));
-			Object(message: msg, path: msg.uri.get_path (), query: query, method: msg.method, headers: headers, body: body);
+		public override string method { get { return this._method; } }
+
+		public override string path { get { return this.message.uri.get_path (); } }
+
+		public override Map<string, string> query { get { return this._query; } }
+
+		public override MultiMap<string, string> headers { get { return this._headers; } }
+
+		public override InputStream body { get { return this._body; } }
+
+		public SoupRequest(Soup.Message msg, HashMap<string, string> query) {
+			this.message = msg;
+			this._headers = new MessageHeadersMultiMap(msg.request_headers);
+			this._body = new MessageBodyInputStream(msg.request_body);
+			this._query = query;
+			this._method = msg.method;
 		}
 	}
 
 	public class SoupResponse : SGI.Response {
 
-		public Soup.Message message { construct; get; }
+		private Soup.Message message;
+		private MessageHeadersMultiMap _headers;
+		private MessageBodyOutputStream _body;
 
 		public override string mime {
 			get { return this.message.response_headers.get_content_type(null); }
@@ -141,10 +159,14 @@ namespace Valum {
 			set { this.message.set_status(value); }
 		}
 
+		public override MultiMap<string, string> headers { get { return this._headers; } }
+
+		public override OutputStream body { get { return this._body; } }
+
 		public SoupResponse(Soup.Message msg) {
-			var headers = new MessageHeadersMultiMap(msg.response_headers);
-			var body = new DataOutputStream(new MessageBodyOutputStream(msg.response_body));
-			Object(message: msg, headers: headers, body: body);
+			this.message = msg;
+			this._headers = new MessageHeadersMultiMap(msg.response_headers);
+			this._body = new MessageBodyOutputStream(msg.response_body);
 		}
 
 		public void append(string str) {

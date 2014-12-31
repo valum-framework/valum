@@ -11,15 +11,15 @@ namespace SGI {
 
 		public Map<string, string> params { get; set; }
 
-		public Map<string, string> query { construct; get; }
+		public abstract Map<string, string> query { get; }
 
-		public string path { construct; get; }
+		public abstract string path { get; }
 
-		public string method { construct; get; }
+		public abstract string method { get; }
 
-		public MultiMap<string, string> headers { construct; get; }
+		public abstract MultiMap<string, string> headers { get; }
 
-		public DataInputStream body { construct; get; }
+		public abstract InputStream body { get; }
 	}
 
 	public abstract class Response : Object {
@@ -28,8 +28,8 @@ namespace SGI {
 
 		public abstract uint status { get; set; }
 
-		public MultiMap<string, string> headers { construct; get; }
+		public abstract MultiMap<string, string> headers { get; }
 
-		public DataOutputStream body { construct; get; }
+		public abstract OutputStream body { get; }
 	}
 }
