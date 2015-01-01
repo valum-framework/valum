@@ -4,7 +4,7 @@ namespace SGI {
 	public abstract class Application {
 
 		// Environment of the Application that can be setted from the request_handler
-		public Map<string, string> environment { get; set; }
+		public Map<string, string> environment { get; set; default = new HashMap<string, string> (); }
 
 		// Handles a Request and produce a Response
 		public abstract void request_handler (Request req, Response res);
@@ -12,7 +12,7 @@ namespace SGI {
 
 	public abstract class Request : Object {
 
-		public Map<string, string> params { get; set; }
+		public Map<string, string> params { get; set; default = new HashMap<string, string> (); }
 
 		public abstract Map<string, string> query { get; }
 
