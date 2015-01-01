@@ -1,13 +1,17 @@
 using Gee;
+using SGI;
 
 namespace Valum {
 
 	public const string APP_NAME = "Valum/0.1";
 
-	public class Router {
+	public class Router : SGI.Application {
 
+		// list of routes associated to each HTTP method
 		private HashMap<string, ArrayList<Route>> routes = new HashMap<string, ArrayList> ();
-		private string[] _scope;
+
+		// stack of scopes
+		private string[] scopes;
 
 		// signal called before a request execution starts
 		public virtual signal void before_request (Request req, Response res) {
@@ -17,7 +21,11 @@ namespace Valum {
 
 		// signal called after a request has executed
 		public virtual signal void after_request (Request req, Response res) {
-			res.message.response_body.complete ();
+			try {
+				res.body.close ();
+			} catch (IOError ioe) {
+				error (ioe.message);
+			}
 		}
 
 		// signal called if no route has matched the request
@@ -40,8 +48,8 @@ namespace Valum {
 			this.after_request.connect((req, res) => {
 				timer.stop();
 				var elapsed = timer.elapsed();
-				res.headers.append("X-Runtime", "%8.3fms".printf(elapsed * 1000));
-				info("%s computed in %8.3fms", req.path, elapsed * 1000);
+				res.headers["X-Runtime"] = "%8.3fms".printf(elapsed * 1000);
+				message("%s computed in %8.3fms", req.path, elapsed * 1000);
 			});
 #endif
 		}
@@ -91,9 +99,9 @@ namespace Valum {
 		// Routing helpers
 		//
 		public void scope(string fragment, NestedRouter router) {
-			this._scope += fragment;
+			this.scopes += fragment;
 			router(this);
-			this._scope = this._scope[0:-1];
+			this.scopes = this.scopes[0:-1];
 		}
 
 		//
@@ -101,36 +109,33 @@ namespace Valum {
 		//
 		private void route(string method, string rule, Route.RequestCallback cb) {
 			string full_rule = "";
-			for (var seg = 0; seg < this._scope.length; seg++) {
-				full_rule += "/";
-				full_rule += this._scope[seg];
+
+			foreach (var scope in this.scopes) {
+				full_rule += "/%s".printf(scope);
 			}
+
 			full_rule += "/%s".printf(rule);
+
+			// initialize the method if no route were registered
 			if (!this.routes.has_key(method)){
 				this.routes[method] = new ArrayList<Route> ();
 			}
+
 			this.routes[method].add(new Route(full_rule, cb));
 		}
 
-		// Handler code
-		public void request_handler (Soup.Server server,
-				Soup.Message msg,
-				string path,
-				GLib.HashTable? query,
-				Soup.ClientContext client) {
-
-			var req = new Request(msg);
-			var res = new Response(msg);
+		// handler code
+		public override void request_handler (Request req, Response res) {
 
 			this.before_request (req, res);
 
-			var routes = this.routes[msg.method];
+			var routes = this.routes[req.method];
 
 			foreach (var route in routes) {
-				if (route.matches(path)) {
+				if (route.matches(req.path)) {
 
 					// fire the route!
-					route.fire(req, res);
+					route.fire (req, res);
 
 					this.after_request (req, res);
 
@@ -144,7 +149,4 @@ namespace Valum {
 			this.after_request (req, res);
 		}
 	}
-
 }
-
-

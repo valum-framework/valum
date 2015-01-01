@@ -11,67 +11,83 @@ mcd.add_server("127.0.0.1", 11211);
 app.get("", (req, res) => {
 	var template =  new Valum.View.Tpl.from_path("app/templates/home.html");
 
-	template.vars["path"] = req.message.uri.get_path ();
-	template.vars["query"] = req.message.uri.get_query ();
+	template.vars["path"] = req.path;
 	template.vars["headers"] = req.headers;
 
-	res.append(template.render());
+	template.stream (res.body);
+});
+
+app.get("headers", (req, res) => {
+
+	var writer = new DataOutputStream(res.body);
+
+	res.mime = "text/plain";
+	req.headers.map_iterator().foreach((name, header) => {
+		writer.put_string ("%s: %s\n".printf(name, header));
+		return true;
+	});
 });
 
 // hello world! (compare with Node.js!)
 app.get("hello", (req, res) => {
+	var writer = new DataOutputStream(res.body);
 	res.mime = "text/plain";
-	res.append("Hello world\n");
+	writer.put_string("Hello world\n");
 });
 
 // hello with a trailing slash
 app.get("hello/", (req, res) => {
+	var writer = new DataOutputStream(res.body);
 	res.mime = "text/plain";
-	res.append("Hello world\n");
+	writer.put_string("Hello world\n");
 });
 
 // example using route parameter
 app.get("hello/<id>", (req, res) => {
+	var writer = new DataOutputStream(res.body);
 	res.mime = "text/plain";
-	res.append("hello %s!".printf(req.params["id"]));
+	writer.put_string("hello %s!".printf(req.params["id"]));
 });
 
 // example using a typed route parameter
 app.get("users/<int:id>/<action>", (req, res) => {
 	var id   = req.params["id"];
 	var test = req.params["action"];
+	var writer = new DataOutputStream(res.body);
 	res.mime = "text/plain";
-	res.append(@"id\t=> $id\n");
-	res.append(@"action\t=> $test");
+	writer.put_string(@"id\t=> $id\n");
+	writer.put_string(@"action\t=> $test");
 });
 
 // lua scripting
 app.get("lua", (req, res) => {
-	res.append(lua.eval("""
+	var writer = new DataOutputStream(res.body);
+	writer.put_string(lua.eval("""
 		require "markdown"
 		return markdown('## Hello from lua.eval!')
 	"""));
 
-	res.append(lua.run("app/hello.lua"));
+	writer.put_string(lua.run("app/hello.lua"));
 });
 
 app.get("lua.haml", (req, res) => {
-	res.append(lua.run("app/haml.lua"));
+	var writer = new DataOutputStream(res.body);
+	writer.put_string(lua.run("app/haml.lua"));
 });
 
-// precompiled template
-var tpl = new Valum.View.Tpl.from_string("""
-   <p> hello {foo} </p>
-   <p> hello {bar} </p>
-   <ul>
-	 { for el in arr }
-	   <li> { el } </li>
-	 { end }
-   </ul>
-""");
 
 // Ctpl template rendering
 app.get("ctpl/<foo>/<bar>", (req, res) => {
+
+	var tpl = new Valum.View.Tpl.from_string("""
+	   <p> hello {foo} </p>
+	   <p> hello {bar} </p>
+	   <ul>
+		 { for el in arr }
+		   <li> { el } </li>
+		 { end }
+	   </ul>
+	""");
 
 	var arr = new Gee.ArrayList<Value?>();
 	arr.add("omg");
@@ -82,21 +98,31 @@ app.get("ctpl/<foo>/<bar>", (req, res) => {
 	tpl.vars["arr"] = arr;
 	tpl.vars["int"] = 1;
 
-	res.append(tpl.render ());
+	tpl.stream (res.body);
+});
+
+// streamed Ctpl template
+app.get("ctpl/streamed", (req, res) => {
+
+	var tpl = new Valum.View.Tpl.from_path("app/templates/home.html");
+
+	tpl.stream(res.body);
 });
 
 // memcached
 app.get("memcached/get/<key>", (req, res) => {
 	var value = mcd.get(req.params["key"]);
-	res.append(value);
+	var writer = new DataOutputStream(res.body);
+	writer.put_string(value);
 });
 
 // TODO: rewrite using POST
 app.get("memcached/set/<key>/<value>", (req, res) => {
+	var writer = new DataOutputStream(res.body);
 	if (mcd.set(req.params["key"], req.params["value"])) {
-		res.append("Ok! Pushed.");
+		writer.put_string("Ok! Pushed.");
 	} else {
-		res.append("Fail! Not Pushed...");
+		writer.put_string("Fail! Not Pushed...");
 	}
 });
 
@@ -104,7 +130,7 @@ app.get("memcached/set/<key>/<value>", (req, res) => {
 // for (var i = 0; i < 1000; i++) {
 //		print(@"New route /$i\n");
 //		var route = "%d".printf(i);
-//		app.get(route, (req, res) => { res.append(@"yo 1"); });
+//		app.get(route, (req, res) => { res.body.put_string(@"yo 1"); });
 // }
 
 // scoped routing
@@ -112,12 +138,14 @@ app.scope("admin", (adm) => {
 	adm.scope("fun", (fun) => {
 		fun.get("hack", (req, res) => {
 				var time = new DateTime.now_utc();
+				var writer = new DataOutputStream(res.body);
 				res.mime = "text/plain";
-				res.append("It's %s around here!\n".printf(time.format("%H:%M")));
+				writer.put_string("It's %s around here!\n".printf(time.format("%H:%M")));
 		});
 		fun.get("heck", (req, res) => {
+				var writer = new DataOutputStream(res.body);
 				res.mime = "text/plain";
-				res.append("Wuzzup!");
+				writer.put_string("Wuzzup!");
 		});
 	});
 });
@@ -127,13 +155,13 @@ app.default_request.connect((req, res) => {
 
 	template.vars["path"] = req.path;
 
-	res.append(template.render());
+	template.stream (res.body);
 });
 
 var server = new Soup.Server(Soup.SERVER_SERVER_HEADER, Valum.APP_NAME);
 
 // bind the application to the server
-server.add_handler("/", app.request_handler);
+server.add_handler("/", app.soup_request_handler);
 
 server.listen_all(3003, Soup.ServerListenOptions.IPV4_ONLY);
 
