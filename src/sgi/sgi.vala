@@ -8,6 +8,37 @@ namespace SGI {
 
 		// Handles a Request and produce a Response
 		public abstract void request_handler (Request req, Response res);
+
+		// libsoup based handler
+		public void soup_request_handler (Soup.Server server,
+				Soup.Message msg,
+				string path,
+				GLib.HashTable<string, string>? query,
+				Soup.ClientContext client) {
+
+			var qry = new HashMap<string, string> ();
+
+			if (query != null) {
+				query.foreach((key, value) => {
+					qry[key] = value;
+				});
+			}
+
+			var req = new SoupRequest(msg, qry);
+			var res = new SoupResponse(msg);
+
+			this.request_handler (req, res);
+		}
+
+		// FastCGI handler
+		//public void fastcgi_request_handler (FastCGI.request request) {
+		// TODO: implementation
+
+		//var req = new FastCGIRequest(request);
+		//var res = new FastCGIResponse ();
+
+		//this.request_handler (req, res);
+		//}
 	}
 
 	public abstract class Request : Object {
