@@ -1,6 +1,6 @@
 using FastCGI;
 
-namespace Valum {
+namespace SGI {
 
 	// FastCGI implmentation
 	// public class FastCGIRequest : Request {}

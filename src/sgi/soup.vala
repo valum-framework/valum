@@ -1,7 +1,7 @@
 using Gee;
 using Soup;
 
-namespace Valum {
+namespace SGI {
 
 	// Adapt Soup.MessageHeaders as a MultiMap
 	class MessageHeadersMultiMap : Object, MultiMap<string, string> {
