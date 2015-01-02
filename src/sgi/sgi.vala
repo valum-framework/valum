@@ -7,7 +7,7 @@ namespace SGI {
 		public Map<string, string> environment { get; set; default = new HashMap<string, string> (); }
 	}
 
-	public abstract class Request : Object {
+	public abstract class Request : InputStream {
 
 		public Map<string, string> params { get; set; default = new HashMap<string, string> (); }
 
@@ -18,18 +18,14 @@ namespace SGI {
 		public abstract string method { get; }
 
 		public abstract MultiMap<string, string> headers { get; }
-
-		public abstract InputStream body { get; }
 	}
 
-	public abstract class Response : Object {
+	public abstract class Response : OutputStream {
 
 		public abstract string mime { get; set; }
 
 		public abstract uint status { get; set; }
 
 		public abstract MultiMap<string, string> headers { get; }
-
-		public abstract OutputStream body { get; }
 	}
 }

@@ -75,52 +75,11 @@ namespace SGI {
 		}
 	}
 
-	// Use Soup MessageBody as an InputStream
-	class MessageBodyInputStream : InputStream {
-
-		private MessageBody body;
-
-		public MessageBodyInputStream(MessageBody body) {
-			this.body = body;
-		}
-
-		public override bool close(Cancellable? cancellable = null) {
-			this.body.complete();
-			return true;
-		}
-
-		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) {
-			buffer = this.body.data;
-			return this.body.data.length;
-		}
-	}
-
-	// Use Soup MessageBody as OutputStream
-	class MessageBodyOutputStream : OutputStream {
-
-		private MessageBody body;
-
-		public MessageBodyOutputStream(MessageBody body) {
-			this.body = body;
-		}
-
-		public override bool close(Cancellable? cancellable = null) {
-			this.body.complete();
-			return true;
-		}
-
-		public override ssize_t write(uint8[] buffer, Cancellable? cancellable = null) {
-			this.body.append_take(buffer);
-			return buffer.length;
-		}
-	}
-
 	// libsoup implementation
 	public class SoupRequest : SGI.Request {
 
 		private Soup.Message message;
 		private MessageHeadersMultiMap _headers;
-		private MessageBodyInputStream _body;
 		private HashMap<string, string> _query;
 		private string _method;
 
@@ -132,14 +91,21 @@ namespace SGI {
 
 		public override MultiMap<string, string> headers { get { return this._headers; } }
 
-		public override InputStream body { get { return this._body; } }
-
 		public SoupRequest(Soup.Message msg, HashMap<string, string> query) {
 			this.message = msg;
 			this._headers = new MessageHeadersMultiMap(msg.request_headers);
-			this._body = new MessageBodyInputStream(msg.request_body);
 			this._query = query;
 			this._method = msg.method;
+		}
+
+		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) {
+			buffer = this.message.request_body.data;
+			return this.message.request_body.data.length;
+		}
+
+		public override bool close(Cancellable? cancellable = null) {
+			this.message.request_body.complete();
+			return true;
 		}
 	}
 
@@ -147,7 +113,6 @@ namespace SGI {
 
 		private Soup.Message message;
 		private MessageHeadersMultiMap _headers;
-		private MessageBodyOutputStream _body;
 
 		public override string mime {
 			get { return this.message.response_headers.get_content_type(null); }
@@ -161,16 +126,19 @@ namespace SGI {
 
 		public override MultiMap<string, string> headers { get { return this._headers; } }
 
-		public override OutputStream body { get { return this._body; } }
-
 		public SoupResponse(Soup.Message msg) {
 			this.message = msg;
 			this._headers = new MessageHeadersMultiMap(msg.response_headers);
-			this._body = new MessageBodyOutputStream(msg.response_body);
 		}
 
-		public void append(string str) {
-			this.message.response_body.append_take(str.data);
+		public override ssize_t write(uint8[] buffer, Cancellable? cancellable = null) {
+			this.message.response_body.append_take(buffer);
+			return buffer.length;
+		}
+
+		public override bool close(Cancellable? cancellable = null) {
+			this.message.response_body.complete();
+			return true;
 		}
 	}
 }

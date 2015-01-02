@@ -14,12 +14,12 @@ app.get("", (req, res) => {
 	template.vars["path"] = req.path;
 	template.vars["headers"] = req.headers;
 
-	template.stream (res.body);
+	template.stream (res);
 });
 
 app.get("headers", (req, res) => {
 
-	var writer = new DataOutputStream(res.body);
+	var writer = new DataOutputStream(res);
 
 	res.mime = "text/plain";
 	req.headers.map_iterator().foreach((name, header) => {
@@ -30,21 +30,21 @@ app.get("headers", (req, res) => {
 
 // hello world! (compare with Node.js!)
 app.get("hello", (req, res) => {
-	var writer = new DataOutputStream(res.body);
+	var writer = new DataOutputStream(res);
 	res.mime = "text/plain";
 	writer.put_string("Hello world\n");
 });
 
 // hello with a trailing slash
 app.get("hello/", (req, res) => {
-	var writer = new DataOutputStream(res.body);
+	var writer = new DataOutputStream(res);
 	res.mime = "text/plain";
 	writer.put_string("Hello world\n");
 });
 
 // example using route parameter
 app.get("hello/<id>", (req, res) => {
-	var writer = new DataOutputStream(res.body);
+	var writer = new DataOutputStream(res);
 	res.mime = "text/plain";
 	writer.put_string("hello %s!".printf(req.params["id"]));
 });
@@ -53,7 +53,7 @@ app.get("hello/<id>", (req, res) => {
 app.get("users/<int:id>/<action>", (req, res) => {
 	var id   = req.params["id"];
 	var test = req.params["action"];
-	var writer = new DataOutputStream(res.body);
+	var writer = new DataOutputStream(res);
 	res.mime = "text/plain";
 	writer.put_string(@"id\t=> $id\n");
 	writer.put_string(@"action\t=> $test");
@@ -61,7 +61,7 @@ app.get("users/<int:id>/<action>", (req, res) => {
 
 // lua scripting
 app.get("lua", (req, res) => {
-	var writer = new DataOutputStream(res.body);
+	var writer = new DataOutputStream(res);
 	writer.put_string(lua.eval("""
 		require "markdown"
 		return markdown('## Hello from lua.eval!')
@@ -71,7 +71,7 @@ app.get("lua", (req, res) => {
 });
 
 app.get("lua.haml", (req, res) => {
-	var writer = new DataOutputStream(res.body);
+	var writer = new DataOutputStream(res);
 	writer.put_string(lua.run("app/haml.lua"));
 });
 
@@ -98,7 +98,7 @@ app.get("ctpl/<foo>/<bar>", (req, res) => {
 	tpl.vars["arr"] = arr;
 	tpl.vars["int"] = 1;
 
-	tpl.stream (res.body);
+	tpl.stream (res);
 });
 
 // streamed Ctpl template
@@ -106,19 +106,19 @@ app.get("ctpl/streamed", (req, res) => {
 
 	var tpl = new Valum.View.Tpl.from_path("app/templates/home.html");
 
-	tpl.stream(res.body);
+	tpl.stream(res);
 });
 
 // memcached
 app.get("memcached/get/<key>", (req, res) => {
 	var value = mcd.get(req.params["key"]);
-	var writer = new DataOutputStream(res.body);
+	var writer = new DataOutputStream(res);
 	writer.put_string(value);
 });
 
 // TODO: rewrite using POST
 app.get("memcached/set/<key>/<value>", (req, res) => {
-	var writer = new DataOutputStream(res.body);
+	var writer = new DataOutputStream(res);
 	if (mcd.set(req.params["key"], req.params["value"])) {
 		writer.put_string("Ok! Pushed.");
 	} else {
@@ -130,7 +130,7 @@ app.get("memcached/set/<key>/<value>", (req, res) => {
 // for (var i = 0; i < 1000; i++) {
 //		print(@"New route /$i\n");
 //		var route = "%d".printf(i);
-//		app.get(route, (req, res) => { res.body.put_string(@"yo 1"); });
+//		app.get(route, (req, res) => { res.put_string(@"yo 1"); });
 // }
 
 // scoped routing
@@ -138,12 +138,12 @@ app.scope("admin", (adm) => {
 	adm.scope("fun", (fun) => {
 		fun.get("hack", (req, res) => {
 				var time = new DateTime.now_utc();
-				var writer = new DataOutputStream(res.body);
+				var writer = new DataOutputStream(res);
 				res.mime = "text/plain";
 				writer.put_string("It's %s around here!\n".printf(time.format("%H:%M")));
 		});
 		fun.get("heck", (req, res) => {
-				var writer = new DataOutputStream(res.body);
+				var writer = new DataOutputStream(res);
 				res.mime = "text/plain";
 				writer.put_string("Wuzzup!");
 		});
@@ -156,7 +156,7 @@ app.get("<any:path>", (req, res) => {
 	template.vars["path"] = req.path;
 
 	res.status = 404;
-	template.stream (res.body);
+	template.stream (res);
 });
 
 #if (FCGI)
