@@ -131,6 +131,29 @@ app.get("<any:path>", (req, res) => {
 	res.append(template.render());
 });
 
+#if (FCGI)
+
+FastCGI.init ();
+
+FastCGI.request request;
+FastCGI.request.init (out request);
+
+while (true) {
+	// accept a new request
+	if (request.accept () < 0)
+		break;
+
+	// handle the request
+	app.fastcgi_request_handler (request);
+
+	assert(request.out.is_closed);
+}
+
+request.close ();
+
+#else
+
+// Soup server example
 var server = new Soup.Server(Soup.SERVER_SERVER_HEADER, Valum.APP_NAME);
 
 // bind the application to the server
@@ -144,3 +167,5 @@ foreach (var uri in server.get_uris ()) {
 
 // run the server
 server.run ();
+
+#endif

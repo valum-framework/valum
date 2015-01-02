@@ -2,6 +2,7 @@ VER   := 0.1
 CC    := gcc
 VALAC := valac
 
+FEXE := build/valum.fcg
 EXE  := build/valum
 LIB  := build/libvalum-$(VER).so
 GIR  := build/Valum-$(VER).gir
@@ -13,8 +14,11 @@ USER := $(shell echo $(USER))
 FLAGS := --enable-experimental --thread --vapidir=vapi \
          --cc=$(CC) -D BENCHMARK
 
-LFLAGS := -X -fPIC -X -shared --gir=$(GIR) --library=$(VAPI) \
-          --header=$(HDR) --output=$(LIB)
+FLAGS  := --enable-experimental --thread --vapidir=./vapi/ \
+	  --cc=$(CC) -D BENCHMARK
+
+LFLAGS := -X -fPIC -X -shared -X -lfcgi --gir=$(GIR) --library=$(VAPI) \
+	  --header=$(HDR) --output=$(LIB)
 
 AFLAGS := -X $(LIB) -X -Ibuild --output=$(EXE)
 
