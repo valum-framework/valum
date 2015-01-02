@@ -1,7 +1,7 @@
 using Gee;
 using Soup;
 
-namespace SGI {
+namespace VSGI {
 
 	// Adapt Soup.MessageHeaders as a MultiMap
 	class MessageHeadersMultiMap : Object, MultiMap<string, string> {
@@ -76,7 +76,7 @@ namespace SGI {
 	}
 
 	// libsoup implementation
-	public class SoupRequest : SGI.Request {
+	public class SoupRequest : VSGI.Request {
 
 		private Soup.Message message;
 		private MessageHeadersMultiMap _headers;
@@ -109,7 +109,7 @@ namespace SGI {
 		}
 	}
 
-	public class SoupResponse : SGI.Response {
+	public class SoupResponse : VSGI.Response {
 
 		private Soup.Message message;
 		private MessageHeadersMultiMap _headers;

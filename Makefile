@@ -30,15 +30,18 @@ LSRC := $(shell find 'src/' -type f -name "*.vala")
 CSRC := $(shell find 'src/' -type f -name "*.c")
 ASRC := $(shell find 'app/' -type f -name "*.vala")
 
+$(FEXE): $(LIB) $(ASRC)
+	$(VALAC) $(FLAGS) $(AFLAGS) -X -lfcgi -D FCGI $(VAPI).vapi $(ASRC) $(PKGS) --output=$@
+
 $(EXE): $(LIB) $(ASRC)
-	$(VALAC) $(FLAGS) $(AFLAGS) $(VAPI).vapi $(ASRC) $(PKGS)
+	$(VALAC) $(FLAGS) $(AFLAGS) $(VAPI).vapi $(ASRC) $(PKGS) --output=$@
 
 $(LIB): $(LSRC)
-	$(VALAC) $(FLAGS) $(LFLAGS) $(PKGS) $(LSRC)
+	$(VALAC) $(FLAGS) $(LFLAGS) $(PKGS) $(LSRC) --output=$@
 
-all: $(LIB) $(EXE)
+all: $(LIB) $(EXE) $(FEXE)
 
-run: all
+run: $(EXE)
 	$(EXE)
 
 drun: debug

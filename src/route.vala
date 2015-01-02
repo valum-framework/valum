@@ -1,5 +1,5 @@
 using Gee;
-using SGI;
+using VSGI;
 
 namespace Valum {
 

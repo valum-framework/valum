@@ -1,11 +1,11 @@
 using Gee;
-using SGI;
+using VSGI;
 
 namespace Valum {
 
 	public const string APP_NAME = "Valum/0.1";
 
-	public class Router : SGI.Application {
+	public class Router : VSGI.Application {
 
 		// list of routes associated to each HTTP method
 		private HashMap<string, ArrayList<Route>> routes = new HashMap<string, ArrayList> ();
