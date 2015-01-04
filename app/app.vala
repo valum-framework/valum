@@ -122,11 +122,12 @@ app.scope("admin", (adm) => {
 	});
 });
 
-app.default_request.connect((req, res) => {
+app.get("<any:path>", (req, res) => {
 	var template =  new Valum.View.Tpl.from_path("app/templates/404.html");
 
 	template.vars["path"] = req.path;
 
+	res.status = 404;
 	res.append(template.render());
 });
 

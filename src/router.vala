@@ -20,12 +20,6 @@ namespace Valum {
 			res.message.response_body.complete ();
 		}
 
-		// signal called if no route has matched the request
-		public virtual signal void default_request (Request req, Response res) {
-			res.status = 404;
-			warning("could not match %s, fallback to default handler", req.path);
-		}
-
 		public delegate void NestedRouter(Valum.Router app);
 
 		public Router() {
@@ -137,9 +131,6 @@ namespace Valum {
 					return;
 				}
 			}
-
-			// No route has matched
-			this.default_request (req, res);
 
 			this.after_request (req, res);
 		}
