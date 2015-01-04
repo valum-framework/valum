@@ -133,23 +133,43 @@ app.get("<any:path>", (req, res) => {
 
 #if (FCGI)
 
+var loop = new MainLoop ();
+
 FastCGI.init ();
 
 FastCGI.request request;
 FastCGI.request.init (out request);
 
-while (true) {
-	// accept a new request
-	if (request.accept () < 0)
-		break;
+var source = new TimeoutSource (0);
 
-	// handle the request
+source.set_callback(() => {
+
+	message("accepting a new request...");
+
+	// accept a new request
+	var status = request.accept ();
+
+	if (status < 0) {
+		warning ("could not accept a request (code %d)", status);
+		request.close ();
+		loop.quit ();
+		return false;
+	}
+
+	// handle the request using FastCGI handler
 	app.fastcgi_request_handler (request);
 
-	assert(request.out.is_closed);
-}
+	request.finish ();
 
-request.close ();
+	assert (request.in.is_closed);
+	assert (request.out.is_closed);
+
+	return true;
+});
+
+source.attach (loop.get_context ());
+
+loop.run ();
 
 #else
 
