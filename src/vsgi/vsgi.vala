@@ -3,20 +3,16 @@ using Gee;
 namespace VSGI {
 
 	/**
-	 * Application that handles Request and produce Response.
-     *
-	 * Provides basic implementation for libsoup and FastCGI handlers.
-	 */
-	public abstract class Application {
-
-		// Environment of the Application that can be setted from the request_handler
-		public Map<string, string> environment { get; set; default = new HashMap<string, string> (); }
-	}
-
-	/**
 	 * Request
 	 */
 	public abstract class Request : InputStream {
+
+		/**
+		 * Request environment.
+         *
+		 * This is providen by the server implementation.
+		 */
+		public abstract Map<string, string> environment { get; }
 
 		/**
 		 * Request method

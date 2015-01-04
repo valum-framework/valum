@@ -5,7 +5,7 @@ namespace Valum {
 
 	public const string APP_NAME = "Valum/0.1";
 
-	public class Router : VSGI.Application {
+	public class Router {
 
 		// list of routes associated to each HTTP method
 		private HashMap<string, ArrayList<Route>> routes = new HashMap<string, ArrayList> ();
@@ -22,7 +22,7 @@ namespace Valum {
 			});
 
 			this.handler.connect_after((req, res) => {
-				res.body.close ();
+				res.close ();
 			});
 
 #if (BENCHMARK)
@@ -141,7 +141,7 @@ namespace Valum {
 				});
 			}
 
-			var req = new SoupRequest(msg, qry);
+			var req = new SoupRequest(msg);
 			var res = new SoupResponse(msg);
 
 			this.handler (req, res);
