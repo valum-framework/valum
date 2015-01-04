@@ -11,7 +11,7 @@ mcd.add_server("127.0.0.1", 11211);
 app.get("", (req, res) => {
 	var template =  new Valum.View.Tpl.from_path("app/templates/home.html");
 
-	template.vars["path"] = req.path;
+	template.vars["path"] = req.uri.get_path ();
 	template.vars["headers"] = req.headers;
 
 	template.stream (res);
@@ -153,7 +153,7 @@ app.scope("admin", (adm) => {
 app.get("<any:path>", (req, res) => {
 	var template =  new Valum.View.Tpl.from_path("app/templates/404.html");
 
-	template.vars["path"] = req.path;
+	template.vars["path"] = req.uri.get_path ();
 
 	res.status = 404;
 	template.stream (res);

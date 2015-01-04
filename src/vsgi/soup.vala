@@ -85,17 +85,14 @@ namespace VSGI {
 
 		public override string method { get { return this._method; } }
 
-		public override string path { get { return this.message.uri.get_path (); } }
-
-		public override Map<string, string> query { get { return this._query; } }
+		public override URI uri { get { return this.message.uri; } }
 
 		public override MultiMap<string, string> headers { get { return this._headers; } }
 
-		public SoupRequest(Soup.Message msg, HashMap<string, string> query) {
+		public SoupRequest(Soup.Message msg) {
 			this.message = msg;
-			this._headers = new MessageHeadersMultiMap(msg.request_headers);
-			this._query = query;
 			this._method = msg.method;
+			this._headers = new MessageHeadersMultiMap(msg.request_headers);
 		}
 
 		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) {

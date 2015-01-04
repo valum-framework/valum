@@ -36,7 +36,7 @@ namespace Valum {
 				timer.stop();
 				var elapsed = timer.elapsed();
 				res.headers["X-Runtime"] = "%8.3fms".printf(elapsed * 1000);
-				message("%s computed in %8.3fms", req.path, elapsed * 1000);
+				message("%s computed in %8.3fms", req.uri.get_path (), elapsed * 1000);
 			});
 #endif
 		}
@@ -116,7 +116,7 @@ namespace Valum {
 			var routes = this.routes[req.method];
 
 			foreach (var route in routes) {
-				if (route.matches(req.path)) {
+				if (route.matches(req.uri.get_path ())) {
 
 					// fire the route!
 					route.fire (req, res);

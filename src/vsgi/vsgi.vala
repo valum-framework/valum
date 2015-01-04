@@ -18,14 +18,26 @@ namespace VSGI {
 	 */
 	public abstract class Request : InputStream {
 
-		public Map<string, string> params { get; set; default = new HashMap<string, string> (); }
-
-		public abstract Map<string, string> query { get; }
-
-		public abstract string path { get; }
-
+		/**
+		 * Request method
+		 */
 		public abstract string method { get; }
 
+		/**
+		 * Parameters for the request.
+		 *
+		 * These should be extracted from the uri path.
+		 */
+		public Map<string, string> params { get; set; default = new HashMap<string, string> (); }
+
+		/**
+		 * Request URI using libsoup implementation.
+		 */
+		public abstract Soup.URI uri { get; }
+
+		/**
+		 * Request headers.
+		 */
 		public abstract MultiMap<string, string> headers { get; }
 	}
 
@@ -34,6 +46,9 @@ namespace VSGI {
 	 */
 	public abstract class Response : OutputStream {
 
+		/**
+		 * Response status.
+		 */
 		public abstract uint status { get; set; }
 
 		/**
@@ -41,6 +56,9 @@ namespace VSGI {
 		 */
 		public abstract string mime { get; set; }
 
+		/**
+		 * Response headers.
+		 */
 		public abstract MultiMap<string, string> headers { get; }
 	}
 }

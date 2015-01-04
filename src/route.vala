@@ -59,7 +59,7 @@ namespace Valum {
 
 		public void fire(Request req, Response res) {
 			MatchInfo matchinfo;
-			if(this.regex.match(req.path, 0, out matchinfo)) {
+			if(this.regex.match(req.uri.get_path (), 0, out matchinfo)) {
 				foreach(var cap in captures) {
 					req.params[cap] = matchinfo.fetch_named(cap);
 				}
