@@ -28,6 +28,25 @@ app.get("headers", (req, res) => {
 	});
 });
 
+app.get("cookies", (req, res) => {
+	var writer = new DataOutputStream(res);
+
+	res.mime = "text/plain";
+
+	// write cookies in response
+	writer.put_string ("Cookie\n");
+	foreach (var cookie in req.cookies) {
+		// write-back the cookies
+		res.headers["Set-Cookie"] = cookie.to_set_cookie_header ();
+		writer.put_string ("%s: %s\n".printf(cookie.name, cookie.value));
+	}
+
+	writer.put_string ("Set-Cookie\n");
+	foreach (var cookie in res.cookies) {
+		writer.put_string ("%s: %s\n".printf(cookie.name, cookie.value));
+	}
+});
+
 // hello world! (compare with Node.js!)
 app.get("hello", (req, res) => {
 	var writer = new DataOutputStream(res);
