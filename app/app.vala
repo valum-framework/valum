@@ -7,15 +7,22 @@ var mcd = new Valum.NoSQL.Mcached();
 
 mcd.add_server("127.0.0.1", 11211);
 
+// extra route types
+app.types["permutations"] = "abc|acb|bac|bca|cab|cba";
+
 // default route
 app.get("", (req, res) => {
 	var template =  new Valum.View.Tpl.from_path("app/templates/home.html");
 
-	template.vars["path"] = req.message.uri.get_path ();
-	template.vars["query"] = req.message.uri.get_query ();
+	template.vars["path"]    = req.message.uri.get_path ();
+	template.vars["query"]   = req.message.uri.get_query ();
 	template.vars["headers"] = req.headers;
 
 	res.append(template.render());
+});
+
+app.get("custom-route-type/<permutations:p>", (req, res) => {
+	res.append(req.params["p"]);
 });
 
 // hello world! (compare with Node.js!)
