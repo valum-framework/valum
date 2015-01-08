@@ -6,9 +6,20 @@ namespace Valum {
 
 	public class Router {
 
+		/**
+		 * Registered types.
+		 */
 		public Map<string, string> types = new HashMap<string, string> ();
-		private HashMap<string, ArrayList<Route>> routes = new HashMap<string, ArrayList> ();
-		private string[] _scope;
+
+		/**
+		 * Registered routes by HTTP method.
+		 */
+		private Map<string, ArrayList<Route>> routes = new HashMap<string, ArrayList> ();
+
+		/**
+		 * Stack of scope.
+		 */
+		private Gee.List<string> scopes = new ArrayList<string> ();
 
 		public delegate void NestedRouter(Valum.Router app);
 
@@ -87,31 +98,30 @@ namespace Valum {
 		// Routing helpers
 		//
 		public void scope(string fragment, NestedRouter router) {
-			this._scope += fragment;
+			this.scopes.add (fragment);
 			router(this);
-			this._scope = this._scope[0:-1];
+			this.scopes.remove_at (this.scopes.size - 1);
 		}
 
 		//
 		// Routing and request handling machinery
 		//
 		private void route(string method, string rule, Route.RequestCallback cb) {
-			string full_rule = "";
+			var full_rule = new StringBuilder ();
 
 			// scope the route
-			for (var seg = 0; seg < this._scope.length; seg++) {
-				full_rule += "/";
-				full_rule += this._scope[seg];
+			foreach (var scope in this.scopes)
+			{
+				full_rule.append ("/%s".printf (scope));
 			}
 
-			// prepend the root
-			full_rule += "/%s".printf(rule);
+			full_rule.append ("/%s".printf(rule));
 
 			if (!this.routes.has_key(method)){
 				this.routes[method] = new ArrayList<Route> ();
 			}
 
-			this.routes[method].add(new Route.from_rule (this, full_rule, cb));
+			this.routes[method].add (new Route.from_rule (this, full_rule.str, cb));
 		}
 
 		// handler code
