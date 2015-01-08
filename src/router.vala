@@ -111,7 +111,13 @@ namespace Valum {
 			this.routes[method].add(new Route(full_rule, cb));
 		}
 
-		// handler code
+		/**
+		 * Signal handling the request.
+         *
+		 * It is possible to bind a callback to be executed before and after
+		 * this signal so that you can have setup and teardown operations (ex.
+		 * closing the database connection, sending mails).
+		 */
 		public virtual signal void handler (Request req, Response res) {
 			var routes = this.routes[req.method];
 

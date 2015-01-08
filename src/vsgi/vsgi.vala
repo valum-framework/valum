@@ -1,5 +1,14 @@
 using Gee;
 
+/**
+ * VSGI is an set of abstraction and implementations used to build generic web
+ * application in Vala.
+ *
+ * It is minimalist and relies on libsoup, a good and stable HTTP library.
+ *
+ * Two implementation are planned: Soup.Server and FastCGI. The latter
+ * integrates with pretty much any web server.
+ */
 namespace VSGI {
 
 	/**
@@ -28,6 +37,9 @@ namespace VSGI {
 
 		/**
 		 * Request URI using libsoup implementation.
+         *
+		 * The uri, protocol and HTTP query and other request information is
+		 * made available through this property.
 		 */
 		public abstract Soup.URI uri { get; }
 
@@ -38,6 +50,8 @@ namespace VSGI {
 
 		/**
 		 * Request Cookie.
+         *
+		 * This property is a wrapper around the Cookie request header.
 		 */
 		public Gee.List<Soup.Cookie> cookies {
 			owned get {
