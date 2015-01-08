@@ -1,32 +1,30 @@
-VER    := 0.1
-CC     := gcc
-VALAC  := valac
+VER   := 0.1
+CC    := gcc
+VALAC := valac
 
-EXE   := ./build/app.valum
-LIB   := ./build/libvalum_$(VER).so
-GIR   := Valum-$(VER).gir
-HDR   := ./build/valum_$(VER).h
-VAPI  := ./vapi/valum-$(VER)
+EXE  := build/valum
+LIB  := build/libvalum-$(VER).so
+GIR  := build/Valum-$(VER).gir
+HDR  := build/valum-$(VER).h
+VAPI := vapi/valum-$(VER)
 
-USER  := $(shell echo $(USER))
+USER := $(shell echo $(USER))
 
-
-FLAGS  := --enable-experimental --thread --vapidir=./vapi/ \
-	  --cc=$(CC) -D BENCHMARK
+FLAGS := --enable-experimental --thread --vapidir=vapi \
+         --cc=$(CC) -D BENCHMARK
 
 LFLAGS := -X -fPIC -X -shared --gir=$(GIR) --library=$(VAPI) \
-	  --header=$(HDR) --output=$(LIB)
+          --header=$(HDR) --output=$(LIB)
 
-AFLAGS := -X $(LIB) -X -I./build/ --output=$(EXE)
+AFLAGS := -X $(LIB) -X -Ibuild --output=$(EXE)
 
-PKGS   := --pkg gio-2.0 --pkg json-glib-1.0 --pkg gee-0.8 \
-	  --pkg libsoup-2.4 --pkg libmemcached --pkg luajit \
-	  --pkg ctpl
+PKGS := --pkg gio-2.0 --pkg json-glib-1.0 --pkg gee-0.8 \
+        --pkg libsoup-2.4 --pkg libmemcached --pkg luajit \
+        --pkg ctpl
 
-LSRC   := $(shell find 'src/' -type f -name "*.vala")
-CSRC   := $(shell find 'src/' -type f -name "*.c")
-ASRC   := $(shell find 'app/' -type f -name "*.vala")
-
+LSRC := $(shell find 'src/' -type f -name "*.vala")
+CSRC := $(shell find 'src/' -type f -name "*.c")
+ASRC := $(shell find 'app/' -type f -name "*.vala")
 
 $(EXE): $(LIB) $(ASRC)
 	$(VALAC) $(FLAGS) $(AFLAGS) $(VAPI).vapi $(ASRC) $(PKGS)
@@ -56,7 +54,7 @@ genc:
 	@$(MAKE) "FLAGS=$(FLAGS) --ccode"
 
 clean:
-	rm -f $(CSRC) ./build/* ./vapi/valum-*
+	rm -f $(CSRC) build/* vapi/valum-*
 
 builddock:
 	docker build -t $(USER)/valum .
@@ -64,4 +62,4 @@ builddock:
 rundock:
 	docker run -v $(shell pwd):/src -p 127.0.0.1:3003:3003 $(USER)/valum
 
-.PHONY= all clean run drun vdrun valgrind debug genc dock
+.PHONY: all clean run drun vdrun valgrind debug genc dock
