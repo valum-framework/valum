@@ -15,7 +15,7 @@ namespace Valum {
 			this.callback = callback;
 
 			try {
-				Regex param_regex = new Regex("(<(?:(?:float|int):)?\\w+>)");
+				Regex param_regex = new Regex("(<(?:\\w+:)?\\w+>)");
 				var params = param_regex.split_full(this.rule);
 
 				StringBuilder route = new StringBuilder("^");
@@ -29,15 +29,22 @@ namespace Valum {
 						var cap = p.slice(1, p.length - 1).split(":", 2);
 						var type = cap.length == 1 ? "string" : cap[0];
 						var key = cap.length == 1 ? cap[0] : cap[1];
+
 						// TODO: support any type with a HashMap<string, string>
-						var type_re = type == "int" ? "\\d+" : "\\w+";
+						var types = new HashMap<string, string> ();
+
+						// add default types
+						types["any"]    = ".+";
+						types["int"]    = "\\d+";
+						types["string"] = "\\w+";
+
 						captures.add(key);
-						route.append("(?<%s>%s)".printf(key, type_re));
+						route.append("(?<%s>%s)".printf(key, types[type]));
 					}
 				}
 
 				route.append("$");
-				info("registered %s", route.str);
+				message("registered %s", route.str);
 
 				this.regex = new Regex(route.str, RegexCompileFlags.OPTIMIZE);
 			} catch(RegexError e) {
