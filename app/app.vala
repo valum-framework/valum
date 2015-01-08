@@ -43,6 +43,33 @@ app.get("hello/<id>", (req, res) => {
 	res.append("hello %s!".printf(req.params["id"]));
 });
 
+app.scope("urlencoded-data", (inner) => {
+	inner.get("", (req, res) => {
+		res.append(
+		"""
+	<!DOCTYPE html>
+	<html>
+	  <body>
+	    <form method="post">
+          <textarea name="data"></textarea>
+		  <button type="submit">submit</button>
+		</form>
+	  </body>
+	</html>
+	"""
+	);
+	});
+
+	inner.post("", (req, res) => {
+
+		var data = Soup.Form.decode ((string) req.body.data);
+
+		data.foreach((key, value) => {
+			res.append ("%s: %s".printf(key, value));
+		});
+	});
+});
+
 // example using a typed route parameter
 app.get("users/<int:id>/<action>", (req, res) => {
 	var id   = req.params["id"];
