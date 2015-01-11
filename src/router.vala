@@ -9,29 +9,27 @@ namespace Valum {
 		private HashMap<string, ArrayList<Route>> routes = new HashMap<string, ArrayList> ();
 		private string[] _scope;
 
-		// signal called before a request execution starts
-		public virtual signal void before_request (Request req, Response res) {
-			res.status = 200;
-			res.mime   = "text/html";
-		}
-
-		// signal called after a request has executed
-		public virtual signal void after_request (Request req, Response res) {
-			res.message.response_body.complete ();
-		}
-
 		public delegate void NestedRouter(Valum.Router app);
 
 		public Router() {
 
+			this.handler.connect((req, res) => {
+				res.status = 200;
+				res.mime   = "text/html";
+			});
+
+			this.handler.connect_after((req, res) => {
+				res.message.response_body.complete ();
+			});
+
 #if (BENCHMARK)
 			var timer  = new Timer();
 
-			this.before_request.connect((req, res) => {
+			this.handler.connect((req, res) => {
 				timer.start();
 			});
 
-			this.after_request.connect((req, res) => {
+			this.handler.connect_after((req, res) => {
 				timer.stop();
 				var elapsed = timer.elapsed();
 				res.headers.append("X-Runtime", "%8.3fms".printf(elapsed * 1000));
@@ -106,8 +104,23 @@ namespace Valum {
 			this.routes[method].add(new Route(full_rule, cb));
 		}
 
-		// Handler code
-		public void request_handler (Soup.Server server,
+		// handler code
+		public virtual signal void handler (Request req, Response res) {
+			var routes = this.routes[req.message.method];
+
+			foreach (var route in routes) {
+				if (route.matches(req.path)) {
+
+					// fire the route!
+					route.fire(req, res);
+
+					return;
+				}
+			}
+		}
+
+		// libsoup-based handler
+		public void soup_handler (Soup.Server server,
 				Soup.Message msg,
 				string path,
 				GLib.HashTable? query,
@@ -116,23 +129,7 @@ namespace Valum {
 			var req = new Request(msg);
 			var res = new Response(msg);
 
-			this.before_request (req, res);
-
-			var routes = this.routes[msg.method];
-
-			foreach (var route in routes) {
-				if (route.matches(path)) {
-
-					// fire the route!
-					route.fire(req, res);
-
-					this.after_request (req, res);
-
-					return;
-				}
-			}
-
-			this.after_request (req, res);
+			this.handler (req, res);
 		}
 	}
 

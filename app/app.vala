@@ -134,7 +134,7 @@ app.get("<any:path>", (req, res) => {
 var server = new Soup.Server(Soup.SERVER_SERVER_HEADER, Valum.APP_NAME);
 
 // bind the application to the server
-server.add_handler("/", app.request_handler);
+server.add_handler("/", app.soup_handler);
 
 server.listen_all(3003, Soup.ServerListenOptions.IPV4_ONLY);
 
