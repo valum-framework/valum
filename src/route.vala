@@ -25,7 +25,7 @@ namespace Valum {
 
 		private unowned RequestCallback callback;
 
-		public delegate void RequestCallback(Request req, Response res);
+		public delegate void RequestCallback (Request req, Response res);
 
 		/**
 		 * Create a Route for a given callback using a Regex.
@@ -47,18 +47,18 @@ namespace Valum {
 			this.captures = new ArrayList<string> ();
 			this.callback = callback;
 			try {
-				Regex param_regex = new Regex("(<(?:\\w+:)?\\w+>)");
-				var params = param_regex.split_full(rule);
+				Regex param_regex = new Regex ("(<(?:\\w+:)?\\w+>)");
+				var params = param_regex.split_full (rule);
 
-				StringBuilder route = new StringBuilder("^");
+				StringBuilder route = new StringBuilder ("^");
 
 				foreach (var p in params) {
 					if(p[0] != '<') {
 						// regular piece of route
-						route.append (Regex.escape_string(p));
+						route.append (Regex.escape_string (p));
 					} else {
 						// extract parameter
-						var cap  = p.slice(1, p.length - 1).split(":", 2);
+						var cap  = p.slice (1, p.length - 1).split (":", 2);
 						var type = cap.length == 1 ? "string" : cap[0];
 						var key = cap.length == 1 ? cap[0] : cap[1];
 
@@ -70,8 +70,8 @@ namespace Valum {
 					}
 				}
 
-				route.append("$");
-				message("registered %s", route.str);
+				route.append ("$");
+				message ("registered %s", route.str);
 
 				this.regex = new Regex (route.str, RegexCompileFlags.OPTIMIZE);
 			} catch(RegexError e) {
@@ -83,6 +83,10 @@ namespace Valum {
 			return this.regex.match (path, 0);
 		}
 
+		/**
+		 * Extract the Request parameters from URI and execute the route
+		 * callback.
+		 */
 		public void fire (Request req, Response res) {
 			MatchInfo matchinfo;
 			// initialize Request parameters

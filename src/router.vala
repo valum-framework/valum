@@ -14,37 +14,38 @@ namespace Valum {
 		/**
 		 * Registered routes by HTTP method.
 		 */
-		private Map<string, ArrayList<Route>> routes = new HashMap<string, ArrayList> ();
+		private Map<string, Gee.List<Route>> routes = new HashMap<string, Gee.List> ();
 
 		/**
 		 * Stack of scope.
 		 */
 		private Gee.List<string> scopes = new ArrayList<string> ();
 
-		public delegate void NestedRouter(Valum.Router app);
+		public delegate void NestedRouter (Valum.Router app);
 
-		public Router() {
+		public Router () {
 
 			// initialize default types
 			this.types["int"]    = "\\d+";
 			this.types["string"] = "\\w+";
-			this.handler.connect((req, res) => {
+
+			this.handler.connect ((req, res) => {
 				res.status = 200;
 				res.mime   = "text/html";
 			});
 
-			this.handler.connect_after((req, res) => {
+			this.handler.connect_after ((req, res) => {
 				res.message.response_body.complete ();
 			});
 
 #if (BENCHMARK)
 			var timer  = new Timer();
 
-			this.handler.connect((req, res) => {
+			this.handler.connect ((req, res) => {
 				timer.start();
 			});
 
-			this.handler.connect_after((req, res) => {
+			this.handler.connect_after ((req, res) => {
 				timer.stop();
 				var elapsed = timer.elapsed();
 				res.headers.append("X-Runtime", "%8.3fms".printf(elapsed * 1000));
@@ -56,57 +57,57 @@ namespace Valum {
 		//
 		// HTTP Verbs
 		//
-		public new void get(string rule, Route.RequestCallback cb) {
-			this.route("GET", rule, cb);
+		public new void get (string rule, Route.RequestCallback cb) {
+			this.route ("GET", rule, cb);
 		}
 
-		public void post(string rule, Route.RequestCallback cb) {
-			this.route("POST", rule, cb);
+		public void post (string rule, Route.RequestCallback cb) {
+			this.route ("POST", rule, cb);
 		}
 
-		public void put(string rule, Route.RequestCallback cb) {
-			this.route("PUT", rule, cb);
+		public void put (string rule, Route.RequestCallback cb) {
+			this.route ("PUT", rule, cb);
 		}
 
-		public void delete(string rule, Route.RequestCallback cb) {
-			this.route("DELETE", rule, cb);
+		public void delete (string rule, Route.RequestCallback cb) {
+			this.route ("DELETE", rule, cb);
 		}
 
-		public void head(string rule, Route.RequestCallback cb) {
-			this.route("HEAD", rule, cb);
+		public void head (string rule, Route.RequestCallback cb) {
+			this.route ("HEAD", rule, cb);
 		}
 
 		public void options(string rule, Route.RequestCallback cb) {
-			this.route("OPTIONS", rule, cb);
+			this.route ("OPTIONS", rule, cb);
 		}
 
-		public void trace(string rule, Route.RequestCallback cb) {
-			this.route("TRACE", rule, cb);
+		public void trace (string rule, Route.RequestCallback cb) {
+			this.route ("TRACE", rule, cb);
 		}
 
-		public void connect(string rule, Route.RequestCallback cb) {
-			this.route("CONNECT", rule, cb);
+		public void connect (string rule, Route.RequestCallback cb) {
+			this.route ("CONNECT", rule, cb);
 		}
 
 		// http://tools.ietf.org/html/rfc5789
-		public void patch(string rule, Route.RequestCallback cb) {
-			this.route("PATCH", rule, cb);
+		public void patch (string rule, Route.RequestCallback cb) {
+			this.route ("PATCH", rule, cb);
 		}
 
 
 		//
 		// Routing helpers
 		//
-		public void scope(string fragment, NestedRouter router) {
+		public void scope (string fragment, NestedRouter router) {
 			this.scopes.add (fragment);
-			router(this);
+			router (this);
 			this.scopes.remove_at (this.scopes.size - 1);
 		}
 
 		//
 		// Routing and request handling machinery
 		//
-		private void route(string method, string rule, Route.RequestCallback cb) {
+		private void route (string method, string rule, Route.RequestCallback cb) {
 			var full_rule = new StringBuilder ();
 
 			// scope the route
@@ -129,10 +130,10 @@ namespace Valum {
 			var routes = this.routes[req.message.method];
 
 			foreach (var route in routes) {
-				if (route.matches(req.path)) {
+				if (route.matches (req.path)) {
 
 					// fire the route!
-					route.fire(req, res);
+					route.fire (req, res);
 
 					return;
 				}
@@ -146,13 +147,12 @@ namespace Valum {
 				GLib.HashTable? query,
 				Soup.ClientContext client) {
 
-			var req = new Request(msg);
-			var res = new Response(msg);
+			var req = new Request (msg);
+			var res = new Response (msg);
 
 			this.handler (req, res);
 		}
 	}
-
 }
 
 
