@@ -79,8 +79,10 @@ namespace Valum {
 			}
 		}
 
+		private MatchInfo last_matchinfo;
+
 		public bool matches (string path) {
-			return this.regex.match (path, 0);
+			return this.regex.match (path, 0, out last_matchinfo);
 		}
 
 		/**
@@ -88,13 +90,10 @@ namespace Valum {
 		 * callback.
 		 */
 		public void fire (Request req, Response res) {
-			MatchInfo matchinfo;
-			// initialize Request parameters
-			if (this.regex.match (req.path, 0, out matchinfo)) {
-				foreach (var cap in captures) {
-					req.params[cap] = matchinfo.fetch_named (cap);
-				}
+			foreach (var cap in captures) {
+				req.params[cap] = this.last_matchinfo.fetch_named (cap);
 			}
+
 			this.callback (req, res);
 		}
 	}

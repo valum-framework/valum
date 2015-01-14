@@ -49,7 +49,7 @@ namespace Valum {
 				timer.stop();
 				var elapsed = timer.elapsed();
 				res.headers.append("X-Runtime", "%8.3fms".printf(elapsed * 1000));
-				info("%s computed in %8.3fms", req.path, elapsed * 1000);
+				message ("%s computed in %8.3fms", req.path, elapsed * 1000);
 			});
 #endif
 		}
