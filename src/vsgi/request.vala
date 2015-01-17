@@ -31,14 +31,16 @@ namespace VSGI {
 		/**
 		 * Parameters for the request.
 		 *
-		 * These should be extracted from the uri path.
+		 * These should be extracted from the URI path.
 		 */
 		public Map<string, string> params { get; set; default = new HashMap<string, string> (); }
 
 		/**
-		 * Request URI using libsoup implementation.
+		 * Request URI
          *
-		 * The uri, protocol and HTTP query and other request information is
+		 * The implementation is based on libsoup.
+         *
+		 * The URI, protocol and HTTP query and other request information is
 		 * made available through this property.
 		 */
 		public abstract Soup.URI uri { get; }
@@ -49,7 +51,9 @@ namespace VSGI {
 		public abstract MultiMap<string, string> headers { get; }
 
 		/**
-		 * Request Cookie.
+		 * Request cookies.
+         *
+		 * Cookie implementation is based on libsoup.
          *
 		 * This property is a wrapper around the Cookie request header.
 		 */
@@ -62,45 +66,5 @@ namespace VSGI {
 				return cookies;
 			}
 		}
-	}
-
-	/**
-	 * Response
-	 */
-	public abstract class Response : OutputStream {
-
-		/**
-		 * Response status.
-		 */
-		public abstract uint status { get; set; }
-
-		/**
-		 * Property for the Content-Type header.
-		 */
-		public abstract string mime { get; set; }
-
-		/**
-		 * Property for the Set-Cookie header.
-		 * Set cookies for this Response.
-		 */
-		public Gee.List<Soup.Cookie> cookies {
-			owned get {
-				var cookies = new ArrayList<Soup.Cookie> ();
-				foreach (var cookie in this.headers["Set-Cookie"]) {
-					cookies.add(Soup.Cookie.parse (cookie, null));
-				}
-				return cookies;
-			}
-			set {
-				foreach (var cookie in value) {
-					this.headers["Set-Cookie"] = cookie.to_set_cookie_header ();
-				}
-			}
-		}
-
-		/**
-		 * Response headers.
-		 */
-		public abstract MultiMap<string, string> headers { get; }
 	}
 }
