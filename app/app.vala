@@ -45,6 +45,24 @@ app.get("users/<int:id>/<action>", (req, res) => {
 	res.append(@"action\t=> $test");
 });
 
+// serve static resource using a path route parameter
+app.get("static/<path:resource>.min.<type>", (req, res) => {
+	var resource = req.params["resource"];
+	var type     = req.params["type"];
+	uint8[] contents;
+	bool uncertain;
+
+	// TODO: serve resource asynchronously
+	try {
+		FileUtils.get_data("app/static/%s.min.%s".printf(resource, type), out contents);
+		res.mime = ContentType.guess("%s.%s".printf(resource, type), contents, out uncertain);
+		res.body.append_take(contents);
+	} catch (FileError fe) {
+		res.status = 404;
+		res.append(fe.message);
+	}
+});
+
 // lua scripting
 app.get("lua", (req, res) => {
 	res.append(lua.eval("""
