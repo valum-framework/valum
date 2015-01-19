@@ -37,9 +37,10 @@ def build(bld):
 
     # build the sample application
     bld.program(
-       packages  = ['libsoup-2.4', 'gee-0.8', 'ctpl', 'lua', 'libmemcached'],
-       target    = 'valum',
-       source    = glob.glob('app/*.vala') + glob.glob('app/**/*.vala') + glob.glob('src/*.vala') + glob.glob('src/view/*.vala'),
-       uselib    = ['CTPL', 'GEE', 'SOUP', 'LUA', 'MEMCACHED'],
-       vapi_dirs   = ['build', 'vapi'],
-       experimental=True)
+       packages     = ['libsoup-2.4', 'gee-0.8', 'ctpl', 'lua', 'libmemcached'],
+       target       = 'valum',
+       source       = glob.glob('app/*.vala') + glob.glob('app/**/*.vala') + glob.glob('src/*.vala') + glob.glob('src/view/*.vala'),
+       uselib       = ['CTPL', 'GEE', 'SOUP', 'LUA', 'MEMCACHED'],
+       vapi_dirs    = ['build', 'vapi'],
+       thread       = True,
+       experimental = True)
