@@ -5,7 +5,7 @@ namespace Valum {
 
 	public const string APP_NAME = "Valum/0.1";
 
-	public class Router {
+	public class Router : GLib.Object, VSGI.Application {
 
 		// list of routes associated to each HTTP method
 		private HashMap<string, ArrayList<Route>> routes = new HashMap<string, ArrayList> ();
@@ -15,6 +15,10 @@ namespace Valum {
 		public delegate void NestedRouter(Valum.Router app);
 
 		public Router() {
+
+			this.handler.connect((req, res) => {
+
+			});
 
 			this.handler.connect((req, res) => {
 				res.status = 200;
@@ -72,7 +76,7 @@ namespace Valum {
 			this.route("TRACE", rule, cb);
 		}
 
-		public void connect(string rule, Route.RouteCallback cb) {
+		public new void connect(string rule, Route.RouteCallback cb) {
 			this.route("CONNECT", rule, cb);
 		}
 
@@ -118,7 +122,7 @@ namespace Valum {
 		 * this signal so that you can have setup and teardown operations (ex.
 		 * closing the database connection, sending mails).
 		 */
-		public virtual signal void handler (Request req, Response res) {
+		public void handler (Request req, Response res) {
 			var routes = this.routes[req.method];
 
 			foreach (var route in routes) {
@@ -131,36 +135,5 @@ namespace Valum {
 				}
 			}
 		}
-
-		// libsoup based handler
-		public void soup_handler (Soup.Server server,
-				Soup.Message msg,
-				string path,
-				GLib.HashTable<string, string>? query,
-				Soup.ClientContext client) {
-
-			var qry = new HashMap<string, string> ();
-
-			if (query != null) {
-				query.foreach((key, value) => {
-					qry[key] = value;
-				});
-			}
-
-			var req = new SoupRequest(msg);
-			var res = new SoupResponse(msg);
-
-			this.handler (req, res);
-		}
-
-		// FastCGI handler
-		//public void fastcgi_request_handler (FastCGI.request request) {
-		// TODO: implementation
-
-		//var req = new FastCGIRequest(request);
-		//var res = new FastCGIResponse ();
-
-		//this.request_handler (req, res);
-		//}
 	}
 }

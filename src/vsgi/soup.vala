@@ -141,4 +141,47 @@ namespace VSGI {
 			return true;
 		}
 	}
+
+	/**
+	 * Soup implementation for VSGI.Server based on Soup.Server.
+	 */
+	public class SoupServer : VSGI.Server {
+
+		public SoupServer (VSGI.Application app) {
+			base (app);
+		}
+
+		public override void listen () {
+
+			var server = new Soup.Server (Soup.SERVER_SERVER_HEADER, VSGI.APP_NAME);
+
+			Soup.ServerCallback soup_handler = (server, msg, path, query, client) => {
+
+				var qry = new HashMap<string, string> ();
+
+				if (query != null) {
+					query.foreach((key, value) => {
+						qry[key] = value;
+					});
+				}
+
+				var req = new SoupRequest(msg);
+				var res = new SoupResponse(msg);
+
+				this.application.handler (req, res);
+			};
+
+			server.add_handler (null, soup_handler);
+
+			server.listen_all(3003, Soup.ServerListenOptions.IPV4_ONLY);
+
+			foreach (var uri in server.get_uris ()) {
+				message("listening on %s", uri.to_string (false));
+			}
+
+			// run the server
+			server.run ();
+		}
+
+	}
 }
