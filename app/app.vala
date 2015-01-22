@@ -187,4 +187,3 @@ new VSGI.FastCGIServer (app).listen ();
 new VSGI.SoupServer (app).listen ();
 
 #endif
-

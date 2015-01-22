@@ -1,9 +1,14 @@
 using Gee;
 using Soup;
 
+/**
+ * Soup implementation of VSGI.
+ */
 namespace VSGI {
 
-	// Adapt Soup.MessageHeaders as a MultiMap
+	/**
+	 * Adapter for Soup.MessageHeaders as a MultiMap.
+	 */
 	class MessageHeadersMultiMap : Object, MultiMap<string, string> {
 		private class MessageHeadersMapIterator : Object, MapIterator <string, string> {
 			private MessageHeadersIter iter;
@@ -75,7 +80,9 @@ namespace VSGI {
 		}
 	}
 
-	// libsoup implementation
+	/**
+	 * Soup Request
+	 */
 	public class SoupRequest : VSGI.Request {
 
 		private Soup.Message message;
@@ -109,6 +116,9 @@ namespace VSGI {
 		}
 	}
 
+	/**
+	 * Soup Response
+	 */
 	public class SoupResponse : VSGI.Response {
 
 		private Soup.Message message;
@@ -143,7 +153,7 @@ namespace VSGI {
 	}
 
 	/**
-	 * Soup implementation for VSGI.Server based on Soup.Server.
+	 * Implementation of VSGI.Server based on Soup.Server.
 	 */
 	public class SoupServer : VSGI.Server {
 
@@ -151,6 +161,10 @@ namespace VSGI {
 			base (app);
 		}
 
+		/**
+		 * Creates a Soup.Server, bind the application to it using a closure and
+		 * start the server.
+		 */
 		public override void listen () {
 
 			var server = new Soup.Server (Soup.SERVER_SERVER_HEADER, VSGI.APP_NAME);
