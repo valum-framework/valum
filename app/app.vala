@@ -178,4 +178,13 @@ app.get("<any:path>", (req, res) => {
 	template.stream (res);
 });
 
+#if (FCGI)
+
+new VSGI.FastCGIServer (app).listen ();
+
+#else
+
 new VSGI.SoupServer (app).listen ();
+
+#endif
+
