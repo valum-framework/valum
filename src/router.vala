@@ -7,16 +7,30 @@ namespace Valum {
 
 	public class Router : GLib.Object, VSGI.Application {
 
-		// list of routes associated to each HTTP method
-		private HashMap<string, ArrayList<Route>> routes = new HashMap<string, ArrayList> ();
+		/**
+		 * Registered types.
+		 */
+		public Map<string, string> types = new HashMap<string, string> ();
 
-		private string[] scopes;
+		/**
+		 * Registered routes by HTTP method.
+		 */
+		private Map<string, Gee.List<Route>> routes = new HashMap<string, Gee.List> ();
 
-		public delegate void NestedRouter(Valum.Router app);
+		/**
+		 * Stack of scope.
+		 */
+		private Gee.List<string> scopes = new ArrayList<string> ();
 
-		public Router() {
+		public delegate void NestedRouter (Valum.Router app);
 
-			this.handler.connect((req, res) => {
+		public Router () {
+
+			// initialize default types
+			this.types["int"]    = "\\d+";
+			this.types["string"] = "\\w+";
+
+			this.handler.connect ((req, res) => {
 				res.status = 200;
 				res.mime   = "text/html";
 			});
@@ -28,15 +42,15 @@ namespace Valum {
 #if (BENCHMARK)
 			var timer  = new Timer();
 
-			this.handler.connect((req, res) => {
+			this.handler.connect ((req, res) => {
 				timer.start();
 			});
 
-			this.handler.connect_after((req, res) => {
+			this.handler.connect_after ((req, res) => {
 				timer.stop();
 				var elapsed = timer.elapsed();
 				res.headers.append("X-Runtime", "%8.3fms".printf(elapsed * 1000));
-				message("%s computed in %8.3fms", req.uri.get_path (), elapsed * 1000);
+				message ("%s computed in %8.3fms", req.path, elapsed * 1000);
 			});
 #endif
 		}
@@ -85,30 +99,32 @@ namespace Valum {
 		//
 		// Routing helpers
 		//
-		public void scope(string fragment, NestedRouter router) {
-			this.scopes += fragment;
-			router(this);
-			this.scopes = this.scopes[0:-1];
+		public void scope (string fragment, NestedRouter router) {
+			this.scopes.add (fragment);
+			router (this);
+			this.scopes.remove_at (this.scopes.size - 1);
 		}
 
 		//
 		// Routing and request handling machinery
 		//
 		private void route(string method, string rule, Route.RouteCallback cb) {
-			string full_rule = "";
+			var full_rule = new StringBuilder();
 
-			foreach (var scope in this.scopes) {
-				full_rule += "/%s".printf(scope);
+			// scope the route
+			foreach (var scope in this.scopes)
+			{
+				full_rule.append ("/%s".printf (scope));
 			}
 
-			full_rule += "/%s".printf(rule);
+			full_rule.append ("/%s".printf(rule));
 
 			// initialize the method if no route were registered
 			if (!this.routes.has_key(method)){
 				this.routes[method] = new ArrayList<Route> ();
 			}
 
-			this.routes[method].add(new Route(full_rule, cb));
+			this.routes[method].add (new Route.from_rule (this, full_rule.str, cb));
 		}
 
 		/**

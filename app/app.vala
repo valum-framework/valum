@@ -7,6 +7,9 @@ var mcd = new Valum.NoSQL.Mcached();
 
 mcd.add_server("127.0.0.1", 11211);
 
+// extra route types
+app.types["permutations"] = "abc|acb|bac|bca|cab|cba";
+
 // default route
 app.get("", (req, res) => {
 	var template =  new Valum.View.Tpl.from_path("app/templates/home.html");
@@ -46,6 +49,11 @@ app.get("cookies", (req, res) => {
 	}
 });
 
+app.get("custom-route-type/<permutations:p>", (req, res) => {
+	var writer = new DataOutputStream(res);
+	writer.put_string(req.params["p"]);
+});
+
 // hello world! (compare with Node.js!)
 app.get("hello", (req, res) => {
 	var writer = new DataOutputStream(res);
@@ -65,6 +73,36 @@ app.get("hello/<id>", (req, res) => {
 	var writer = new DataOutputStream(res);
 	res.mime = "text/plain";
 	writer.put_string("hello %s!".printf(req.params["id"]));
+});
+
+app.scope("urlencoded-data", (inner) => {
+	inner.get("", (req, res) => {
+		var writer = new DataOutputStream(res);
+		writer.put_string(
+		"""
+	<!DOCTYPE html>
+	<html>
+	  <body>
+	    <form method="post">
+          <textarea name="data"></textarea>
+		  <button type="submit">submit</button>
+		</form>
+	  </body>
+	</html>
+	"""
+	);
+	});
+
+	inner.post("", (req, res) => {
+
+		/*
+		var data = Soup.Form.decode ((string) req.body.data);
+
+		data.foreach((key, value) => {
+			res.append ("%s: %s".printf(key, value));
+		});
+		*/
+	});
 });
 
 // example using a typed route parameter
