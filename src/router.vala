@@ -6,34 +6,50 @@ namespace Valum {
 
 	public class Router {
 
-		private HashMap<string, ArrayList<Route>> routes = new HashMap<string, ArrayList> ();
-		private string[] _scope;
+		/**
+		 * Registered types.
+		 */
+		public Map<string, string> types = new HashMap<string, string> ();
 
-		public delegate void NestedRouter(Valum.Router app);
+		/**
+		 * Registered routes by HTTP method.
+		 */
+		private Map<string, Gee.List<Route>> routes = new HashMap<string, Gee.List> ();
 
-		public Router() {
+		/**
+		 * Stack of scope.
+		 */
+		private Gee.List<string> scopes = new ArrayList<string> ();
 
-			this.handler.connect((req, res) => {
+		public delegate void NestedRouter (Valum.Router app);
+
+		public Router () {
+
+			// initialize default types
+			this.types["int"]    = "\\d+";
+			this.types["string"] = "\\w+";
+
+			this.handler.connect ((req, res) => {
 				res.status = 200;
 				res.mime   = "text/html";
 			});
 
-			this.handler.connect_after((req, res) => {
+			this.handler.connect_after ((req, res) => {
 				res.message.response_body.complete ();
 			});
 
 #if (BENCHMARK)
 			var timer  = new Timer();
 
-			this.handler.connect((req, res) => {
+			this.handler.connect ((req, res) => {
 				timer.start();
 			});
 
-			this.handler.connect_after((req, res) => {
+			this.handler.connect_after ((req, res) => {
 				timer.stop();
 				var elapsed = timer.elapsed();
 				res.headers.append("X-Runtime", "%8.3fms".printf(elapsed * 1000));
-				info("%s computed in %8.3fms", req.path, elapsed * 1000);
+				message ("%s computed in %8.3fms", req.path, elapsed * 1000);
 			});
 #endif
 		}
@@ -41,67 +57,72 @@ namespace Valum {
 		//
 		// HTTP Verbs
 		//
-		public new void get(string rule, Route.RequestCallback cb) {
-			this.route("GET", rule, cb);
+		public new void get (string rule, Route.RequestCallback cb) {
+			this.route ("GET", rule, cb);
 		}
 
-		public void post(string rule, Route.RequestCallback cb) {
-			this.route("POST", rule, cb);
+		public void post (string rule, Route.RequestCallback cb) {
+			this.route ("POST", rule, cb);
 		}
 
-		public void put(string rule, Route.RequestCallback cb) {
-			this.route("PUT", rule, cb);
+		public void put (string rule, Route.RequestCallback cb) {
+			this.route ("PUT", rule, cb);
 		}
 
-		public void delete(string rule, Route.RequestCallback cb) {
-			this.route("DELETE", rule, cb);
+		public void delete (string rule, Route.RequestCallback cb) {
+			this.route ("DELETE", rule, cb);
 		}
 
-		public void head(string rule, Route.RequestCallback cb) {
-			this.route("HEAD", rule, cb);
+		public void head (string rule, Route.RequestCallback cb) {
+			this.route ("HEAD", rule, cb);
 		}
 
 		public void options(string rule, Route.RequestCallback cb) {
-			this.route("OPTIONS", rule, cb);
+			this.route ("OPTIONS", rule, cb);
 		}
 
-		public void trace(string rule, Route.RequestCallback cb) {
-			this.route("TRACE", rule, cb);
+		public void trace (string rule, Route.RequestCallback cb) {
+			this.route ("TRACE", rule, cb);
 		}
 
-		public void connect(string rule, Route.RequestCallback cb) {
-			this.route("CONNECT", rule, cb);
+		public void connect (string rule, Route.RequestCallback cb) {
+			this.route ("CONNECT", rule, cb);
 		}
 
 		// http://tools.ietf.org/html/rfc5789
-		public void patch(string rule, Route.RequestCallback cb) {
-			this.route("PATCH", rule, cb);
+		public void patch (string rule, Route.RequestCallback cb) {
+			this.route ("PATCH", rule, cb);
 		}
 
 
 		//
 		// Routing helpers
 		//
-		public void scope(string fragment, NestedRouter router) {
-			this._scope += fragment;
-			router(this);
-			this._scope = this._scope[0:-1];
+		public void scope (string fragment, NestedRouter router) {
+			this.scopes.add (fragment);
+			router (this);
+			this.scopes.remove_at (this.scopes.size - 1);
 		}
 
 		//
 		// Routing and request handling machinery
 		//
-		private void route(string method, string rule, Route.RequestCallback cb) {
-			string full_rule = "";
-			for (var seg = 0; seg < this._scope.length; seg++) {
-				full_rule += "/";
-				full_rule += this._scope[seg];
+		private void route (string method, string rule, Route.RequestCallback cb) {
+			var full_rule = new StringBuilder ();
+
+			// scope the route
+			foreach (var scope in this.scopes)
+			{
+				full_rule.append ("/%s".printf (scope));
 			}
-			full_rule += "/%s".printf(rule);
+
+			full_rule.append ("/%s".printf(rule));
+
 			if (!this.routes.has_key(method)){
 				this.routes[method] = new ArrayList<Route> ();
 			}
-			this.routes[method].add(new Route(full_rule, cb));
+
+			this.routes[method].add (new Route.from_rule (this, full_rule.str, cb));
 		}
 
 		// handler code
@@ -109,10 +130,10 @@ namespace Valum {
 			var routes = this.routes[req.message.method];
 
 			foreach (var route in routes) {
-				if (route.matches(req.path)) {
+				if (route.matches (req.path)) {
 
 					// fire the route!
-					route.fire(req, res);
+					route.fire (req, res);
 
 					return;
 				}
@@ -126,13 +147,12 @@ namespace Valum {
 				GLib.HashTable? query,
 				Soup.ClientContext client) {
 
-			var req = new Request(msg);
-			var res = new Response(msg);
+			var req = new Request (msg);
+			var res = new Response (msg);
 
 			this.handler (req, res);
 		}
 	}
-
 }
 
 
