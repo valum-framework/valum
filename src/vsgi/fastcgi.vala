@@ -13,9 +13,9 @@ namespace VSGI {
 
 		private weak FastCGI.request request;
 
-		private Soup.URI _uri;
+		private Soup.URI _uri = new Soup.URI (null);
 		private HashMap<string, string> _environment = new HashMap<string, string> ();
-		private HashMultiMap<string, string> _headers = new HashMultiMap<string, string> ();
+		private Soup.MessageHeaders _headers = new Soup.MessageHeaders(Soup.MessageHeadersType.REQUEST);
 
 		public override Map<string, string> environment { get { return this._environment; } }
 
@@ -27,26 +27,30 @@ namespace VSGI {
 			}
 		}
 
-		public override MultiMap<string, string> headers { get { return this._headers; } }
+		public override Soup.MessageHeaders headers {
+			get {
+				return this._headers;
+			}
+		}
 
 		public FastCGIRequest(FastCGI.request request) {
 			this.request = request;
 
-			// extract environment variables
+			var headers = new StringBuilder();
+
 			message ("extracting environment variables...");
-			foreach (var variable in this.request.environment.get_all ())
-			{
+			foreach (var variable in this.request.environment.get_all ()) {
 				message (variable);
 				var parts = variable.split("=", 2);
 				this._environment[parts[0]] = parts[1];
 
 				if (parts[0].has_prefix("HTTP_")) {
 					// this is a header
-					this.headers[parts[0][5:-1].replace("_", "-")] = parts[1];
+					headers.append("%s: %s\r\n".printf(parts[0].substring(5).replace("_", "-"), parts[1]));
 				}
 			}
 
-			this._uri = new Soup.URI(null);
+			Soup.headers_parse (headers.str, (int) headers.len, this._headers);
 
 			this._uri.set_path (this.environment["PATH_INFO"]);
 			this._uri.set_query (this.environment["QUERY_STRING"]);
@@ -76,7 +80,7 @@ namespace VSGI {
 
 		private uint _status;
 
-		private HashMultiMap _headers = new HashMultiMap<string, string> ();
+		private Soup.MessageHeaders _headers = new Soup.MessageHeaders (Soup.MessageHeadersType.RESPONSE);
 
 		public override uint status {
 			get { return this._status; }
@@ -84,14 +88,14 @@ namespace VSGI {
 
 		public override string mime {
 			get {
-				return this.headers["Content-Type"].to_array()[0];
+				return this.headers.get_content_type (null);
 			}
 			set {
-				this.headers["Content-Type"] = value;
+				this.headers.set_content_type (value, null);
 			}
 		}
 
-		public override MultiMap<string, string> headers { get { return this._headers; } }
+		public override Soup.MessageHeaders headers { get { return this._headers; } }
 
 		public FastCGIResponse(FastCGI.request request) {
 			this.request = request;
@@ -108,9 +112,8 @@ namespace VSGI {
 			written += this.request.out.printf("Status: %u %s\r\n", this.status, Soup.Status.get_phrase (this.status));
 
 			// write headers...
-			this.headers.map_iterator().foreach((k, v) => {
+			this.headers.foreach((k, v) => {
 				written += this.request.out.printf("%s: %s\r\n", k, v);
-				return true;
 			});
 
 			written += this.request.out.puts("\r\n");

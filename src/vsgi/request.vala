@@ -48,7 +48,7 @@ namespace VSGI {
 		/**
 		 * Request headers.
 		 */
-		public abstract MultiMap<string, string> headers { get; }
+		public abstract Soup.MessageHeaders headers { get; }
 
 		/**
 		 * Request cookies.
@@ -60,9 +60,11 @@ namespace VSGI {
 		public Gee.List<Soup.Cookie> cookies {
 			owned get {
 				var cookies = new ArrayList<Soup.Cookie> ();
-				foreach (var cookie in this.headers["Cookie"]) {
-					cookies.add(Soup.Cookie.parse (cookie, this.uri));
+
+				foreach (var cookie in this.headers.get_list("Set-Cookie").split(",")) {
+					cookies.add(Soup.Cookie.parse (cookie, null));
 				}
+
 				return cookies;
 			}
 		}

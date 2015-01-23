@@ -24,14 +24,16 @@ namespace VSGI {
 		public Gee.List<Soup.Cookie> cookies {
 			owned get {
 				var cookies = new ArrayList<Soup.Cookie> ();
-				foreach (var cookie in this.headers["Set-Cookie"]) {
+
+				foreach (var cookie in this.headers.get_list("Set-Cookie").split(",")) {
 					cookies.add(Soup.Cookie.parse (cookie, null));
 				}
+
 				return cookies;
 			}
 			set {
 				foreach (var cookie in value) {
-					this.headers["Set-Cookie"] = cookie.to_set_cookie_header ();
+					this.headers.replace("Set-Cookie", cookie.to_set_cookie_header ());
 				}
 			}
 		}
@@ -39,6 +41,6 @@ namespace VSGI {
 		/**
 		 * Response headers.
 		 */
-		public abstract MultiMap<string, string> headers { get; }
+		public abstract Soup.MessageHeaders headers { get; }
 	}
 }

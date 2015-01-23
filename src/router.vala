@@ -35,7 +35,7 @@ namespace Valum {
 			this.handler.connect_after((req, res) => {
 				timer.stop();
 				var elapsed = timer.elapsed();
-				res.headers["X-Runtime"] = "%8.3fms".printf(elapsed * 1000);
+				res.headers.append("X-Runtime", "%8.3fms".printf(elapsed * 1000));
 				message("%s computed in %8.3fms", req.uri.get_path (), elapsed * 1000);
 			});
 #endif

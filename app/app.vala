@@ -22,9 +22,8 @@ app.get("headers", (req, res) => {
 	var writer = new DataOutputStream(res);
 
 	res.mime = "text/plain";
-	req.headers.map_iterator().foreach((name, header) => {
+	req.headers.foreach((name, header) => {
 		writer.put_string ("%s: %s\n".printf(name, header));
-		return true;
 	});
 });
 
@@ -37,7 +36,7 @@ app.get("cookies", (req, res) => {
 	writer.put_string ("Cookie\n");
 	foreach (var cookie in req.cookies) {
 		// write-back the cookies
-		res.headers["Set-Cookie"] = cookie.to_set_cookie_header ();
+		res.headers.replace("Set-Cookie", cookie.to_set_cookie_header ());
 		writer.put_string ("%s: %s\n".printf(cookie.name, cookie.value));
 	}
 
@@ -170,7 +169,10 @@ app.scope("admin", (adm) => {
 });
 
 app.get("<any:path>", (req, res) => {
-	var template =  new Valum.View.Tpl.from_path("app/templates/404.html");
+
+	res.status = 404;
+
+	var template = new Valum.View.Tpl.from_path("app/templates/404.html");
 
 	template.vars["path"] = req.uri.get_path ();
 
