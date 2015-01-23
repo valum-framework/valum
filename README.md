@@ -6,38 +6,55 @@ Valum is a web micro-framework based on libsoup and entirely written in the
 Valum ships with a [Ctpl](http://ctpl.tuxfamily.org/), a lightweight and simple
 temlating engine.
 
+Features
+--------
+
+ - router with scoping and typed parameters
+ - simple Request-Response based on Soup Message
+ - basic templating engine [Ctpl](http://ctpl.tuxfamily.org/)
+
 Quickstart
 ----------
 
 Debian/Ubuntu
 ```bash
 apt-get install -y git-core build-essential valac libgee-0.8-dev \
-    libsoup2.4-dev libjson-glib-dev memcached libmemcached-dev \
-    libluajit-5.1-dev libctpl-dev
+                   libsoup2.4-dev libjson-glib-dev memcached libmemcached-dev \
+                   libluajit-5.1-dev libctpl-dev
 ```
 
 Fedora
-```
-sudo yum install vala git libgee-devel libsoup-devel libgson-glib-devel
+```bash
+sudo yum install git python vala libgee-devel libsoup-devel libjson-glib-devel \
                  libctpl-devel libmemcached-devel luajit-devel
 ```
 
-Clone and start the application!
+You may either clone or download one of our
+[releases](https://github.com/antono/valum/releases) from GitHub
+```bash
+git clone git://github.com/antono/valum.git && cd valum
 ```
-git clone git://github.com/antono/valum.git
-cd valum
-make run
+
+We use the waf build system, so all you need is Python installed
+```bash
+./waf configure
+./waf build
 ```
 
-Visit [http://localhost:3003/](http://localhost:3003/) and take a look at other
-routes definition in `app/app.vala`.
+Valum can be installed system-wide and used as a shared library, the sample
+application should be in your `$PATH`
+```bash
+./waf install
+valum
+```
 
-Features
---------
+Or you can run the sample application from the `build` folder
+```bash
+./build/valum
+```
 
-  - router with scoping and typed parameters
-  - simple Request-Response based on Soup Message
-  - basic templating engine [Ctpl](http://ctpl.tuxfamily.org/)
+Visit [http://localhost:3003/](http://localhost:3003/) on your favourite web
+browser.
 
 Examples
 --------
