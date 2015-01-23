@@ -2,6 +2,7 @@ VER   := 0.1
 CC    := gcc
 VALAC := valac
 
+FEXE := build/valum.fcg
 EXE  := build/valum
 LIB  := build/libvalum-$(VER).so
 GIR  := build/Valum-$(VER).gir
@@ -13,29 +14,39 @@ USER := $(shell echo $(USER))
 FLAGS := --enable-experimental --thread --vapidir=vapi \
          --cc=$(CC) -D BENCHMARK
 
-LFLAGS := -X -fPIC -X -shared --gir=$(GIR) --library=$(VAPI) \
-          --header=$(HDR) --output=$(LIB)
+FLAGS  := --enable-experimental --thread --vapidir=./vapi/ \
+	  --cc=$(CC) -D BENCHMARK
+
+LFLAGS := -X -fPIC -X -shared -X -lfcgi --gir=$(GIR) --library=$(VAPI) \
+	  --header=$(HDR) --output=$(LIB)
 
 AFLAGS := -X $(LIB) -X -Ibuild --output=$(EXE)
 
 PKGS := --pkg gio-2.0 --pkg json-glib-1.0 --pkg gee-0.8 \
         --pkg libsoup-2.4 --pkg libmemcached --pkg luajit \
-        --pkg ctpl
+        --pkg ctpl --pkg fcgi
 
 LSRC := $(shell find 'src/' -type f -name "*.vala")
 CSRC := $(shell find 'src/' -type f -name "*.c")
 ASRC := $(shell find 'app/' -type f -name "*.vala")
 
+$(FEXE): $(LIB) $(ASRC)
+	$(VALAC) $(FLAGS) $(AFLAGS) -X -lfcgi -D FCGI $(VAPI).vapi $(ASRC) $(PKGS) --output=$@
+
 $(EXE): $(LIB) $(ASRC)
-	$(VALAC) $(FLAGS) $(AFLAGS) $(VAPI).vapi $(ASRC) $(PKGS)
+	$(VALAC) $(FLAGS) $(AFLAGS) $(VAPI).vapi $(ASRC) $(PKGS) --output=$@
 
 $(LIB): $(LSRC)
-	$(VALAC) $(FLAGS) $(LFLAGS) $(PKGS) $(LSRC)
+	$(VALAC) $(FLAGS) $(LFLAGS) $(PKGS) $(LSRC) --output=$@
 
-all: $(LIB) $(EXE)
+all: $(LIB) $(EXE) $(FEXE)
 
-run: all
+run: $(EXE)
 	$(EXE)
+
+run-fcgi: $(FEXE)
+	spawn-fcgi -n -s valum.socket -- $(FEXE) &
+	fastcgi --socket valum.socket --port 3003
 
 drun: debug
 	gdb $(EXE)

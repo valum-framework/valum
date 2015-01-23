@@ -1,4 +1,5 @@
 using Gee;
+using VSGI;
 
 namespace Valum {
 
@@ -6,11 +7,17 @@ namespace Valum {
 		public  string rule { construct; get; }
 		private Regex regex;
 		private ArrayList<string> captures = new ArrayList<string> ();
-		private unowned RequestCallback callback;
+		private unowned RouteCallback callback;
 
-		public delegate void RequestCallback(Request req, Response res);
+		/**
+		 * Route callback.
 
-		public Route(string rule, RequestCallback callback) {
+		 * IOError are thrown as the Request and Response objects are based on
+		 * GIO stream api.
+		 */
+		public delegate void RouteCallback (Request req, Response res) throws IOError;
+
+		public Route(string rule, RouteCallback callback) {
 			Object(rule: rule);
 			this.callback = callback;
 
@@ -58,7 +65,7 @@ namespace Valum {
 
 		public void fire(Request req, Response res) {
 			MatchInfo matchinfo;
-			if(this.regex.match(req.path, 0, out matchinfo)) {
+			if(this.regex.match(req.uri.get_path (), 0, out matchinfo)) {
 				foreach(var cap in captures) {
 					req.params[cap] = matchinfo.fetch_named(cap);
 				}

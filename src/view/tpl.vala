@@ -1,4 +1,5 @@
 using Gee;
+using Soup;
 
 namespace Valum {
 	namespace View {
@@ -41,6 +42,15 @@ namespace Valum {
 				}
 			}
 
+			// stream the template in the given OutputStream
+			public void stream (OutputStream stream) {
+				var output = new Ctpl.OutputStream (stream);
+
+				var env = prepare_environment(this.vars);
+
+				Ctpl.parser_parse(this.tree, env, output);
+			}
+
 			private Ctpl.Environ prepare_environment(HashMap<string, Value?>? vars) {
 				var env = new Ctpl.Environ();
 
@@ -56,7 +66,7 @@ namespace Valum {
 							env.push((string) e.key, val);
 							break;
 						default:
-							// message("Cannot create env var of type %s", e.value.type_name());
+							warning("Cannot create env var of type %s", e.value.type_name());
 							break;
 					}
 				}
@@ -77,7 +87,6 @@ namespace Valum {
 				}
 				return val;
 			}
-
 		}
 	}
 }

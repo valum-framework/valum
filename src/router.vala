@@ -1,13 +1,16 @@
 using Gee;
+using VSGI;
 
 namespace Valum {
 
 	public const string APP_NAME = "Valum/0.1";
 
-	public class Router {
+	public class Router : GLib.Object, VSGI.Application {
 
+		// list of routes associated to each HTTP method
 		private HashMap<string, ArrayList<Route>> routes = new HashMap<string, ArrayList> ();
-		private string[] _scope;
+
+		private string[] scopes;
 
 		public delegate void NestedRouter(Valum.Router app);
 
@@ -19,7 +22,7 @@ namespace Valum {
 			});
 
 			this.handler.connect_after((req, res) => {
-				res.message.response_body.complete ();
+				res.close ();
 			});
 
 #if (BENCHMARK)
@@ -33,7 +36,7 @@ namespace Valum {
 				timer.stop();
 				var elapsed = timer.elapsed();
 				res.headers.append("X-Runtime", "%8.3fms".printf(elapsed * 1000));
-				info("%s computed in %8.3fms", req.path, elapsed * 1000);
+				message("%s computed in %8.3fms", req.uri.get_path (), elapsed * 1000);
 			});
 #endif
 		}
@@ -41,40 +44,40 @@ namespace Valum {
 		//
 		// HTTP Verbs
 		//
-		public new void get(string rule, Route.RequestCallback cb) {
+		public new void get(string rule, Route.RouteCallback cb) {
 			this.route("GET", rule, cb);
 		}
 
-		public void post(string rule, Route.RequestCallback cb) {
+		public void post(string rule, Route.RouteCallback cb) {
 			this.route("POST", rule, cb);
 		}
 
-		public void put(string rule, Route.RequestCallback cb) {
+		public void put(string rule, Route.RouteCallback cb) {
 			this.route("PUT", rule, cb);
 		}
 
-		public void delete(string rule, Route.RequestCallback cb) {
+		public void delete(string rule, Route.RouteCallback cb) {
 			this.route("DELETE", rule, cb);
 		}
 
-		public void head(string rule, Route.RequestCallback cb) {
+		public void head(string rule, Route.RouteCallback cb) {
 			this.route("HEAD", rule, cb);
 		}
 
-		public void options(string rule, Route.RequestCallback cb) {
+		public void options(string rule, Route.RouteCallback cb) {
 			this.route("OPTIONS", rule, cb);
 		}
 
-		public void trace(string rule, Route.RequestCallback cb) {
+		public void trace(string rule, Route.RouteCallback cb) {
 			this.route("TRACE", rule, cb);
 		}
 
-		public void connect(string rule, Route.RequestCallback cb) {
+		public new void connect(string rule, Route.RouteCallback cb) {
 			this.route("CONNECT", rule, cb);
 		}
 
 		// http://tools.ietf.org/html/rfc5789
-		public void patch(string rule, Route.RequestCallback cb) {
+		public void patch(string rule, Route.RouteCallback cb) {
 			this.route("PATCH", rule, cb);
 		}
 
@@ -83,56 +86,50 @@ namespace Valum {
 		// Routing helpers
 		//
 		public void scope(string fragment, NestedRouter router) {
-			this._scope += fragment;
+			this.scopes += fragment;
 			router(this);
-			this._scope = this._scope[0:-1];
+			this.scopes = this.scopes[0:-1];
 		}
 
 		//
 		// Routing and request handling machinery
 		//
-		private void route(string method, string rule, Route.RequestCallback cb) {
+		private void route(string method, string rule, Route.RouteCallback cb) {
 			string full_rule = "";
-			for (var seg = 0; seg < this._scope.length; seg++) {
-				full_rule += "/";
-				full_rule += this._scope[seg];
+
+			foreach (var scope in this.scopes) {
+				full_rule += "/%s".printf(scope);
 			}
+
 			full_rule += "/%s".printf(rule);
+
+			// initialize the method if no route were registered
 			if (!this.routes.has_key(method)){
 				this.routes[method] = new ArrayList<Route> ();
 			}
+
 			this.routes[method].add(new Route(full_rule, cb));
 		}
 
-		// handler code
-		public virtual signal void handler (Request req, Response res) {
-			var routes = this.routes[req.message.method];
+		/**
+		 * Signal handling the request.
+         *
+		 * It is possible to bind a callback to be executed before and after
+		 * this signal so that you can have setup and teardown operations (ex.
+		 * closing the database connection, sending mails).
+		 */
+		public void handler (Request req, Response res) {
+			var routes = this.routes[req.method];
 
 			foreach (var route in routes) {
-				if (route.matches(req.path)) {
+				if (route.matches(req.uri.get_path ())) {
 
 					// fire the route!
-					route.fire(req, res);
+					route.fire (req, res);
 
 					return;
 				}
 			}
 		}
-
-		// libsoup-based handler
-		public void soup_handler (Soup.Server server,
-				Soup.Message msg,
-				string path,
-				GLib.HashTable? query,
-				Soup.ClientContext client) {
-
-			var req = new Request(msg);
-			var res = new Response(msg);
-
-			this.handler (req, res);
-		}
 	}
-
 }
-
-

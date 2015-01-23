@@ -38,6 +38,9 @@ Features
   - router with scoping and typed parameters
   - simple Request-Response based on Soup Message
   - basic templating engine [Ctpl](http://ctpl.tuxfamily.org/)
+  - simple VSGI using Gee and GIO Stream
+  - libsoup to run your application locally
+  - FastCGI for real-world deployment
 
 Examples
 --------
