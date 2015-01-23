@@ -179,11 +179,7 @@ app.get("<any:path>", (req, res) => {
 });
 
 #if (FCGI)
-
-new VSGI.FastCGIServer (app).listen ();
-
+new VSGI.FastCGIServer.from_socket (app, "valum.socket", 0).listen ();
 #else
-
 new VSGI.SoupServer (app).listen ();
-
 #endif

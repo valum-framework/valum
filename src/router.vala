@@ -17,10 +17,6 @@ namespace Valum {
 		public Router() {
 
 			this.handler.connect((req, res) => {
-
-			});
-
-			this.handler.connect((req, res) => {
 				res.status = 200;
 				res.mime   = "text/html";
 			});

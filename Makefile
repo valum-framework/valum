@@ -44,6 +44,10 @@ all: $(LIB) $(EXE) $(FEXE)
 run: $(EXE)
 	$(EXE)
 
+run-fcgi: $(FEXE)
+	spawn-fcgi -n -s valum.socket -- $(FEXE) &
+	fastcgi --socket valum.socket --port 3003
+
 drun: debug
 	gdb $(EXE)
 

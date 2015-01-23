@@ -26,7 +26,7 @@ namespace VSGI {
 		/**
 		 * Request method
 		 */
-		public abstract string method { get; }
+		public abstract string method { owned get; }
 
 		/**
 		 * Parameters for the request.

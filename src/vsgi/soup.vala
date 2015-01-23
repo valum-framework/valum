@@ -89,11 +89,10 @@ namespace VSGI {
 		private HashMap<string, string> _environment = new HashMap<string, string> ();
 		private MessageHeadersMultiMap _headers;
 		private HashMap<string, string> _query;
-		private string _method;
 
 		public override Map<string, string> environment { get { return this._environment; } }
 
-		public override string method { get { return this._method; } }
+		public override string method { owned get { return this.message.method ; } }
 
 		public override URI uri { get { return this.message.uri; } }
 
@@ -101,7 +100,6 @@ namespace VSGI {
 
 		public SoupRequest(Soup.Message msg) {
 			this.message = msg;
-			this._method = msg.method;
 			this._headers = new MessageHeadersMultiMap(msg.request_headers);
 		}
 
