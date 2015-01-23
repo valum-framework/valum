@@ -15,22 +15,18 @@ namespace VSGI {
 
 		private Soup.URI _uri = new Soup.URI (null);
 		private HashMap<string, string> _environment = new HashMap<string, string> ();
-		private Soup.MessageHeaders _headers = new Soup.MessageHeaders(Soup.MessageHeadersType.REQUEST);
+		private Soup.MessageHeaders _headers = new Soup.MessageHeaders (Soup.MessageHeadersType.REQUEST);
 
 		public override Map<string, string> environment { get { return this._environment; } }
 
 		public override Soup.URI uri { get { return this._uri; } }
 
 		public override string method {
-			owned get {
-				return this._environment["REQUEST_METHOD"];
-			}
+			owned get { return this._environment["REQUEST_METHOD"]; }
 		}
 
 		public override Soup.MessageHeaders headers {
-			get {
-				return this._headers;
-			}
+			get { return this._headers; }
 		}
 
 		public FastCGIRequest(FastCGI.request request) {
@@ -40,13 +36,15 @@ namespace VSGI {
 
 			message ("extracting environment variables...");
 			foreach (var variable in this.request.environment.get_all ()) {
-				message (variable);
 				var parts = variable.split("=", 2);
-				this._environment[parts[0]] = parts[1];
 
+				// register an environment variable
+				this._environment[parts[0]] = parts[1];
+				info ("registered environment variable %s with value %s".printf (parts[0], parts[1]));
+
+				// headers are prefixed with HTTP_
 				if (parts[0].has_prefix("HTTP_")) {
-					// this is a header
-					headers.append("%s: %s\r\n".printf(parts[0].substring(5).replace("_", "-"), parts[1]));
+					headers.append ("%s: %s\r\n".printf(parts[0].substring(5).replace("_", "-").casefold(), parts[1]));
 				}
 			}
 
@@ -73,10 +71,10 @@ namespace VSGI {
 		private weak FastCGI.request request;
 
 		/**
-		 * Tells if the HEAD part of the HTTP message has been written to the
+		 * Tells if the headers part of the HTTP message has been written to the
 		 * output stream.
 		 */
-		private bool head_written = false;
+		private bool headers_written = false;
 
 		private uint _status;
 
@@ -84,15 +82,12 @@ namespace VSGI {
 
 		public override uint status {
 			get { return this._status; }
-			set { this._status = value; } }
+			set { this._status = value; }
+		}
 
 		public override string mime {
-			get {
-				return this.headers.get_content_type (null);
-			}
-			set {
-				this.headers.set_content_type (value, null);
-			}
+			get { return this.headers.get_content_type (null); }
+			set { this.headers.set_content_type (value, null); }
 		}
 
 		public override Soup.MessageHeaders headers { get { return this._headers; } }
@@ -102,21 +97,21 @@ namespace VSGI {
 		}
 
 		private int write_headers () {
-			if (this.head_written) {
+			if (this.headers_written) {
 				message ("headers has already been written");
 				return 0;
 			}
 
 			var written = 0;
 
-			written += this.request.out.printf("Status: %u %s\r\n", this.status, Soup.Status.get_phrase (this.status));
+			written += this.request.out.printf ("Status: %u %s\r\n", this.status, Soup.Status.get_phrase (this.status));
 
 			// write headers...
-			this.headers.foreach((k, v) => {
-				written += this.request.out.printf("%s: %s\r\n", k, v);
+			this.headers.foreach ((k, v) => {
+				written += this.request.out.printf ("%s: %s\r\n", k, v);
 			});
 
-			written += this.request.out.puts("\r\n");
+			written += this.request.out.puts ("\r\n");
 
 			return written;
 		}
@@ -125,13 +120,12 @@ namespace VSGI {
 		 * Headers are written on the first call of write.
 		 */
 		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) {
-
 			var written = 0;
 
 			// write headers
-			if (!this.head_written) {
+			if (!this.headers_written) {
 				written += this.write_headers ();
-				this.head_written = true;
+				this.headers_written = true;
 			}
 
 			// write body byte per byte
@@ -143,11 +137,11 @@ namespace VSGI {
 		}
 
 		public override bool close (Cancellable? cancellable = null) {
-
 			// it's kind of too late..
-			if (!this.head_written) {
+			// TODO: check if we can have a simpler way of writting headers
+			if (!this.headers_written) {
 				this.write_headers ();
-				this.head_written = true;
+				this.headers_written = true;
 			}
 
 			this.request.out.set_exit_status (0);
@@ -193,8 +187,7 @@ namespace VSGI {
 			var loop = new MainLoop ();
 			var source = new TimeoutSource (0);
 
-			source.set_callback(() => {
-
+			source.set_callback (() => {
 				// accept a new request
 				var status = this.request.accept ();
 
@@ -207,13 +200,13 @@ namespace VSGI {
 
 				message ("new request with id %d accepted", request.request_id);
 
-				// handle the request using FastCGI handler
 				var req = new VSGI.FastCGIRequest (this.request);
 				var res = new VSGI.FastCGIResponse (this.request);
 
 				this.application.handler (req, res);
 
-				this.request.finish();
+				// free the request
+				this.request.finish ();
 
 				return true;
 			});

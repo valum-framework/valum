@@ -24,16 +24,16 @@ namespace VSGI {
 		public abstract Map<string, string> environment { get; }
 
 		/**
-		 * Request method
-		 */
-		public abstract string method { owned get; }
-
-		/**
 		 * Parameters for the request.
 		 *
 		 * These should be extracted from the URI path.
 		 */
-		public Map<string, string> params { get; set; default = new HashMap<string, string> (); }
+		public Map<string, string> params = new HashMap<string, string> ();
+
+		/**
+		 * Request method
+		 */
+		public abstract string method { owned get; }
 
 		/**
 		 * Request URI
@@ -62,7 +62,7 @@ namespace VSGI {
 				var cookies = new ArrayList<Soup.Cookie> ();
 
 				foreach (var cookie in this.headers.get_list("Set-Cookie").split(",")) {
-					cookies.add(Soup.Cookie.parse (cookie, null));
+					cookies.add (Soup.Cookie.parse (cookie, null));
 				}
 
 				return cookies;

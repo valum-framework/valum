@@ -35,8 +35,11 @@ namespace VSGI {
 			return this.message.request_body.data.length;
 		}
 
-		public override bool close(Cancellable? cancellable = null) {
-			this.message.request_body.complete();
+		/**
+		 * This will complete the request MessageBody.
+		 */
+		public override bool close (Cancellable? cancellable = null) {
+			this.message.request_body.complete ();
 			return true;
 		}
 	}
@@ -49,32 +52,35 @@ namespace VSGI {
 		private Soup.Message message;
 
 		public override string mime {
-			get { return this.message.response_headers.get_content_type(null); }
-			set { this.message.response_headers.set_content_type(value, null); }
+			get { return this.message.response_headers.get_content_type (null); }
+			set { this.message.response_headers.set_content_type (value, null); }
 		}
 
 		public override uint status {
 			get { return this.message.status_code; }
-			set { this.message.set_status(value); }
+			set { this.message.set_status (value); }
 		}
 
 		public override MessageHeaders headers {
-			get {
-				return this.message.response_headers;
-			}
+			get { return this.message.response_headers; }
 		}
 
-		public SoupResponse(Soup.Message msg) {
+		public SoupResponse (Soup.Message msg) {
 			this.message = msg;
 		}
 
-		public override ssize_t write(uint8[] buffer, Cancellable? cancellable = null) {
-			this.message.response_body.append_take(buffer);
+		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) {
+			this.message.response_body.append_take (buffer);
 			return buffer.length;
 		}
 
-		public override bool close(Cancellable? cancellable = null) {
-			this.message.response_body.complete();
+		/**
+		 * This will complete the response MessageBody.
+         *
+		 * Once called, you will not be able to alter the stream.
+		 */
+		public override bool close (Cancellable? cancellable = null) {
+			this.message.response_body.complete ();
 			return true;
 		}
 	}
@@ -84,8 +90,12 @@ namespace VSGI {
 	 */
 	public class SoupServer : VSGI.Server {
 
-		public SoupServer (VSGI.Application app) {
+		private Soup.Server server = new Soup.Server (Soup.SERVER_SERVER_HEADER, VSGI.APP_NAME);
+
+		public SoupServer (VSGI.Application app, uint port) {
 			base (app);
+
+			this.server.listen_all (port, Soup.ServerListenOptions.IPV4_ONLY);
 		}
 
 		/**
@@ -94,35 +104,22 @@ namespace VSGI {
 		 */
 		public override void listen () {
 
-			var server = new Soup.Server (Soup.SERVER_SERVER_HEADER, VSGI.APP_NAME);
-
 			Soup.ServerCallback soup_handler = (server, msg, path, query, client) => {
 
-				var qry = new HashMap<string, string> ();
-
-				if (query != null) {
-					query.foreach((key, value) => {
-						qry[key] = value;
-					});
-				}
-
-				var req = new SoupRequest(msg);
-				var res = new SoupResponse(msg);
+				var req = new SoupRequest (msg);
+				var res = new SoupResponse (msg);
 
 				this.application.handler (req, res);
 			};
 
-			server.add_handler (null, soup_handler);
-
-			server.listen_all(3003, Soup.ServerListenOptions.IPV4_ONLY);
+			this.server.add_handler (null, soup_handler);
 
 			foreach (var uri in server.get_uris ()) {
-				message("listening on %s", uri.to_string (false));
+				message ("listening on %s", uri.to_string (false));
 			}
 
 			// run the server
-			server.run ();
+			this.server.run ();
 		}
-
 	}
 }
