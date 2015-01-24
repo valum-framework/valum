@@ -22,13 +22,12 @@ def configure(conf):
     conf.check_cfg(package='luajit', uselib_store='LUA', args='--cflags --libs')
 
 def build(bld):
-    bld.shlib(
+    # build a static library
+    bld.stlib(
         packages    = ['glib-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl'],
-        features    = 'c shlib',
         target      = 'valum-{}.{}'.format(*VERSION),
-        source      = bld.path.ant_glob('src/**/*.vala'),
         gir         = 'Valum-{}.{}'.format(*VERSION),
-        pkg_name    = 'valum',
+        source      = bld.path.ant_glob('src/**/*.vala'),
         uselib      = ['CTPL', 'GEE', 'SOUP'],
         vapi_dirs   = ['vapi'],
         vala_define = ['BENCHMARK'])
@@ -37,8 +36,9 @@ def build(bld):
     bld.program(
        packages     = ['libsoup-2.4', 'gee-0.8', 'ctpl', 'lua', 'libmemcached'],
        target       = 'valum',
-       source       = bld.path.ant_glob('**/*.vala'),
+       use          = 'valum-{}.{}'.format(*VERSION),
+       source       = bld.path.ant_glob('app/**/*.vala'),
        uselib       = ['CTPL', 'GEE', 'SOUP', 'LUA', 'MEMCACHED'],
-       vapi_dirs    = ['build', 'vapi'],
+       vapi_dirs    = ['vapi'],
        thread       = True,
        experimental = True)
