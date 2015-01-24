@@ -21,7 +21,7 @@ namespace Valum {
 		 * Remembers what names have been defined in the regular expression to
 		 * build the Request params Map.
 		 */
-		private Gee.List<string> captures;
+		private Gee.List<string> captures = new ArrayList<string> ();
 
 		private unowned RequestCallback callback;
 
@@ -30,11 +30,12 @@ namespace Valum {
 		/**
 		 * Create a Route for a given callback using a Regex.
 		 */
-		public Route (Router router, Regex regex, Gee.List<string> captures, RequestCallback callback) {
+		public Route (Router router, Regex regex, RequestCallback callback) {
 			this.router   = router;
 			this.regex    = regex;
-			this.captures = captures;
 			this.callback = callback;
+
+			// TODO: extract the capture from the Regex
 		}
 
 		/**
@@ -44,8 +45,8 @@ namespace Valum {
 		 */
 		public Route.from_rule (Router router, string rule, RequestCallback callback) {
 			this.router   = router;
-			this.captures = new ArrayList<string> ();
 			this.callback = callback;
+
 			try {
 				Regex param_regex = new Regex ("(<(?:\\w+:)?\\w+>)");
 				var params = param_regex.split_full (rule);
@@ -82,12 +83,14 @@ namespace Valum {
 		private MatchInfo last_matchinfo;
 
 		public bool matches (string path) {
-			return this.regex.match (path, 0, out last_matchinfo);
+			return this.regex.match (path, 0, out this.last_matchinfo);
 		}
 
 		/**
-		 * Extract the Request parameters from URI and execute the route
-		 * callback.
+		 * Extract the Request parameters from URI and execute the route callack.
+		 *
+		 * Calling fire asssumes you have already called matches as it will reuse the
+		 * MatchInfo object.
 		 */
 		public void fire (Request req, Response res) {
 			foreach (var cap in captures) {

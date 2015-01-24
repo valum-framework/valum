@@ -156,6 +156,14 @@ app.scope("admin", (adm) => {
 	});
 });
 
+app.method ("GET", "custom-method", (req, res) => {
+	res.append (req.message.method);
+});
+
+app.regex ("GET", /\/custom-regular-expression$/, (req, res) => {
+	res.append ("This route was matched using a custom regular expression.");
+});
+
 app.get("<any:path>", (req, res) => {
 	var template =  new Valum.View.Tpl.from_path("app/templates/404.html");
 
