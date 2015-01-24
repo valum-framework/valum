@@ -37,21 +37,6 @@ namespace Valum {
 			this.handler.connect_after ((req, res) => {
 				res.message.response_body.complete ();
 			});
-
-#if (BENCHMARK)
-			var timer  = new Timer();
-
-			this.handler.connect ((req, res) => {
-				timer.start();
-			});
-
-			this.handler.connect_after ((req, res) => {
-				timer.stop();
-				var elapsed = timer.elapsed();
-				res.headers.append("X-Runtime", "%8.3fms".printf(elapsed * 1000));
-				message ("%s computed in %8.3fms", req.path, elapsed * 1000);
-			});
-#endif
 		}
 
 		//

@@ -10,6 +10,19 @@ mcd.add_server("127.0.0.1", 11211);
 // extra route types
 app.types["permutations"] = "abc|acb|bac|bca|cab|cba";
 
+var timer  = new Timer();
+
+app.handler.connect ((req, res) => {
+	timer.start();
+});
+
+app.handler.connect_after ((req, res) => {
+	timer.stop ();
+	var elapsed = timer.elapsed ();
+	res.headers.append ("X-Runtime", "%8.3fms".printf(elapsed * 1000));
+	message ("%s computed in %8.3fms", req.path, elapsed * 1000);
+});
+
 // default route
 app.get("", (req, res) => {
 	var template =  new Valum.View.Tpl.from_path("app/templates/home.html");

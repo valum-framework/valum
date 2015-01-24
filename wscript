@@ -29,8 +29,7 @@ def build(bld):
         gir         = 'Valum-{}.{}'.format(*VERSION),
         source      = bld.path.ant_glob('src/**/*.vala'),
         uselib      = ['CTPL', 'GEE', 'SOUP'],
-        vapi_dirs   = ['vapi'],
-        vala_define = ['BENCHMARK'])
+        vapi_dirs   = ['vapi'])
 
     # build the sample application
     bld.program(
@@ -39,6 +38,4 @@ def build(bld):
        use          = 'valum-{}.{}'.format(*VERSION),
        source       = bld.path.ant_glob('app/**/*.vala'),
        uselib       = ['CTPL', 'GEE', 'SOUP', 'LUA', 'MEMCACHED'],
-       vapi_dirs    = ['vapi'],
-       thread       = True,
-       experimental = True)
+       vapi_dirs    = ['vapi'])
