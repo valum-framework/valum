@@ -38,3 +38,6 @@ def build(bld):
 
     # build examples recursively
     bld.recurse(glob.glob('examples/*'))
+
+    # build tests
+    bld.recurse('tests')

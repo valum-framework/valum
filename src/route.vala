@@ -10,13 +10,15 @@ namespace Valum {
 
 		/**
 		 * Router that declared this route.
+         *
+		 * This is used to hold parameters types.
 		 */
 		private weak Router router;
 
 		/**
 		 * Regular expression matching the Request path.
 		 */
-		private Regex regex;
+		public Regex regex;
 
 		/**
 		 * Remembers what names have been defined in the regular expression to
