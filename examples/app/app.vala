@@ -24,7 +24,7 @@ app.handler.connect_after ((req, res) => {
 
 // default route
 app.get("", (req, res) => {
-	var template =  new View.Tpl.from_path("templates/home.html");
+	var template =  new View.Tpl.from_path("examples/app/templates/home.html");
 
 	template.vars["path"] = req.uri.get_path ();
 	template.vars["headers"] = req.headers;
@@ -135,12 +135,12 @@ app.get("lua", (req, res) => {
 		return markdown('## Hello from lua.eval!')
 	"""));
 
-	writer.put_string(lua.run("app/hello.lua"));
+	writer.put_string(lua.run("examples/app/hello.lua"));
 });
 
 app.get("lua.haml", (req, res) => {
 	var writer = new DataOutputStream(res);
-	writer.put_string(lua.run("app/haml.lua"));
+	writer.put_string(lua.run("examples/app/haml.lua"));
 });
 
 
@@ -172,7 +172,7 @@ app.get("ctpl/<foo>/<bar>", (req, res) => {
 // streamed Ctpl template
 app.get("ctpl/streamed", (req, res) => {
 
-	var tpl = new View.Tpl.from_path("app/templates/home.html");
+	var tpl = new View.Tpl.from_path("examples/app/templates/home.html");
 
 	tpl.stream(res);
 });
@@ -232,7 +232,7 @@ app.get("<any:path>", (req, res) => {
 
 	res.status = 404;
 
-	var template = new View.Tpl.from_path("templates/404.html");
+	var template = new View.Tpl.from_path("examples/app/templates/404.html");
 
 	template.vars["path"] = req.uri.get_path ();
 
