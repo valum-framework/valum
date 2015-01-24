@@ -29,6 +29,7 @@ namespace Valum {
 			// initialize default types
 			this.types["int"]    = "\\d+";
 			this.types["string"] = "\\w+";
+			this.types["any"]    = ".+";
 
 			this.handler.connect ((req, res) => {
 				res.status = 200;
