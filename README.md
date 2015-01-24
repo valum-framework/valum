@@ -50,7 +50,7 @@ valum
 
 Or you can run the sample application from the `build` folder
 ```bash
-./build/valum
+./build/example/app/app
 ```
 
 Visit [http://localhost:3003/](http://localhost:3003/) on your favourite web

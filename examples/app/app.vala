@@ -1,18 +1,30 @@
-using Soup;
 using Valum;
 
-var app = new Valum.Router();
-var lua = new Valum.Script.Lua();
-var mcd = new Valum.NoSQL.Mcached();
+var app = new Router();
+var lua = new Script.Lua();
+var mcd = new NoSQL.Mcached();
 
 mcd.add_server("127.0.0.1", 11211);
 
 // extra route types
 app.types["permutations"] = "abc|acb|bac|bca|cab|cba";
 
+var timer  = new Timer ();
+
+app.handler.connect ((req, res) => {
+	timer.start();
+});
+
+app.handler.connect_after ((req, res) => {
+	timer.stop ();
+	var elapsed = timer.elapsed ();
+	res.headers.append ("X-Runtime", "%8.3fms".printf(elapsed * 1000));
+	message ("%s computed in %8.3fms", req.uri.get_path (), elapsed * 1000);
+});
+
 // default route
 app.get("", (req, res) => {
-	var template =  new Valum.View.Tpl.from_path("app/templates/home.html");
+	var template =  new View.Tpl.from_path("templates/home.html");
 
 	template.vars["path"] = req.uri.get_path ();
 	template.vars["headers"] = req.headers;
@@ -135,7 +147,7 @@ app.get("lua.haml", (req, res) => {
 // Ctpl template rendering
 app.get("ctpl/<foo>/<bar>", (req, res) => {
 
-	var tpl = new Valum.View.Tpl.from_string("""
+	var tpl = new View.Tpl.from_string("""
 	   <p> hello {foo} </p>
 	   <p> hello {bar} </p>
 	   <ul>
@@ -160,7 +172,7 @@ app.get("ctpl/<foo>/<bar>", (req, res) => {
 // streamed Ctpl template
 app.get("ctpl/streamed", (req, res) => {
 
-	var tpl = new Valum.View.Tpl.from_path("app/templates/home.html");
+	var tpl = new View.Tpl.from_path("app/templates/home.html");
 
 	tpl.stream(res);
 });
@@ -206,11 +218,21 @@ app.scope("admin", (adm) => {
 	});
 });
 
+app.method ("GET", "custom-method", (req, res) => {
+	var writer = new DataOutputStream(res);
+	writer.put_string (req.method);
+});
+
+app.regex ("GET", /\/custom-regular-expression$/, (req, res) => {
+	var writer = new DataOutputStream(res);
+	writer.put_string ("This route was matched using a custom regular expression.");
+});
+
 app.get("<any:path>", (req, res) => {
 
 	res.status = 404;
 
-	var template = new Valum.View.Tpl.from_path("app/templates/404.html");
+	var template = new View.Tpl.from_path("templates/404.html");
 
 	template.vars["path"] = req.uri.get_path ();
 
@@ -218,8 +240,6 @@ app.get("<any:path>", (req, res) => {
 	template.stream (res);
 });
 
-#if (FCGI)
-new VSGI.FastCGIServer.from_socket (app, "valum.socket", 0).listen ();
-#else
-new VSGI.SoupServer (app, 3003).listen ();
-#endif
+var server = new VSGI.SoupServer (app, 3003);
+
+server.listen ();

@@ -1,0 +1,8 @@
+#!/usr/bin/env python
+
+bld.program(
+   target       = 'fastcgi',
+   use          = 'valum',
+   source       = ['app.vala'],
+   uselib       = ['GEE', 'SOUP', 'FCGI'],
+   vapi_dirs    = ['../../vapi'])
