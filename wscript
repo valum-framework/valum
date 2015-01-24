@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import glob
-
 VERSION=(0,1,0)
 APPNAME='valum'
 
@@ -28,7 +26,7 @@ def build(bld):
         packages    = ['glib-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl'],
         features    = 'c shlib',
         target      = 'valum-{}.{}'.format(*VERSION),
-        source      = glob.glob('src/*.vala') + glob.glob('src/view/*.vala'),
+        source      = bld.path.ant_glob('src/**/*.vala'),
         gir         = 'Valum-{}.{}'.format(*VERSION),
         pkg_name    = 'valum',
         uselib      = ['CTPL', 'GEE', 'SOUP'],
@@ -39,7 +37,7 @@ def build(bld):
     bld.program(
        packages     = ['libsoup-2.4', 'gee-0.8', 'ctpl', 'lua', 'libmemcached'],
        target       = 'valum',
-       source       = glob.glob('app/*.vala') + glob.glob('app/**/*.vala') + glob.glob('src/*.vala') + glob.glob('src/view/*.vala'),
+       source       = bld.path.ant_glob('**/*.vala'),
        uselib       = ['CTPL', 'GEE', 'SOUP', 'LUA', 'MEMCACHED'],
        vapi_dirs    = ['build', 'vapi'],
        thread       = True,
