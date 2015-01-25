@@ -1,4 +1,5 @@
 using Valum;
+using VSGI;
 
 var app = new Router();
 var lua = new Script.Lua();
@@ -218,12 +219,12 @@ app.scope("admin", (adm) => {
 	});
 });
 
-app.method ("GET", "custom-method", (req, res) => {
+app.method (Request.GET, "custom-method", (req, res) => {
 	var writer = new DataOutputStream(res);
 	writer.put_string (req.method);
 });
 
-app.regex ("GET", /\/custom-regular-expression$/, (req, res) => {
+app.regex (Request.GET, /\/custom-regular-expression$/, (req, res) => {
 	var writer = new DataOutputStream(res);
 	writer.put_string ("This route was matched using a custom regular expression.");
 });

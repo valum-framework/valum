@@ -16,6 +16,18 @@ namespace VSGI {
 	 */
 	public abstract class Request : InputStream {
 
+		// HTTP/1.1 http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
+		public const string OPTIONS = "OPTIONS";
+		public const string GET     = "GET";
+		public const string HEAD    = "HEAD";
+		public const string POST    = "POST";
+		public const string PUT     = "PUT";
+		public const string DELETE  = "DELETE";
+		public const string TRACE   = "TRACE";
+		public const string CONNECT = "CONNECT";
+
+		public const string PATCH   = "PATCH";
+
 		/**
 		 * Request environment.
          *

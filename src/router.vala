@@ -45,40 +45,40 @@ namespace Valum {
 		// HTTP Verbs
 		//
 		public new void get (string rule, Route.RouteCallback cb) {
-			this.method ("GET", rule, cb);
+			this.method (Request.GET, rule, cb);
 		}
 
 		public void post (string rule, Route.RouteCallback cb) {
-			this.method ("POST", rule, cb);
+			this.method (Request.POST, rule, cb);
 		}
 
 		public void put (string rule, Route.RouteCallback cb) {
-			this.method ("PUT", rule, cb);
+			this.method (Request.PUT, rule, cb);
 		}
 
 		public void delete (string rule, Route.RouteCallback cb) {
-			this.method ("DELETE", rule, cb);
+			this.method (Request.DELETE, rule, cb);
 		}
 
 		public void head (string rule, Route.RouteCallback cb) {
-			this.method ("HEAD", rule, cb);
+			this.method (Request.HEAD, rule, cb);
 		}
 
 		public void options(string rule, Route.RouteCallback cb) {
-			this.method ("OPTIONS", rule, cb);
+			this.method (Request.OPTIONS, rule, cb);
 		}
 
 		public void trace (string rule, Route.RouteCallback cb) {
-			this.method ("TRACE", rule, cb);
+			this.method (Request.TRACE, rule, cb);
 		}
 
 		public new void connect (string rule, Route.RouteCallback cb) {
-			this.method ("CONNECT", rule, cb);
+			this.method (Request.CONNECT, rule, cb);
 		}
 
 		// http://tools.ietf.org/html/rfc5789
 		public void patch (string rule, Route.RouteCallback cb) {
-			this.method ("PATCH", rule, cb);
+			this.method (Request.PATCH, rule, cb);
 		}
 
 		/**
