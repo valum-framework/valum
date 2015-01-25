@@ -118,6 +118,13 @@ namespace Valum {
 		}
 
 		/**
+		 * Bind a callback with a custom method and matcher.
+		 */
+		public void matcher (string method, Route.RequestMatcher matcher, Route.RequestCallback cb) {
+			this.route (method, new Route.from_matcher (this, matcher, cb));
+		}
+
+		/**
 		 * Bind a callback with a custom method and route.
 		 *
 		 * This is a low-level function and should be used with care.
@@ -151,7 +158,7 @@ namespace Valum {
 			var routes = this.routes[req.message.method];
 
 			foreach (var route in routes) {
-				if (route.matches (req)) {
+				if (route.match (req)) {
 
 					// fire the route!
 					route.fire (req, res);

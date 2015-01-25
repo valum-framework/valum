@@ -15,7 +15,7 @@ namespace Valum {
 		/**
 		 * Match a Request and populate its parameters if successful.
 		 */
-		private RouteMatcher matcher;
+		private RequestMatcher matcher;
 
 		/**
 		 * Callback
@@ -25,14 +25,14 @@ namespace Valum {
 		/**
 		 * Match the request and populate the parameters.
 		 */
-		public delegate bool RouteMatcher (Request req);
+		public delegate bool RequestMatcher (Request req);
 
 		public delegate void RequestCallback (Request req, Response res);
 
 		/**
 		 * Create a Route using a custom matcher.
 		 */
-		public Route.from_matcher (Router router, RouteMatcher matcher, RequestCallback callback) {
+		public Route.from_matcher (Router router, RequestMatcher matcher, RequestCallback callback) {
 			this.router   = router;
 			this.matcher  = matcher;
 			this.callback = callback;
@@ -63,7 +63,7 @@ namespace Valum {
 			var route       = new StringBuilder ("^");
 
 			foreach (var p in params) {
-				if(p[0] != '<') {
+				if (p[0] != '<') {
 					// regular piece of route
 					route.append (Regex.escape_string (p));
 				} else {
@@ -78,7 +78,6 @@ namespace Valum {
 			}
 
 			route.append ("$");
-			message ("registered %s", route.str);
 
 			var regex = new Regex (route.str, RegexCompileFlags.OPTIMIZE);
 
@@ -86,6 +85,7 @@ namespace Valum {
 			this.matcher = (req) => {
 				MatchInfo match_info;
 				if (regex.match (req.path, 0, out match_info)) {
+					// populate the request parameters
 					foreach (var capture in captures) {
 						req.params[capture] = match_info.fetch_named (capture);
 					}
@@ -93,12 +93,27 @@ namespace Valum {
 				}
 				return false;
 			};
+
+			message ("registered %s", route.str);
 		}
 
-		public bool matches (Request req) {
+		/**
+		 * Matches the given request and populate its parameters on success.
+         *
+		 * @param req request that is being matched
+		 */
+		public bool match (Request req) {
 			return this.matcher (req);
 		}
 
+		/**
+		 * Fire a request-response couple.
+		 *
+		 * This will apply the callback on the request and response.
+         *
+		 * @param req
+		 * @param res
+		 */
 		public void fire (Request req, Response res) {
 			this.callback (req, res);
 		}

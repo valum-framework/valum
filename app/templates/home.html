@@ -18,33 +18,34 @@
           <div class="row">
             <div class="col-md-4">
               <h3>Documentation</h3>
-              <p>
+              <p class="text-justify">
                 Valum provides <a href="http://valum.readthedocs.org/en/latest/">user documentation</a> to get you
                 started with the framework.
               </p>
-              <p>
+              <p class="text-justify">
                 The framework is built upon <a href="https://developer.gnome.org/libsoup/stable/">libsoup</a> and
                 <a href="https://wiki.gnome.org/action/show/Projects/Libgee">Libgee</a> and automated with the
                 <a href="https://code.google.com/p/waf/">waf build system</a>, so reading about all these is a good
                 start.
               </p>
-              <p>
+              <p class="text-justify">
                 The <a href="http://valadoc.org">valadoc.org</a> website provides api specification of most libraries
                 available in Vala.
               </p>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-8">
               <h3>Examples</h3>
               <p>
                 This is a real Vala web application and we got real examples!
               </p>
-              <ul>
+              <ul class="list-inline">
                 <li><a href="/hello">Hello world!</a></li>
                 <li><a href="/hello/">Hello world! (with a trailing slash)</a></li>
                 <li><a href="/hello/world">route parameter</a></li>
                 <li><a href="/users/4/edit">typed route parameter</a></li>
                 <li><a href="/custom-route-type/abc">custom typed route parameter (permutations of abc)</a></li>
                 <li><a href="/custom-regular-expression">route using a custom regular expression</a></li>
+                <li><a href="/custom-matcher">custom matcher</a></li>
                 <li><a href="/custom-method">route using a custom HTTP method</a></li>
                 <li><a href="/admin/fun/hack">scoped routing</a></li>
                 <li><a href="/urlencoded-data/">parse url-encoded data</a></li>
@@ -53,8 +54,6 @@
                 <li><a href="/memcached/get/bar">memcached (get value)</a></li>
                 <li><a href="/memcached/set/bar">memcached (set value)</a></li>
               </ul>
-            </div>
-            <div class="col-md-4">
               <h3>Contributing</h3>
               <p>
                 Valum is hosted on GitHub and developed under the LGPL license.
