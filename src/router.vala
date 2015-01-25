@@ -14,7 +14,7 @@ namespace Valum {
 		/**
 		 * Registered routes by HTTP method.
 		 */
-		private Map<string, Gee.List<Route>> routes = new HashMap<string, Gee.List> ();
+		private Map<string, Gee.List<Route>> routes = new HashMap<string, Gee.List<Route>> ();
 
 		/**
 		 * Stack of scope.
@@ -141,9 +141,15 @@ namespace Valum {
 			this.routes[method].add (route);
 		}
 
-		//
-		// Routing helpers
-		//
+		/**
+		 * Add a fragment to the scope stack and nest a router in this
+		 * new environment.
+		 *
+		 * Scoping will only work with rules
+		 *
+		 * @param fragment fragment to push on the scopes stack
+		 * @param router   nested router in the new scoped environment
+		 */
 		public void scope (string fragment, NestedRouter router) {
 			this.scopes.add (fragment);
 			router (this);
