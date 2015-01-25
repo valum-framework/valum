@@ -25,10 +25,12 @@ app.handle.connect_after ((req, res) => {
 
 // default route
 app.get("", (req, res) => {
-	var template =  new View.Tpl.from_path("examples/app/templates/home.html");
+	var template =  new View.from_path("examples/app/templates/home.html");
 
-	template.vars["path"] = req.uri.get_path ();
-	template.vars["headers"] = req.headers;
+	template.environment.push_string ("path", req.uri.get_path ());
+	req.headers.foreach ((k, v) => {
+		template.environment.push_string ("headers_%s".printf(k), v);
+	});
 
 	template.stream (res);
 });
@@ -153,7 +155,7 @@ app.get("lua.haml", (req, res) => {
 // Ctpl template rendering
 app.get("ctpl/<foo>/<bar>", (req, res) => {
 
-	var tpl = new View.Tpl.from_string("""
+	var tpl = new View.from_string("""
 	   <p> hello {foo} </p>
 	   <p> hello {bar} </p>
 	   <ul>
@@ -163,14 +165,14 @@ app.get("ctpl/<foo>/<bar>", (req, res) => {
 	   </ul>
 	""");
 
-	var arr = new Gee.ArrayList<Value?>();
+	var arr = new Gee.ArrayList<string> ();
 	arr.add("omg");
 	arr.add("typed hell");
 
-	tpl.vars["foo"] = req.params["foo"];
-	tpl.vars["bar"] = req.params["bar"];
-	tpl.vars["arr"] = arr;
-	tpl.vars["int"] = 1;
+	tpl.environment.push_string ("foo", req.params["foo"]);
+	tpl.environment.push_string ("bar", req.params["bar"]);
+	tpl.push_collection ("arr", arr);
+	tpl.environment.push_int ("int", 1);
 
 	tpl.stream (res);
 });
@@ -178,7 +180,7 @@ app.get("ctpl/<foo>/<bar>", (req, res) => {
 // streamed Ctpl template
 app.get("ctpl/streamed", (req, res) => {
 
-	var tpl = new View.Tpl.from_path("examples/app/templates/home.html");
+	var tpl = new View.from_path("examples/app/templates/home.html");
 
 	tpl.stream(res);
 });
@@ -275,10 +277,8 @@ app.matcher (VSGI.Request.GET, (req) => { return req.uri.get_path () == "/custom
 
 app.handle.connect_after ((req, res) => {
 	if (res.status == 404) {
-		var template = new View.Tpl.from_path("examples/app/templates/404.html");
-
-		template.vars["path"] = req.uri.get_path ();
-
+		var template = new View.from_path("examples/app/templates/404.html");
+		template.environment.push_string ("path", req.uri.get_path ());
 		template.stream (res);
 	}
 });
