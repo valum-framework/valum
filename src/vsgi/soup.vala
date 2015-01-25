@@ -9,7 +9,7 @@ namespace VSGI {
 	/**
 	 * Soup Request
 	 */
-	public class SoupRequest : VSGI.Request {
+	class SoupRequest : VSGI.Request {
 
 		private Soup.Message message;
 
@@ -44,7 +44,7 @@ namespace VSGI {
 	/**
 	 * Soup Response
 	 */
-	public class SoupResponse : VSGI.Response {
+	class SoupResponse : VSGI.Response {
 
 		private Soup.Message message;
 

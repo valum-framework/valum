@@ -9,7 +9,7 @@ namespace VSGI {
 	/**
 	 * FastCGI Request parsed from FastCGI.request struct.
 	 */
-	public class FastCGIRequest : Request {
+	class FastCGIRequest : Request {
 
 		private weak FastCGI.request request;
 
@@ -58,7 +58,7 @@ namespace VSGI {
 	/**
 	 * FastCGI Response
 	 */
-	public class FastCGIResponse : Response {
+	class FastCGIResponse : Response {
 
 		private weak FastCGI.request request;
 
