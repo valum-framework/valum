@@ -14,15 +14,12 @@ namespace VSGI {
 		private weak FastCGI.request request;
 
 		private Soup.URI _uri = new Soup.URI (null);
-		private HashMap<string, string> _environment = new HashMap<string, string> ();
 		private Soup.MessageHeaders _headers = new Soup.MessageHeaders (Soup.MessageHeadersType.REQUEST);
-
-		public override Map<string, string> environment { get { return this._environment; } }
 
 		public override Soup.URI uri { get { return this._uri; } }
 
 		public override string method {
-			owned get { return this._environment["REQUEST_METHOD"]; }
+			owned get { return this.request.environment["REQUEST_METHOD"]; }
 		}
 
 		public override Soup.MessageHeaders headers {
@@ -32,26 +29,21 @@ namespace VSGI {
 		public FastCGIRequest(FastCGI.request request) {
 			this.request = request;
 
+			this._uri.set_path (this.request.environment["PATH_INFO"]);
+			this._uri.set_query (this.request.environment["QUERY_STRING"]);
+
 			var headers = new StringBuilder();
 
-			message ("extracting environment variables...");
+			message ("extracting headers...");
 			foreach (var variable in this.request.environment.get_all ()) {
-				var parts = variable.split("=", 2);
-
-				// register an environment variable
-				this._environment[parts[0]] = parts[1];
-				info ("registered environment variable %s with value %s".printf (parts[0], parts[1]));
-
 				// headers are prefixed with HTTP_
-				if (parts[0].has_prefix("HTTP_")) {
+				if (variable.has_prefix ("HTTP_")) {
+					var parts = variable.split("=", 2);
 					headers.append ("%s: %s\r\n".printf(parts[0].substring(5).replace("_", "-").casefold(), parts[1]));
 				}
 			}
 
 			Soup.headers_parse (headers.str, (int) headers.len, this._headers);
-
-			this._uri.set_path (this.environment["PATH_INFO"]);
-			this._uri.set_query (this.environment["QUERY_STRING"]);
 		}
 
 		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) {

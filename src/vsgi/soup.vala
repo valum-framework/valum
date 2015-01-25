@@ -12,9 +12,6 @@ namespace VSGI {
 	public class SoupRequest : VSGI.Request {
 
 		private Soup.Message message;
-		private HashMap<string, string> _environment = new HashMap<string, string> ();
-
-		public override Map<string, string> environment { get { return this._environment; } }
 
 		public override string method { owned get { return this.message.method ; } }
 

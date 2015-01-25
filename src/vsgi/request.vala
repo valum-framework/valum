@@ -29,13 +29,6 @@ namespace VSGI {
 		public const string PATCH   = "PATCH";
 
 		/**
-		 * Request environment.
-         *
-		 * This is providen by the server implementation.
-		 */
-		public abstract Map<string, string> environment { get; }
-
-		/**
 		 * Parameters for the request.
 		 *
 		 * These should be extracted from the URI path.
