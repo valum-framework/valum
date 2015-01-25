@@ -6,10 +6,9 @@ namespace Valum {
 	 */
 	public class View {
 
-		private static Ctpl.Value ctpl_value_from_value (Value? val) {
-			return new Ctpl.Value ();
-		}
-
+		/**
+		 *
+		 */
 		private unowned Ctpl.Token tree;
 
 		/**
@@ -51,11 +50,25 @@ namespace Valum {
 
 		/**
 		 * Push a Gee.Collection into the environment.
+         *
+		 * The collection type can be string, int, float or collection.
 		 */
 		public void push_collection (string key, Collection collection) {
-			var v = new Ctpl.Value ();
+			var arr = collection.to_array ();
 
-			this.environment.push (key, v);
+			if (collection.element_type.name () == "gint") {
+				this.push_ints (key, (int[]) arr);
+			}
+
+			if (collection.element_type.name () == "gdouble") {
+				this.push_floats (key, (float[]) arr);
+			}
+
+			if (collection.element_type.name () == "gchararray") {
+				this.push_strings (key, (string[]) arr);
+			}
+
+			this.environment.push_string (key, "could not infer type %s of %s".printf (collection.element_type.name (), key));
 		}
 
 		/**
@@ -63,7 +76,7 @@ namespace Valum {
 		 */
 		public void push_map (string key, Map<string, Value?> map) {
 			map.foreach((e) => {
-				this.environment.push ("%s.%s".printf(key, e.key), View.ctpl_value_from_value (e.value));
+				this.push_value ("%s_%s".printf(key, e.key), e.value);
 				return true;
 			});
 		}
@@ -74,19 +87,13 @@ namespace Valum {
 		 */
 		public void push_multimap (string key, MultiMap<string, Value?> multimap) {
 			foreach (var k in multimap.get_keys ()) {
-				this.push_collection ("%s.%s".printf (key, k), multimap[k]);
+				this.push_collection ("%s_%s".printf (key, k), multimap[k]);
 			}
-		}
-
-		public void push_list (string key, GLib.List lst) {
-			var v = new Ctpl.Value ();
-
-			this.environment.push (key, v);
 		}
 
 		public void push_hashtable (string key, GLib.HashTable<string, Value?> ht) {
 			ht.foreach((k, v) => {
-				this.environment.push ("%s.%s".printf(key, k), View.ctpl_value_from_value (v));
+				this.push_value ("%s_%s".printf (key, k), v);
 			});
 		}
 
@@ -95,33 +102,54 @@ namespace Valum {
 		 * This might have an unexpected result.
 		 */
 		public void push_value (string key, Value? val) {
-			this.environment.push (key, View.ctpl_value_from_value (val));
+
+			// coverts all Gee collections
+			if (val.get_object () is Collection) {
+				this.push_collection (key, (Collection) val);
+			}
+
+			// converts all Gee maps
+			else if (val.get_object () is Map) {
+				this.push_map (key, (Map) val);
+			}
+
+			else if (val.get_object () is HashTable) {
+				this.push_hashtable (key, (HashTable) val);
+			}
+
+			else if (val.type_name() == "gchararray") {
+				this.environment.push_string (key, val.get_string ());
+			}
+
+			else if (val.type_name() == "gdouble") {
+				this.environment.push_float (key, val.get_double ());
+			}
+
+			else if (val.type_name() == "gint") {
+				this.environment.push_int (key, val.get_int ());
+			}
+
+			else {
+				this.environment.push_string (key, "unknown type %s for key %s".printf (val.type_name (), key));
+			}
 		}
 
 		/**
 		 * Stream the view in the given output stream.
 		 */
-		public void stream (OutputStream output) {
+		public void stream (OutputStream output) throws Error {
 			Ctpl.parser_parse (this.tree, this.environment, new Ctpl.OutputStream (output));
 		}
 
 		/**
 		 * Renders the view as a string.
 		 */
-		public string render () {
-			try {
-				var mem_stream = new MemoryOutputStream (null, realloc, free);
+		public string render () throws Error {
+			var mem_stream = new MemoryOutputStream (null, realloc, free);
 
-				this.stream (mem_stream);
+			this.stream (mem_stream);
 
-				return (string) mem_stream.get_data();
-
-			} catch (Error e) {
-				warning (e.message);
-				return e.message;
-			}
+			return (string) mem_stream.get_data();
 		}
-
-
 	}
 }
