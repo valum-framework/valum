@@ -13,29 +13,39 @@ namespace Valum {
 		private weak Router router;
 
 		/**
-		 * Regular expression matching the Request path.
+		 * Match a Request and populate its parameters if successful.
 		 */
-		private Regex regex;
+		private RouteMatcher matcher;
 
 		/**
-		 * Remembers what names have been defined in the regular expression to
-		 * build the Request params Map.
+		 * Callback
 		 */
-		private Gee.List<string> captures = new ArrayList<string> ();
-
 		private unowned RequestCallback callback;
+
+		/**
+		 * Match the request and populate the parameters.
+		 */
+		public delegate bool RouteMatcher (Request req);
 
 		public delegate void RequestCallback (Request req, Response res);
 
 		/**
+		 * Create a Route using a custom matcher.
+		 */
+		public Route.from_matcher (Router router, RouteMatcher matcher, RequestCallback callback) {
+			this.router   = router;
+			this.matcher  = matcher;
+			this.callback = callback;
+		}
+
+		/**
 		 * Create a Route for a given callback using a Regex.
 		 */
-		public Route (Router router, Regex regex, RequestCallback callback) {
-			this.router   = router;
-			this.regex    = regex;
-			this.callback = callback;
+		public Route.from_regex (Router router, Regex regex, RequestCallback callback) {
+			this.router = router;
 
 			// TODO: extract the capture from the Regex
+			this.matcher = (req) => { return regex.match (req.path, 0); };
 		}
 
 		/**
@@ -47,56 +57,49 @@ namespace Valum {
 			this.router   = router;
 			this.callback = callback;
 
-			try {
-				Regex param_regex = new Regex ("(<(?:\\w+:)?\\w+>)");
-				var params = param_regex.split_full (rule);
+			var param_regex = new Regex ("(<(?:\\w+:)?\\w+>)");
+			var params      = param_regex.split_full (rule);
+			var captures    = new ArrayList<string> ();
+			var route       = new StringBuilder ("^");
 
-				StringBuilder route = new StringBuilder ("^");
+			foreach (var p in params) {
+				if(p[0] != '<') {
+					// regular piece of route
+					route.append (Regex.escape_string (p));
+				} else {
+					// extract parameter
+					var cap  = p.slice (1, p.length - 1).split (":", 2);
+					var type = cap.length == 1 ? "string" : cap[0];
+					var key  = cap.length == 1 ? cap[0] : cap[1];
 
-				foreach (var p in params) {
-					if(p[0] != '<') {
-						// regular piece of route
-						route.append (Regex.escape_string (p));
-					} else {
-						// extract parameter
-						var cap  = p.slice (1, p.length - 1).split (":", 2);
-						var type = cap.length == 1 ? "string" : cap[0];
-						var key = cap.length == 1 ? cap[0] : cap[1];
-
-						// TODO: support any type with a HashMap<string, string>
-						var types = new HashMap<string, string> ();
-
-						captures.add (key);
-						route.append ("(?<%s>%s)".printf (key, this.router.types[type]));
-					}
+					captures.add (key);
+					route.append ("(?<%s>%s)".printf (key, this.router.types[type]));
 				}
-
-				route.append ("$");
-				message ("registered %s", route.str);
-
-				this.regex = new Regex (route.str, RegexCompileFlags.OPTIMIZE);
-			} catch(RegexError e) {
-				error (e.message);
 			}
+
+			route.append ("$");
+			message ("registered %s", route.str);
+
+			var regex = new Regex (route.str, RegexCompileFlags.OPTIMIZE);
+
+			// register a matcher based on the generated regular expression
+			this.matcher = (req) => {
+				MatchInfo match_info;
+				if (regex.match (req.path, 0, out match_info)) {
+					foreach (var capture in captures) {
+						req.params[capture] = match_info.fetch_named (capture);
+					}
+					return true;
+				}
+				return false;
+			};
 		}
 
-		private MatchInfo last_matchinfo;
-
-		public bool matches (string path) {
-			return this.regex.match (path, 0, out this.last_matchinfo);
+		public bool matches (Request req) {
+			return this.matcher (req);
 		}
 
-		/**
-		 * Extract the Request parameters from URI and execute the route callack.
-		 *
-		 * Calling fire asssumes you have already called matches as it will reuse the
-		 * MatchInfo object.
-		 */
 		public void fire (Request req, Response res) {
-			foreach (var cap in captures) {
-				req.params[cap] = this.last_matchinfo.fetch_named (cap);
-			}
-
 			this.callback (req, res);
 		}
 	}

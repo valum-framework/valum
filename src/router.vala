@@ -114,17 +114,19 @@ namespace Valum {
 		 * @param regex  regular expression matching the request path.
 		 */
 		public void regex (string method, Regex regex, Route.RequestCallback cb) {
-			this.route (method, new Route (this, regex, cb));
+			this.route (method, new Route.from_regex (this, regex, cb));
 		}
 
 		/**
 		 * Bind a callback with a custom method and route.
 		 *
+		 * This is a low-level function and should be used with care.
+		 *
 		 * @param method HTTP method
 		 * @param route  an instance of Route defining the matching process and the
 		 *               callback.
 		 */
-		private void route (string method, Route route) {
+		public void route (string method, Route route) {
 			if (!this.routes.has_key(method)){
 				this.routes[method] = new ArrayList<Route> ();
 			}
@@ -149,7 +151,7 @@ namespace Valum {
 			var routes = this.routes[req.message.method];
 
 			foreach (var route in routes) {
-				if (route.matches (req.path)) {
+				if (route.matches (req)) {
 
 					// fire the route!
 					route.fire (req, res);
@@ -173,5 +175,3 @@ namespace Valum {
 		}
 	}
 }
-
-
