@@ -15,7 +15,7 @@ namespace Valum {
 		/**
 		 * Registered routes by HTTP method.
 		 */
-		private Map<string, Gee.List<Route>> routes = new HashMap<string, Gee.List> ();
+		private Map<string, Gee.List<Route>> routes = new HashMap<string, Gee.List<Route>> ();
 
 		/**
 		 * Stack of scope.
@@ -115,11 +115,20 @@ namespace Valum {
 		 * @param regex  regular expression matching the request path.
 		 */
 		public void regex (string method, Regex regex, Route.RouteCallback cb) {
-			this.route (method, new Route (this, regex, cb));
+			this.route (method, new Route.from_regex (this, regex, cb));
+		}
+
+		/**
+		 * Bind a callback with a custom method and matcher.
+		 */
+		public void matcher (string method, Route.RequestMatcher matcher, Route.RouteCallback cb) {
+			this.route (method, new Route.from_matcher (this, matcher, cb));
 		}
 
 		/**
 		 * Bind a callback with a custom method and route.
+		 *
+		 * This is a low-level function and should be used with care.
 		 *
 		 * @param method HTTP method
 		 * @param route  an instance of Route defining the matching process and the
@@ -133,9 +142,15 @@ namespace Valum {
 			this.routes[method].add (route);
 		}
 
-		//
-		// Routing helpers
-		//
+		/**
+		 * Add a fragment to the scope stack and nest a router in this
+		 * new environment.
+		 *
+		 * Scoping will only work with rules
+		 *
+		 * @param fragment fragment to push on the scopes stack
+		 * @param router   nested router in the new scoped environment
+		 */
 		public void scope (string fragment, NestedRouter router) {
 			this.scopes.add (fragment);
 			router (this);
@@ -159,7 +174,7 @@ namespace Valum {
 			var routes = this.routes[req.method];
 
 			foreach (var route in routes) {
-				if (route.matches(req.uri.get_path ())) {
+				if (route.match (req)) {
 
 					// fire the route!
 					route.fire (req, res);

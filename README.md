@@ -70,7 +70,7 @@ Examples
 --------
 
 Setup application
-```vala
+```java
 using Soup;
 using Valum;
 
@@ -93,7 +93,7 @@ try {
 ```
 
 GET request
-```vala
+```java
 app.get("hello", (req, res) => {
   res.status = 200;
   res.mime = "text/plain";
@@ -103,7 +103,7 @@ app.get("hello", (req, res) => {
 ```
 
 POST request (not implemented)
-```vala
+```java
 app.post("hello", (req, res) => {
     var username = req.post["username"];
     var password = req.post["password"];
@@ -112,7 +112,7 @@ app.post("hello", (req, res) => {
 ```
 
 Route scoping
-```vala
+```java
 // GET /admin/user/11
 // GET /admin/user/antono
 app.scope("admin", (admin) => {
@@ -127,7 +127,7 @@ Scripting languages!
 --------------------
 
 Embedded Lua
-```vala
+```java
 var app = new Valum.Router();
 var lua = new Valum.Script.Lua();
 
@@ -149,7 +149,7 @@ details.
 We are going to implement simplier syntax for lua scripts:
 
 Vala code:
-```vala
+```java
 app.get("lua.html", app.lua("hello"));
 ```
 
@@ -167,7 +167,7 @@ Resulted html:
 ```
 
 Embedded scheme! (TODO)
-```vala
+```java
 app.get("hello.scm", app.scm("hello"));
 ```
 
@@ -184,7 +184,7 @@ Persistance
 -----------
 
 Memcached
-```vala
+```java
 var mc = new Valum.NoSQL.Memcached();
 
 // GET /hello
@@ -199,7 +199,7 @@ Redis (TODO)
 
 We need vapi for hiredis: https://github.com/antirez/hiredis
 
-```vala
+```java
 var redis = new Valum.NoSQL.Redis();
 
 app.get("hello", (req, res) => {
@@ -214,7 +214,7 @@ MongoDB (TODO)
 This is not yet implemented. But mongo client for
 vala is on the way: https://github.com/chergert/mongo-glib
 
-```vala
+```java
 var mongo = new Valum.NoSQL.Mongo();
 
 // GET /hello.json
