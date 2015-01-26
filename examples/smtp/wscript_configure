@@ -1,0 +1,3 @@
+#!/usr/bin/env python
+
+conf.check(lib='libesmtp', uselib_store='SMTP')

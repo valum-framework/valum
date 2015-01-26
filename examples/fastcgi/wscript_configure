@@ -1,0 +1,4 @@
+#!/usr/bin/env python
+
+# libfcgi does not provide a .pc file...
+conf.check(lib='fcgi', mandatory=True, uselib_store='FCGI')
