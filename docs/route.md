@@ -1,6 +1,3 @@
-Route
-=====
-
 Route associate regular expression that matches request path with a callback
 that is executed on user request.
 
