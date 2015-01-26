@@ -11,9 +11,9 @@ This class implements the rule system designed to simplify regular expression.
 
 The following are rules examples:
 
- - /user
- - /user/<id>
- - /user/<int:id>
+ - `/user`
+ - `/user/<id>`
+ - `/user/<int:id>`
 
 These will respectively compile down to the following regular expressions
 
@@ -41,7 +41,7 @@ primary key.
 The `any` type is useful to create catch-all route. The sample application shows
 an example for creating a 404 error page.
 
-```vala
+```java
 app.get('<any:path>', (req, res) => {
     res.status = 404;
 });
@@ -50,7 +50,7 @@ app.get('<any:path>', (req, res) => {
 It is possible to specify new types using the `types` map in `Router`. This
 example will define the `path` type matching words and slashes.
 
-```vala
+```java
 app.types["path"] = "[\\w/]+";
 ```
 
@@ -58,7 +58,8 @@ Types are defined at construct time of the `Router` class. It is possible to
 overwrite the built-in type.
 
 If you would like `ìnt` to match negatives integer, you may just do:
-```
+
+```java
 app = new Router ();
 
 app.types["int"] = "-?\d+";
@@ -70,7 +71,7 @@ Plumbering with regular expression
 If the rule system does not suit your needs, it is always possible to use
 regular expression.
 
-```vala
+```java
 app.regex ("GET", /^/home/?$/, (req, res) => {
 
 });
@@ -85,7 +86,7 @@ to define them yourself.
 
 A matcher consist of a callback matching a given `Request` object.
 
-```vala
+```java
 Route.RequestMatcher matcher = (req) => { req.path == "/custom-matcher"; };
 
 app.matcher ("GET", matcher, (req, res) => {
@@ -96,7 +97,7 @@ app.matcher ("GET", matcher, (req, res) => {
 You could, for instance, match the request if the user is an administrator and
 fallback to a default route otherwise.
 
-```
+```java
 app.matcher ("GET", (req) => {
     var user = new User (req.query["id"]);
     return "admin" in user.roles;

@@ -3,4 +3,5 @@ repo_url: https://github.com/antono/valum
 theme: readthedocs
 pages:
     - [index.md, Valum]
+    - [route.md, Route]
     - [about/gnu-lgpl-v3.0.md, About, License]
