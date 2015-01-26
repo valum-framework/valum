@@ -42,10 +42,32 @@ namespace Valum {
 		 * Create a Route for a given callback using a Regex.
 		 */
 		public Route.from_regex (Router router, Regex regex, RequestCallback callback) {
-			this.router = router;
+			this.router   = router;
+			this.callback = callback;
 
-			// TODO: extract the capture from the Regex
-			this.matcher = (req) => { return regex.match (req.path, 0); };
+			var captures      = new ArrayList<string> ();
+			var capture_regex = new Regex ("\\(\\?<(\\w+)>.+\\)");
+			MatchInfo capture_match_info;
+
+			// extract the captures from the regular expression
+			if (capture_regex.match (regex.get_pattern (), 0, out capture_match_info)) {
+				foreach (var capture in capture_match_info.fetch_all ()) {
+					message ("found capture %s in regex %s".printf (capture, regex.get_pattern ()));
+					captures.add (capture);
+				}
+			}
+
+			this.matcher = (req) => {
+				MatchInfo match_info;
+				if (regex.match (req.path, 0, out match_info)) {
+					// populate the request parameters
+					foreach (var capture in captures) {
+						req.params[capture] = match_info.fetch_named (capture);
+					}
+					return true;
+				}
+				return false;
+			};
 		}
 
 		/**
