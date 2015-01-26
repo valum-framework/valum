@@ -17,21 +17,7 @@ Valum includes helpers for the HTTP/1.1 protocol and the extra TRACE method.
  - `connect`
  - `trace`
 
-Handling a `POST` request would be something like
-
-```java
-app.post ("login", (req, res) => {
-    var data = Soup.Form.decode (req.body);
-
-    var username = data["username"];
-    var password = data["password"];
-
-    // assuming you have a session implementation in your app
-    var session = app.authenticate (username, password);
-});
-```
-
-It is also possible to use a custom HTTP method via the `method` function.
+It is also possible to use a custom HTTP method, though not recommended.
 
 ```java
 app.method ("METHOD", "rule", (req, res) => {});
@@ -58,3 +44,30 @@ app.get ("users", (req, res) => {
     // matches /users
 });
 ```
+
+Extending the Router
+--------------------
+
+It is often useful to extend the `Router` class to provide specific
+functionnalities in a container fashion.
+
+[libesmtp](http://www.stafford.uklinux.net/libesmtp/) provide
+[Vala bindings](http://valadoc.org/#!api=libesmtp/Smtp) and can be used to send
+emails through the SMTP protocol.
+
+```java
+class MyApplication extends Router {
+
+    public Smtp.Session smtp_session { get; default = Smtp.Session (); }
+
+    public MyApplication () {
+        base ();
+
+        this.session.set_hostname ("mail.google.com:587");
+
+        // send all messages after the request
+        this.handler.connect_after ((req, res) => {
+            session.start_session ();
+        });
+    }
+}
