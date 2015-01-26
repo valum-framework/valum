@@ -38,6 +38,17 @@ app.get("custom-route-type/<permutations:p>", (req, res) => {
 	res.append(req.params["p"]);
 });
 
+// custom matcher
+app.matcher ("GET",
+	// this callback is used to match the route
+	(req) => {
+		return req.path == "/custom-matcher";
+	},
+	// this callback is called if the matcher is successful
+	(req, res) => {
+		res.append ("This route was matched using a custom matcher.");
+	});
+
 // hello world! (compare with Node.js!)
 app.get("hello", (req, res) => {
 	res.mime = "text/plain";
