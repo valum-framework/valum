@@ -181,9 +181,6 @@ namespace Valum {
 		 * @param res response being transmitted to the request client.
 		 */
 		public void handler (Request req, Response res) {
-
-			info ("%s %s".printf (req.method, req.uri.get_path ()));
-
 			// ensure at least one route has been declared with that method
 			if (!this.routes.contains(req.method))
 				return;

@@ -106,6 +106,8 @@ namespace VSGI {
 				var res = new SoupResponse (msg);
 
 				this.application.handler (req, res);
+
+				message ("%u %s %s".printf (res.status, req.method, req.uri.get_path ()));
 			};
 
 			this.server.add_handler (null, soup_handler);

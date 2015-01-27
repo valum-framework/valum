@@ -195,6 +195,8 @@ namespace VSGI {
 
 				this.application.handler (req, res);
 
+				message ("%u %s %s".printf (res.status, req.method, req.uri.get_path ()));
+
 				// free the request
 				this.request.finish ();
 
