@@ -25,27 +25,33 @@ namespace Valum {
 		}
 
 		public void push_strings (string key, string[] val) {
-			var v = new Ctpl.Value ();
+			var arr = new Ctpl.Value.array (Ctpl.ValueType.STRING);
 
-			v.set_array_stringv (val.length, val);
+			foreach (var e in val) {
+				arr.array_append_string (e);
+			}
 
-			this.environment.push (key, v);
+			this.environment.push (key, arr);
 		}
 
 		public void push_ints (string key, int[] val) {
-			var v = new Ctpl.Value ();
+			var arr = new Ctpl.Value.array (Ctpl.ValueType.INT);
 
-			v.set_array_intv (val.length, val);
+			foreach (var e in val) {
+				arr.array_append_int (e);
+			}
 
-			this.environment.push (key, v);
+			this.environment.push (key, arr);
 		}
 
 		public void push_floats (string key, float[] val) {
-			var v = new Ctpl.Value ();
+			var arr = new Ctpl.Value.array (Ctpl.ValueType.FLOAT);
 
-			v.set_array_floatv (val.length, val);
+			foreach (var e in val) {
+				arr.array_append_float (e);
+			}
 
-			this.environment.push (key, v);
+			this.environment.push (key, arr);
 		}
 
 		/**
@@ -75,8 +81,8 @@ namespace Valum {
 		 * Map are bound by composing the key with the entry key.
 		 */
 		public void push_map (string key, Map<string, Value?> map) {
-			map.foreach((e) => {
-				this.push_value ("%s_%s".printf(key, e.key), e.value);
+			map.map_iterator().foreach((k, v) => {
+				this.push_value ("%s_%s".printf(key, k), v);
 				return true;
 			});
 		}
@@ -99,33 +105,46 @@ namespace Valum {
 
 		/**
 		 * Push an arbitrary value into the environment.
-		 * This might have an unexpected result.
+		 *
+		 * Supports the following types:
+		 *
+		 * * string
+		 * * float
+		 * * int
+		 * * Gee.Collection
+		 * * Gee.Map
+		 * * GLib.HashTable
+		 *
+		 * @param key   key for the value pushed in the environment
+		 * @param value value that must respec one of the supported type
 		 */
-		public void push_value (string key, Value? val) {
+		public void push_value (string key, Value val) {
+
+			// TODO: list of string, float and int
 
 			// coverts all Gee collections
-			if (val.get_object () is Collection) {
-				this.push_collection (key, (Collection) val);
+			if (Value.type_compatible (val.type (), typeof(Collection))) {
+				this.push_collection (key, (Collection) val.get_object ());
 			}
 
 			// converts all Gee maps
-			else if (val.get_object () is Map) {
-				this.push_map (key, (Map) val);
+			else if (Value.type_compatible (val.type (), typeof(Map))) {
+				this.push_map (key, (Map) val.get_object ());
 			}
 
-			else if (val.get_object () is HashTable) {
-				this.push_hashtable (key, (HashTable) val);
+			else if (Value.type_compatible (val.type (), typeof(HashTable))) {
+				this.push_hashtable (key, (HashTable) val.get_object ());
 			}
 
-			else if (val.type_name() == "gchararray") {
+			else if (val.type() == typeof(string)) {
 				this.environment.push_string (key, val.get_string ());
 			}
 
-			else if (val.type_name() == "gdouble") {
+			else if (Value.type_transformable(val.type (), typeof(double))) {
 				this.environment.push_float (key, val.get_double ());
 			}
 
-			else if (val.type_name() == "gint") {
+			else if (Value.type_transformable(val.type (), typeof(long))) {
 				this.environment.push_int (key, val.get_int ());
 			}
 
