@@ -12,6 +12,11 @@ namespace Valum {
 		public HashTable<string, string> types = new HashTable<string, string> (str_hash, str_equal);
 
 		/**
+		 * Base path of the running application.
+		 */
+		private string base_path = "/";
+
+		/**
 		 * Registered routes by HTTP method.
 		 */
 		private HashTable<string, Queue<Route>> routes = new HashTable<string, Queue<Route>> (str_hash, str_equal);
@@ -23,7 +28,9 @@ namespace Valum {
 
 		public delegate void NestedRouter (Valum.Router app);
 
-		public Router () {
+		public Router (string base_path = "/") {
+			this.base_path = base_path;
+
 			// initialize default types
 			this.types["int"]    = "\\d+";
 			this.types["string"] = "\\w+";
@@ -82,8 +89,13 @@ namespace Valum {
 		/**
 		 * Bind a callback with a custom method.
          *
+		 * The providen rule will be scoped based on the current scopes stack by
+		 * prepending /<scope>.
+		 *
 		 * Useful if you need to support a non-standard HTTP method, otherwise you
 		 * should use the predefined methods.
+         *
+		 * All prefedined methods are calling this function.
 		 *
 		 * @param method HTTP method
 		 * @param rule   rule
@@ -98,7 +110,8 @@ namespace Valum {
 				full_rule.append ("/%s".printf (scope));
 			}
 
-			full_rule.append ("/%s".printf(rule));
+			// rebase the rule
+			full_rule.append ("%s%s".printf(this.base_path, rule));
 
 			this.route (method, new Route.from_rule (this, full_rule.str, cb));
 		}
@@ -108,6 +121,9 @@ namespace Valum {
          *
 		 * It is recommended to declare the Regex using the RegexCompileFlags.OPTIMIZE
 		 * flag as it will be used *very* often during the application process.
+		 *
+		 * Regex are unaware of the base_path parameter, so if you specify one, you
+		 * will have to prefix your regular expression manually.
          *
 		 * @param method HTTP method
 		 * @param regex  regular expression matching the request path.
