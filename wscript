@@ -19,6 +19,9 @@ def configure(conf):
     conf.check_cfg(package='gee-0.8', mandatory=True, uselib_store='GEE', args='--cflags --libs')
     conf.check_cfg(package='libsoup-2.4', mandatory=True, uselib_store='SOUP', args='--cflags --libs')
 
+    # libfcgi does not provide a .pc file...
+    conf.check(lib='fcgi', mandatory=True, uselib_store='FCGI')
+
     # configure examples
     conf.recurse(glob.glob('examples/*'))
 

@@ -6,4 +6,4 @@ bld.program(
    use          = 'valum',
    source       = bld.path.ant_glob('**/*.vala'),
    uselib       = ['CTPL', 'GEE', 'SOUP', 'LUA', 'MEMCACHED'],
-   vapi_dirs    = ['../../vapi'])
+   vapi_dirs    = ['../../vapi', 'vapi'])
