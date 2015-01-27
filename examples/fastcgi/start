@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+socket=$(mktemp)
+
+spawn-fcgi -n -s $socket -- fastcgi $socket &
+fastcgi --socket $socket --port 3003
