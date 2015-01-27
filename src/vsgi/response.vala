@@ -1,5 +1,3 @@
-using Gee;
-
 namespace VSGI {
 
 	/**
@@ -21,12 +19,12 @@ namespace VSGI {
 		 * Property for the Set-Cookie header.
 		 * Set cookies for this Response.
 		 */
-		public Gee.List<Soup.Cookie> cookies {
+		public SList<Soup.Cookie> cookies {
 			owned get {
-				var cookies = new ArrayList<Soup.Cookie> ();
+				var cookies = new SList<Soup.Cookie> ();
 
 				foreach (var cookie in this.headers.get_list ("Set-Cookie").split (",")) {
-					cookies.add (Soup.Cookie.parse (cookie, null));
+					cookies.append (Soup.Cookie.parse (cookie, null));
 				}
 
 				return cookies;

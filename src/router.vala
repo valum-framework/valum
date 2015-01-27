@@ -1,4 +1,3 @@
-using Gee;
 using VSGI;
 
 namespace Valum {
@@ -10,22 +9,21 @@ namespace Valum {
 		/**
 		 * Registered types.
 		 */
-		public Map<string, string> types = new HashMap<string, string> ();
+		public HashTable<string, string> types = new HashTable<string, string> (str_hash, str_equal);
 
 		/**
 		 * Registered routes by HTTP method.
 		 */
-		private Map<string, Gee.List<Route>> routes = new HashMap<string, Gee.List<Route>> ();
+		private HashTable<string, Queue<Route>> routes = new HashTable<string, Queue<Route>> (str_hash, str_equal);
 
 		/**
 		 * Stack of scope.
 		 */
-		private Gee.List<string> scopes = new ArrayList<string> ();
+		private Queue<string> scopes = new Queue<string> ();
 
 		public delegate void NestedRouter (Valum.Router app);
 
 		public Router () {
-
 			// initialize default types
 			this.types["int"]    = "\\d+";
 			this.types["string"] = "\\w+";
@@ -36,7 +34,7 @@ namespace Valum {
 				res.mime   = "text/html";
 			});
 
-			this.handler.connect_after((req, res) => {
+			this.handler.connect_after ((req, res) => {
 				res.close ();
 			});
 		}
@@ -96,7 +94,7 @@ namespace Valum {
 			var full_rule = new StringBuilder ();
 
 			// scope the route
-			foreach (var scope in this.scopes) {
+			foreach (var scope in this.scopes.head) {
 				full_rule.append ("/%s".printf (scope));
 			}
 
@@ -135,11 +133,10 @@ namespace Valum {
 		 *               callback.
 		 */
 		private void route (string method, Route route) {
-			if (!this.routes.has_key(method)){
-				this.routes[method] = new ArrayList<Route> ();
-			}
+			if (!this.routes.contains (method))
+				this.routes[method] = new Queue<Route> ();
 
-			this.routes[method].add (route);
+			this.routes[method].push_tail (route);
 		}
 
 		/**
@@ -152,9 +149,9 @@ namespace Valum {
 		 * @param router   nested router in the new scoped environment
 		 */
 		public void scope (string fragment, NestedRouter router) {
-			this.scopes.add (fragment);
+			this.scopes.push_tail (fragment);
 			router (this);
-			this.scopes.remove_at (this.scopes.size - 1);
+			this.scopes.pop_tail ();
 		}
 
 		/**
@@ -171,9 +168,11 @@ namespace Valum {
 
 			info ("%s %s".printf (req.method, req.uri.get_path ()));
 
-			var routes = this.routes[req.method];
+			// ensure at least one route has been declared with that method
+			if (!this.routes.contains(req.method))
+				return;
 
-			foreach (var route in routes) {
+			foreach (var route in this.routes[req.method].head) {
 				if (route.match (req)) {
 
 					// fire the route!

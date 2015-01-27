@@ -1,5 +1,3 @@
-using Gee;
-
 namespace VSGI {
 
 	/**
@@ -20,11 +18,16 @@ namespace VSGI {
 		public const string PATCH   = "PATCH";
 
 		/**
+		 * List of all supported HTTP methods.
+		 */
+		public const string[] METHODS = {OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT, PATCH};
+
+		/**
 		 * Parameters for the request.
 		 *
 		 * These should be extracted from the URI path.
 		 */
-		public Map<string, string> params = new HashMap<string, string> ();
+		public HashTable<string, string>? params = null;
 
 		/**
 		 * Request HTTP method
@@ -58,12 +61,12 @@ namespace VSGI {
 		 * Cookies will be computed from the Cookie HTTP header everytime they are
 		 * accessed.
 		 */
-		public Gee.List<Soup.Cookie> cookies {
+		public SList<Soup.Cookie> cookies {
 			owned get {
-				var cookies = new ArrayList<Soup.Cookie> ();
+				var cookies = new SList<Soup.Cookie> ();
 
-				foreach (var cookie in this.headers.get_list ("Set-Cookie").split (",")) {
-					cookies.add (Soup.Cookie.parse (cookie, null));
+				foreach (var cookie in this.headers.get_list ("Cookie").split (",")) {
+					cookies.append (Soup.Cookie.parse (cookie, this.uri));
 				}
 
 				return cookies;
