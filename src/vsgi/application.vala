@@ -1,3 +1,12 @@
+/**
+ * VSGI is an set of abstraction and implementations used to build generic web
+ * application in Vala.
+ *
+ * It is minimalist and relies on libsoup, a good and stable HTTP library.
+ *
+ * Two implementation are planned: Soup.Server and FastCGI. The latter
+ * integrates with pretty much any web server.
+ */
 namespace VSGI {
 
 	public const string APP_NAME = "VSGI";

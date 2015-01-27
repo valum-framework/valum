@@ -25,15 +25,15 @@ namespace VSGI {
 			owned get {
 				var cookies = new ArrayList<Soup.Cookie> ();
 
-				foreach (var cookie in this.headers.get_list("Set-Cookie").split(",")) {
-					cookies.add(Soup.Cookie.parse (cookie, null));
+				foreach (var cookie in this.headers.get_list ("Set-Cookie").split (",")) {
+					cookies.add (Soup.Cookie.parse (cookie, null));
 				}
 
 				return cookies;
 			}
 			set {
 				foreach (var cookie in value) {
-					this.headers.replace("Set-Cookie", cookie.to_set_cookie_header ());
+					this.headers.replace ("Set-Cookie", cookie.to_set_cookie_header ());
 				}
 			}
 		}
