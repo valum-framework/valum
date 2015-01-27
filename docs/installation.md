@@ -47,10 +47,11 @@ git clone git://github.com/antono/valum.git && cd valum
 Build
 -----
 
-We use the waf build system, so all you need is Python installed
+Build Valum and run the tests to make sure everything is fine.
+
 ```bash
 ./waf configure
-./waf build
+./waf build && ./build/tests/tests
 ```
 
 Run the sample application
@@ -60,7 +61,7 @@ You can run the sample application from the `build` folder, it uses the libsoup
 built-in HTTP server.
 
 ```bash
-./build/valum
+./build/example/app/app
 ```
 
 Visit [http://localhost:3003](http://localhost:3003) on your favourite web

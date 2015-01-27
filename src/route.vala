@@ -57,7 +57,6 @@ namespace Valum {
 			// extract the captures from the regular expression
 			if (capture_regex.match (regex.get_pattern (), 0, out capture_match_info)) {
 				foreach (var capture in capture_match_info.fetch_all ()) {
-					message ("found capture %s in regex %s".printf (capture, regex.get_pattern ()));
 					captures.add (capture);
 				}
 			}
