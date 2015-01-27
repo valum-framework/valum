@@ -49,7 +49,7 @@ namespace Valum {
 			this.router   = router;
 			this.callback = callback;
 
-			var captures      = new ArrayList<string> ();
+			var captures      = new SList<string> ();
 			var capture_regex = new Regex ("\\(\\?<(\\w+)>.+\\)");
 			MatchInfo capture_match_info;
 
@@ -57,16 +57,19 @@ namespace Valum {
 			if (capture_regex.match (regex.get_pattern (), 0, out capture_match_info)) {
 				foreach (var capture in capture_match_info.fetch_all ()) {
 					message ("found capture %s in regex %s".printf (capture, regex.get_pattern ()));
-					captures.add (capture);
+					captures.append (capture);
 				}
 			}
 
 			this.matcher = (req) => {
 				MatchInfo match_info;
 				if (regex.match (req.uri.get_path (), 0, out match_info)) {
-					// populate the request parameters
-					foreach (var capture in captures) {
-						req.params[capture] = match_info.fetch_named (capture);
+					if (captures.length () > 0) {
+						// populate the request parameters
+						req.params = new HashTable<string, string> (str_hash, str_equal);
+						foreach (var capture in captures) {
+							req.params[capture] = match_info.fetch_named (capture);
+						}
 					}
 					return true;
 				}
@@ -111,10 +114,12 @@ namespace Valum {
 			this.matcher = (req) => {
 				MatchInfo match_info;
 				if (regex.match (req.uri.get_path (), 0, out match_info)) {
-					req.params = new HashTable<string, string> (str_hash, str_equal);
-					// populate the request parameters
-					foreach (var capture in captures) {
-						req.params[capture] = match_info.fetch_named (capture);
+					if (captures.length () > 0) {
+						// populate the request parameters
+						req.params = new HashTable<string, string> (str_hash, str_equal);
+						foreach (var capture in captures) {
+							req.params[capture] = match_info.fetch_named (capture);
+						}
 					}
 					return true;
 				}
