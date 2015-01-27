@@ -44,11 +44,11 @@ namespace VSGI {
 			Soup.headers_parse (headers.str, (int) headers.len, this._headers);
 		}
 
-		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) {
+		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
 			return this.request.in.read (buffer);
 		}
 
-		public override bool close (Cancellable? cancellable = null) {
+		public override bool close (Cancellable? cancellable = null) throws IOError {
 			return this.request.in.flush () && this.request.in.is_closed;
 		}
 	}
@@ -86,22 +86,37 @@ namespace VSGI {
 			this.request = request;
 		}
 
-		private int write_headers () {
-			if (this.headers_written) {
-				warning ("headers has already been written");
-				return 0;
-			}
+		private ssize_t write_headers () throws IOError {
+			ssize_t written = 0;
 
-			var written = 0;
+			if (this.headers_written)
+				error ("HTTP headers have already been written");
 
-			written += this.request.out.printf ("Status: %u %s\r\n", this.status, Soup.Status.get_phrase (this.status));
+			var written_status = this.request.out.printf ("Status: %u %s\r\n", this.status, Soup.Status.get_phrase (this.status));
+
+			if (written_status == GLib.FileStream.EOF)
+				throw new IOError.FAILED ("could not write status to stream");
+
+			written += written_status;
 
 			// write headers...
 			this.headers.foreach ((k, v) => {
-				written += this.request.out.printf ("%s: %s\r\n", k, v);
+				var w = this.request.out.printf ("%s: %s\r\n", k, v);
+
+				if (w == GLib.FileStream.EOF)
+					throw new IOError.FAILED ("could not write header to stream");
+
+				written += w;
 			});
 
-			written += this.request.out.puts ("\r\n");
+			var written_empty_line = this.request.out.puts ("\r\n");
+
+			if (written_empty_line == GLib.FileStream.EOF)
+				throw new IOError.FAILED ("could not write empty line to stream");
+
+			written += written_empty_line;
+
+			this.headers_written = true;
 
 			return written;
 		}
@@ -109,29 +124,34 @@ namespace VSGI {
 		/**
 		 * Headers are written on the first call of write.
 		 */
-		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) {
-			var written = 0;
+		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
+			ssize_t written = 0;
 
-			// write headers
-			if (!this.headers_written) {
-				written += this.write_headers ();
-				this.headers_written = true;
+			// lock so that two threads would not write headers at the same time.
+			lock (this.headers_written) {
+				if (!this.headers_written)
+					written += this.write_headers ();
 			}
 
 			// write body byte per byte
 			foreach (var byte in buffer) {
-				written += this.request.out.putc (byte);
+				var w = this.request.out.putc (byte);
+
+				if (w == GLib.FileStream.EOF)
+					throw new IOError.FAILED ("could not write body to stream");
+
+				written += w;
 			}
 
 			return written;
 		}
 
 		public override bool close (Cancellable? cancellable = null) {
-			// it's kind of too late..
-			// TODO: check if we can have a simpler way of writting headers
-			if (!this.headers_written) {
-				this.write_headers ();
-				this.headers_written = true;
+			// write headers for empty message
+			lock (this.headers_written) {
+				if (!this.headers_written) {
+					this.write_headers ();
+				}
 			}
 
 			this.request.out.set_exit_status (0);
