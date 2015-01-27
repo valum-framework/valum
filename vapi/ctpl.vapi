@@ -154,7 +154,7 @@ namespace Ctpl {
 		[CCode (has_construct_function = false)]
 		public Value ();
 		[CCode (has_construct_function = false)]
-		public Value.array (size_t count);
+		public Value.array (Ctpl.ValueType type, size_t count = 0);
 		public void array_append (Ctpl.Value val);
 		public void array_append_float (double val);
 		public void array_append_int (long val);
