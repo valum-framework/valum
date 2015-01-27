@@ -6,7 +6,7 @@ using Valum;
 public void test_valum_route_new () {}
 
 public void test_valum_route_from_rule () {
-	var router = new Router ();
+	var route  = new Route.from_rule (new Router (), "/<int:id>", (req, res) => {});
 
 	/*
 	var route = new Route.from_rule (router, "<int:id>", (req, res) => {});
@@ -20,7 +20,52 @@ public void test_valum_route_from_rule () {
 	*/
 }
 
-/**
- * TODO: test parameters extraction
- */
-public void test_route_fire () {}
+public void test_valum_route_from_regex () {
+	var route  = new Route.from_regex (new Router (), /^\/(?<id>\d+)$/, (req, res) => {});
+	var req    = new TestRequest.with_uri (new Soup.URI ("http://localhost/5"));
+
+	assert (route.match (req));
+}
+
+public void test_valum_route_from_matcher () {
+	var route  = new Route.from_matcher (new Router (), (req) => { return true; }, (req, res) => {});
+	var req    = new TestRequest.with_uri (new Soup.URI ("http://localhost/5"));
+
+	assert (route.match (req));
+
+}
+
+public void test_valum_route_match () {
+	var route  = new Route.from_rule (new Router (), "/<int:id>", (req, res) => {});
+	var req    = new TestRequest.with_uri (new Soup.URI ("http://localhost/5"));
+
+	var matches = route.match (req);
+
+	assert (matches);
+	assert_nonnull (req.params);
+	assert (req.params.contains ("id"));
+
+}
+
+public void test_valum_route_match_not_matching () {
+	var route  = new Route.from_rule (new Router (), "/<int:id>", (req, res) => {});
+	var req    = new TestRequest.with_uri (new Soup.URI ("http://localhost/home"));
+
+	// no match and params remains null
+	assert (route.match (req) == false);
+}
+
+public void test_route_fire () {
+	var setted = false;
+	var route = new Route.from_rule (new Router (), "/<int:id>", (req, res) => {
+		setted = true;
+	});
+	var req   = new TestRequest.with_uri (new Soup.URI ("http://localhost/home"));
+	var res   = new TestResponse (200);
+
+	assert_false (setted);
+
+	route.fire (req, res);
+
+	assert (setted);
+}

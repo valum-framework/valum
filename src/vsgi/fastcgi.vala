@@ -34,7 +34,6 @@ namespace VSGI {
 
 			var headers = new StringBuilder();
 
-			message ("extracting headers...");
 			foreach (var variable in this.request.environment.get_all ()) {
 				// headers are prefixed with HTTP_
 				if (variable.has_prefix ("HTTP_")) {
@@ -90,7 +89,7 @@ namespace VSGI {
 
 		private int write_headers () {
 			if (this.headers_written) {
-				message ("headers has already been written");
+				warning ("headers has already been written");
 				return 0;
 			}
 
@@ -190,7 +189,7 @@ namespace VSGI {
 					return false;
 				}
 
-				message ("new request with id %d accepted", request.request_id);
+				info ("new request with id %d accepted", request.request_id);
 
 				var req = new VSGI.FastCGIRequest (this.request);
 				var res = new VSGI.FastCGIResponse (this.request);

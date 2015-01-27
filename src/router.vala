@@ -169,7 +169,7 @@ namespace Valum {
 		 */
 		public void handler (Request req, Response res) {
 
-			message ("%s %s".printf (req.method, req.uri.get_path ()));
+			info ("%s %s".printf (req.method, req.uri.get_path ()));
 
 			var routes = this.routes[req.method];
 

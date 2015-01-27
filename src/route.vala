@@ -99,7 +99,7 @@ namespace Valum {
 				return false;
 			};
 
-			message ("registered %s", route.str);
+			info ("registered %s", route.str);
 		}
 
 		/**
