@@ -1,4 +1,3 @@
-using Gee;
 using VSGI;
 
 namespace Valum {
@@ -86,7 +85,7 @@ namespace Valum {
 
 			var param_regex = new Regex ("(<(?:\\w+:)?\\w+>)");
 			var params      = param_regex.split_full (rule);
-			var captures    = new ArrayList<string> ();
+			var captures    = new SList<string> ();
 			var route       = new StringBuilder ("^");
 
 			foreach (var p in params) {
@@ -99,7 +98,7 @@ namespace Valum {
 					var type = cap.length == 1 ? "string" : cap[0];
 					var key  = cap.length == 1 ? cap[0] : cap[1];
 
-					captures.add (key);
+					captures.append (key);
 					route.append ("(?<%s>%s)".printf (key, this.router.types[type]));
 				}
 			}
@@ -112,6 +111,7 @@ namespace Valum {
 			this.matcher = (req) => {
 				MatchInfo match_info;
 				if (regex.match (req.uri.get_path (), 0, out match_info)) {
+					req.params = new HashTable<string, string> (str_hash, str_equal);
 					// populate the request parameters
 					foreach (var capture in captures) {
 						req.params[capture] = match_info.fetch_named (capture);

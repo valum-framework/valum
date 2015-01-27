@@ -18,6 +18,11 @@ namespace VSGI {
 		public const string PATCH   = "PATCH";
 
 		/**
+		 * List of all supported HTTP methods.
+		 */
+		public const string[] METHODS = {OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT, PATCH};
+
+		/**
 		 * Parameters for the request.
 		 *
 		 * These should be extracted from the URI path.
@@ -60,8 +65,8 @@ namespace VSGI {
 			owned get {
 				var cookies = new SList<Soup.Cookie> ();
 
-				foreach (var cookie in this.headers.get_list ("Set-Cookie").split (",")) {
-					cookies.append (Soup.Cookie.parse (cookie, null));
+				foreach (var cookie in this.headers.get_list ("Cookie").split (",")) {
+					cookies.append (Soup.Cookie.parse (cookie, this.uri));
 				}
 
 				return cookies;
