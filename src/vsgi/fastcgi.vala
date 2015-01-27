@@ -87,35 +87,30 @@ namespace VSGI {
 		}
 
 		private ssize_t write_headers () throws IOError {
-			ssize_t written = 0;
-
+			// headers cannot be rewritten
 			if (this.headers_written)
 				error ("HTTP headers have already been written");
 
-			var written_status = this.request.out.printf ("Status: %u %s\r\n", this.status, Soup.Status.get_phrase (this.status));
+			var headers = new StringBuilder ();
 
-			if (written_status == GLib.FileStream.EOF)
-				throw new IOError.FAILED ("could not write status to stream");
+			// status
+			headers.append ("Status: %u %s\r\n".printf (this.status, Soup.Status.get_phrase (this.status)));
 
-			written += written_status;
-
-			// write headers...
+			// headers
 			this.headers.foreach ((k, v) => {
-				var w = this.request.out.printf ("%s: %s\r\n", k, v);
-
-				if (w == GLib.FileStream.EOF)
-					throw new IOError.FAILED ("could not write header to stream");
-
-				written += w;
+				headers.append ("%s: %s\r\n".printf(k, v));
 			});
 
-			var written_empty_line = this.request.out.puts ("\r\n");
+			// newline preceeding the body
+			headers.append ("\r\n");
 
-			if (written_empty_line == GLib.FileStream.EOF)
-				throw new IOError.FAILED ("could not write empty line to stream");
+			// write headers in a single operation
+			ssize_t written = this.request.out.put_str (headers.str.data);
 
-			written += written_empty_line;
+			if (written == GLib.FileStream.EOF)
+				throw new IOError.FAILED ("could not write headers to stream");
 
+			// headers are written if the write operation is successful (rewritten otherwise)
 			this.headers_written = true;
 
 			return written;
@@ -125,23 +120,16 @@ namespace VSGI {
 		 * Headers are written on the first call of write.
 		 */
 		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
-			ssize_t written = 0;
-
 			// lock so that two threads would not write headers at the same time.
 			lock (this.headers_written) {
 				if (!this.headers_written)
-					written += this.write_headers ();
+					this.write_headers ();
 			}
 
-			// write body byte per byte
-			foreach (var byte in buffer) {
-				var w = this.request.out.putc (byte);
+			ssize_t written = this.request.out.put_str (buffer);
 
-				if (w == GLib.FileStream.EOF)
-					throw new IOError.FAILED ("could not write body to stream");
-
-				written += w;
-			}
+			if (written == GLib.FileStream.EOF)
+				throw new IOError.FAILED ("could not write body to stream");
 
 			return written;
 		}
