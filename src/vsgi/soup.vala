@@ -97,7 +97,7 @@ namespace VSGI {
 		public SoupServer (VSGI.Application app, uint port) throws Error {
 			base (app);
 
-			this.server.listen_all (port, Soup.ServerListenOptions.IPV4_ONLY);
+			this.server.listen_all (port, 0);
 		}
 
 		/**
