@@ -14,23 +14,23 @@ public int main (string[] args) {
 	Test.add_func ("/valum/route/match/not_matching", test_valum_route_match_not_matching);
 	Test.add_func ("/valum/route/fire", test_valum_route_match_not_matching);
 
-	// register test functions
-	Test.add_func ("/fastcgi/listen", test_fastcgi_listen);
-
 	return Test.run ();
 }
 /**
- * Test implementation of VSGI.Request used to stub a request.
+ * Test implementation of Request used to stub a request.
  */
 public class TestRequest : VSGI.Request {
 
 	private string _method;
 	private Soup.URI _uri;
 	private Soup.MessageHeaders _headers;
+	private HashTable<string, string> _query;
 
 	public override string method { owned get { return this._method; } }
 
 	public override Soup.URI uri { get { return this._uri; } }
+
+	public override HashTable<string, string>? query { get { return this._query; } }
 
 	public override Soup.MessageHeaders headers {
 		get {
@@ -38,9 +38,10 @@ public class TestRequest : VSGI.Request {
 		}
 	}
 
-	public TestRequest (string method, Soup.URI uri) {
+	public TestRequest (string method, Soup.URI uri, HashTable<string, string>? query = null) {
 		this._method = method;
 		this._uri    = uri;
+		this._query  = query;
 	}
 
 	public TestRequest.with_method (string method) {
@@ -49,6 +50,10 @@ public class TestRequest : VSGI.Request {
 
 	public TestRequest.with_uri (Soup.URI uri) {
 		this._uri = uri;
+	}
+
+	public TestRequest.with_query (HashTable<string, string>? query) {
+		this._query = query;
 	}
 
 	public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) {

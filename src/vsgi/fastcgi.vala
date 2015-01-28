@@ -13,9 +13,16 @@ namespace VSGI {
 		private weak FastCGI.request request;
 
 		private Soup.URI _uri = new Soup.URI (null);
+		private HashTable<string, string> _query;
 		private Soup.MessageHeaders _headers = new Soup.MessageHeaders (Soup.MessageHeadersType.REQUEST);
 
 		public override Soup.URI uri { get { return this._uri; } }
+
+		public override HashTable<string, string>? query {
+			get {
+				return this._query;
+			}
+		}
 
 		public override string method {
 			owned get { return this.request.environment["REQUEST_METHOD"]; }
@@ -28,8 +35,12 @@ namespace VSGI {
 		public FastCGIRequest(FastCGI.request request) {
 			this.request = request;
 
+			// populate the URI
 			this._uri.set_path (this.request.environment["PATH_INFO"]);
 			this._uri.set_query (this.request.environment["QUERY_STRING"]);
+
+			// parse the HTTP query
+			this._query = Soup.Form.decode (this.request.environment["QUERY_STRING"]);
 
 			var headers = new StringBuilder();
 

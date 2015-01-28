@@ -33,6 +33,18 @@ app.get("", (req, res) => {
 	template.stream (res);
 });
 
+app.get ("query", (req, res) => {
+	var writer = new DataOutputStream(res);
+
+	res.mime = "text/plain";
+
+	if (req.query != null) {
+		req.query.foreach ((k, v) => {
+		writer.put_string ("%s: %s\n".printf (k, v));
+	});
+	}
+});
+
 app.get("headers", (req, res) => {
 
 	var writer = new DataOutputStream(res);

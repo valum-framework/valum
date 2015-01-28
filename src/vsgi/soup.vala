@@ -11,10 +11,13 @@ namespace VSGI {
 	class SoupRequest : VSGI.Request {
 
 		private Soup.Message message;
+		private HashTable<string, string> _query;
 
 		public override string method { owned get { return this.message.method ; } }
 
 		public override URI uri { get { return this.message.uri; } }
+
+		public override HashTable<string, string>? query { get { return this._query; } }
 
 		public override MessageHeaders headers {
 			get {
@@ -22,8 +25,9 @@ namespace VSGI {
 			}
 		}
 
-		public SoupRequest(Soup.Message msg) {
+		public SoupRequest(Soup.Message msg, HashTable<string, string>? query) {
 			this.message = msg;
+			this._query = query;
 		}
 
 		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) {
@@ -102,7 +106,7 @@ namespace VSGI {
 
 			Soup.ServerCallback soup_handler = (server, msg, path, query, client) => {
 
-				var req = new SoupRequest (msg);
+				var req = new SoupRequest (msg, query);
 				var res = new SoupResponse (msg);
 
 				this.application.handler (req, res);

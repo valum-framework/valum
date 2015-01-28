@@ -51,6 +51,16 @@ namespace VSGI {
 		public abstract Soup.URI uri { get; }
 
 		/**
+		 * HTTP query.
+		 *
+		 * This is null if the query hasn't been set.
+		 *
+		 * /path/? empty query
+		 * /path/  null query
+		 */
+		public abstract HashTable<string, string>? query { get; }
+
+		/**
 		 * Request headers.
 		 */
 		public abstract Soup.MessageHeaders headers { get; }
