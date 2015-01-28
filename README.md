@@ -1,6 +1,8 @@
 Valum micro-framework
 =====================
 
+[![Build Status](https://travis-ci.org/antono/valum.svg)](https://travis-ci.org/antono/valum)
+
 Valum is a web micro-framework entirely written in the
 [Vala](https://wiki.gnome.org/Projects/Vala) programming language.
 

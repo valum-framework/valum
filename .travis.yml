@@ -1,0 +1,17 @@
+language: c
+
+compiler:
+    - gcc
+
+before_install:
+    - sudo add-apt-repository --yes ppa:vala-team
+    - sudo apt-get update --quiet
+    - sudo apt-get install --yes valac-0.26 libglib2.0-dev libsoup2.4-dev
+      libgee-0.8-dev libfcgi-dev libmemcached-dev libluajit-5.1-dev
+      libctpl-dev
+
+before_script:
+    - ./waf configure
+    - ./waf build
+
+script: build/tests/tests
