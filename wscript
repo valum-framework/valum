@@ -14,7 +14,7 @@ def options(opt):
 def configure(conf):
     conf.load('compiler_c vala')
 
-    conf.check_cfg(package='glib', mandatory=True)
+    conf.check_cfg(package='glib-2.0', mandatory=True)
     conf.check_cfg(package='ctpl', mandatory=True, uselib_store='CTPL', args='--cflags --libs')
     conf.check_cfg(package='gee-0.8', mandatory=True, uselib_store='GEE', args='--cflags --libs')
     conf.check_cfg(package='libsoup-2.4', mandatory=True, uselib_store='SOUP', args='--cflags --libs')
