@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 bld.program(
-    target = 'tests',
-    source = ['tests.vala'] + bld.path.ant_glob('**/test_*.vala'),
-    use    = 'valum',
-    uselib = ['CTPL', 'GEE', 'SOUP', 'FCGI'],
+    packages  = ['glib-2.0'],
+    target    = 'tests',
+    source    = ['tests.vala'] + bld.path.ant_glob('**/test_*.vala'),
+    use       = 'valum',
+    uselib    = ['GLIB', 'CTPL', 'GEE', 'SOUP', 'FCGI'],
     vapi_dirs = ['../vapi'])
