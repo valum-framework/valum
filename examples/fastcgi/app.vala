@@ -21,6 +21,16 @@ public static void main (string[] args) {
 		writer.put_string ("Hello world!");
 	});
 
+	app.get ("random/<int:size>", (req, res) => {
+		var size   = int.parse (req.params["size"]);
+		var writer = new DataOutputStream (res);
+
+		for (; size > 0; size--) {
+			// write byte to byte
+			writer.put_uint32 (Random.next_int ());
+		}
+	});
+
 	app.get("<any:path>", (req, res) => {
 		res.status = 404;
 
