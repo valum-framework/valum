@@ -2,12 +2,20 @@ using VSGI;
 
 namespace Valum {
 
+	/**
+	 * @since 0.0.1
+	 */
 	public const string APP_NAME = "Valum/0.1";
 
+	/**
+	 * @since 0.0.1
+	 */
 	public class Router : GLib.Object, VSGI.Application {
 
 		/**
 		 * Registered types.
+         *
+		 * @since 0.1
 		 */
 		public HashTable<string, string> types = new HashTable<string, string> (str_hash, str_equal);
 
@@ -26,8 +34,14 @@ namespace Valum {
 		 */
 		private Queue<string> scopes = new Queue<string> ();
 
+		/**
+		 * @since 0.0.1
+		 */
 		public delegate void NestedRouter (Valum.Router app);
 
+		/**
+		 * @since 0.0.1
+		 */
 		public Router (string base_path = "/") {
 			this.base_path = base_path;
 
@@ -47,42 +61,66 @@ namespace Valum {
 			});
 		}
 
-		//
-		// HTTP Verbs
-		//
+		/**
+		 * @since 0.0.1
+		 */
 		public new void get (string rule, Route.RouteCallback cb) {
 			this.method (Request.GET, rule, cb);
 		}
 
+		/**
+		 * @since 0.0.1
+		 */
 		public void post (string rule, Route.RouteCallback cb) {
 			this.method (Request.POST, rule, cb);
 		}
 
+		/**
+		 * @since 0.0.1
+		 */
 		public void put (string rule, Route.RouteCallback cb) {
 			this.method (Request.PUT, rule, cb);
 		}
 
+		/**
+		 * @since 0.0.1
+		 */
 		public void delete (string rule, Route.RouteCallback cb) {
 			this.method (Request.DELETE, rule, cb);
 		}
 
+		/**
+		 * @since 0.0.1
+		 */
 		public void head (string rule, Route.RouteCallback cb) {
 			this.method (Request.HEAD, rule, cb);
 		}
 
+		/**
+		 * @since 0.0.1
+		 */
 		public void options(string rule, Route.RouteCallback cb) {
 			this.method (Request.OPTIONS, rule, cb);
 		}
 
+		/**
+		 * @since 0.0.1
+		 */
 		public void trace (string rule, Route.RouteCallback cb) {
 			this.method (Request.TRACE, rule, cb);
 		}
 
+		/**
+		 * @since 0.0.1
+		 */
 		public new void connect (string rule, Route.RouteCallback cb) {
 			this.method (Request.CONNECT, rule, cb);
 		}
 
-		// http://tools.ietf.org/html/rfc5789
+		/**
+		 * @link http://tools.ietf.org/html/rfc5789
+		 * @since 0.0.1
+		 */
 		public void patch (string rule, Route.RouteCallback cb) {
 			this.method (Request.PATCH, rule, cb);
 		}
@@ -97,6 +135,8 @@ namespace Valum {
 		 * should use the predefined methods.
          *
 		 * All prefedined methods are calling this function.
+		 *
+		 * @since 0.1
 		 *
 		 * @param method HTTP method
 		 * @param rule   rule
@@ -126,6 +166,8 @@ namespace Valum {
 		 * Regex are unaware of the base_path parameter, so if you specify one, you
 		 * will have to prefix your regular expression manually.
          *
+		 * @since 0.1
+		 *
 		 * @param method HTTP method
 		 * @param regex  regular expression matching the request path.
 		 */
@@ -135,6 +177,8 @@ namespace Valum {
 
 		/**
 		 * Bind a callback with a custom method and matcher.
+		 *
+		 * @since 0.1
 		 */
 		public void matcher (string method, Route.RequestMatcher matcher, Route.RouteCallback cb) {
 			this.route (method, new Route.from_matcher (this, matcher, cb));
@@ -162,6 +206,8 @@ namespace Valum {
 		 *
 		 * Scoping will only work with rules
 		 *
+		 * @since 0.0.1
+		 *
 		 * @param fragment fragment to push on the scopes stack
 		 * @param router   nested router in the new scoped environment
 		 */
@@ -177,6 +223,8 @@ namespace Valum {
 		 * It is possible to bind a callback to be executed before and after
 		 * this signal so that you can have setup and teardown operations (ex.
 		 * closing the database connection, sending mails).
+		 *
+		 * @since 0.1
 		 *
 		 * @param req request being handled.
 		 * @param res response being transmitted to the request client.

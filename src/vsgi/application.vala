@@ -9,10 +9,15 @@
  */
 namespace VSGI {
 
+	/**
+	 * @since 0.1
+	 */
 	public const string APP_NAME = "VSGI";
 
 	/**
 	 * Application that handles Request and produce Response.
+	 *
+	 * @since 0.1
 	 */
 	public interface Application : Object {
 
@@ -23,6 +28,8 @@ namespace VSGI {
 		 * callbacks before and after the default handler is executed, which
 		 * comes very handy for setup and teardown operations like database
 		 * connection.
+		 *
+		 * @since 0.1
 		 *
 		 * @param Request  req request providen to the application by a
 		 *                     VSGI.Server
