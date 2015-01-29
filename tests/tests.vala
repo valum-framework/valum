@@ -22,5 +22,9 @@ public int main (string[] args) {
 	Test.add_func ("/route/match/not_matching", test_route_match_not_matching);
 	Test.add_func ("/route/fire", test_route_match_not_matching);
 
+	Test.add_func ("/view/push_string", test_view_push_string);
+	Test.add_func ("/view/push_int", test_view_push_int);
+	Test.add_func ("/view/push_float", test_view_push_float);
+
 	return Test.run ();
 }
