@@ -166,6 +166,8 @@ namespace VSGI {
 
 	/**
 	 * FastCGI Server using GLib.MainLoop.
+	 *
+	 * @since 0.1
 	 */
 	public class FastCGIServer : VSGI.Server {
 
@@ -181,6 +183,8 @@ namespace VSGI {
 
 		/**
 		 * Create a FastCGI Server from a socket.
+		 *
+		 * @since 0.1
 		 *
 		 * @param path    socket path or port number (port are written like :8080)
 		 * @param backlog listen queue depth

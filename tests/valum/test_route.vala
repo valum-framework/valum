@@ -2,9 +2,14 @@ using Valum;
 
 /**
  * TODO: test captures extraction
+ *
+ * @since 0.1
  */
 public void test_valum_route_new () {}
 
+/**
+ * @since 0.1
+ */
 public void test_valum_route_from_rule () {
 	var route  = new Route.from_rule (new Router (), "/<int:id>", (req, res) => {});
 
@@ -20,6 +25,9 @@ public void test_valum_route_from_rule () {
 	*/
 }
 
+/**
+ * @since 0.1
+ */
 public void test_valum_route_from_rule_without_captures () {
 	var route  = new Route.from_rule (new Router (), "/", (req, res) => {});
 	var req    = new TestRequest.with_uri (new Soup.URI ("http://localhost/"));
@@ -33,6 +41,9 @@ public void test_valum_route_from_rule_without_captures () {
 	assert (req.params == null);
 }
 
+/**
+ * @since 0.1
+ */
 public void test_valum_route_from_regex () {
 	var route  = new Route.from_regex (new Router (), /^\/(?<id>\d+)$/, (req, res) => {});
 	var req    = new TestRequest.with_uri (new Soup.URI ("http://localhost/5"));
@@ -40,6 +51,9 @@ public void test_valum_route_from_regex () {
 	assert (route.match (req));
 }
 
+/**
+ * @since 0.1
+ */
 public void test_valum_route_from_regex_without_captures () {
 	var route  = new Route.from_regex (new Router (), /\//, (req, res) => {});
 	var req    = new TestRequest.with_uri (new Soup.URI ("http://localhost/"));
@@ -53,6 +67,9 @@ public void test_valum_route_from_regex_without_captures () {
 	assert (req.params == null);
 }
 
+/**
+ * @since 0.1
+ */
 public void test_valum_route_from_matcher () {
 	var route  = new Route.from_matcher (new Router (), (req) => { return true; }, (req, res) => {});
 	var req    = new TestRequest.with_uri (new Soup.URI ("http://localhost/5"));
@@ -61,6 +78,9 @@ public void test_valum_route_from_matcher () {
 
 }
 
+/**
+ * @since 0.1
+ */
 public void test_valum_route_match () {
 	var route  = new Route.from_rule (new Router (), "/<int:id>", (req, res) => {});
 	var req    = new TestRequest.with_uri (new Soup.URI ("http://localhost/5"));
@@ -74,6 +94,9 @@ public void test_valum_route_match () {
 	assert (req.params.contains ("id"));
 }
 
+/**
+ * @since 0.1
+ */
 public void test_valum_route_match_not_matching () {
 	var route  = new Route.from_rule (new Router (), "/<int:id>", (req, res) => {});
 	var req    = new TestRequest.with_uri (new Soup.URI ("http://localhost/home"));
@@ -83,7 +106,9 @@ public void test_valum_route_match_not_matching () {
 	assert (req.params == null);
 }
 
-
+/**
+ * @since 0.1
+ */
 public void test_route_fire () {
 	var setted = false;
 	var route = new Route.from_rule (new Router (), "/<int:id>", (req, res) => {

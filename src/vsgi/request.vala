@@ -2,6 +2,8 @@ namespace VSGI {
 
 	/**
 	 * Request
+	 *
+	 * @since 0.0.1
 	 */
 	public abstract class Request : InputStream {
 
@@ -19,11 +21,15 @@ namespace VSGI {
 
 		/**
 		 * List of all supported HTTP methods.
+		 *
+		 * @since 0.1
 		 */
 		public const string[] METHODS = {OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT, PATCH};
 
 		/**
 		 * Parameters for the request.
+		 *
+		 * @since 0.0.1
 		 *
 		 * These should be extracted from the URI path.
 		 */
@@ -37,6 +43,8 @@ namespace VSGI {
 		 *
 		 * Constants for every standard HTTP methods are providen as constants in
 		 * this class.
+		 *
+		 * @since 0.0.1
 		 */
 		public abstract string method { owned get; }
 
@@ -47,6 +55,8 @@ namespace VSGI {
          *
 		 * The URI, protocol and HTTP query and other request information is
 		 * made available through this property.
+		 *
+		 * @since 0.1
 		 */
 		public abstract Soup.URI uri { get; }
 
@@ -57,11 +67,15 @@ namespace VSGI {
 		 *
 		 * /path/? empty query
 		 * /path/  null query
+		 *
+		 * @since 0.1
 		 */
 		public abstract HashTable<string, string>? query { get; }
 
 		/**
 		 * Request headers.
+		 *
+		 * @since 0.0.1
 		 */
 		public abstract Soup.MessageHeaders headers { get; }
 
@@ -70,6 +84,8 @@ namespace VSGI {
          *
 		 * Cookies will be computed from the Cookie HTTP header everytime they are
 		 * accessed.
+		 *
+		 * @since 0.1
 		 */
 		public SList<Soup.Cookie> cookies {
 			owned get {

@@ -87,6 +87,8 @@ namespace VSGI {
 
 	/**
 	 * Implementation of VSGI.Server based on Soup.Server.
+	 *
+	 * @since 0.1
 	 */
 	public class SoupServer : VSGI.Server {
 

@@ -4,6 +4,8 @@ namespace Valum {
 
 	/**
 	 * Route that matches Request path.
+	 *
+	 * @since 0.0.1
 	 */
 	public class Route : Object {
 
@@ -26,24 +28,31 @@ namespace Valum {
 
 		/**
 		 * Match the request and populate the parameters.
+		 *
+		 * @since 0.1
 		 */
 		public delegate bool RequestMatcher (Request req);
 
+		/**
+		 * @since 0.0.1
+		 */
 		public delegate void RouteCallback (Request req, Response res);
 
 		/**
 		 * Create a Route using a custom matcher.
+		 *
+		 * @since 0.1
 		 */
 		public Route.from_matcher (Router router, RequestMatcher matcher, RouteCallback callback) {
 			this.router   = router;
 			this.matcher  = matcher;
 			this.callback = callback;
-
-			// TODO: extract the capture from the Regex
 		}
 
 		/**
 		 * Create a Route for a given callback using a Regex.
+		 *
+		 * @since 0.1
 		 */
 		public Route.from_regex (Router router, Regex regex, RouteCallback callback) throws RegexError {
 			this.router   = router;
@@ -81,6 +90,8 @@ namespace Valum {
 		 * Create a Route for a given callback from a rule.
          *
 		 * A rule will compile down to Regex.
+		 *
+		 * @since 0.0.1
 		 */
 		public Route.from_rule (Router router, string rule, RouteCallback callback) throws RegexError {
 			this.router   = router;
@@ -133,6 +144,8 @@ namespace Valum {
 		/**
 		 * Matches the given request and populate its parameters on success.
          *
+		 * @since 0.0.1
+		 *
 		 * @param req request that is being matched
 		 */
 		public bool match (Request req) {
@@ -144,6 +157,8 @@ namespace Valum {
 		 *
 		 * This will apply the callback on the request and response.
          *
+		 * @since 0.0.1
+		 *
 		 * @param req
 		 * @param res
 		 */
