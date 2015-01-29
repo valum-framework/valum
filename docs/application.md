@@ -4,25 +4,17 @@ Copy this code in a file named `app.vala` and call
 `valac --pkg valum-0.1 app.vala` to compile the example.
 
 ```java
-using Soup;
 using Valum;
+using VSGI;
 
 var app = new Router ();
 
 app.get("", (req, res) => {
-    res.append("Hello world!");
+    var writer = new DataOutputStream (res);
+    writer.put_string ("Hello world!");
 });
 
-var server = new Soup.Server(Soup.SERVER_SERVER_HEADER, Valum.APP_NAME);
-
-// bind the application to the server
-server.add_handler("/", app.request_handler);
-
-try {
-	server.listen_local(3003, Soup.ServerListenOptions.IPV4_ONLY);
-} catch (Error error) {
-	stderr.printf("%s.\n", error.message);
-}
+new SoupServer (app, 3003).listen ();
 ```
 
 Creating an application
@@ -40,24 +32,26 @@ Binding a route
 An application constitute of a list of routes matching user requests. To declare
 a route, the `Router` class provides useful helpers and low-level utilities.
 
+`Response` (`res` in this case) in Vala are `OutputStream`, so for convenience,
+you can wrap it with a `DataOutputStream` that provide facilities to write
+strings, bytes and many more.
+
 ```java
-app.get ("", (req, res) => {
-    res.append ("Hello world!");
+app.get("", (req, res) => {
+    var writer = new DataOutputStream (res);
+    writer.put_string ("Hello world!");
 });
 ```
 
 Using the Soup built-in server
 ------------------------------
 
+This part is pretty straightforward: you create a server that will serve your
+application at port `3003`.
+
+It is also to use the `FastCGIServer`, but it needs a specific setup that is
+covered in the [FastCGI section](server/fastcgi.md) of the documentation.
+
 ```java
-var server = new Soup.Server(Soup.SERVER_SERVER_HEADER, Valum.APP_NAME);
-
-// bind the application to the server
-server.add_handler("/", app.request_handler);
-
-try {
-	server.listen_local(3000, Soup.ServerListenOptions.IPV4_ONLY);
-} catch (Error error) {
-	stderr.printf("%s.\n", error.message);
-}
+new SoupServer (app, 3003).listen ();
 ```

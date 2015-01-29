@@ -1,15 +1,16 @@
 Valum micro-framework
 =====================
 
-Valum is a web micro-framework based entirely written in the
+Valum is a web micro-framework entirely written in the
 [Vala](https://wiki.gnome.org/Projects/Vala) programming language.
 
 Features
 --------
 
- - router with scoping, typed parameters, and low-level utilities
+ - router with scope, typed parameters and low-level utilities
  - simple Request-Response mechanism
- - integration of [CTPL](http://ctpl.tuxfamily.org/), a templating engine
+ - complete integration of [FastCGI](http://www.fastcgi.com/drupal/) protocol
+ - [CTPL](http://ctpl.tuxfamily.org/), a simple templating engine
  - extensive documentation available at [valum.readthedocs.org](http://valum.readthedocs.org/en/latest)
 
 Contributing

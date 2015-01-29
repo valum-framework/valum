@@ -28,12 +28,16 @@ Valum provides the following built-in types
 
  - int that matches `\d+`
  - string that matches `\w+` (this one is implicit)
+ - path that matches `[\w/]+`
  - any that matches `.+` asad
 
 Undeclared type is assumed to be `string`, this is what implicit meant.
 
 The `ìnt` type is useful for matching non-negative identifier such as database
 primary key.
+
+the `path` type is useful for matching pieces of route including slashes and
+serve multiple subfolders.
 
 The `any` type is useful to create catch-all route. The sample application shows
 an example for creating a 404 error page.
