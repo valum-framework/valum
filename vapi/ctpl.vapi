@@ -15,7 +15,7 @@ namespace Ctpl {
 		public void @foreach (Ctpl.EnvironForeachFunc func);
 		public unowned Ctpl.Value lookup (string symbol);
 		public void merge (Ctpl.Environ source, bool merge_symbols);
-		public bool pop (string symbol, ref Ctpl.Value popped_value);
+		public bool pop (string symbol, ref Ctpl.Value? popped_value);
 		public void push (string symbol, Ctpl.Value value);
 		public void push_float (string symbol, double value);
 		public void push_int (string symbol, long value);
