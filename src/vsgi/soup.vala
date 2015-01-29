@@ -92,12 +92,11 @@ namespace VSGI {
 	 */
 	public class SoupServer : VSGI.Server {
 
-		private Soup.Server server = new Soup.Server (Soup.SERVER_SERVER_HEADER, VSGI.APP_NAME);
+		private Soup.Server server;
 
 		public SoupServer (VSGI.Application app, uint port) throws Error {
 			base (app);
-
-			this.server.listen_all (port, 0);
+			this.server = new Soup.Server (Soup.SERVER_PORT, 3003);
 		}
 
 		/**
@@ -118,9 +117,7 @@ namespace VSGI {
 
 			this.server.add_handler (null, soup_handler);
 
-			foreach (var uri in server.get_uris ()) {
-				message ("listening on %s", uri.to_string (false));
-			}
+			message ("listening on http://%s:%u", server.interface.physical, server.interface.port);
 
 			// run the server
 			this.server.run ();

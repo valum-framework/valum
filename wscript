@@ -9,15 +9,15 @@ top='.'
 out='build'
 
 def options(opt):
-    opt.load('compiler_c vala')
+    opt.load('compiler_c')
 
 def configure(conf):
     conf.load('compiler_c vala')
 
-    conf.check_cfg(package='glib-2.0', mandatory=True, uselib_store='GLIB', args='--cflags --libs')
+    conf.check_cfg(package='glib-2.0', atleast_version='2.32', mandatory=True, uselib_store='GLIB', args='--cflags --libs')
     conf.check_cfg(package='ctpl', mandatory=True, uselib_store='CTPL', args='--cflags --libs')
     conf.check_cfg(package='gee-0.8', mandatory=True, uselib_store='GEE', args='--cflags --libs')
-    conf.check_cfg(package='libsoup-2.4', mandatory=True, uselib_store='SOUP', args='--cflags --libs')
+    conf.check_cfg(package='libsoup-2.4', atleast_version='2.38', mandatory=True, uselib_store='SOUP', args='--cflags --libs')
 
     # libfcgi does not provide a .pc file...
     conf.check(lib='fcgi', mandatory=True, uselib_store='FCGI', args='--cflags --libs')

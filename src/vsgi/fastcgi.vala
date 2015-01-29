@@ -216,8 +216,6 @@ namespace VSGI {
 					return false;
 				}
 
-				info ("new request with id %d accepted", request.request_id);
-
 				var req = new VSGI.FastCGIRequest (this.request);
 				var res = new VSGI.FastCGIResponse (this.request);
 
