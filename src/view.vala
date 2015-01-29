@@ -2,28 +2,63 @@ using Gee;
 
 namespace Valum {
 	/**
+	 * View based on CTPL templating engine.
 	 *
+	 * @since 0.1
 	 */
 	public class View {
 
-		/**
-		 *
-		 */
 		private unowned Ctpl.Token tree;
 
 		/**
+		 * Provides low-level access to the view environment.
 		 *
+		 * @since 0.1
 		 */
 		public Ctpl.Environ environment = new Ctpl.Environ ();
 
-		public View.from_path (string path) throws Error {
+		/**
+		 * Create a CTPL template from a path.
+		 *
+		 * @since 0.1
+		 */
+		public View.from_path (string path) throws IOError, Ctpl.LexerError {
 			this.tree = Ctpl.lexer_lex_path (path);
 		}
 
-		public View.from_string(string template) throws Error {
-			this.tree = Ctpl.lexer_lex_string(template);
+		/**
+		 * Create a CTPL template from a string.
+		 *
+		 * @since 0.0.1
+		 */
+		public View.from_string (string template) throws Ctpl.LexerError {
+			this.tree = Ctpl.lexer_lex_string (template);
 		}
 
+		/**
+		 * @since 0.1
+		 */
+		public void push_string (string key, string val) {
+			this.environment.push_string (key, val);
+		}
+
+		/**
+		 * @since 0.1
+		 */
+		public void push_int (string key, long val) {
+			this.environment.push_int (key, val);
+		}
+
+		/**
+		 * @since 0.1
+		 */
+		public void push_float (string key, double val) {
+			this.environment.push_float (key, val);
+		}
+
+		/**
+		 * @since 0.1
+		 */
 		public void push_strings (string key, string[] val) {
 			var arr = new Ctpl.Value.array (Ctpl.ValueType.STRING);
 
@@ -34,7 +69,10 @@ namespace Valum {
 			this.environment.push (key, arr);
 		}
 
-		public void push_ints (string key, int[] val) {
+		/**
+		 * @since 0.1
+		 */
+		public void push_ints (string key, long[] val) {
 			var arr = new Ctpl.Value.array (Ctpl.ValueType.INT);
 
 			foreach (var e in val) {
@@ -44,7 +82,10 @@ namespace Valum {
 			this.environment.push (key, arr);
 		}
 
-		public void push_floats (string key, float[] val) {
+		/**
+		 * @since 0.1
+		 */
+		public void push_floats (string key, double[] val) {
 			var arr = new Ctpl.Value.array (Ctpl.ValueType.FLOAT);
 
 			foreach (var e in val) {
@@ -60,30 +101,33 @@ namespace Valum {
 		 * The collection type can be string, int, float or collection.
 		 *
 		 * TODO: this thing SEGFAULTs..
+		 *
+		 * @since 0.1
 		 */
 		public void push_collection (string key, Collection collection) {
-			var type = collection.element_type;
 			var arr = collection.to_array ();
 
-			if (type == typeof(int[])) {
-				this.push_ints (key, (int[]) arr);
+			if (Value.type_transformable(collection.element_type, typeof(long[]))) {
+				this.push_ints (key, (long[]) arr);
 			}
 
-			else if (type == typeof(float[])) {
-				this.push_floats (key, (float[]) arr);
+			else if (Value.type_transformable(collection.element_type, typeof(double[]))) {
+				this.push_floats (key, (double[]) arr);
 			}
 
-			else if (type == typeof(string[])) {
+			else if (collection.element_type == typeof(string[])) {
 				this.push_strings (key, (string[]) arr);
 			}
 
 			else {
-				this.environment.push_string (key, "could not infer type %s of %s".printf ("", key));
+				this.environment.push_string (key, "could not infer type %s of %s".printf (collection.element_type.name (), key));
 			}
 		}
 
 		/**
 		 * Map are bound by composing the key with the entry key.
+		 *
+		 * @since 0.1
 		 */
 		public void push_map (string key, Map<string, Value?> map) {
 			map.map_iterator().foreach((k, v) => {
@@ -95,6 +139,8 @@ namespace Valum {
 		/**
 		 * MultiMap are bound by composing the key with the entry key and associate
 		 * that value to an array.
+		 *
+		 * @since 0.1
 		 */
 		public void push_multimap (string key, MultiMap<string, Value?> multimap) {
 			foreach (var k in multimap.get_keys ()) {
@@ -102,6 +148,9 @@ namespace Valum {
 			}
 		}
 
+		/**
+		 * @since 0.1
+		 */
 		public void push_hashtable (string key, GLib.HashTable<string, Value?> ht) {
 			ht.foreach((k, v) => {
 				this.push_value ("%s_%s".printf (key, k), v);
@@ -119,6 +168,8 @@ namespace Valum {
 		 * * Gee.Collection
 		 * * Gee.Map
 		 * * GLib.HashTable
+		 *
+		 * @since 0.1
 		 *
 		 * @param key   key for the value pushed in the environment
 		 * @param value value that must respec one of the supported type
@@ -164,16 +215,21 @@ namespace Valum {
 
 		/**
 		 * Stream the view in the given output stream.
+		 *
+		 * @since 0.1
 		 */
-		public void stream (OutputStream output) throws Error {
+		public void stream (OutputStream output) throws IOError, Ctpl.IOError {
 			Ctpl.parser_parse (this.tree, this.environment, new Ctpl.OutputStream (output));
 		}
 
 		/**
-		 * Renders the view as a string.
+		 * Stream the template into a MemoryOutputStream and return the rendered
+		 * string.
+		 *
+		 * @since 0.0.1
 		 */
-		public string render () throws Error {
-			var mem_stream = new MemoryOutputStream (null, realloc, free);
+		public string render () throws IOError, Ctpl.IOError {
+			var mem_stream = new MemoryOutputStream.resizable ();
 
 			this.stream (mem_stream);
 
