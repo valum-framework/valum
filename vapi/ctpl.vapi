@@ -1,6 +1,6 @@
 [CCode (cprefix = "Ctpl", lower_case_cprefix = "ctpl_")]
 namespace Ctpl {
-	
+
 	[Compact]
 	[CCode (ref_function = "ctpl_environ_ref", unref_function = "ctpl_environ_unref", cheader_filename = "ctpl/ctpl.h")]
 	public class Environ {
@@ -15,7 +15,7 @@ namespace Ctpl {
 		public void @foreach (Ctpl.EnvironForeachFunc func);
 		public unowned Ctpl.Value lookup (string symbol);
 		public void merge (Ctpl.Environ source, bool merge_symbols);
-		public unowned Ctpl.Value pop (string symbol);
+		public bool pop (string symbol, ref Ctpl.Value popped_value);
 		public void push (string symbol, Ctpl.Value value);
 		public void push_float (string symbol, double value);
 		public void push_int (string symbol, long value);
@@ -62,7 +62,7 @@ namespace Ctpl {
 		public ssize_t skip_blank () throws GLib.Error;
 		public ssize_t skip_word (string reject, ssize_t reject_len) throws GLib.Error;
 	}
-	
+
 	[Compact]
 	[CCode (ref_function = "ctpl_output_stream_ref", unref_function = "ctpl_output_stream_unref", cheader_filename = "ctpl/ctpl.h")]
 	public class OutputStream {
@@ -91,7 +91,7 @@ namespace Ctpl {
 		public Token.@if (Ctpl.TokenExpr condition, Ctpl.Token if_children, Ctpl.Token else_children);
 		public void prepend (Ctpl.Token brother);
 	}
-	
+
 	[Compact]
 	[CCode (cheader_filename = "ctpl/ctpl.h")]
 	public class TokenExpr {
@@ -107,7 +107,7 @@ namespace Ctpl {
 		[CCode (has_construct_function = false)]
 		public TokenExpr.symbol (string symbol, ssize_t len);
 	}
-	
+
 	[Compact]
 	[CCode (cheader_filename = "ctpl/ctpl.h")]
 	public class TokenExprOperator {
@@ -115,7 +115,7 @@ namespace Ctpl {
 		public Ctpl.Operator operator;
 		public weak Ctpl.TokenExpr roperand;
 	}
-	
+
 	[Compact]
 	[CCode (cheader_filename = "ctpl/ctpl.h")]
 	public class TokenExprValue {
@@ -325,7 +325,7 @@ namespace Ctpl {
 	public static unowned string operator_to_string (Ctpl.Operator op);
 	[CCode (cheader_filename = "ctpl/ctpl.h")]
 	public static GLib.Quark parser_error_quark ();
-	
+
 	[CCode (cheader_filename = "ctpl/ctpl.h")]
 	public static bool parser_parse (Ctpl.Token tree, Ctpl.Environ env, Ctpl.OutputStream output) throws GLib.Error;
 }
