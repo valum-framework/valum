@@ -58,23 +58,28 @@ namespace Valum {
 		 * Push a Gee.Collection into the environment.
          *
 		 * The collection type can be string, int, float or collection.
+		 *
+		 * TODO: this thing SEGFAULTs..
 		 */
 		public void push_collection (string key, Collection collection) {
+			var type = collection.element_type;
 			var arr = collection.to_array ();
 
-			if (collection.element_type.name () == "gint") {
+			if (type == typeof(int[])) {
 				this.push_ints (key, (int[]) arr);
 			}
 
-			if (collection.element_type.name () == "gdouble") {
+			else if (type == typeof(float[])) {
 				this.push_floats (key, (float[]) arr);
 			}
 
-			if (collection.element_type.name () == "gchararray") {
+			else if (type == typeof(string[])) {
 				this.push_strings (key, (string[]) arr);
 			}
 
-			this.environment.push_string (key, "could not infer type %s of %s".printf (collection.element_type.name (), key));
+			else {
+				this.environment.push_string (key, "could not infer type %s of %s".printf ("", key));
+			}
 		}
 
 		/**
@@ -121,36 +126,39 @@ namespace Valum {
 		public void push_value (string key, Value? val) {
 			if (val == null) {
 				this.environment.push_string (key, "null");
+				return;
 			}
 
+			var v = /* (Value) does not compile.. */ val;
+
 			// coverts all Gee collections
-			else if (Value.type_compatible (val.type (), typeof(Collection))) {
-				this.push_collection (key, (Collection) val.get_object ());
+			if (Value.type_compatible (v.type (), typeof(Collection))) {
+				this.push_collection (key, (Collection) v.get_object ());
 			}
 
 			// converts all Gee maps
-			else if (Value.type_compatible (val.type (), typeof(Map))) {
-				this.push_map (key, (Map) val.get_object ());
+			else if (Value.type_compatible (v.type (), typeof(Map))) {
+				this.push_map (key, (Map) v.get_object ());
 			}
 
-			else if (Value.type_compatible (val.type (), typeof(HashTable))) {
-				this.push_hashtable (key, (HashTable) val.get_object ());
+			else if (Value.type_compatible (v.type (), typeof(HashTable))) {
+				this.push_hashtable (key, (HashTable) v.get_object ());
 			}
 
-			else if (val.type() == typeof(string)) {
-				this.environment.push_string (key, val.get_string ());
+			else if (v.type() == typeof(string)) {
+				this.environment.push_string (key, v.get_string ());
 			}
 
-			else if (Value.type_transformable(val.type (), typeof(double))) {
-				this.environment.push_float (key, val.get_double ());
+			else if (Value.type_transformable(v.type (), typeof(double))) {
+				this.environment.push_float (key, v.get_double ());
 			}
 
-			else if (Value.type_transformable(val.type (), typeof(long))) {
-				this.environment.push_int (key, val.get_int ());
+			else if (Value.type_transformable(v.type (), typeof(long))) {
+				this.environment.push_int (key, v.get_int ());
 			}
 
 			else {
-				this.environment.push_string (key, "unknown type %s for key %s".printf (val.type_name (), key));
+				this.environment.push_string (key, "unknown type %s for key %s".printf (v.type_name (), key));
 			}
 		}
 
