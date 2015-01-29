@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+
+bld.program(
+   target       = 'fastcgi',
+   use          = 'valum',
+   source       = ['app.vala'],
+   uselib       = ['GEE', 'SOUP', 'FCGI'],
+   vapi_dirs    = ['../../vapi'])
+
+bld(
+    rule   = 'cp ${SRC} ${TGT}',
+    target = bld.path.get_bld().make_node('start'),
+    source = bld.path.make_node('start'))

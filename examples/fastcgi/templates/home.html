@@ -9,51 +9,61 @@
   <body>
     <div class="container">
       <div class="row">
-        <div class="col-md-8 col-md-offset-2" style="margin-top: 40px;">
+        <div class="col-md-8 col-md-offset-2" style="margin-top: 60px;">
           <div class="row">
             <div class="col-md-12">
               <h1>Valum <small>web micro-framework written in Vala</small></h1>
+              <p>
+                Valum is a web micro-framework written in Vala that provides
+                routing and basic request-response mechanism.
+              </p>
             </div>
           </div>
           <div class="row">
             <div class="col-md-4">
               <h3>Documentation</h3>
-              <p class="text-justify">
-                Valum provides <a href="http://valum.readthedocs.org/en/latest/">user documentation</a> to get you
-                started with the framework.
+              <p>
+                Valum is based on libsoup, so reading about it is a good start.
               </p>
-              <p class="text-justify">
-                The framework is built upon <a href="https://developer.gnome.org/libsoup/stable/">libsoup</a> and
-                <a href="https://wiki.gnome.org/action/show/Projects/Libgee">Libgee</a> and automated with the
-                <a href="https://code.google.com/p/waf/">waf build system</a>, so reading about all these is a good
-                start.
-              </p>
-              <p class="text-justify">
-                The <a href="http://valadoc.org">valadoc.org</a> website provides api specification of most libraries
-                available in Vala.
-              </p>
+              <ul>
+                <li>
+                  <a href="http://valadoc.org/">Vala documentation</a>
+                  <ul>
+                    <li><a href="http://valadoc.org/#!api=libsoup-2.4/Soup.Message">Soup Message</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <a href="http://www.apache.org/">Apache documentation</a>
+                  <ul>
+                    <li><a href="http://httpd.apache.org/mod_fcgid/mod/mod_fcgid.html#fcgidwrapper">mod_fcgid</a></li>
+                  </ul>
+                </li>
+              </ul>
             </div>
-            <div class="col-md-8">
+            <div class="col-md-4">
               <h3>Examples</h3>
               <p>
                 This is a real Vala web application and we got real examples!
               </p>
-              <ul class="list-inline">
+              <ul>
                 <li><a href="/hello">Hello world!</a></li>
                 <li><a href="/hello/">Hello world! (with a trailing slash)</a></li>
+                <li><a href="/headers">HTTP headers</a></li>
                 <li><a href="/hello/world">route parameter</a></li>
                 <li><a href="/users/4/edit">typed route parameter</a></li>
                 <li><a href="/custom-route-type/abc">custom typed route parameter (permutations of abc)</a></li>
                 <li><a href="/custom-regular-expression">route using a custom regular expression</a></li>
-                <li><a href="/custom-matcher">custom matcher</a></li>
                 <li><a href="/custom-method">route using a custom HTTP method</a></li>
                 <li><a href="/admin/fun/hack">scoped routing</a></li>
+                <li><a href="/cookies">cookies</a></li>
                 <li><a href="/urlencoded-data/">parse url-encoded data</a></li>
                 <li><a href="/lua">lua scripting</a></li>
                 <li><a href="/ctpl/foo/bar">Ctpl templating</a></li>
                 <li><a href="/memcached/get/bar">memcached (get value)</a></li>
                 <li><a href="/memcached/set/bar">memcached (set value)</a></li>
               </ul>
+            </div>
+            <div class="col-md-4">
               <h3>Contributing</h3>
               <p>
                 Valum is hosted on GitHub and developed under the LGPL license.

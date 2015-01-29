@@ -1,4 +1,4 @@
-using Gee;
+using VSGI;
 
 namespace Valum {
 
@@ -9,6 +9,8 @@ namespace Valum {
 
 		/**
 		 * Router that declared this route.
+         *
+		 * This is used to hold parameters types.
 		 */
 		private weak Router router;
 
@@ -20,49 +22,53 @@ namespace Valum {
 		/**
 		 * Callback
 		 */
-		private unowned RequestCallback callback;
+		private unowned RouteCallback callback;
 
 		/**
 		 * Match the request and populate the parameters.
 		 */
 		public delegate bool RequestMatcher (Request req);
 
-		public delegate void RequestCallback (Request req, Response res);
+		public delegate void RouteCallback (Request req, Response res);
 
 		/**
 		 * Create a Route using a custom matcher.
 		 */
-		public Route.from_matcher (Router router, RequestMatcher matcher, RequestCallback callback) {
+		public Route.from_matcher (Router router, RequestMatcher matcher, RouteCallback callback) {
 			this.router   = router;
 			this.matcher  = matcher;
 			this.callback = callback;
+
+			// TODO: extract the capture from the Regex
 		}
 
 		/**
 		 * Create a Route for a given callback using a Regex.
 		 */
-		public Route.from_regex (Router router, Regex regex, RequestCallback callback) {
+		public Route.from_regex (Router router, Regex regex, RouteCallback callback) {
 			this.router   = router;
 			this.callback = callback;
 
-			var captures      = new ArrayList<string> ();
+			var captures      = new SList<string> ();
 			var capture_regex = new Regex ("\\(\\?<(\\w+)>.+\\)");
 			MatchInfo capture_match_info;
 
 			// extract the captures from the regular expression
 			if (capture_regex.match (regex.get_pattern (), 0, out capture_match_info)) {
 				foreach (var capture in capture_match_info.fetch_all ()) {
-					message ("found capture %s in regex %s".printf (capture, regex.get_pattern ()));
-					captures.add (capture);
+					captures.append (capture);
 				}
 			}
 
 			this.matcher = (req) => {
 				MatchInfo match_info;
-				if (regex.match (req.path, 0, out match_info)) {
-					// populate the request parameters
-					foreach (var capture in captures) {
-						req.params[capture] = match_info.fetch_named (capture);
+				if (regex.match (req.uri.get_path (), 0, out match_info)) {
+					if (captures.length () > 0) {
+						// populate the request parameters
+						req.params = new HashTable<string, string> (str_hash, str_equal);
+						foreach (var capture in captures) {
+							req.params[capture] = match_info.fetch_named (capture);
+						}
 					}
 					return true;
 				}
@@ -75,13 +81,13 @@ namespace Valum {
          *
 		 * A rule will compile down to Regex.
 		 */
-		public Route.from_rule (Router router, string rule, RequestCallback callback) {
+		public Route.from_rule (Router router, string rule, RouteCallback callback) {
 			this.router   = router;
 			this.callback = callback;
 
 			var param_regex = new Regex ("(<(?:\\w+:)?\\w+>)");
 			var params      = param_regex.split_full (rule);
-			var captures    = new ArrayList<string> ();
+			var captures    = new SList<string> ();
 			var route       = new StringBuilder ("^");
 
 			foreach (var p in params) {
@@ -94,7 +100,7 @@ namespace Valum {
 					var type = cap.length == 1 ? "string" : cap[0];
 					var key  = cap.length == 1 ? cap[0] : cap[1];
 
-					captures.add (key);
+					captures.append (key);
 					route.append ("(?<%s>%s)".printf (key, this.router.types[type]));
 				}
 			}
@@ -106,17 +112,20 @@ namespace Valum {
 			// register a matcher based on the generated regular expression
 			this.matcher = (req) => {
 				MatchInfo match_info;
-				if (regex.match (req.path, 0, out match_info)) {
-					// populate the request parameters
-					foreach (var capture in captures) {
-						req.params[capture] = match_info.fetch_named (capture);
+				if (regex.match (req.uri.get_path (), 0, out match_info)) {
+					if (captures.length () > 0) {
+						// populate the request parameters
+						req.params = new HashTable<string, string> (str_hash, str_equal);
+						foreach (var capture in captures) {
+							req.params[capture] = match_info.fetch_named (capture);
+						}
 					}
 					return true;
 				}
 				return false;
 			};
 
-			message ("registered %s", route.str);
+			info ("registered %s", route.str);
 		}
 
 		/**

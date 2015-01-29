@@ -9,6 +9,8 @@ pages:
     - [ctpl.md, Basics, CTPL]
     - [router.md, Basics, Router]
     - [route.md, Basics, Route]
+    - [server/soup.md, Server, Soup]
+    - [server/fastcgi.md, Server, FastCGI]
     - [scripting.md, Extra, Scripting]
     - [about/gnu-lgpl-v3.0.md, About, License]
 

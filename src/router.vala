@@ -1,15 +1,15 @@
-using Gee;
+using VSGI;
 
 namespace Valum {
 
 	public const string APP_NAME = "Valum/0.1";
 
-	public class Router {
+	public class Router : GLib.Object, VSGI.Application {
 
 		/**
 		 * Registered types.
 		 */
-		public Map<string, string> types = new HashMap<string, string> ();
+		public HashTable<string, string> types = new HashTable<string, string> (str_hash, str_equal);
 
 		/**
 		 * Base path of the running application.
@@ -19,12 +19,12 @@ namespace Valum {
 		/**
 		 * Registered routes by HTTP method.
 		 */
-		private Map<string, Gee.List<Route>> routes = new HashMap<string, Gee.List<Route>> ();
+		private HashTable<string, Queue<Route>> routes = new HashTable<string, Queue<Route>> (str_hash, str_equal);
 
 		/**
 		 * Stack of scope.
 		 */
-		private Gee.List<string> scopes = new ArrayList<string> ();
+		private Queue<string> scopes = new Queue<string> ();
 
 		public delegate void NestedRouter (Valum.Router app);
 
@@ -42,48 +42,48 @@ namespace Valum {
 			});
 
 			this.handler.connect_after ((req, res) => {
-				res.message.response_body.complete ();
+				res.close ();
 			});
 		}
 
 		//
 		// HTTP Verbs
 		//
-		public new void get (string rule, Route.RequestCallback cb) {
-			this.method ("GET", rule, cb);
+		public new void get (string rule, Route.RouteCallback cb) {
+			this.method (Request.GET, rule, cb);
 		}
 
-		public void post (string rule, Route.RequestCallback cb) {
-			this.method ("POST", rule, cb);
+		public void post (string rule, Route.RouteCallback cb) {
+			this.method (Request.POST, rule, cb);
 		}
 
-		public void put (string rule, Route.RequestCallback cb) {
-			this.method ("PUT", rule, cb);
+		public void put (string rule, Route.RouteCallback cb) {
+			this.method (Request.PUT, rule, cb);
 		}
 
-		public void delete (string rule, Route.RequestCallback cb) {
-			this.method ("DELETE", rule, cb);
+		public void delete (string rule, Route.RouteCallback cb) {
+			this.method (Request.DELETE, rule, cb);
 		}
 
-		public void head (string rule, Route.RequestCallback cb) {
-			this.method ("HEAD", rule, cb);
+		public void head (string rule, Route.RouteCallback cb) {
+			this.method (Request.HEAD, rule, cb);
 		}
 
-		public void options(string rule, Route.RequestCallback cb) {
-			this.method ("OPTIONS", rule, cb);
+		public void options(string rule, Route.RouteCallback cb) {
+			this.method (Request.OPTIONS, rule, cb);
 		}
 
-		public void trace (string rule, Route.RequestCallback cb) {
-			this.method ("TRACE", rule, cb);
+		public void trace (string rule, Route.RouteCallback cb) {
+			this.method (Request.TRACE, rule, cb);
 		}
 
-		public void connect (string rule, Route.RequestCallback cb) {
-			this.method ("CONNECT", rule, cb);
+		public new void connect (string rule, Route.RouteCallback cb) {
+			this.method (Request.CONNECT, rule, cb);
 		}
 
 		// http://tools.ietf.org/html/rfc5789
-		public void patch (string rule, Route.RequestCallback cb) {
-			this.method ("PATCH", rule, cb);
+		public void patch (string rule, Route.RouteCallback cb) {
+			this.method (Request.PATCH, rule, cb);
 		}
 
 		/**
@@ -102,11 +102,11 @@ namespace Valum {
 		 * @param cb     callback to be called on request matching the method and the
 		 *               rule.
 		 */
-		public void method (string method, string rule, Route.RequestCallback cb) {
+		public void method (string method, string rule, Route.RouteCallback cb) {
 			var full_rule = new StringBuilder ();
 
 			// scope the route
-			foreach (var scope in this.scopes) {
+			foreach (var scope in this.scopes.head) {
 				full_rule.append ("/%s".printf (scope));
 			}
 
@@ -128,14 +128,14 @@ namespace Valum {
 		 * @param method HTTP method
 		 * @param regex  regular expression matching the request path.
 		 */
-		public void regex (string method, Regex regex, Route.RequestCallback cb) {
+		public void regex (string method, Regex regex, Route.RouteCallback cb) {
 			this.route (method, new Route.from_regex (this, regex, cb));
 		}
 
 		/**
 		 * Bind a callback with a custom method and matcher.
 		 */
-		public void matcher (string method, Route.RequestMatcher matcher, Route.RequestCallback cb) {
+		public void matcher (string method, Route.RequestMatcher matcher, Route.RouteCallback cb) {
 			this.route (method, new Route.from_matcher (this, matcher, cb));
 		}
 
@@ -148,12 +148,11 @@ namespace Valum {
 		 * @param route  an instance of Route defining the matching process and the
 		 *               callback.
 		 */
-		public void route (string method, Route route) {
-			if (!this.routes.has_key(method)){
-				this.routes[method] = new ArrayList<Route> ();
-			}
+		private void route (string method, Route route) {
+			if (!this.routes.contains (method))
+				this.routes[method] = new Queue<Route> ();
 
-			this.routes[method].add (route);
+			this.routes[method].push_tail (route);
 		}
 
 		/**
@@ -166,19 +165,27 @@ namespace Valum {
 		 * @param router   nested router in the new scoped environment
 		 */
 		public void scope (string fragment, NestedRouter router) {
-			this.scopes.add (fragment);
+			this.scopes.push_tail (fragment);
 			router (this);
-			this.scopes.remove_at (this.scopes.size - 1);
+			this.scopes.pop_tail ();
 		}
 
-		// handler code
-		public virtual signal void handler (Request req, Response res) {
+		/**
+		 * Signal handling the request.
+		 *
+		 * It is possible to bind a callback to be executed before and after
+		 * this signal so that you can have setup and teardown operations (ex.
+		 * closing the database connection, sending mails).
+		 *
+		 * @param req request being handled.
+		 * @param res response being transmitted to the request client.
+		 */
+		public void handler (Request req, Response res) {
+			// ensure at least one route has been declared with that method
+			if (!this.routes.contains(req.method))
+				return;
 
-			message ("%s %s".printf (req.message.method, req.path));
-
-			var routes = this.routes[req.message.method];
-
-			foreach (var route in routes) {
+			foreach (var route in this.routes[req.method].head) {
 				if (route.match (req)) {
 
 					// fire the route!
@@ -187,19 +194,6 @@ namespace Valum {
 					return;
 				}
 			}
-		}
-
-		// libsoup-based handler
-		public void soup_handler (Soup.Server server,
-				Soup.Message msg,
-				string path,
-				GLib.HashTable? query,
-				Soup.ClientContext client) {
-
-			var req = new Request (msg);
-			var res = new Response (msg);
-
-			this.handler (req, res);
 		}
 	}
 }
