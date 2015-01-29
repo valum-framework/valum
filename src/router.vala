@@ -50,40 +50,40 @@ namespace Valum {
 		//
 		// HTTP Verbs
 		//
-		public new void get (string rule, Route.RouteCallback cb) {
+		public new void get (string rule, Route.RouteCallback cb) throws RegexError {
 			this.method (Request.GET, rule, cb);
 		}
 
-		public void post (string rule, Route.RouteCallback cb) {
+		public void post (string rule, Route.RouteCallback cb) throws RegexError {
 			this.method (Request.POST, rule, cb);
 		}
 
-		public void put (string rule, Route.RouteCallback cb) {
+		public void put (string rule, Route.RouteCallback cb) throws RegexError {
 			this.method (Request.PUT, rule, cb);
 		}
 
-		public void delete (string rule, Route.RouteCallback cb) {
+		public void delete (string rule, Route.RouteCallback cb) throws RegexError {
 			this.method (Request.DELETE, rule, cb);
 		}
 
-		public void head (string rule, Route.RouteCallback cb) {
+		public void head (string rule, Route.RouteCallback cb) throws RegexError {
 			this.method (Request.HEAD, rule, cb);
 		}
 
-		public void options(string rule, Route.RouteCallback cb) {
+		public void options(string rule, Route.RouteCallback cb) throws RegexError {
 			this.method (Request.OPTIONS, rule, cb);
 		}
 
-		public void trace (string rule, Route.RouteCallback cb) {
+		public void trace (string rule, Route.RouteCallback cb) throws RegexError {
 			this.method (Request.TRACE, rule, cb);
 		}
 
-		public new void connect (string rule, Route.RouteCallback cb) {
+		public new void connect (string rule, Route.RouteCallback cb) throws RegexError {
 			this.method (Request.CONNECT, rule, cb);
 		}
 
 		// http://tools.ietf.org/html/rfc5789
-		public void patch (string rule, Route.RouteCallback cb) {
+		public void patch (string rule, Route.RouteCallback cb) throws RegexError {
 			this.method (Request.PATCH, rule, cb);
 		}
 
@@ -103,7 +103,7 @@ namespace Valum {
 		 * @param cb     callback to be called on request matching the method and the
 		 *               rule.
 		 */
-		public void method (string method, string rule, Route.RouteCallback cb) {
+		public void method (string method, string rule, Route.RouteCallback cb) throws RegexError {
 			var full_rule = new StringBuilder ();
 
 			// scope the route
@@ -129,7 +129,7 @@ namespace Valum {
 		 * @param method HTTP method
 		 * @param regex  regular expression matching the request path.
 		 */
-		public void regex (string method, Regex regex, Route.RouteCallback cb) {
+		public void regex (string method, Regex regex, Route.RouteCallback cb) throws RegexError {
 			this.route (method, new Route.from_regex (this, regex, cb));
 		}
 

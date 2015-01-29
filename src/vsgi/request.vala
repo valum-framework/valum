@@ -27,7 +27,7 @@ namespace VSGI {
 		 *
 		 * These should be extracted from the URI path.
 		 */
-		public HashTable<string, string>? params = null;
+		public HashTable<string, string?>? params = null;
 
 		/**
 		 * Request HTTP method

@@ -24,7 +24,7 @@ namespace VSGI {
 				var cookies = new SList<Soup.Cookie> ();
 
 				foreach (var cookie in this.headers.get_list ("Set-Cookie").split (",")) {
-					cookies.append (Soup.Cookie.parse (cookie, null));
+					cookies.append (Soup.Cookie.parse (cookie, new Soup.URI (null)));
 				}
 
 				return cookies;

@@ -45,7 +45,7 @@ namespace Valum {
 		/**
 		 * Create a Route for a given callback using a Regex.
 		 */
-		public Route.from_regex (Router router, Regex regex, RouteCallback callback) {
+		public Route.from_regex (Router router, Regex regex, RouteCallback callback) throws RegexError {
 			this.router   = router;
 			this.callback = callback;
 
@@ -65,10 +65,11 @@ namespace Valum {
 				if (regex.match (req.uri.get_path (), 0, out match_info)) {
 					if (captures.length () > 0) {
 						// populate the request parameters
-						req.params = new HashTable<string, string> (str_hash, str_equal);
+						var p = new HashTable<string, string?> (str_hash, str_equal);
 						foreach (var capture in captures) {
-							req.params[capture] = match_info.fetch_named (capture);
+							p[capture] = match_info.fetch_named (capture);
 						}
+						req.params = p;
 					}
 					return true;
 				}
@@ -81,7 +82,7 @@ namespace Valum {
          *
 		 * A rule will compile down to Regex.
 		 */
-		public Route.from_rule (Router router, string rule, RouteCallback callback) {
+		public Route.from_rule (Router router, string rule, RouteCallback callback) throws RegexError {
 			this.router   = router;
 			this.callback = callback;
 
@@ -115,10 +116,11 @@ namespace Valum {
 				if (regex.match (req.uri.get_path (), 0, out match_info)) {
 					if (captures.length () > 0) {
 						// populate the request parameters
-						req.params = new HashTable<string, string> (str_hash, str_equal);
+						var p = new HashTable<string, string?> (str_hash, str_equal);
 						foreach (var capture in captures) {
-							req.params[capture] = match_info.fetch_named (capture);
+							p[capture] = match_info.fetch_named (capture);
 						}
+						req.params = p;
 					}
 					return true;
 				}

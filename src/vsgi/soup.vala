@@ -11,7 +11,7 @@ namespace VSGI {
 	class SoupRequest : VSGI.Request {
 
 		private Soup.Message message;
-		private HashTable<string, string> _query;
+		private HashTable<string, string>? _query;
 
 		public override string method { owned get { return this.message.method ; } }
 
@@ -92,7 +92,7 @@ namespace VSGI {
 
 		private Soup.Server server = new Soup.Server (Soup.SERVER_SERVER_HEADER, VSGI.APP_NAME);
 
-		public SoupServer (VSGI.Application app, uint port) {
+		public SoupServer (VSGI.Application app, uint port) throws Error {
 			base (app);
 
 			this.server.listen_all (port, Soup.ServerListenOptions.IPV4_ONLY);
