@@ -180,7 +180,11 @@ namespace Valum {
 				return;
 			}
 
-			var v = /* (Value) does not compile.. */ val;
+			warning ("not implemented!");
+
+			return;
+
+			var v = (Value) val;
 
 			// coverts all Gee collections
 			if (Value.type_compatible (v.type (), typeof(Collection))) {
