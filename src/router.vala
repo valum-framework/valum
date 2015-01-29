@@ -34,6 +34,7 @@ namespace Valum {
 			// initialize default types
 			this.types["int"]    = "\\d+";
 			this.types["string"] = "\\w+";
+			this.types["path"]   = "[\\w/]+";
 			this.types["any"]    = ".+";
 
 			this.handler.connect ((req, res) => {
