@@ -5,7 +5,7 @@ Valum has the following dependencies:
 
  - vala
  - glib-2.0
- - libsoup-2.5
+ - libsoup-2.4
  - libgee-0.8
  - ctpl
 
@@ -16,23 +16,24 @@ The sample application depends on
  - memcached
 
 We use the [waf build system](https://code.google.com/p/waf/) and distribute it
-with the sources, so you will need Python.
+with the sources, so you will need a
+[Python interpreter](https://www.python.org/).
 
 Debian and Ubuntu
 -----------------
 
 ```bash
-apt-get install -y git-core build-essential python valac libgee-0.8-dev \
-                   libsoup2.4-dev memcached libmemcached-dev libluajit-5.1-dev \
-                   libctpl-dev
+apt-get install git-core build-essential python valac libglib2.0-dev \
+                libsoup2.4-dev libgee-0.8-dev libfcgi-dev memcached \
+                libmemcached-dev libluajit-5.1-dev libctpl-dev
 ```
 
 Fedora
 ------
 
 ```bash
-yum install git python vala libgee-devel libsoup-devel libctpl-devel \
-            memcached libmemcached-devel luajit-devel
+yum install git python vala glib2-devel libsoup-devel libgee-devel fcgi-devel \
+            memcached libmemcached-devel luajit-devel libctpl-devel
 ```
 
 Download the sources

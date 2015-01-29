@@ -12,7 +12,8 @@ namespace VSGI {
 
 		private weak FastCGI.request request;
 
-		private Soup.URI _uri = new Soup.URI (null);
+		private string _method;
+		private Soup.URI _uri;
 		private HashTable<string, string> _query;
 		private Soup.MessageHeaders _headers = new Soup.MessageHeaders (Soup.MessageHeadersType.REQUEST);
 
@@ -25,7 +26,7 @@ namespace VSGI {
 		}
 
 		public override string method {
-			owned get { return this.request.environment["REQUEST_METHOD"]; }
+			owned get { return this._method; }
 		}
 
 		public override Soup.MessageHeaders headers {
@@ -35,12 +36,16 @@ namespace VSGI {
 		public FastCGIRequest(FastCGI.request request) {
 			this.request = request;
 
+			// assign the HTTP method
+			var method = this.request.environment["REQUEST_METHOD"];
+			this._method = (method == null) ? Request.GET : (string) method;
+
 			// populate the URI
-			this._uri.set_path (this.request.environment["PATH_INFO"]);
+			this._uri = new Soup.URI (this.request.environment["PATH_INFO"]);
 			this._uri.set_query (this.request.environment["QUERY_STRING"]);
 
 			// parse the HTTP query
-			this._query = Soup.Form.decode (this.request.environment["QUERY_STRING"]);
+			this._query = Soup.Form.decode (this._uri.get_query ());
 
 			var headers = new StringBuilder();
 
@@ -145,7 +150,7 @@ namespace VSGI {
 			return written;
 		}
 
-		public override bool close (Cancellable? cancellable = null) {
+		public override bool close (Cancellable? cancellable = null) throws IOError {
 			// write headers for empty message
 			lock (this.headers_written) {
 				if (!this.headers_written) {
@@ -161,6 +166,8 @@ namespace VSGI {
 
 	/**
 	 * FastCGI Server using GLib.MainLoop.
+	 *
+	 * @since 0.1
 	 */
 	public class FastCGIServer : VSGI.Server {
 
@@ -176,6 +183,8 @@ namespace VSGI {
 
 		/**
 		 * Create a FastCGI Server from a socket.
+		 *
+		 * @since 0.1
 		 *
 		 * @param path    socket path or port number (port are written like :8080)
 		 * @param backlog listen queue depth
@@ -206,8 +215,6 @@ namespace VSGI {
 					loop.quit ();
 					return false;
 				}
-
-				info ("new request with id %d accepted", request.request_id);
 
 				var req = new VSGI.FastCGIRequest (this.request);
 				var res = new VSGI.FastCGIResponse (this.request);

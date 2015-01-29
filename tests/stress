@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+# stress test using httperf
+httperf --server 0.0.0.0 --port 3003 --hog --num-calls 5000 --rate 30 $@

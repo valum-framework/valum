@@ -7,24 +7,30 @@ namespace VSGI {
 
 		/**
 		 * Response status.
+		 *
+		 * @since 0.0.1
 		 */
 		public abstract uint status { get; set; }
 
 		/**
 		 * Property for the Content-Type header.
+		 *
+		 * @since 0.0.1
 		 */
 		public abstract string mime { get; set; }
 
 		/**
 		 * Property for the Set-Cookie header.
 		 * Set cookies for this Response.
+		 *
+		 * @since 0.1
 		 */
 		public SList<Soup.Cookie> cookies {
 			owned get {
 				var cookies = new SList<Soup.Cookie> ();
 
 				foreach (var cookie in this.headers.get_list ("Set-Cookie").split (",")) {
-					cookies.append (Soup.Cookie.parse (cookie, null));
+					cookies.append (Soup.Cookie.parse (cookie, new Soup.URI (null)));
 				}
 
 				return cookies;
@@ -38,6 +44,8 @@ namespace VSGI {
 
 		/**
 		 * Response headers.
+		 *
+		 * @since 0.0.1
 		 */
 		public abstract Soup.MessageHeaders headers { get; }
 	}

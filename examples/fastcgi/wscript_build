@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
 bld.program(
-   target       = 'fastcgi',
-   use          = 'valum',
-   source       = ['app.vala'],
-   uselib       = ['GEE', 'SOUP', 'FCGI'],
-   vapi_dirs    = ['../../vapi'])
+    packages  = ['glib-2.0'],
+    target    = 'fastcgi',
+    use       = 'valum',
+    source    = ['app.vala'],
+    uselib    = ['GLIB', 'SOUP', 'GEE', 'FCGI'],
+    vapi_dirs = ['../../vapi'])
 
 bld(
     rule   = 'cp ${SRC} ${TGT}',

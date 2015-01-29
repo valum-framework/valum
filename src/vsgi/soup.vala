@@ -11,7 +11,7 @@ namespace VSGI {
 	class SoupRequest : VSGI.Request {
 
 		private Soup.Message message;
-		private HashTable<string, string> _query;
+		private HashTable<string, string>? _query;
 
 		public override string method { owned get { return this.message.method ; } }
 
@@ -87,15 +87,16 @@ namespace VSGI {
 
 	/**
 	 * Implementation of VSGI.Server based on Soup.Server.
+	 *
+	 * @since 0.1
 	 */
 	public class SoupServer : VSGI.Server {
 
-		private Soup.Server server = new Soup.Server (Soup.SERVER_SERVER_HEADER, VSGI.APP_NAME);
+		private Soup.Server server;
 
-		public SoupServer (VSGI.Application app, uint port) {
+		public SoupServer (VSGI.Application app, uint port) throws Error {
 			base (app);
-
-			this.server.listen_all (port, Soup.ServerListenOptions.IPV4_ONLY);
+			this.server = new Soup.Server (Soup.SERVER_PORT, 3003);
 		}
 
 		/**
@@ -116,9 +117,7 @@ namespace VSGI {
 
 			this.server.add_handler (null, soup_handler);
 
-			foreach (var uri in server.get_uris ()) {
-				message ("listening on %s", uri.to_string (false));
-			}
+			message ("listening on http://%s:%u", server.interface.physical, server.interface.port);
 
 			// run the server
 			this.server.run ();
