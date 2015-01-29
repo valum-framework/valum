@@ -118,12 +118,13 @@ namespace Valum {
 		 * @param key   key for the value pushed in the environment
 		 * @param value value that must respec one of the supported type
 		 */
-		public void push_value (string key, Value val) {
-
-			// TODO: list of string, float and int
+		public void push_value (string key, Value? val) {
+			if (val == null) {
+				this.environment.push_string (key, "null");
+			}
 
 			// coverts all Gee collections
-			if (Value.type_compatible (val.type (), typeof(Collection))) {
+			else if (Value.type_compatible (val.type (), typeof(Collection))) {
 				this.push_collection (key, (Collection) val.get_object ());
 			}
 
