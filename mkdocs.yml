@@ -5,6 +5,7 @@ pages:
     - [index.md, Valum]
     - [installation.md, Basics, Installation]
     - [application.md, Basics, Application]
+    - [module.md, Basics, Modular application]
     - [ctpl.md, Basics, CTPL]
     - [router.md, Basics, Router]
     - [route.md, Basics, Route]

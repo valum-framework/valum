@@ -231,6 +231,32 @@ app.scope("admin", (adm) => {
 	});
 });
 
+// serve static resource using a path route parameter
+app.get("static/<path:resource>.min.<type>", (req, res) => {
+	var writer = new DataOutputStream (res);
+	var resource = req.params["resource"];
+	var type     = req.params["type"];
+	var contents = new uint8[128];
+	bool uncertain;
+
+	try {
+		var file = File.new_for_path ("examples/app/static/%s.min.%s".printf(resource, type));
+
+        // read 128 bytes for the content-type guess
+		file.read ().read (contents);
+		res.mime = ContentType.guess("%s.%s".printf(resource, type), contents, out uncertain);
+
+		if (uncertain)
+			warning ("could not infer content type of file %s.min.%s with certainty".printf (resource, type));
+
+		// transfer the file
+		res.splice (file.read (), OutputStreamSpliceFlags.CLOSE_SOURCE);
+	} catch (FileError fe) {
+		res.status = 404;
+		writer.put_string (fe.message);
+	}
+});
+
 app.method (Request.GET, "custom-method", (req, res) => {
 	var writer = new DataOutputStream(res);
 	writer.put_string (req.method);
