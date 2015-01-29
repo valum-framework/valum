@@ -267,6 +267,11 @@ app.regex (Request.GET, /\/custom-regular-expression$/, (req, res) => {
 	writer.put_string ("This route was matched using a custom regular expression.");
 });
 
+app.matcher (Request.GET, (req) => { return req.uri.get_path () == "/custom-matcher"; }, (req, res) => {
+	var writer = new DataOutputStream(res);
+	writer.put_string ("This route was matched using a custom matcher.");
+});
+
 app.get("<any:path>", (req, res) => {
 
 	res.status = 404;
