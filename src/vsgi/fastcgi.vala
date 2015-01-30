@@ -12,9 +12,9 @@ namespace VSGI {
 
 		private weak FastCGI.request request;
 
-		private string _method;
-		private Soup.URI _uri;
-		private HashTable<string, string> _query;
+		private string _method = Request.GET;
+		private Soup.URI _uri = new Soup.URI (null);
+		private HashTable<string, string> _query = null;
 		private Soup.MessageHeaders _headers = new Soup.MessageHeaders (Soup.MessageHeadersType.REQUEST);
 
 		public override Soup.URI uri { get { return this._uri; } }
@@ -36,16 +36,19 @@ namespace VSGI {
 		public FastCGIRequest(FastCGI.request request) {
 			this.request = request;
 
-			// assign the HTTP method
-			var method = this.request.environment["REQUEST_METHOD"];
-			this._method = (method == null) ? Request.GET : (string) method;
+			var environment = this.request.environment;
 
-			// populate the URI
-			this._uri = new Soup.URI (this.request.environment["PATH_INFO"]);
-			this._uri.set_query (this.request.environment["QUERY_STRING"]);
+			if (environment["REQUEST_METHOD"] != null)
+				this._method = environment["REQUEST_METHOD"];
+
+			if (environment["PATH_INFO"] != null)
+				this._uri.set_path (environment["PATH_INFO"]);
 
 			// parse the HTTP query
-			this._query = Soup.Form.decode (this._uri.get_query ());
+			if (environment["QUERY_STRING"] != null) {
+				this._uri.set_query (environment["QUERY_STRING"]);
+				this._query = Soup.Form.decode (environment["QUERY_STRING"]);
+			}
 
 			var headers = new StringBuilder();
 
