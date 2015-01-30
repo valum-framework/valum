@@ -3,14 +3,16 @@ repo_url: https://github.com/antono/valum
 theme: readthedocs
 pages:
     - [index.md, Valum]
-    - [installation.md, Basics, Installation]
+    - [installation.md, Installation]
     - [application.md, Basics, Application]
-    - [module.md, Basics, Modular application]
-    - [ctpl.md, Basics, CTPL]
-    - [router.md, Basics, Router]
+    - [vsgi/request.md, Basics, Request]
+    - [vsgi/response.md, Basics, Response]
     - [route.md, Basics, Route]
+    - [router.md, Basics, Router]
     - [server/soup.md, Server, Soup]
     - [server/fastcgi.md, Server, FastCGI]
+    - [module.md, Extra, Modular application]
+    - [ctpl.md, Extra, CTPL]
     - [scripting.md, Extra, Scripting]
     - [about/gnu-lgpl-v3.0.md, About, License]
 

@@ -1,6 +1,3 @@
-Modular application
-===================
-
 It is often useful to construct an application as a set of independant modules
 for decoupling the code or distributing reusable pieces.
 

@@ -1,6 +1,3 @@
-FastCGI
-=======
-
 This section covers how to deploy a FastCGI application written in Vala.
 
 In order to test your application, you will need to spawn a FastCGI process and

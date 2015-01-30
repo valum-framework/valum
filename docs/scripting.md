@@ -1,52 +1,58 @@
-Embedded Lua
-------------
+Through [Vala VAPI bindings](https://wiki.gnome.org/Projects/Vala/Bindings),
+application written on Valum can support multiple interpreters and JIT providing
+facilities for computation and templating.
+
+Basically, we provide [CTPL](ctpl), but you might want to have something a
+little more powerful, so this section should fit your needs.
+
+Lua
+---
+
+Valum currently supports embedded Lua as a templating and computation engine.
 
 ```java
-var app = new Valum.Router();
-var lua = new Valum.Script.Lua();
+using Valum;
+
+var app = new Router();
+var lua = new Script.Lua();
 
 // GET /lua
 app.get("lua", (req, res) => {
-  res.append(lua.eval("""
+    var writer = new DataOutputStream (res);
+
+    writer.put_string (lua.eval("""
     require "markdown"
     return markdown('## Hello from lua.eval!')
-  """));
+    """));
 
-  res.append(lua.run("app/hello.lua"));
+    writer.put_string (lua.run("scripts/hello.lua"));
 });
+
+new SoupServer (app, 3003).listen ();
 ```
 
-This code works with either Lua or LuaJIT depending
-on `--pkg` option in `Makefile`. See ./vapi/lua[jit].vapi for
-details.
-
-We are going to implement simplier syntax for lua scripts:
-
-Vala code:
-
-```java
-app.get("lua.html", app.lua("hello"));
-```
-
-Lua code:
-
+The sample Lua script contains:
 ```lua
--- VALUM_ROOT/scripts/hello.lua
 require 'markdown'
 return markdown("# Hello from Lua!!!")
 -- returned value will be appended to response body
 ```
 
-Resulted html:
+Resulting response
 ```html
-<h1> Hello from Lua!!! </h1>
+<h1>Hello from Lua!!!</h1>
 ```
 
 Scheme (TODO)
 -------------
 
+Scheme can be used to produce template or facilitate computation.
+
 ```java
-app.get("hello.scm", app.scm("hello"));
+app.get("hello.scm", (req, res) => {
+    var writer = new DataOutputStream (res);
+    res.put_string (scm.run ("scripts/hello.scm"));
+});
 ```
 
 Scheme code:

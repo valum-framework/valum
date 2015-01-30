@@ -1,3 +1,6 @@
+Getting started
+---------------
+
 This setup application should get you started with Valum.
 
 Copy this code in a file named `app.vala` and call
@@ -45,6 +48,9 @@ app.get("", (req, res) => {
 
 Using the Soup built-in server
 ------------------------------
+
+Implementations of application are based on VSGI middleware. This is why you can
+use an arbitrary server to serve them.
 
 This part is pretty straightforward: you create a server that will serve your
 application at port `3003`.

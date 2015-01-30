@@ -52,7 +52,7 @@ namespace Valum {
 			this.types["any"]    = ".+";
 
 			this.handler.connect ((req, res) => {
-				res.status = 200;
+				res.status = Soup.Status.OK;
 				res.headers.set_content_type ("text/html", null);
 			});
 

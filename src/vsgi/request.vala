@@ -7,7 +7,12 @@ namespace VSGI {
 	 */
 	public abstract class Request : InputStream {
 
-		// HTTP/1.1 http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
+		/**
+		 * HTTP/1.1 standard methods.
+		 *
+		 * @link  http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
+		 * @since 0.1
+		 */
 		public const string OPTIONS = "OPTIONS";
 		public const string GET     = "GET";
 		public const string HEAD    = "HEAD";
@@ -17,6 +22,15 @@ namespace VSGI {
 		public const string TRACE   = "TRACE";
 		public const string CONNECT = "CONNECT";
 
+		/**
+		 * PATCH method defined in RFC5789.
+		 *
+		 * This is a proposed standard, it is not part of the current HTTP/1.1
+		 * protocol.
+		 *
+		 * @link  http://tools.ietf.org/html/rfc5789
+		 * @since 0.1
+		 */
 		public const string PATCH   = "PATCH";
 
 		/**
@@ -33,7 +47,7 @@ namespace VSGI {
 		 *
 		 * These should be extracted from the URI path.
 		 */
-		public HashTable<string, string?>? params = null;
+		public HashTable<string, string?>? @params = null;
 
 		/**
 		 * Request HTTP method

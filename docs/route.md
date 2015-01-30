@@ -73,8 +73,9 @@ If the rule system does not suit your needs, it is always possible to use
 regular expression.
 
 ```java
-app.regex ("GET", /^/home/?$/, (req, res) => {
-
+app.regex (Request.GET, /^/home/?$/, (req, res) => {
+    var writer = new DataOutputStream (res);
+    writer.put_string ("Matched using a regular expression.");
 });
 ```
 
@@ -91,7 +92,8 @@ A matcher consist of a callback matching a given `Request` object.
 Route.RequestMatcher matcher = (req) => { req.path == "/custom-matcher"; };
 
 app.matcher ("GET", matcher, (req, res) => {
-    res.append ("Matched using a custom matcher.");
+    var writer = new DataOutputStream (res);
+    writer.put_string ("Matched using a custom matcher.");
 });
 ```
 
