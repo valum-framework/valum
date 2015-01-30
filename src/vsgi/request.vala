@@ -105,7 +105,7 @@ namespace VSGI {
 			owned get {
 				var cookies = new SList<Soup.Cookie> ();
 
-				foreach (var cookie in this.headers.get_list ("Cookie").split (",")) {
+				foreach (var cookie in this.headers.get_list ("Cookie").split ("; ")) {
 					cookies.append (Soup.Cookie.parse (cookie, this.uri));
 				}
 

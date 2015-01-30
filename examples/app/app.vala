@@ -63,14 +63,7 @@ app.get("cookies", (req, res) => {
 	// write cookies in response
 	writer.put_string ("Cookie\n");
 	foreach (var cookie in req.cookies) {
-		// write-back the cookies
-		res.headers.replace("Set-Cookie", cookie.to_set_cookie_header ());
-		writer.put_string ("%s: %s\n".printf(cookie.name, cookie.value));
-	}
-
-	writer.put_string ("Set-Cookie\n");
-	foreach (var cookie in res.cookies) {
-		writer.put_string ("%s: %s\n".printf(cookie.name, cookie.value));
+		writer.put_string ("%s: %s\n".printf (cookie.name, cookie.value));
 	}
 });
 

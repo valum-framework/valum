@@ -54,6 +54,7 @@ namespace Valum {
 			this.handler.connect ((req, res) => {
 				res.status = Soup.Status.OK;
 				res.headers.set_content_type ("text/html", null);
+				res.cookies = req.cookies;
 			});
 
 			this.handler.connect_after ((req, res) => {

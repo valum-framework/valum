@@ -39,23 +39,15 @@ namespace VSGI {
 
 		/**
 		 * Property for the Set-Cookie header.
-		 * Set cookies for this Response.
 		 *
 		 * @since 0.1
 		 */
 		public SList<Soup.Cookie> cookies {
-			owned get {
-				var cookies = new SList<Soup.Cookie> ();
-
-				foreach (var cookie in this.headers.get_list ("Set-Cookie").split (",")) {
-					cookies.append (Soup.Cookie.parse (cookie, this.request.uri));
-				}
-
-				return cookies;
-			}
 			set {
+				this.headers.remove ("Set-Cookie");
+
 				foreach (var cookie in value) {
-					this.headers.replace ("Set-Cookie", cookie.to_set_cookie_header ());
+					this.headers.append ("Set-Cookie", cookie.to_set_cookie_header ());
 				}
 			}
 		}
