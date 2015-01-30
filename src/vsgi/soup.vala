@@ -60,7 +60,8 @@ namespace VSGI {
 			get { return this.message.response_headers; }
 		}
 
-		public SoupResponse (Soup.Message msg) {
+		public SoupResponse (SoupRequest req, Soup.Message msg) {
+			base (req);
 			this.message = msg;
 		}
 
@@ -103,7 +104,7 @@ namespace VSGI {
 			Soup.ServerCallback soup_handler = (server, msg, path, query, client) => {
 
 				var req = new SoupRequest (msg, query);
-				var res = new SoupResponse (msg);
+				var res = new SoupResponse (req, msg);
 
 				this.application.handler (req, res);
 

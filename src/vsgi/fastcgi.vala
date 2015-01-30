@@ -96,7 +96,8 @@ namespace VSGI {
 
 		public override Soup.MessageHeaders headers { get { return this._headers; } }
 
-		public FastCGIResponse(FastCGI.request request) {
+		public FastCGIResponse(FastCGIRequest req, FastCGI.request request) {
+			base (req);
 			this.request = request;
 		}
 
@@ -215,7 +216,7 @@ namespace VSGI {
 				}
 
 				var req = new VSGI.FastCGIRequest (this.request);
-				var res = new VSGI.FastCGIResponse (this.request);
+				var res = new VSGI.FastCGIResponse (req, this.request);
 
 				this.application.handler (req, res);
 

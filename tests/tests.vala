@@ -82,7 +82,8 @@ public class TestResponse : VSGI.Response {
 		}
 	}
 
-	public TestResponse (uint status) {
+	public TestResponse (TestRequest req, uint status) {
+		base (req);
 		this._status = status;
 	}
 

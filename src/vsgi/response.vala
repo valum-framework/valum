@@ -8,6 +8,11 @@ namespace VSGI {
 	public abstract class Response : OutputStream {
 
 		/**
+		 * @since 0.1
+		 */
+		protected Request request;
+
+		/**
 		 * Response status.
 		 *
 		 * @since 0.0.1
@@ -22,6 +27,17 @@ namespace VSGI {
 		public abstract Soup.MessageHeaders headers { get; }
 
 		/**
+		 * Create a new Response instance.
+		 *
+		 * @since 0.1
+		 *
+		 * @param request Request that originated this response
+		 */
+		public Response (Request request) {
+			this.request = request;
+		}
+
+		/**
 		 * Property for the Set-Cookie header.
 		 * Set cookies for this Response.
 		 *
@@ -32,7 +48,7 @@ namespace VSGI {
 				var cookies = new SList<Soup.Cookie> ();
 
 				foreach (var cookie in this.headers.get_list ("Set-Cookie").split (",")) {
-					cookies.append (Soup.Cookie.parse (cookie, new Soup.URI (null)));
+					cookies.append (Soup.Cookie.parse (cookie, this.request.uri));
 				}
 
 				return cookies;

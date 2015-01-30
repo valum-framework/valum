@@ -115,7 +115,7 @@ public void test_route_fire () {
 		setted = true;
 	});
 	var req   = new TestRequest.with_uri (new Soup.URI ("http://localhost/home"));
-	var res   = new TestResponse (200);
+	var res   = new TestResponse (req, 200);
 
 	assert_false (setted);
 
