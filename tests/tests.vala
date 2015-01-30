@@ -76,11 +76,6 @@ public class TestResponse : VSGI.Response {
 
 	public override uint status { get { return this._status; } set { this._status = value; } }
 
-	public override string mime {
-		get { return this.headers.get_content_type (null); }
-		set { this.headers.set_content_type (value, null); }
-	}
-
 	public override Soup.MessageHeaders headers {
 		get {
 			return this._headers;

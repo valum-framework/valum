@@ -36,7 +36,7 @@ app.get("", (req, res) => {
 app.get ("query", (req, res) => {
 	var writer = new DataOutputStream(res);
 
-	res.mime = "text/plain";
+	res.headers.set_content_type ("text/plain", null);
 
 	if (req.query != null) {
 		req.query.foreach ((k, v) => {
@@ -49,7 +49,7 @@ app.get("headers", (req, res) => {
 
 	var writer = new DataOutputStream(res);
 
-	res.mime = "text/plain";
+	res.headers.set_content_type ("text/plain", null);
 	req.headers.foreach((name, header) => {
 		writer.put_string ("%s: %s\n".printf(name, header));
 	});
@@ -58,7 +58,7 @@ app.get("headers", (req, res) => {
 app.get("cookies", (req, res) => {
 	var writer = new DataOutputStream(res);
 
-	res.mime = "text/plain";
+	res.headers.set_content_type ("text/plain", null);
 
 	// write cookies in response
 	writer.put_string ("Cookie\n");
@@ -82,21 +82,21 @@ app.get("custom-route-type/<permutations:p>", (req, res) => {
 // hello world! (compare with Node.js!)
 app.get("hello", (req, res) => {
 	var writer = new DataOutputStream(res);
-	res.mime = "text/plain";
+	res.headers.set_content_type ("text/plain", null);
 	writer.put_string("Hello world\n");
 });
 
 // hello with a trailing slash
 app.get("hello/", (req, res) => {
 	var writer = new DataOutputStream(res);
-	res.mime = "text/plain";
+	res.headers.set_content_type ("text/plain", null);
 	writer.put_string("Hello world\n");
 });
 
 // example using route parameter
 app.get("hello/<id>", (req, res) => {
 	var writer = new DataOutputStream(res);
-	res.mime = "text/plain";
+	res.headers.set_content_type ("text/plain", null);
 	writer.put_string("hello %s!".printf(req.params["id"]));
 });
 
@@ -135,7 +135,7 @@ app.get("users/<int:id>/<action>", (req, res) => {
 	var id   = req.params["id"];
 	var test = req.params["action"];
 	var writer = new DataOutputStream(res);
-	res.mime = "text/plain";
+	res.headers.set_content_type ("text/plain", null);
 	writer.put_string(@"id\t=> $id\n");
 	writer.put_string(@"action\t=> $test");
 });
@@ -220,12 +220,12 @@ app.scope("admin", (adm) => {
 		fun.get("hack", (req, res) => {
 				var time = new DateTime.now_utc();
 				var writer = new DataOutputStream(res);
-				res.mime = "text/plain";
+				res.headers.set_content_type ("text/plain", null);
 				writer.put_string("It's %s around here!\n".printf(time.format("%H:%M")));
 		});
 		fun.get("heck", (req, res) => {
 				var writer = new DataOutputStream(res);
-				res.mime = "text/plain";
+				res.headers.set_content_type ("text/plain", null);
 				writer.put_string("Wuzzup!");
 		});
 	});
@@ -244,7 +244,7 @@ app.get("static/<path:resource>.min.<type>", (req, res) => {
 
         // read 128 bytes for the content-type guess
 		file.read ().read (contents);
-		res.mime = ContentType.guess("%s.%s".printf(resource, type), contents, out uncertain);
+		res.headers.set_content_type (ContentType.guess("%s.%s".printf(resource, type), contents, out uncertain), null);
 
 		if (uncertain)
 			warning ("could not infer content type of file %s.min.%s with certainty".printf (resource, type));

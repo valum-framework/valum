@@ -53,7 +53,7 @@ namespace Valum {
 
 			this.handler.connect ((req, res) => {
 				res.status = 200;
-				res.mime   = "text/html";
+				res.headers.set_content_type ("text/html", null);
 			});
 
 			this.handler.connect_after ((req, res) => {

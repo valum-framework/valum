@@ -2,6 +2,8 @@ namespace VSGI {
 
 	/**
 	 * Response
+	 *
+	 * @since 0.0.1
 	 */
 	public abstract class Response : OutputStream {
 
@@ -13,11 +15,11 @@ namespace VSGI {
 		public abstract uint status { get; set; }
 
 		/**
-		 * Property for the Content-Type header.
+		 * Response headers.
 		 *
 		 * @since 0.0.1
 		 */
-		public abstract string mime { get; set; }
+		public abstract Soup.MessageHeaders headers { get; }
 
 		/**
 		 * Property for the Set-Cookie header.
@@ -41,12 +43,5 @@ namespace VSGI {
 				}
 			}
 		}
-
-		/**
-		 * Response headers.
-		 *
-		 * @since 0.0.1
-		 */
-		public abstract Soup.MessageHeaders headers { get; }
 	}
 }

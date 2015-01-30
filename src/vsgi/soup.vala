@@ -51,11 +51,6 @@ namespace VSGI {
 
 		private Soup.Message message;
 
-		public override string mime {
-			get { return this.message.response_headers.get_content_type (null); }
-			set { this.message.response_headers.set_content_type (value, null); }
-		}
-
 		public override uint status {
 			get { return this.message.status_code; }
 			set { this.message.set_status (value); }
