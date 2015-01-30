@@ -10,6 +10,8 @@ public class TestRequest : VSGI.Request {
 
 	public override string method { owned get { return this._method; } }
 
+	public override HashTable<string, string>? session { owned get { return null; } set {} }
+
 	public override Soup.URI uri { get { return this._uri; } }
 
 	public override HashTable<string, string>? query { get { return this._query; } }

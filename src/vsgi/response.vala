@@ -8,19 +8,25 @@ namespace VSGI {
 	public abstract class Response : OutputStream {
 
 		/**
+		 * Request from which this response originates.
+		 *
+		 * Protected since the Request is assumed accessible in the public scope
+		 * through the application. This is a facility for accessing request from
+		 * the implementation.
+		 *
 		 * @since 0.1
 		 */
 		protected Request request;
 
 		/**
-		 * Response status.
+		 * Response HTTP status.
 		 *
 		 * @since 0.0.1
 		 */
 		public abstract uint status { get; set; }
 
 		/**
-		 * Response headers.
+		 * Response HTTP headers.
 		 *
 		 * @since 0.0.1
 		 */
@@ -31,14 +37,14 @@ namespace VSGI {
 		 *
 		 * @since 0.1
 		 *
-		 * @param request Request that originated this response
+		 * @param request from which this response originates.
 		 */
 		public Response (Request request) {
 			this.request = request;
 		}
 
 		/**
-		 * Property for the Set-Cookie header.
+		 * Cookies to send back to the client.
 		 *
 		 * @since 0.1
 		 */

@@ -94,6 +94,18 @@ namespace VSGI {
 		public abstract Soup.MessageHeaders headers { get; }
 
 		/**
+		 * User session.
+		 *
+		 * As session implementation might differ from a server to another, you have
+		 * to submit back the session to apply your changes.
+		 *
+		 * Assigning null to sessions will delete the session.
+		 *
+		 * @return filled table with session data
+		 */
+		public abstract HashTable<string, string>? session { owned get; set; }
+
+		/**
 		 * Request cookies.
          *
 		 * Cookies will be computed from the Cookie HTTP header everytime they are

@@ -6,12 +6,40 @@ using Soup;
 namespace VSGI {
 
 	/**
-	 * Soup Request
+	 * Request implementation based on libsoup.
 	 */
 	class SoupRequest : VSGI.Request {
 
+		/**
+		 * In-memory session implementation.
+		 *
+		 * This maps session id to session hashtable.
+		 */
+		private static HashTable<string, HashTable<string, string>> sessions = new HashTable<string, HashTable<string, string>> (str_hash, str_equal);
+
 		private Soup.Message message;
 		private HashTable<string, string>? _query;
+
+		/**
+		 * Find the session cookie if it exists.
+		 *
+		 * Minimally checks if the cookie is secure and not expired.
+		 *
+		 * @return null if the cookie is not found
+		 */
+		private Cookie? find_session_cookie () {
+			var cookies = this.cookies;
+
+			cookies.reverse ();
+
+			foreach (var cookie in cookies) {
+				if (cookie.name == "session" && cookie.secure && !cookie.expires.is_past ()) {
+					return cookie;
+				}
+			}
+
+			return null;
+		}
 
 		public override string method { owned get { return this.message.method ; } }
 
@@ -22,6 +50,40 @@ namespace VSGI {
 		public override MessageHeaders headers {
 			get {
 				return this.message.request_headers;
+			}
+		}
+
+		public override HashTable<string, string>? session {
+			owned get {
+				var cookie = this.find_session_cookie ();
+
+				// no cookie, no session
+				if (cookie == null)
+					return null;
+
+				return sessions[((Cookie) cookie).value];
+			}
+			set {
+				var cookie = this.find_session_cookie ();
+
+				if (cookie == null && session == null)
+					return;
+
+				if (cookie == null) {
+					// create a new cookie
+					cookie = new Cookie ("session", NM.Utils.uuid_generate (), this.uri.get_host (), this.uri.get_path (), -1);
+					this.headers.append ("Cookie", ((Cookie) cookie).to_cookie_header ());
+				}
+
+				var session_id = ((Cookie) cookie).value;
+
+				if (value == null) {
+					// delete the session
+					sessions.remove (session_id);
+				} else {
+					// update the session
+					sessions[session_id] = value;
+				}
 			}
 		}
 
@@ -113,6 +175,9 @@ namespace VSGI {
 		/**
 		 * Creates a Soup.Server, bind the application to it using a closure and
 		 * start the server.
+		 *
+		 * The used implementation of server is deprecated, but requires to build
+		 * under Travis CI.
 		 */
 		public override void listen () {
 
