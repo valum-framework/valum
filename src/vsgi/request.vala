@@ -106,8 +106,10 @@ namespace VSGI {
 				var cookies = new SList<Soup.Cookie> ();
 
 				foreach (var cookie in this.headers.get_list ("Cookie").split ("; ")) {
-					cookies.append (Soup.Cookie.parse (cookie, this.uri));
+					cookies.prepend (Soup.Cookie.parse (cookie, this.uri));
 				}
+
+				cookies.reverse ();
 
 				return cookies;
 			}
