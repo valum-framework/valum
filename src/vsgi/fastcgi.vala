@@ -10,11 +10,11 @@ namespace VSGI {
 	 */
 	class FastCGIRequest : Request {
 
-		private weak FastCGI.request request;
+		private new weak FastCGI.request request;
 
 		private string _method = Request.GET;
 		private Soup.URI _uri = new Soup.URI (null);
-		private HashTable<string, string> _query = null;
+		private HashTable<string, string>? _query = null;
 		private Soup.MessageHeaders _headers = new Soup.MessageHeaders (Soup.MessageHeadersType.REQUEST);
 
 		public override Soup.URI uri { get { return this._uri; } }
@@ -39,15 +39,15 @@ namespace VSGI {
 			var environment = this.request.environment;
 
 			if (environment["REQUEST_METHOD"] != null)
-				this._method = environment["REQUEST_METHOD"];
+				this._method = (string) environment["REQUEST_METHOD"];
 
 			if (environment["PATH_INFO"] != null)
-				this._uri.set_path (environment["PATH_INFO"]);
+				this._uri.set_path ((string) environment["PATH_INFO"]);
 
 			// parse the HTTP query
 			if (environment["QUERY_STRING"] != null) {
 				this._uri.set_query (environment["QUERY_STRING"]);
-				this._query = Soup.Form.decode (environment["QUERY_STRING"]);
+				this._query = Soup.Form.decode ((string) environment["QUERY_STRING"]);
 			}
 
 			var headers = new StringBuilder();
@@ -77,7 +77,7 @@ namespace VSGI {
 	 */
 	class FastCGIResponse : Response {
 
-		private weak FastCGI.request request;
+		private new weak FastCGI.request request;
 
 		/**
 		 * Tells if the headers part of the HTTP message has been written to the
