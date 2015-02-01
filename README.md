@@ -9,11 +9,28 @@ Valum is a web micro-framework entirely written in the
 Features
 --------
 
+Valum is built upon libsoup and provides a minimal set of features that covers
+just enough of the HTTP protocol to suit any requirement:
+
  - router with scope, typed parameters and low-level utilities
- - simple Request-Response mechanism
- - complete integration of [FastCGI](http://www.fastcgi.com/drupal/) protocol
+ - simple Request-Response mechanism via callback
+ - cookies and session handling
+ - complete integration of the [FastCGI](http://www.fastcgi.com/drupal/)
+   protocol
  - [CTPL](http://ctpl.tuxfamily.org/), a simple templating engine
- - extensive documentation available at [valum.readthedocs.org](http://valum.readthedocs.org/en/latest)
+ - extensive documentation available at
+   [valum.readthedocs.org](http://valum.readthedocs.org/en/latest)
+
+If you need more horsepower, bindings exist for
+
+ - HTTP protocol elements with
+   [libsoup](https://wiki.gnome.org/action/show/Projects/libsoup)
+ - database abstraction via [GDA](http://www.gnome-db.org/Home)
+ - cryptography and password hashing with
+   [gcrypt](http://www.gnu.org/software/libgcrypt/)
+ - more bindings on
+   [GNOME wiki](https://wiki.gnome.org/Projects/Vala/ExternalBindings) and
+   [nemequ/vala-extra-vapis](https://github.com/nemequ/vala-extra-vapis)
 
 Contributing
 ------------

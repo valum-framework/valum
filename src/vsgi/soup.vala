@@ -70,8 +70,13 @@ namespace VSGI {
 					return;
 
 				if (cookie == null) {
-					// create a new cookie
-					cookie = new Cookie ("session", NM.Utils.uuid_generate (), this.uri.get_host (), this.uri.get_path (), -1);
+					// create a new cookie using a UUID as name
+					uint8[16] uuid = {};
+					char[37] session_id = {};
+					UUID.generate_random (uuid);
+					UUID.unparse (uuid, session_id);
+
+					cookie = new Cookie ("session", (string) session_id, this.uri.get_host (), this.uri.get_path (), -1);
 					this.headers.append ("Cookie", ((Cookie) cookie).to_cookie_header ());
 				}
 
