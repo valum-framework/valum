@@ -32,7 +32,7 @@ app.get("", (req, res) => {
 		template.environment.push_string ("headers_%s".printf(k), v);
 	});
 
-	template.stream (res);
+	template.splice (res);
 });
 
 app.get ("query", (req, res) => {
@@ -174,7 +174,7 @@ app.get("ctpl/<foo>/<bar>", (req, res) => {
 	tpl.push_collection ("arr", arr);
 	tpl.environment.push_int ("int", 1);
 
-	tpl.stream (res);
+	tpl.splice  (res);
 });
 
 // streamed Ctpl template
@@ -182,7 +182,7 @@ app.get("ctpl/streamed", (req, res) => {
 
 	var tpl = new View.from_path("examples/app/templates/home.html");
 
-	tpl.stream(res);
+	tpl.splice (res);
 });
 
 // memcached
@@ -279,7 +279,7 @@ app.handle.connect_after ((req, res) => {
 	if (res.status == 404) {
 		var template = new View.from_path("examples/app/templates/404.html");
 		template.environment.push_string ("path", req.uri.get_path ());
-		template.stream (res);
+		template.splice (res);
 	}
 });
 
