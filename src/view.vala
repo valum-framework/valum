@@ -20,6 +20,7 @@ namespace Valum {
 		/**
 		 * Create a CTPL template from a path.
 		 *
+		 * @see   Ctpl.lexer_lex_path
 		 * @since 0.1
 		 */
 		public View.from_path (string path) throws IOError, Ctpl.LexerError {
@@ -29,6 +30,7 @@ namespace Valum {
 		/**
 		 * Create a CTPL template from a string.
 		 *
+		 * @see   Ctpl.lexer_lex_string
 		 * @since 0.0.1
 		 */
 		public View.from_string (string template) throws Ctpl.LexerError {
@@ -36,6 +38,7 @@ namespace Valum {
 		}
 
 		/**
+		 * @see   Ctpl.Environ.push_string
 		 * @since 0.1
 		 */
 		public void push_string (string key, string val) {
@@ -43,6 +46,7 @@ namespace Valum {
 		}
 
 		/**
+		 * @see   Ctpl.Environ.push_int
 		 * @since 0.1
 		 */
 		public void push_int (string key, long val) {
@@ -50,6 +54,7 @@ namespace Valum {
 		}
 
 		/**
+		 * @see   Ctpl.Environ.push_float
 		 * @since 0.1
 		 */
 		public void push_float (string key, double val) {
@@ -57,6 +62,8 @@ namespace Valum {
 		}
 
 		/**
+		 * Push an array of string into the environment.
+		 *
 		 * @since 0.1
 		 */
 		public void push_strings (string key, string[] val) {
@@ -70,6 +77,8 @@ namespace Valum {
 		}
 
 		/**
+		 * Push an array of long into the environment.
+		 *
 		 * @since 0.1
 		 */
 		public void push_ints (string key, long[] val) {
@@ -83,6 +92,8 @@ namespace Valum {
 		}
 
 		/**
+		 * Push an array of double into the environment.
+		 *
 		 * @since 0.1
 		 */
 		public void push_floats (string key, double[] val) {
@@ -98,9 +109,7 @@ namespace Valum {
 		/**
 		 * Push a Gee.Collection into the environment.
          *
-		 * The collection type can be string, int, float or collection.
-		 *
-		 * TODO: this thing SEGFAULTs..
+		 * The element type can be either string, long or double.
 		 *
 		 * @since 0.1
 		 */
@@ -163,11 +172,17 @@ namespace Valum {
 		 * Supports the following types:
 		 *
 		 * * string
-		 * * float
-		 * * int
+		 * * double
+		 * * long
+		 * * string[]
+		 * * double[]
+		 * * long[]
 		 * * Gee.Collection
 		 * * Gee.Map
 		 * * GLib.HashTable
+		 *
+		 * GLib lists (SList, List, Array, ...) are not supported as they do not
+		 * provide any way of infering their element type.
 		 *
 		 * @since 0.1
 		 *
@@ -218,11 +233,16 @@ namespace Valum {
 		}
 
 		/**
-		 * Stream the view in the given output stream.
+		 * Splice the template into a given OutputStream.
+		 *
+		 * This is used to render a template directly into a stream and avoid
+		 * memory overhead if the template is heavy.
 		 *
 		 * @since 0.1
+		 *
+		 * @param output OutputStream into which the template will be spliced.
 		 */
-		public void stream (OutputStream output) throws IOError, Ctpl.IOError {
+		public void splice (OutputStream output) throws IOError, Ctpl.IOError {
 			Ctpl.parser_parse (this.tree, this.environment, new Ctpl.OutputStream (output));
 		}
 
@@ -235,7 +255,7 @@ namespace Valum {
 		public string render () throws IOError, Ctpl.IOError {
 			var mem_stream = new MemoryOutputStream.resizable ();
 
-			this.stream (mem_stream);
+			this.splice (mem_stream);
 
 			return (string) mem_stream.get_data();
 		}
