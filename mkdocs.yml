@@ -11,6 +11,7 @@ pages:
     - [redirection-and-error.md, Basics, Redirection and Error]
     - [route.md, Basics, Route]
     - [router.md, Basics, Router]
+    - [recipes/static-resource.md, Recipes, Resources]
     - [server/soup.md, Server, Soup]
     - [server/fastcgi.md, Server, FastCGI]
     - [module.md, Extra, Modular Application]
