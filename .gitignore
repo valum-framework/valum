@@ -1,17 +1,8 @@
+### Valum ###
 build/*
-tmp/*
-log/*.log
-vendor/*
-*~
-*.o
-*.c
-*.h
-.\#*
-*.swp
-vapi/valum*
+
 
 ### Waf ###
 # for projects that use Waf for building: http://code.google.com/p/waf/
 .waf-*
 .lock-*
-
