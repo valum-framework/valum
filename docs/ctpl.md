@@ -12,8 +12,8 @@ Three primitive types and one composite type are supported:
 Creating views
 --------------
 
-The `View` class provides constructors to create views from string and file
-path.
+The `View` class provides constructors to create views from `string`, file path
+and `InputStream`.
 
 ```java
 var template = new View.from_string ("{a}");
@@ -21,6 +21,12 @@ var template = new View.from_string ("{a}");
 
 ```java
 var template = new View.from_path ("path/to/your/template.tpl");
+```
+
+It is a good practice to bundle static data in the executable using
+[GLib.Resource](http://valadoc.org/#!api=gio-2.0/GLib.Resource).
+```java
+var template = new View.from_stream (resources_open_stream ("/your/template.tpl"));
 ```
 
 Environment

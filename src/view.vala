@@ -38,6 +38,16 @@ namespace Valum {
 		}
 
 		/**
+		 * Create a CTPL template from an input stream.
+		 *
+		 * @see   Ctpl.lexer_lex_string
+		 * @since 0.1
+		 */
+		public View.from_stream (InputStream input) throws IOError, Ctpl.LexerError {
+			this.tree = Ctpl.lexer_lex (new Ctpl.InputStream (input, null));
+		}
+
+		/**
 		 * @see   Ctpl.Environ.push_string
 		 * @since 0.1
 		 */

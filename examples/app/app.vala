@@ -25,7 +25,7 @@ app.handle.connect_after ((req, res) => {
 
 // default route
 app.get("", (req, res) => {
-	var template =  new View.from_path("examples/app/templates/home.html");
+	var template = new View.from_stream(resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
 
 	template.environment.push_string ("path", req.uri.get_path ());
 	req.headers.foreach ((k, v) => {
@@ -180,7 +180,7 @@ app.get("ctpl/<foo>/<bar>", (req, res) => {
 // streamed Ctpl template
 app.get("ctpl/streamed", (req, res) => {
 
-	var tpl = new View.from_path("examples/app/templates/home.html");
+	var tpl = new View.from_stream(resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
 
 	tpl.splice (res);
 });
@@ -232,23 +232,25 @@ app.get("static/<path:resource>.<any:type>", (req, res) => {
 	var resource = req.params["resource"];
 	var type     = req.params["type"];
 	var contents = new uint8[128];
+	var path     = "/static/%s.%s".printf (resource, type);
 	bool uncertain;
 
 	try {
-		var file = File.new_for_path ("examples/app/static/%s.%s".printf(resource, type));
+		var lookup = resources_lookup_data (path, ResourceLookupFlags.NONE);
 
-        // read 128 bytes for the content-type guess
-		file.read ().read (contents);
-		res.headers.set_content_type (ContentType.guess("%s.%s".printf(resource, type), contents, out uncertain), null);
+		// set the content-type based on a good guess
+		res.headers.set_content_type (ContentType.guess(path, lookup.get_data (), out uncertain), null);
 
 		if (uncertain)
 			warning ("could not infer content type of file %s.%s with certainty".printf (resource, type));
 
+		var file = resources_open_stream (path, ResourceLookupFlags.NONE);
+
 		// transfer the file
-		res.splice (file.read (), OutputStreamSpliceFlags.CLOSE_SOURCE);
-	} catch (FileError fe) {
+		res.splice (file, OutputStreamSpliceFlags.CLOSE_SOURCE);
+	} catch (Error e) {
 		res.status = 404;
-		writer.put_string (fe.message);
+		writer.put_string (e.message);
 	}
 });
 
@@ -277,7 +279,7 @@ app.matcher (VSGI.Request.GET, (req) => { return req.uri.get_path () == "/custom
 
 app.handle.connect_after ((req, res) => {
 	if (res.status == 404) {
-		var template = new View.from_path("examples/app/templates/404.html");
+		var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));
 		template.environment.push_string ("path", req.uri.get_path ());
 		template.splice (res);
 	}

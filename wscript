@@ -15,7 +15,6 @@ def options(opt):
 def configure(conf):
     conf.load('compiler_c vala')
 
-    conf.check_cfg(package='glib', mandatory=True)
     conf.check_cfg(package='glib-2.0', atleast_version='2.32', mandatory=True, uselib_store='GLIB', args='--cflags --libs')
     conf.check_cfg(package='gio-2.0', atleast_version='2.32', uselib_store='GIO', args='--cflags --libs')
     conf.check_cfg(package='ctpl', atleast_version='0.3.3', mandatory=True, uselib_store='CTPL', args='--cflags --libs')
