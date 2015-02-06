@@ -165,7 +165,7 @@ namespace Ctpl {
 		public void array_prepend_int (long val);
 		public void array_prepend_string (global::string val);
 		[CCode (has_construct_function = false)]
-		public Value.arrayv (Ctpl.ValueType type, size_t count, void* ap);
+		public Value.arrayv (Ctpl.ValueType type, size_t count, va_list ap);
 		public bool convert (Ctpl.ValueType vtype);
 		public void copy (Ctpl.Value dst_value);
 		public unowned Ctpl.Value dup ();
@@ -183,14 +183,14 @@ namespace Ctpl {
 		public void init ();
 		[CCode (has_construct_function = false)]
 		public Value.int (long val);
-		public void set_array (Ctpl.ValueType type, size_t count, void* ap);
+		public void set_array (Ctpl.ValueType type, size_t count, va_list ap);
 		public void set_array_float (size_t count);
-		public void set_array_floatv (size_t count, void* ap);
+		public void set_array_floatv (size_t count, va_list ap);
 		public void set_array_int (size_t count);
-		public void set_array_intv (size_t count, void* ap);
+		public void set_array_intv (size_t count, va_list ap);
 		public void set_array_string (size_t count);
-		public void set_array_stringv (size_t count, void* ap);
-		public void set_arrayv (Ctpl.ValueType type, size_t count, void* ap);
+		public void set_array_stringv (size_t count, va_list ap);
+        public void set_arrayv (Ctpl.ValueType type, size_t count, va_list ap);
 		public void set_float (double val);
 		public void set_int (long val);
 		public void set_string (global::string val);
