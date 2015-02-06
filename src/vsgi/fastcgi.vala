@@ -38,17 +38,22 @@ namespace VSGI {
 
 			var environment = this.request.environment;
 
-			if (environment["REQUEST_METHOD"] != null)
-				this._method = (string) environment["REQUEST_METHOD"];
+			// nullables
+			this._uri.set_host (environment["SERVER_NAME"]);
+			this._uri.set_query (environment["QUERY_STRING"]);
 
 			if (environment["PATH_INFO"] != null)
 				this._uri.set_path ((string) environment["PATH_INFO"]);
 
+			if (environment["SERVER_PORT"] != null)
+				this._uri.set_port (int.parse (environment["SERVER_PORT"]));
+
+			if (environment["REQUEST_METHOD"] != null)
+				this._method = (string) environment["REQUEST_METHOD"];
+
 			// parse the HTTP query
-			if (environment["QUERY_STRING"] != null) {
-				this._uri.set_query (environment["QUERY_STRING"]);
+			if (environment["QUERY_STRING"] != null)
 				this._query = Soup.Form.decode ((string) environment["QUERY_STRING"]);
-			}
 
 			var headers = new StringBuilder();
 
@@ -214,6 +219,9 @@ namespace VSGI {
 					loop.quit ();
 					return false;
 				}
+
+				foreach (var env in this.request.environment.get_all())
+					message (env);
 
 				var req = new VSGI.FastCGIRequest (this.request);
 				var res = new VSGI.FastCGIResponse (req, this.request);
