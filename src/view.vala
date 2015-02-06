@@ -66,14 +66,8 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public void push_strings (string key, string[] val) {
-			var arr = new Ctpl.Value.array (Ctpl.ValueType.STRING);
-
-			foreach (var e in val) {
-				arr.array_append_string (e);
-			}
-
-			this.environment.push (key, arr);
+		public void push_strings (string key, size_t length, ...) {
+			this.environment.push (key, new Ctpl.Value.arrayv (Ctpl.ValueType.STRING, length, va_list ()));
 		}
 
 		/**
@@ -81,14 +75,8 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public void push_ints (string key, long[] val) {
-			var arr = new Ctpl.Value.array (Ctpl.ValueType.INT);
-
-			foreach (var e in val) {
-				arr.array_append_int (e);
-			}
-
-			this.environment.push (key, arr);
+		public void push_ints (string key, size_t length, ...) {
+			this.environment.push (key, new Ctpl.Value.arrayv (Ctpl.ValueType.INT, length, va_list ()));
 		}
 
 		/**
@@ -96,14 +84,8 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public void push_floats (string key, double[] val) {
-			var arr = new Ctpl.Value.array (Ctpl.ValueType.FLOAT);
-
-			foreach (var e in val) {
-				arr.array_append_float (e);
-			}
-
-			this.environment.push (key, arr);
+		public void push_floats (string key, size_t length, ...) {
+			this.environment.push (key, new Ctpl.Value.arrayv (Ctpl.ValueType.FLOAT, length, va_list ()));
 		}
 
 		/**
@@ -116,16 +98,16 @@ namespace Valum {
 		public void push_collection (string key, Collection collection) {
 			var arr = collection.to_array ();
 
-			if (Value.type_transformable(collection.element_type, typeof(long[]))) {
-				this.push_ints (key, (long[]) arr);
+			if (Value.type_transformable(collection.element_type, typeof(long))) {
+				this.push_ints (key, arr.length, (long[]) arr);
 			}
 
-			else if (Value.type_transformable(collection.element_type, typeof(double[]))) {
-				this.push_floats (key, (double[]) arr);
+			else if (Value.type_transformable(collection.element_type, typeof(double))) {
+				this.push_floats (key, arr.length, (double[]) arr);
 			}
 
-			else if (collection.element_type == typeof(string[])) {
-				this.push_strings (key, (string[]) arr);
+			else if (collection.element_type == typeof(string)) {
+				this.push_strings (key, arr.length, (string[]) arr);
 			}
 
 			else {

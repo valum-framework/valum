@@ -41,3 +41,124 @@ public static void test_view_push_float () {
 	assert (popped);
 	assert (val.get_float () == 5.5);
 }
+
+public static void test_view_push_strings () {
+	var view         = new View ();
+
+	view.push_strings ("key", 3, "a", "b", "c");
+
+	Ctpl.Value val = null;
+	var popped = view.environment.pop ("key", ref val);
+
+	assert (popped);
+
+	unowned SList<string> arr = (SList<string>) val.get_array ();
+
+	assert (arr.nth_data (0) == "a");
+	assert (arr.nth_data (1) == "b");
+	assert (arr.nth_data (2) == "c");
+
+	assert (arr.nth_data (3) == null);
+}
+
+public static void test_view_push_ints () {
+	var view     = new View ();
+
+	view.push_ints ("key", 3,  0L, 1L, 2L);
+
+	Ctpl.Value val = null;
+	var popped = view.environment.pop ("key", ref val);
+
+	assert (popped);
+
+	unowned SList<long> arr = (SList<long>) val.get_array ();
+
+	assert (arr.nth_data (0) == 0L);
+	assert (arr.nth_data (1) == 1L);
+	assert (arr.nth_data (2) == 2L);
+}
+
+public static void test_view_push_floats () {
+	var view         = new View ();
+
+	view.push_floats ("key", 3, 0.1, 0.2, 0.3);
+
+	Ctpl.Value val = null;
+	var popped = view.environment.pop ("key", ref val);
+
+	assert (popped);
+
+	unowned SList<double?> arr = (SList<double?>) val.get_array ();
+
+	assert (arr.nth_data (0) == 0.1);
+	assert (arr.nth_data (1) == 0.2);
+	assert (arr.nth_data (2) == 0.3);
+
+	assert (arr.nth_data (3) == null);
+}
+
+public static void test_view_push_collection_strings () {
+	var view         = new View ();
+	var collection   = new Gee.ArrayList<string> ();
+
+	collection.add ("a");
+	collection.add ("b");
+	collection.add ("c");
+
+	view.push_collection ("key", collection);
+
+	Ctpl.Value val = null;
+	var popped = view.environment.pop ("key", ref val);
+
+	assert (popped);
+
+	unowned SList<string> arr = (SList<string>) val.get_array ();
+
+	assert (arr.nth_data (0) == "a");
+	assert (arr.nth_data (1) == "b");
+	assert (arr.nth_data (2) == "c");
+}
+
+public static void test_view_push_collection_ints () {
+	var view         = new View ();
+	var collection   = new Gee.ArrayList<long> ();
+
+	collection.add (0L);
+	collection.add (1L);
+	collection.add (2L);
+
+	view.push_collection ("key", collection);
+
+	Ctpl.Value val = null;
+	var popped = view.environment.pop ("key", ref val);
+
+	assert (popped);
+
+	unowned SList<long> arr = (SList<long>) val.get_array ();
+
+	assert (arr.nth_data (0) == 0L);
+	assert (arr.nth_data (1) == 1L);
+	assert (arr.nth_data (2) == 2L);
+}
+
+public static void test_view_push_collection_floats () {
+	var view         = new View ();
+	var collection   = new Gee.ArrayList<double?> ();
+
+	collection.add (0.1);
+	collection.add (0.2);
+	collection.add (0.3);
+
+	view.push_collection ("key", collection);
+
+	Ctpl.Value val = null;
+	var popped = view.environment.pop ("key", ref val);
+
+	assert (popped);
+
+	unowned SList<double?> arr = (SList<double?>) val.get_array ();
+
+	assert (arr.nth_data (0) == 0.1);
+	assert (arr.nth_data (1) == 0.2);
+	assert (arr.nth_data (2) == 0.3);
+}
