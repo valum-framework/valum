@@ -245,7 +245,7 @@ namespace Valum {
 		 * @since 0.0.1
 		 */
 		public string render () throws IOError, Ctpl.IOError {
-			var mem_stream = new MemoryOutputStream.resizable ();
+			var mem_stream = new MemoryOutputStream (null, realloc, free);
 
 			this.splice (mem_stream);
 
