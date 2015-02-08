@@ -131,9 +131,14 @@ namespace VSGI {
 			headers.append ("Status: %u %s\r\n".printf (this.status, Soup.Status.get_phrase (this.status)));
 
 			// session
+			var session = base.request.session;
+
 			// TODO: avoid replacing session if it has not changed
-			var session = base.request.session == null ? "" : Soup.Form.encode_hash ((HashTable<string, string>) base.request.session);
-			headers.append ("X-Replace-Session: %s".printf (session));
+			if (session == null) {
+				headers.append ("X-Replace-Session: \r\n"); // delete the session
+			} else {
+				headers.append ("X-Replace-Session: %s\r\n".printf (Soup.Form.encode_hash (session))); // replace
+			}
 
 			// headers
 			this.headers.foreach ((k, v) => {
