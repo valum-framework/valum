@@ -59,21 +59,18 @@ namespace Valum {
 			// filter and transmit cookies from request to response
 			this.handler.connect ((req, res) => {
 				var cookies = req.cookies;
+				var kept    = new SList<Soup.Cookie> ();
 
-				unowned SList<Soup.Cookie>? head = cookies;
-				while (head != null) {
-					unowned SList<Soup.Cookie> h    = (SList<Soup.Cookie>) head;
-					unowned SList<Soup.Cookie> next = h.next;
-
+				foreach (var cookie in cookies) {
 					// filter expired or unapplying cookies
-					if (!h.data.applies_to_uri (req.uri) || h.data.expires.is_past ()) {
-						cookies.delete_link (h);
+					if (cookie.domain_matches (req.uri.get_host ()) && cookie.applies_to_uri (req.uri) && !cookie.expires.is_past ()) {
+						kept.prepend (cookie);
 					}
-
-					head = next;
 				}
 
-				res.cookies = cookies;
+				kept.reverse ();
+
+				res.cookies = kept;
 			});
 
 			this.handler.connect_after ((req, res) => {
