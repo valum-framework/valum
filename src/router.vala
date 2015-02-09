@@ -41,34 +41,9 @@ namespace Valum {
 			this.types["any"]    = /.+/;
 
 			this.handle.connect ((req, res) => {
-				res.status = Soup.Status.OK;
+				res.status  = Soup.Status.OK;
+				res.cookies = req.cookies;
 				res.headers.set_content_type ("text/html", null);
-			});
-
-			// filter and transmit cookies from request to response
-			this.handle.connect ((req, res) => {
-				var cookies = req.cookies;
-				var kept    = new SList<Soup.Cookie> ();
-
-				foreach (var cookie in cookies) {
-					// cookie does not match the domain
-					if (!cookie.domain_matches (req.uri.get_host ()))
-						continue;
-
-					// cookie does not apply to this uri
-					if (!cookie.applies_to_uri (req.uri))
-						continue;
-
-					// cookie expires and is expired
-					if (cookie.expires != null && cookie.expires.is_past ())
-						continue;
-
-					kept.prepend (cookie);
-				}
-
-				kept.reverse ();
-
-				res.cookies = kept;
 			});
 		}
 

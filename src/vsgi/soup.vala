@@ -21,9 +21,7 @@ namespace VSGI {
 		private HashTable<string, string>? _query;
 
 		/**
-		 * Find the session cookie if it exists.
-		 *
-		 * Minimally checks if the cookie is secure and not expired.
+		 * Find the session cookie in the Request cookies if it exists.
 		 *
 		 * @return null if the cookie is not found
 		 */
@@ -33,9 +31,8 @@ namespace VSGI {
 			cookies.reverse ();
 
 			foreach (var cookie in cookies) {
-				if (cookie.name == "session" && cookie.secure && !cookie.expires.is_past ()) {
+				if (cookie.name == "session")
 					return cookie;
-				}
 			}
 
 			return null;
@@ -66,21 +63,27 @@ namespace VSGI {
 			set {
 				var cookie = this.find_session_cookie ();
 
-				if (cookie == null && session == null)
+				// delete an unexisting session
+				if (cookie == null && value == null)
 					return;
 
+				// create a new cookie
 				if (cookie == null) {
-					// create a new cookie using a UUID as name
-					uint8[16] uuid = {};
-					char[37] session_id = {};
+					var uuid       = new uint8[16];
+					var session_id = new char[37];
+
 					UUID.generate_random (uuid);
 					UUID.unparse (uuid, session_id);
 
-					cookie = new Cookie ("session", (string) session_id, this.uri.get_host (), this.uri.get_path (), -1);
-					this.headers.append ("Cookie", ((Cookie) cookie).to_cookie_header ());
+					// default expiration is 1 week
+					cookie = new Cookie ("session", (string) session_id, this.uri.get_host (), "/", 60 * 60 * 24 * 7);
+					cookie.set_http_only (true);
+
+					// write the cookie in the response
+					message.response_headers.append ("Set-Cookie", cookie.to_set_cookie_header ());
 				}
 
-				var session_id = ((Cookie) cookie).value;
+				var session_id = cookie.value;
 
 				if (value == null) {
 					// delete the session
