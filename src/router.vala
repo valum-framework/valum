@@ -1,17 +1,11 @@
 using VSGI;
 
+[CCode (gir_namespace = "Valum", gir_version = "0.1")]
 namespace Valum {
-
-	/**
-	 * @since 0.0.1
-	 */
-	public const string APP_NAME = "Valum/0.1";
-
 	/**
 	 * @since 0.0.1
 	 */
 	public class Router : GLib.Object, VSGI.Application {
-
 		/**
 		 * Registered types.
          *

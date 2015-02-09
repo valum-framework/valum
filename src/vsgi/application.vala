@@ -7,6 +7,7 @@
  * Two implementation are planned: Soup.Server and FastCGI. The latter
  * integrates with pretty much any web server.
  */
+[CCode (gir_namespace = "VSGI", gir_version = "0.1")]
 namespace VSGI {
 
 	/**
