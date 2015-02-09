@@ -280,9 +280,10 @@ app.scope ("session", (inner) => {
 		if (req.session == null) {
 			res.status = 404;
 		} else {
+			var session = Soup.Form.decode (req.session);
 			writer.put_string ("""<p><a href="/cookies">View the session cookie</a></p>""");
 
-			req.session.@foreach ((k, v) => {
+			session.@foreach ((k, v) => {
 				writer.put_string ("""<p><a href="/session/%s">%s</a> """.printf(k, v));
 				writer.put_string ("""<a href="/session/%s/delete">delete</a></p>""".printf(k));
 			});
@@ -299,7 +300,7 @@ app.scope ("session", (inner) => {
 
 	// new entry
 	inner.post ("", (req, res) => {
-		var session = req.session == null ? new HashTable<string, string> (str_hash, str_equal) : req.session;
+		var session = req.session == null ? new HashTable<string, string> (str_hash, str_equal) : Soup.Form.decode (req.session);
 		var buffer  = new uint8[255];
 		var writer  = new DataOutputStream (res);
 
@@ -319,7 +320,7 @@ app.scope ("session", (inner) => {
 
 		session[form["key"]] = form["value"];
 
-		req.session = session;
+		req.session = Soup.Form.encode_hash (session);
 
 		res.status = Soup.Status.CREATED;
 
@@ -332,7 +333,7 @@ app.scope ("session", (inner) => {
 	// get the value of a specific key
 	inner.get ("<key>", (req, res) => {
 		var writer  = new DataOutputStream(res);
-		var session = req.session;
+		var session = Soup.Form.decode (req.session);
 		var key     = req.params["key"];
 
 		res.headers.set_content_type ("text/plain", null);
@@ -348,7 +349,7 @@ app.scope ("session", (inner) => {
 
 	// delete a given key
 	inner.get ("<key>/delete", (req, res) => {
-		var session = req.session;
+		var session = Soup.Form.decode (req.session);
 		var key     = req.params["key"];
 
 		if (session == null || !session.contains (key)) {
@@ -358,7 +359,7 @@ app.scope ("session", (inner) => {
 
 		session.remove (req.params["key"]);
 
-		req.session = session;
+		req.session = Soup.Form.encode_hash (session);
 
 		res.status = Soup.Status.NO_CONTENT;
 	});

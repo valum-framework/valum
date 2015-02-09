@@ -16,7 +16,7 @@ namespace VSGI {
 		private Soup.URI _uri = new Soup.URI (null);
 		private HashTable<string, string>? _query = null;
 		private Soup.MessageHeaders _headers = new Soup.MessageHeaders (Soup.MessageHeadersType.REQUEST);
-		private HashTable<string, string>? _session;
+		private string? _session;
 
 		public override Soup.URI uri { get { return this._uri; } }
 
@@ -34,8 +34,8 @@ namespace VSGI {
 			get { return this._headers; }
 		}
 
-		public override HashTable<string, string>? session {
-			owned get {
+		public override string? session {
+			get {
 				return this._session;
 			}
 			set {
@@ -67,7 +67,7 @@ namespace VSGI {
 
 			// session
 			if (environment["HTTP_SESSION"] != null)
-				this._session = Soup.Form.decode ((string) environment["HTTP_SESSION"]);
+				this._session = Soup.URI.decode ((string) environment["HTTP_SESSION"]);
 
 			var headers = new StringBuilder();
 
@@ -130,6 +130,11 @@ namespace VSGI {
 			// status
 			headers.append ("Status: %u %s\r\n".printf (this.status, Soup.Status.get_phrase (this.status)));
 
+			// headers
+			this.headers.foreach ((k, v) => {
+				headers.append ("%s: %s\r\n".printf(k, v));
+			});
+
 			// session
 			var session = base.request.session;
 
@@ -137,13 +142,8 @@ namespace VSGI {
 			if (session == null) {
 				headers.append ("X-Replace-Session: \r\n"); // delete the session
 			} else {
-				headers.append ("X-Replace-Session: %s\r\n".printf (Soup.Form.encode_hash (session))); // replace
+				headers.append ("X-Replace-Session: %s\r\n".printf (Soup.Form.encode (session)));
 			}
-
-			// headers
-			this.headers.foreach ((k, v) => {
-				headers.append ("%s: %s\r\n".printf(k, v));
-			});
 
 			// newline preceeding the body
 			headers.append ("\r\n");

@@ -66,30 +66,27 @@ query via the `Request.uri.get_query` function.
 HTTP session
 ------------
 
-Session handling is providen by multiple HTTP server implementation, so the
-Request defines a session with basic operations to create, update and delete
-session.
+Session handling is providen by multiple HTTP server implementation and
+supported through `Request.session` with basic operations to create, update and
+delete session.
 
 The absence of session is represented by `null`. Unless you know the session is
-set, you should always null-check it. A good practise is to provide such
-facilities by extending the Router.
+set, you should always null-check it.
 
-Session are generally not implememented using a `HashTable` internally, but
-rather through specific server communication. The HashTable you get from the
-session property is created on the fly. This allow session operation to be
-transactionnal.
+It is left to you to decide what encoding you want for your session, but it is
+generally a good practise to encode it following x-www-urlencoded specification
+through Soup.Form or in [JSON](http://json.org).
 
-```
+```java
 app.get ("", (req, res) => {
     // create if missing
-    if (req.session == null)
-        req.session = new HashTable<string, string> ();
+    var session = req.session == null ? new HashTable<string, string> () : Soup.Form.decode (req.session);
 
     // edit a copy
     var session = req.session;
     session["key"] = "value";
 
     // save your changes
-    req.session = session;
+    req.session = Soup.Form.encode_hash (session);
 });
 ```

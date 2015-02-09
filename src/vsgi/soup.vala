@@ -15,7 +15,7 @@ namespace VSGI {
 		 *
 		 * This maps session id to session hashtable.
 		 */
-		private static HashTable<string, HashTable<string, string>> sessions = new HashTable<string, HashTable<string, string>> (str_hash, str_equal);
+		private static HashTable<string, string> sessions = new HashTable<string, string> (str_hash, str_equal);
 
 		private Soup.Message message;
 		private HashTable<string, string>? _query;
@@ -50,15 +50,15 @@ namespace VSGI {
 			}
 		}
 
-		public override HashTable<string, string>? session {
-			owned get {
+		public override string? session {
+			get {
 				var cookie = this.find_session_cookie ();
 
 				// no cookie, no session
 				if (cookie == null)
 					return null;
 
-				return sessions[((Cookie) cookie).value];
+				return sessions[cookie.value];
 			}
 			set {
 				var cookie = this.find_session_cookie ();

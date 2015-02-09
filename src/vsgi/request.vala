@@ -103,7 +103,7 @@ namespace VSGI {
 		 *
 		 * @return filled table with session data
 		 */
-		public abstract HashTable<string, string>? session { owned get; set; }
+		public abstract string? session { get; set; }
 
 		/**
 		 * Request cookies.
