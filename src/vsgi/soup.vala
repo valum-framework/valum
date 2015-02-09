@@ -30,9 +30,24 @@ namespace VSGI {
 			this._query = query;
 		}
 
+		/**
+		 * Offset from which the response body is being read.
+		 */
+		private int64 offset = 0;
+
 		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) {
-			buffer = this.message.request_body.data;
-			return this.message.request_body.data.length;
+			var chunk = this.message.request_body.get_chunk (offset);
+
+			/* potentially more data... */
+			if (chunk == null)
+				return -1;
+
+			// copy the data into the buffer
+			Memory.copy (buffer, chunk.data, chunk.length);
+
+			offset += chunk.length;
+
+			return (ssize_t) chunk.length;
 		}
 
 		/**
