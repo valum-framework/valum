@@ -17,6 +17,7 @@ def configure(conf):
     # conf.env.append_unique('VALAFLAGS', ['--enable-experimental-non-null'])
 
     conf.check_cfg(package='glib-2.0', atleast_version='2.32', mandatory=True, uselib_store='GLIB', args='--cflags --libs')
+    conf.check_cfg(package='gio-2.0', atleast_version='2.32', uselib_store='GIO', args='--cflags --libs')
     conf.check_cfg(package='ctpl', atleast_version='0.3.3', mandatory=True, uselib_store='CTPL', args='--cflags --libs')
     conf.check_cfg(package='gee-0.8', atleast_version='0.6.4', mandatory=True, uselib_store='GEE', args='--cflags --libs')
     conf.check_cfg(package='libsoup-2.4', atleast_version='2.38', mandatory=True, uselib_store='SOUP', args='--cflags --libs')
@@ -34,8 +35,15 @@ def build(bld):
         target      = 'valum',
         gir         = 'Valum-{}.{}'.format(*VERSION),
         source      = bld.path.ant_glob('src/**/*.vala'),
-        uselib      = ['GLIB', 'CTPL', 'GEE', 'SOUP', 'FCGI'],
+        uselib      = ['GLIB', 'GIO', 'CTPL', 'GEE', 'SOUP', 'FCGI'],
         vapi_dirs   = ['vapi'])
+
+    bld(
+            features     = 'subst',
+            target       = 'valum.pc',
+            source       = ['src/valum.pc.in'],
+            install_path = '${LIBDIR}/pkgconfig',
+            VERSION      = '.'.join(map(str, VERSION)))
 
     # build examples recursively
     bld.recurse(glob.glob('examples/*'))
