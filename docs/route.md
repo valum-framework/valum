@@ -49,10 +49,11 @@ app.get('<any:path>', (req, res) => {
 ```
 
 It is possible to specify new types using the `types` map in `Router`. This
-example will define the `path` type matching words and slashes.
+example will define the `path` type matching words and slashes using a regular
+expression literal.
 
 ```java
-app.types["path"] = "[\\w/]+";
+app.types["path"] = /[\\w\/]+/;
 ```
 
 Types are defined at construct time of the `Router` class. It is possible to
@@ -63,7 +64,7 @@ If you would like `ìnt` to match negatives integer, you may just do:
 ```java
 app = new Router ();
 
-app.types["int"] = "-?\d+";
+app.types["int"] = /-?\d+/;
 ```
 
 Plumbering with regular expression
