@@ -90,7 +90,7 @@ public void test_route_match () {
 	var matches = route.match (req);
 
 	assert (matches);
-	assert_nonnull (req.params);
+	assert (req.params != null);
 	assert (req.params.contains ("id"));
 }
 
