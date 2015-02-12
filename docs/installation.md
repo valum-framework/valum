@@ -33,7 +33,7 @@ Fedora
 
 ```bash
 yum install git python vala glib2-devel libsoup-devel libgee-devel fcgi-devel \
-            memcached libmemcached-devel luajit-devel libctpl-devel
+            memcached libmemcached-devel luajit-devel ctpl-devel
 ```
 
 Download the sources
