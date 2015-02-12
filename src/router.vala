@@ -11,7 +11,7 @@ namespace Valum {
          *
 		 * @since 0.1
 		 */
-		public HashTable<string, string> types = new HashTable<string, string> (str_hash, str_equal);
+		public HashTable<string, Regex> types = new HashTable<string, Regex> (str_hash, str_equal);
 
 		/**
 		 * Base path of the running application.
@@ -40,10 +40,10 @@ namespace Valum {
 			this.base_path = base_path;
 
 			// initialize default types
-			this.types["int"]    = "\\d+";
-			this.types["string"] = "\\w+";
-			this.types["path"]   = "[\\w/]+";
-			this.types["any"]    = ".+";
+			this.types["int"]    = /\d+/;
+			this.types["string"] = /\w+/;
+			this.types["path"]   = /[\w\/]+/;
+			this.types["any"]    = /.+/;
 
 			this.handler.connect ((req, res) => {
 				res.status = Soup.Status.OK;

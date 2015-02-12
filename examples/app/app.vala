@@ -8,7 +8,7 @@ var mcd = new NoSQL.Mcached();
 mcd.add_server("127.0.0.1", 11211);
 
 // extra route types
-app.types["permutations"] = "abc|acb|bac|bca|cab|cba";
+app.types["permutations"] = /abc|acb|bac|bca|cab|cba/;
 
 var timer  = new Timer ();
 

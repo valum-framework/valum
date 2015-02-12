@@ -112,8 +112,12 @@ namespace Valum {
 					var type = cap.length == 1 ? "string" : cap[0];
 					var key  = cap.length == 1 ? cap[0] : cap[1];
 
+					if (!this.router.types.contains (type))
+						error ("using an undefined type %s".printf (type));
+
 					captures.append (key);
-					route.append ("(?<%s>%s)".printf (key, this.router.types[type]));
+
+					route.append ("(?<%s>%s)".printf (key, this.router.types[type].get_pattern ()));
 				}
 			}
 
