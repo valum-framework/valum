@@ -32,18 +32,22 @@ def build(bld):
     # build a static library
     bld.stlib(
         packages    = ['glib-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'fcgi'],
-        target      = 'valum',
+        name        = 'valum',
+        target      = 'valum-{}.{}'.format(*VERSION),
         gir         = 'Valum-{}.{}'.format(*VERSION),
         source      = bld.path.ant_glob('src/**/*.vala'),
         uselib      = ['GLIB', 'GIO', 'CTPL', 'GEE', 'SOUP', 'FCGI'],
         vapi_dirs   = ['vapi'])
 
+    # pkg-config file
     bld(
-            features     = 'subst',
-            target       = 'valum.pc',
-            source       = ['src/valum.pc.in'],
-            install_path = '${LIBDIR}/pkgconfig',
-            VERSION      = '.'.join(map(str, VERSION)))
+        features     = 'subst',
+        target       = 'valum-{}.{}.pc'.format(*VERSION),
+        source       = ['src/valum.pc.in'],
+        install_path = '${LIBDIR}/pkgconfig',
+        VERSION      = '.'.join(map(str, VERSION)),
+        MAJOR        = str(VERSION[0]),
+        MINOR        = str(VERSION[1]))
 
     # build examples recursively
     bld.recurse(glob.glob('examples/*'))
