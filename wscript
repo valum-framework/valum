@@ -2,8 +2,10 @@
 
 import glob
 
-VERSION=(0,1,0)
 APPNAME='valum'
+
+VERSION=(0,1,0)
+API_VERSION='.'.join(map(str,VERSION))
 
 top='.'
 out='build'
@@ -31,13 +33,14 @@ def configure(conf):
 def build(bld):
     # build a static library
     bld.stlib(
-        packages    = ['glib-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'fcgi'],
-        name        = 'valum',
-        target      = 'valum-{}.{}'.format(*VERSION),
-        gir         = 'Valum-{}.{}'.format(*VERSION),
-        source      = bld.path.ant_glob('src/**/*.vala'),
-        uselib      = ['GLIB', 'GIO', 'CTPL', 'GEE', 'SOUP', 'FCGI'],
-        vapi_dirs   = ['vapi'])
+        packages     = ['glib-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'fcgi'],
+        name         = 'valum',
+        target       = 'valum-{}.{}'.format(*VERSION),
+        gir          = 'Valum-{}.{}'.format(*VERSION),
+        source       = bld.path.ant_glob('src/**/*.vala'),
+        uselib       = ['GLIB', 'GIO', 'CTPL', 'GEE', 'SOUP', 'FCGI'],
+        vapi_dirs    = ['vapi'],
+        install_path = '${LIBDIR}')
 
     # pkg-config file
     bld(
@@ -45,7 +48,7 @@ def build(bld):
         target       = 'valum-{}.{}.pc'.format(*VERSION),
         source       = ['src/valum.pc.in'],
         install_path = '${LIBDIR}/pkgconfig',
-        VERSION      = '.'.join(map(str, VERSION)),
+        VERSION      = API_VERSION,
         MAJOR        = str(VERSION[0]),
         MINOR        = str(VERSION[1]))
 

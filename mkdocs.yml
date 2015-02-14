@@ -4,6 +4,7 @@ theme: readthedocs
 pages:
     - [index.md, Valum]
     - [installation.md, Installation]
+    - [getting-started.md, Getting started]
     - [application.md, Basics, Application]
     - [vsgi/request.md, Basics, Request]
     - [vsgi/response.md, Basics, Response]
