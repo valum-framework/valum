@@ -2,10 +2,12 @@ using VSGI;
 
 [CCode (gir_namespace = "Valum", gir_version = "0.1")]
 namespace Valum {
+
 	/**
 	 * @since 0.0.1
 	 */
 	public class Router : GLib.Object, VSGI.Application {
+
 		/**
 		 * Registered types.
          *
@@ -241,14 +243,21 @@ namespace Valum {
 			if (!this.routes.contains(req.method))
 				return;
 
-			foreach (var route in this.routes[req.method].head) {
-				if (route.match (req)) {
-
-					// fire the route!
-					route.fire (req, res);
-
-					return;
+			try{
+				foreach (var route in this.routes[req.method].head) {
+					if (route.match (req)) {
+						// fire the route!
+						route.fire (req, res);
+						return;
+					}
 				}
+			} catch (Redirection r) {
+				res.status = r.code;
+				res.headers.append("Location", r.message);
+			} catch (ClientError e) {
+				res.status = e.code;
+			} catch (ServerError e) {
+				res.status = e.code;
 			}
 		}
 	}
