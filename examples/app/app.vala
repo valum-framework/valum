@@ -273,10 +273,6 @@ app.matcher (Request.GET, (req) => { return req.uri.get_path () == "/custom-matc
 	writer.put_string ("This route was matched using a custom matcher.");
 });
 
-app.get("<any:path>", (req, res) => {
-	res.status = 404;
-});
-
 app.handler.connect_after ((req, res) => {
 	if (res.status == 404) {
 		var template = new View.Tpl.from_path("examples/app/templates/404.html");
