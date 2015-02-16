@@ -3,6 +3,10 @@ namespace VSGI {
 	/**
 	 * Server that handles a single Application.
 	 *
+	 * It is the server responsibility to close {@link Request} and
+	 * {@link Response} providen to the served {@link Application} if it has not
+	 * been done in the {@link Application.handler}.
+	 *
 	 * @since 0.1
 	 */
 	public abstract class Server : Object {

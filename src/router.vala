@@ -66,10 +66,6 @@ namespace Valum {
 
 				res.cookies = kept;
 			});
-
-			this.handler.connect_after ((req, res) => {
-				res.close ();
-			});
 		}
 
 		/**

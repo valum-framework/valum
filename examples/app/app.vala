@@ -266,15 +266,17 @@ app.matcher (Request.GET, (req) => { return req.uri.get_path () == "/custom-matc
 });
 
 app.get("<any:path>", (req, res) => {
-
 	res.status = 404;
+});
 
-	var template = new View.Tpl.from_path("examples/app/templates/404.html");
+app.handler.connect_after ((req, res) => {
+	if (res.status == 404) {
+		var template = new View.Tpl.from_path("examples/app/templates/404.html");
 
-	template.vars["path"] = req.uri.get_path ();
+		template.vars["path"] = req.uri.get_path ();
 
-	res.status = 404;
-	template.stream (res);
+		template.stream (res);
+	}
 });
 
 var server = new VSGI.SoupServer (app, 3003);
