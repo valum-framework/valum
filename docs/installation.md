@@ -1,26 +1,25 @@
-Dependencies
-------------
+## Dependencies
 
 Valum has the following dependencies:
 
  - vala
- - glib-2.0
- - libsoup-2.4
- - libgee-0.8
- - ctpl
+ - glib-2.0 (>=2.32)
+ - gio-2.0 (>=2.32)
+ - libsoup-2.4 (>=2.38)
+ - libgee-0.8 (>=0.6.4)
+ - ctpl (>=3.3)
 
-The sample application depends on
+Examples depend on
 
  - libmemcached
  - libluajit
  - memcached
 
 We use the [waf build system](https://code.google.com/p/waf/) and distribute it
-with the sources, so you will need a
+with the sources, so will need a
 [Python interpreter](https://www.python.org/).
 
-Debian and Ubuntu
------------------
+### Debian and Ubuntu
 
 ```bash
 apt-get install git-core build-essential python valac libglib2.0-dev \
@@ -28,16 +27,14 @@ apt-get install git-core build-essential python valac libglib2.0-dev \
                 libmemcached-dev libluajit-5.1-dev libctpl-dev
 ```
 
-Fedora
-------
+### Fedora
 
 ```bash
 yum install git python vala glib2-devel libsoup-devel libgee-devel fcgi-devel \
             memcached libmemcached-devel luajit-devel ctpl-devel
 ```
 
-Download the sources
---------------------
+## Download the sources
 
 You may either clone or download one of our
 [releases](https://github.com/antono/valum/releases) from GitHub
@@ -45,21 +42,20 @@ You may either clone or download one of our
 git clone git://github.com/antono/valum.git && cd valum
 ```
 
-Build
------
+## Build
 
 Build Valum and run the tests to make sure everything is fine.
 
 ```bash
 ./waf configure
 ./waf build && ./build/tests/tests
+sudo ./waf install # only if you want the build files installed
 ```
 
-Run the sample application
---------------------------
+## Run the sample application
 
-You can run the sample application from the `build` folder, it uses the libsoup
-built-in HTTP server.
+You can run the sample application from the `build` folder, it uses the
+[libsoup built-in HTTP server](https://developer.gnome.org/libsoup/stable/libsoup-server-howto.html).
 
 ```bash
 ./build/example/app/app

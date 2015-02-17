@@ -6,6 +6,12 @@ Valum micro-framework
 Valum is a web micro-framework entirely written in the
 [Vala](https://wiki.gnome.org/Projects/Vala) programming language.
 
+Installation
+------------
+
+The installation process is fully documented in the
+[user documentation](http://valum.readthedocs.org/en/latest/installation/).
+
 Features
 --------
 
@@ -18,7 +24,9 @@ Features
 Contributing
 ------------
 
-Valum is built by the community, so anyone can contribute.
+Valum is built by the community under the
+[LGPL](https://www.gnu.org/licenses/lgpl.html) license, so anyone can
+contribute.
 
  1. fork repository
  2. pick one task from TODO.md or [GitHub issues](https://github.com/antono/valum/issues)

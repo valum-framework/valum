@@ -1,15 +1,7 @@
+Assuming that Valum is [built and installed](installation.md) correctly, you
+are ready to create your first application!
 
-Assuming Valum is [installed correctly](), you are ready to create your first
-application!
-
-First of all, you have to install Valum:
-
-```bash
-sudo ./waf install
-```
-
-You can use this sample application as a basis; just save the code in a file
-named `app.vala`.
+You can use this sample application and project structure as a basis.
 
 ```javascript
 using Valum;
@@ -25,23 +17,34 @@ app.get("", (req, res) => {
 new SoupServer (app, 3003).run ();
 ```
 
-Right now, CTPL and libfcgi are not providing Vala bindings, so you need to copy
-them in your project `vapi` folder. You can find them in the
-[vapi folder of Valum]().
+```
+build/
+src/
+    app.vala
+vapi/
+    ctpl.vala
+    fcgi.vala
+```
+
+[CTPL](ctpl.tuxfamily.org) and [FastCGI](http://www.fastcgi.com/drupal/) are
+not providing Vala bindings, so you need to copy them in your project `vapi`
+folder. You can find them in the
+[vapi folder of Valum](https://github.com/antono/valum/tree/master/vapi).
 
 Unless you installed Valum with `--prefix=/usr`, you have to export `pkg-config`
 search path:
 
 ```bash
 export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
-```
 
-You now have everything you need to build your own application:
+valac --vapidir=vapi --pkg valum-0.1 --pkg libsoup-2.4 --pkg gee-0.8 \
+                     --pkg ctpl --pkg fcgi \
+      --ccode src/app.vala
 
-```bash
-valac --vapidir=vapi --pkg valum-0.1 --pkg ctpl --pkg fcgi --ccode app.vala
-gcc $(pkg-config valum-0.1 --cflags --libs) app.c /usr/local/lib/libvalum-0.1.a -o app
-./app
+gcc $(pkg-config valum-0.1 --cflags --libs) -o build/app \
+    src/app.c /usr/local/lib/libvalum-0.1.a
+
+./build/app
 ```
 
 It is preferable to use a build system like
