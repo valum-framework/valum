@@ -95,7 +95,8 @@ namespace Valum {
 		/**
 		 * Create a Route for a given callback from a rule.
          *
-		 * A rule will compile down to Regex.
+		 * Rule are scoped from the {@link Router.scope} fragment stack and compiled
+		 * down to {@link GLib.Regex}.
 		 *
 		 * @since 0.0.1
 		 */
@@ -107,6 +108,14 @@ namespace Valum {
 			var params      = param_regex.split_full (rule);
 			var captures    = new SList<string> ();
 			var route       = new StringBuilder ("^");
+
+			// scope the route
+			foreach (var scope in router.scopes.head) {
+				route.append (Regex.escape_string ("/%s".printf (scope)));
+			}
+
+			// root the route
+			route.append ("/");
 
 			foreach (var p in params) {
 				if (p[0] != '<') {

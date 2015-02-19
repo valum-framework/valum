@@ -22,8 +22,10 @@ namespace Valum {
 
 		/**
 		 * Stack of scope.
+		 *
+		 * @since 0.1
 		 */
-		private Queue<string> scopes = new Queue<string> ();
+		public Queue<string> scopes = new Queue<string> ();
 
 		/**
 		 * @since 0.0.1
@@ -141,16 +143,7 @@ namespace Valum {
 		 *               rule.
 		 */
 		public void method (string method, string rule, Route.Handler cb) throws RegexError {
-			var full_rule = new StringBuilder ();
-
-			// scope the route
-			foreach (var scope in this.scopes.head) {
-				full_rule.append ("/%s".printf (scope));
-			}
-
-			full_rule.append ("/%s".printf(rule));
-
-			this.route (method, new Route.from_rule (this, full_rule.str, cb));
+			this.route (method, new Route.from_rule (this, rule, cb));
 		}
 
 		/**
