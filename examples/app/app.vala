@@ -240,36 +240,7 @@ app.get ("ctpl/<foo>/<bar>", (req, res) => {
 });
 
 // serve static resource using a path route parameter
-app.get ("static/<path:resource>.<any:type>", (req, res) => {
-	var resource = req.params["resource"];
-	var type     = req.params["type"];
-	var path     = "/static/%s.%s".printf (resource, type);
-	bool uncertain;
-
-	try {
-		var lookup = resources_lookup_data (path, ResourceLookupFlags.NONE);
-
-		// set the content-type based on a good guess
-		res.headers.set_content_type (ContentType.guess (path, lookup.get_data (), out uncertain), null);
-
-		if (uncertain)
-			warning ("could not infer content type of file %s.%s with certainty".printf (resource, type));
-
-		var file = resources_open_stream (path, ResourceLookupFlags.NONE);
-
-		// transfer the file
-		res.body.splice_async.begin (file,
-			                         OutputStreamSpliceFlags.CLOSE_SOURCE | OutputStreamSpliceFlags.CLOSE_TARGET,
-			                         Priority.DEFAULT,
-			                         null, (obj, result) => {
-			app.invoke (req, res, () => {
-				res.body.splice_async.end (result);
-			});
-		});
-	} catch (Error e) {
-		throw new ClientError.NOT_FOUND (e.message);
-	}
-});
+app.get ("static/<any:path>", Static.serve_from_resource (null, "/static/"));
 
 app.status (Soup.Status.NOT_FOUND, (req, res, next, stack) => {
 	var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));
