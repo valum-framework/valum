@@ -90,7 +90,7 @@ to define them yourself.
 A matcher consist of a callback matching a given `Request` object.
 
 ```java
-Route.RequestMatcher matcher = (req) => { req.path == "/custom-matcher"; };
+Route.Matcher matcher = (req) => { req.path == "/custom-matcher"; };
 
 app.matcher ("GET", matcher, (req, res) => {
     var writer = new DataOutputStream (res);

@@ -2,7 +2,7 @@ HTTP methods
 ------------
 
 Callback can be connected to HTTP methods via a list of helpers having the
-following signature:
+`Route.Handler` signature:
 
 ```java
 app.get ("rule", (req, res) => {});

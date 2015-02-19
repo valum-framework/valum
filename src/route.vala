@@ -21,19 +21,21 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public delegate bool RequestMatcher (Request req);
+		public delegate bool Matcher (Request req);
 
 		/**
+		 * Handle a pair of request and response.
+		 *
 		 * @since 0.0.1
 		 */
-		public delegate void RouteCallback (Request req, Response res) throws Redirection, ClientError, ServerError;
+		public delegate void Handler (Request req, Response res) throws Redirection, ClientError, ServerError;
 
 		/**
 		 * Create a Route using a custom matcher.
 		 *
 		 * @since 0.1
 		 */
-		public Route.from_matcher (Router router, RequestMatcher matcher, RouteCallback callback) {
+		public Route.from_matcher (Router router, Matcher matcher, Handler callback) {
 			this.router = router;
 			this.match  = matcher;
 			this.fire   = callback;
@@ -44,7 +46,7 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public Route.from_regex (Router router, Regex regex, RouteCallback callback) throws RegexError {
+		public Route.from_regex (Router router, Regex regex, Handler callback) throws RegexError {
 			this.router = router;
 			this.fire   = callback;
 
@@ -83,7 +85,7 @@ namespace Valum {
 		 *
 		 * @since 0.0.1
 		 */
-		public Route.from_rule (Router router, string rule, RouteCallback callback) throws RegexError {
+		public Route.from_rule (Router router, string rule, Handler callback) throws RegexError {
 			this.router   = router;
 			this.fire     = callback;
 
@@ -140,7 +142,7 @@ namespace Valum {
 		 *
 		 * @param req request that is being matched
 		 */
-		public RequestMatcher match;
+		public Matcher match;
 
 		/**
 		 * Fire a request-response couple.
@@ -152,6 +154,6 @@ namespace Valum {
 		 * @param req
 		 * @param res
 		 */
-		public unowned RouteCallback fire;
+		public unowned Handler fire;
 	}
 }
