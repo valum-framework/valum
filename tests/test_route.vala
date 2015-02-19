@@ -12,17 +12,23 @@ public void test_route_new () {}
  */
 public void test_route_from_rule () {
 	var route  = new Route.from_rule (new Router (), "/<int:id>", (req, res) => {});
+	var request = new TestRequest.with_uri (new Soup.URI ("http://localhost/5"));
 
-	/*
-	var route = new Route.from_rule (router, "<int:id>", (req, res) => {});
-	assert ("^(?<id>\\d+)$" == route.regex.get_pattern ());
+	assert (route.match (request));
+	assert (request.params != null);
+	assert (request.params["id"] == "5");
+}
 
-	route = new Route.from_rule (router, "<id>", (req, res) => {});
-	assert ("^(?<id>\\w+)$" == route.regex.get_pattern ());
+/**
+ * @since 0.1
+ */
+public void test_route_from_rule_any () {
+	var route  = new Route.from_rule (new Router (), "/<any:id>", (req, res) => {});
+	var request = new TestRequest.with_uri (new Soup.URI ("http://localhost/5"));
 
-	route = new Route.from_rule (router, "<any:id>", (req, res) => {});
-	assert ("^(?<id>.+)$" == route.regex.get_pattern ());
-	*/
+	assert (route.match (request));
+	assert (request.params != null);
+	assert (request.params["id"] == "5");
 }
 
 /**
@@ -48,7 +54,13 @@ public void test_route_from_regex () {
 	var route  = new Route.from_regex (new Router (), /^\/(?<id>\d+)$/, (req, res) => {});
 	var req    = new TestRequest.with_uri (new Soup.URI ("http://localhost/5"));
 
-	assert (route.match (req));
+	assert (req.params == null);
+
+	var matches = route.match (req);
+
+	assert (matches);
+	assert (req.params != null);
+	assert (req.params["id"] == "5");
 }
 
 /**
@@ -58,12 +70,10 @@ public void test_route_from_regex_without_captures () {
 	var route  = new Route.from_regex (new Router (), /\//, (req, res) => {});
 	var req    = new TestRequest.with_uri (new Soup.URI ("http://localhost/"));
 
-	assert (req.params == null);
-
 	var matches = route.match (req);
 
 	// ensure params are still null if there is no captures
-	assert (matches);
+	assert (route.match (req));
 	assert (req.params == null);
 }
 

@@ -37,6 +37,6 @@ namespace VSGI {
 		 * @param Response res response where the application should produce its
 		 *                     output
 		 */
-		public virtual signal void handler (Request req, Response res) {}
+		public virtual signal void handle (Request req, Response res) {}
 	}
 }

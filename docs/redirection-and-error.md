@@ -40,7 +40,7 @@ To do custom handling for specific status, bind a callback after the router
 handler execution.
 
 ```javascript
-app.handler.connect_after ((req, res) => {
+app.handle.connect_after ((req, res) => {
     if (res.status == Soup.Status.NOT_FOUND) {
         // produce a 404 page...
     }

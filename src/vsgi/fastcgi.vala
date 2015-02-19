@@ -226,7 +226,7 @@ namespace VSGI {
 				var req = new VSGI.FastCGIRequest (this.request);
 				var res = new VSGI.FastCGIResponse (req, this.request);
 
-				this.application.handler (req, res);
+				this.application.handle (req, res);
 
 				message ("%u %s %s".printf (res.status, req.method, req.uri.get_path ()));
 

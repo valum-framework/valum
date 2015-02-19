@@ -12,11 +12,11 @@ app.types["permutations"] = /abc|acb|bac|bca|cab|cba/;
 
 var timer  = new Timer ();
 
-app.handler.connect ((req, res) => {
+app.handle.connect ((req, res) => {
 	timer.start();
 });
 
-app.handler.connect_after ((req, res) => {
+app.handle.connect_after ((req, res) => {
 	timer.stop ();
 	var elapsed = timer.elapsed ();
 	res.headers.append ("X-Runtime", "%8.3fms".printf(elapsed * 1000));
@@ -273,7 +273,7 @@ app.matcher (Request.GET, (req) => { return req.uri.get_path () == "/custom-matc
 	writer.put_string ("This route was matched using a custom matcher.");
 });
 
-app.handler.connect_after ((req, res) => {
+app.handle.connect_after ((req, res) => {
 	if (res.status == 404) {
 		var template = new View.Tpl.from_path("examples/app/templates/404.html");
 

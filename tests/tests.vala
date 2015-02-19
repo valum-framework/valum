@@ -5,7 +5,10 @@ public int main (string[] args) {
 
 	Test.init (ref args);
 
+	Test.add_func ("/router", test_router);
+
 	Test.add_func ("/route/from_rule", test_route_from_rule);
+	Test.add_func ("/route/from_rule/any", test_route_from_rule_any);
 	Test.add_func ("/route/from_rule/without_captures", test_route_from_rule_without_captures);
 	Test.add_func ("/route/from_regex", test_route_from_regex);
 	Test.add_func ("/route/from_regex/without_captures", test_route_from_regex_without_captures);

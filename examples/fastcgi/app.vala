@@ -4,11 +4,11 @@ public static void main (string[] args) {
 	var app   = new Router ();
 	var timer = new Timer ();
 
-	app.handler.connect ((req, res) => {
+	app.handle.connect ((req, res) => {
 		timer.start();
 	});
 
-	app.handler.connect_after ((req, res) => {
+	app.handle.connect_after ((req, res) => {
 		timer.stop ();
 		var elapsed = timer.elapsed ();
 		res.headers.append ("X-Runtime", "%8.3fms".printf (elapsed * 1000));

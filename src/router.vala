@@ -40,13 +40,13 @@ namespace Valum {
 			this.types["path"]   = /[\w\/]+/;
 			this.types["any"]    = /.+/;
 
-			this.handler.connect ((req, res) => {
+			this.handle.connect ((req, res) => {
 				res.status = Soup.Status.OK;
 				res.headers.set_content_type ("text/html", null);
 			});
 
 			// filter and transmit cookies from request to response
-			this.handler.connect ((req, res) => {
+			this.handle.connect ((req, res) => {
 				var cookies = req.cookies;
 				var kept    = new SList<Soup.Cookie> ();
 
@@ -222,7 +222,7 @@ namespace Valum {
 		 * @param req request being handled.
 		 * @param res response being transmitted to the request client.
 		 */
-		public void handler (Request req, Response res) {
+		public void handle (Request req, Response res) {
 			try {
 				// ensure at least one route has been declared with that method
 				if (this.routes.contains(req.method)) {
