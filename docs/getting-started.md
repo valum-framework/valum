@@ -1,7 +1,17 @@
 Assuming that Valum is [built and installed](installation.md) correctly, you
 are ready to create your first application!
 
-You can use this sample application and project structure as a basis.
+Valum is not designed to be installed as a shared library, but more like a set
+of build files and a static library that help one develop a web application.
+
+```bash
+sudo ./waf install
+```
+
+## Simple 'Hello world!' application
+
+You can use this sample application and project structure as a basis. The full
+code is [available on GitHub](https://github.com/valum-framework/example).
 
 ```javascript
 using Valum;
@@ -26,6 +36,8 @@ vapi/
     fcgi.vala
 ```
 
+## VAPI bindings
+
 [CTPL](ctpl.tuxfamily.org) and [FastCGI](http://www.fastcgi.com/drupal/) are
 not providing Vala bindings, so you need to copy them in your project `vapi`
 folder. You can find them in the
@@ -47,5 +59,37 @@ gcc $(pkg-config valum-0.1 --cflags --libs) -o build/app \
 ./build/app
 ```
 
+## waf
+
 It is preferable to use a build system like
-[waf](https://code.google.com/p/waf/) to automate all this process.
+[waf](https://code.google.com/p/waf/) to automate all this process. Get
+a release of `waf` and copy this file under the name `wscript` at the root of
+your project.
+
+```python
+#!/usr/bin/env python
+
+def options(cfg):
+    cfg.load('compiler_c')
+
+def configure(cfg):
+    cfg.load('compiler_c vala')
+    cfg.check_cfg(package='valum-0.1', uselib_store='VALUM', args='--libs --cflags')
+
+def build(bld):
+    bld.load('vala')
+    bld.program(
+        packages = ['valum-0.1'],
+        target    = 'app',
+        source    = 'src/app.vala',
+        uselib    = ['VALUM'],
+        vapi_dirs = ['vapi'],
+        stlib     = ['valum-0.1'])
+```
+
+You should now be able to build by issuing the following commands:
+
+```bash
+./waf configure
+./waf build
+```
