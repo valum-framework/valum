@@ -17,16 +17,6 @@ namespace Valum {
 		private weak Router router;
 
 		/**
-		 * Match a Request and populate its parameters if successful.
-		 */
-		private RequestMatcher matcher;
-
-		/**
-		 * Callback
-		 */
-		private unowned RouteCallback callback;
-
-		/**
 		 * Match the request and populate the parameters.
 		 *
 		 * @since 0.1
@@ -36,7 +26,7 @@ namespace Valum {
 		/**
 		 * @since 0.0.1
 		 */
-		public delegate void RouteCallback (Request req, Response res);
+		public delegate void RouteCallback (Request req, Response res) throws Redirection, ClientError, ServerError;
 
 		/**
 		 * Create a Route using a custom matcher.
@@ -44,9 +34,9 @@ namespace Valum {
 		 * @since 0.1
 		 */
 		public Route.from_matcher (Router router, RequestMatcher matcher, RouteCallback callback) {
-			this.router   = router;
-			this.matcher  = matcher;
-			this.callback = callback;
+			this.router = router;
+			this.match  = matcher;
+			this.fire   = callback;
 		}
 
 		/**
@@ -55,8 +45,8 @@ namespace Valum {
 		 * @since 0.1
 		 */
 		public Route.from_regex (Router router, Regex regex, RouteCallback callback) throws RegexError {
-			this.router   = router;
-			this.callback = callback;
+			this.router = router;
+			this.fire   = callback;
 
 			var captures      = new SList<string> ();
 			var capture_regex = new Regex ("\\(\\?<(\\w+)>.+\\)");
@@ -69,7 +59,7 @@ namespace Valum {
 				}
 			}
 
-			this.matcher = (req) => {
+			this.match = (req) => {
 				MatchInfo match_info;
 				if (regex.match (req.uri.get_path (), 0, out match_info)) {
 					if (captures.length () > 0) {
@@ -95,7 +85,7 @@ namespace Valum {
 		 */
 		public Route.from_rule (Router router, string rule, RouteCallback callback) throws RegexError {
 			this.router   = router;
-			this.callback = callback;
+			this.fire     = callback;
 
 			var param_regex = new Regex ("(<(?:\\w+:)?\\w+>)");
 			var params      = param_regex.split_full (rule);
@@ -126,7 +116,7 @@ namespace Valum {
 			var regex = new Regex (route.str, RegexCompileFlags.OPTIMIZE);
 
 			// register a matcher based on the generated regular expression
-			this.matcher = (req) => {
+			this.match = (req) => {
 				MatchInfo match_info;
 				if (regex.match (req.uri.get_path (), 0, out match_info)) {
 					if (captures.length () > 0) {
@@ -150,9 +140,7 @@ namespace Valum {
 		 *
 		 * @param req request that is being matched
 		 */
-		public bool match (Request req) {
-			return this.matcher (req);
-		}
+		public RequestMatcher match;
 
 		/**
 		 * Fire a request-response couple.
@@ -164,8 +152,6 @@ namespace Valum {
 		 * @param req
 		 * @param res
 		 */
-		public void fire (Request req, Response res) {
-			this.callback (req, res);
-		}
+		public unowned RouteCallback fire;
 	}
 }

@@ -250,6 +250,14 @@ app.get("static/<path:resource>.min.<type>", (req, res) => {
 	}
 });
 
+app.get ("redirect", (req, res) => {
+	throw new Redirection.MOVED_TEMPORARILY ("http://example.com");
+});
+
+app.get ("not-found", (req, res) => {
+	throw new ClientError.NOT_FOUND ("the given URL was not found");
+});
+
 app.method (Request.GET, "custom-method", (req, res) => {
 	var writer = new DataOutputStream(res);
 	writer.put_string (req.method);
@@ -263,10 +271,6 @@ app.regex (Request.GET, /\/custom-regular-expression$/, (req, res) => {
 app.matcher (Request.GET, (req) => { return req.uri.get_path () == "/custom-matcher"; }, (req, res) => {
 	var writer = new DataOutputStream(res);
 	writer.put_string ("This route was matched using a custom matcher.");
-});
-
-app.get("<any:path>", (req, res) => {
-	res.status = 404;
 });
 
 app.handler.connect_after ((req, res) => {

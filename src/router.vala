@@ -2,10 +2,12 @@ using VSGI;
 
 [CCode (gir_namespace = "Valum", gir_version = "0.1")]
 namespace Valum {
+
 	/**
 	 * @since 0.0.1
 	 */
 	public class Router : GLib.Object, VSGI.Application {
+
 		/**
 		 * Registered types.
          *
@@ -221,18 +223,27 @@ namespace Valum {
 		 * @param res response being transmitted to the request client.
 		 */
 		public void handler (Request req, Response res) {
-			// ensure at least one route has been declared with that method
-			if (!this.routes.contains(req.method))
-				return;
-
-			foreach (var route in this.routes[req.method].head) {
-				if (route.match (req)) {
-
-					// fire the route!
-					route.fire (req, res);
-
-					return;
+			try {
+				// ensure at least one route has been declared with that method
+				if (this.routes.contains(req.method)) {
+					// find a route that may handle the request
+					foreach (var route in this.routes[req.method].head) {
+						if (route.match (req)) {
+							route.fire (req, res);
+							return;
+						}
+					}
 				}
+
+				throw new ClientError.NOT_FOUND ("The request URI %s was not found.".printf (req.uri.to_string (false)));
+
+			} catch (Redirection r) {
+				res.status = r.code;
+				res.headers.append("Location", r.message);
+			} catch (ClientError e) {
+				res.status = e.code;
+			} catch (ServerError e) {
+				res.status = e.code;
 			}
 		}
 	}
