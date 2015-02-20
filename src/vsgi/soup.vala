@@ -6,12 +6,37 @@ using Soup;
 namespace VSGI {
 
 	/**
-	 * Soup Request
+	 * Request implementation based on libsoup.
 	 */
 	class SoupRequest : VSGI.Request {
 
+		/**
+		 * In-memory session implementation.
+		 *
+		 * This maps session id to session hashtable.
+		 */
+		private static HashTable<string, string> sessions = new HashTable<string, string> (str_hash, str_equal);
+
 		private Soup.Message message;
 		private HashTable<string, string>? _query;
+
+		/**
+		 * Find the session cookie in the Request cookies if it exists.
+		 *
+		 * @return null if the cookie is not found
+		 */
+		private Cookie? find_session_cookie () {
+			var cookies = this.cookies;
+
+			cookies.reverse ();
+
+			foreach (var cookie in cookies) {
+				if (cookie.name == "session")
+					return cookie;
+			}
+
+			return null;
+		}
 
 		public override string method { owned get { return this.message.method ; } }
 
@@ -22,6 +47,51 @@ namespace VSGI {
 		public override MessageHeaders headers {
 			get {
 				return this.message.request_headers;
+			}
+		}
+
+		public override string? session {
+			get {
+				var cookie = this.find_session_cookie ();
+
+				// no cookie, no session
+				if (cookie == null)
+					return null;
+
+				return sessions[cookie.value];
+			}
+			set {
+				var cookie = this.find_session_cookie ();
+
+				// delete an unexisting session
+				if (cookie == null && value == null)
+					return;
+
+				// create a new cookie
+				if (cookie == null) {
+					var uuid       = new uint8[16];
+					var session_id = new char[37];
+
+					UUID.generate_random (uuid);
+					UUID.unparse (uuid, session_id);
+
+					// default expiration is 1 week
+					cookie = new Cookie ("session", (string) session_id, this.uri.get_host (), "/", 60 * 60 * 24 * 7);
+					cookie.set_http_only (true);
+
+					// write the cookie in the response
+					message.response_headers.append ("Set-Cookie", cookie.to_set_cookie_header ());
+				}
+
+				var session_id = cookie.value;
+
+				if (value == null) {
+					// delete the session
+					sessions.remove (session_id);
+				} else {
+					// update the session
+					sessions[session_id] = value;
+				}
 			}
 		}
 
@@ -113,6 +183,9 @@ namespace VSGI {
 		/**
 		 * Creates a Soup.Server, bind the application to it using a closure and
 		 * start the server.
+		 *
+		 * The used implementation of server is deprecated, but requires to build
+		 * under Travis CI.
 		 */
 		public override void listen () {
 

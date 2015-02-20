@@ -16,6 +16,7 @@ namespace VSGI {
 		private Soup.URI _uri = new Soup.URI (null);
 		private HashTable<string, string>? _query = null;
 		private Soup.MessageHeaders _headers = new Soup.MessageHeaders (Soup.MessageHeadersType.REQUEST);
+		private string? _session;
 
 		public override Soup.URI uri { get { return this._uri; } }
 
@@ -31,6 +32,15 @@ namespace VSGI {
 
 		public override Soup.MessageHeaders headers {
 			get { return this._headers; }
+		}
+
+		public override string? session {
+			get {
+				return this._session;
+			}
+			set {
+				this._session = value;
+			}
 		}
 
 		public FastCGIRequest(FastCGI.request request) {
@@ -54,6 +64,10 @@ namespace VSGI {
 			// parse the HTTP query
 			if (environment["QUERY_STRING"] != null)
 				this._query = Soup.Form.decode ((string) environment["QUERY_STRING"]);
+
+			// session
+			if (environment["HTTP_SESSION"] != null)
+				this._session = Soup.URI.decode ((string) environment["HTTP_SESSION"]);
 
 			var headers = new StringBuilder();
 
@@ -120,6 +134,16 @@ namespace VSGI {
 			this.headers.foreach ((k, v) => {
 				headers.append ("%s: %s\r\n".printf(k, v));
 			});
+
+			// session
+			var session = base.request.session;
+
+			// TODO: avoid replacing session if it has not changed
+			if (session == null) {
+				headers.append ("X-Replace-Session: \r\n"); // delete the session
+			} else {
+				headers.append ("X-Replace-Session: %s\r\n".printf (Soup.Form.encode (session)));
+			}
 
 			// newline preceeding the body
 			headers.append ("\r\n");

@@ -273,6 +273,99 @@ app.matcher (Request.GET, (req) => { return req.uri.get_path () == "/custom-matc
 	writer.put_string ("This route was matched using a custom matcher.");
 });
 
+app.scope ("session", (inner) => {
+	inner.get("", (req, res) => {
+		var writer = new DataOutputStream(res);
+
+		if (req.session == null) {
+			res.status = 404;
+		} else {
+			var session = Soup.Form.decode (req.session);
+			writer.put_string ("""<p><a href="/cookies">View the session cookie</a></p>""");
+
+			session.@foreach ((k, v) => {
+				writer.put_string ("""<p><a href="/session/%s">%s</a> """.printf(k, v));
+				writer.put_string ("""<a href="/session/%s/delete">delete</a></p>""".printf(k));
+			});
+		}
+
+		writer.put_string ("""
+						   <form method="post">
+						   <p><input name="key" placeholder="key"></p>
+						   <p><textarea name="value" placeholder="value"></textarea></p>
+						   <input type="submit">
+						   </form>
+						   """);
+	});
+
+	// new entry
+	inner.post ("", (req, res) => {
+		var session = req.session == null ? new HashTable<string, string> (str_hash, str_equal) : Soup.Form.decode (req.session);
+		var buffer  = new uint8[255];
+		var writer  = new DataOutputStream (res);
+
+		req.read (buffer);
+
+		var form = Soup.Form.decode ((string) buffer);
+
+		if (form == null) {
+			res.status = Soup.Status.MALFORMED;
+			return;
+		}
+
+		if (!form.contains ("key") || !form.contains ("value")) {
+			res.status = Soup.Status.BAD_REQUEST;
+			return;
+		}
+
+		session[form["key"]] = form["value"];
+
+		req.session = Soup.Form.encode_hash (session);
+
+		res.status = Soup.Status.CREATED;
+
+		res.headers.set_content_type ("text/plain", null);
+		res.headers.append ("Location", "/session/%s".printf (form["key"]));
+
+		writer.put_string ("Written entry (%s, %s) into the session.".printf (form["key"], form["value"]));
+	});
+
+	// get the value of a specific key
+	inner.get ("<key>", (req, res) => {
+		var writer  = new DataOutputStream(res);
+		var session = Soup.Form.decode (req.session);
+		var key     = req.params["key"];
+
+		res.headers.set_content_type ("text/plain", null);
+
+		if (session == null || !session.contains (key)) {
+			res.status = 404;
+			writer.put_string ("%s is not in the session.");
+			return;
+		}
+
+		writer.put_string (session[key]);
+	});
+
+	// delete a given key
+	inner.get ("<key>/delete", (req, res) => {
+		var session = Soup.Form.decode (req.session);
+		var key     = req.params["key"];
+
+		if (session == null || !session.contains (key)) {
+			res.status = Soup.Status.NOT_FOUND;
+			return;
+		}
+
+		session.remove (req.params["key"]);
+
+		req.session = Soup.Form.encode_hash (session);
+
+		res.status = Soup.Status.NO_CONTENT;
+	});
+
+});
+
 app.handle.connect_after ((req, res) => {
 	if (res.status == 404) {
 		var template = new View.Tpl.from_path("examples/app/templates/404.html");

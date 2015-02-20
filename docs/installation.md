@@ -3,11 +3,13 @@ Dependencies
 
 Valum has the following dependencies:
 
- - vala
- - glib-2.0
- - libsoup-2.4
- - libgee-0.8
- - ctpl
+ - vala (latest you may find is recommended)
+ - glib-2.0 (>=2.32)
+ - libsoup-2.4 (>=2.38)
+ - libgee-0.8 (>=0.6.4)
+ - libfcgi (>=2.4.0)
+ - uuid (>=2.20)
+ - ctpl (>=0.3.3)
 
 The sample application depends on
 
@@ -24,16 +26,17 @@ Debian and Ubuntu
 
 ```bash
 apt-get install git-core build-essential python valac libglib2.0-dev \
-                libsoup2.4-dev libgee-0.8-dev libfcgi-dev memcached \
-                libmemcached-dev libluajit-5.1-dev libctpl-dev
+                libsoup2.4-dev uuid-dev libfcgi-dev memcached libmemcached-dev \
+                libluajit-5.1-dev libctpl-dev
 ```
 
 Fedora
 ------
 
 ```bash
-yum install git python vala glib2-devel libsoup-devel libgee-devel fcgi-devel \
-            memcached libmemcached-devel luajit-devel ctpl-devel
+yum install git python vala glib2-devel libsoup-devel libuuid-devel \
+            libgee-devel fcgi-devel memcached libmemcached-devel luajit-devel \
+            libctpl-devel
 ```
 
 Download the sources
