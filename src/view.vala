@@ -76,8 +76,14 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public void push_strings (string key, size_t length, ...) {
-			this.environment.push (key, new Ctpl.Value.arrayv (Ctpl.ValueType.STRING, length, va_list ()));
+		public void push_strings (string key, string[] strings) {
+			var val = new Ctpl.Value.array (Ctpl.ValueType.STRING, 0);
+
+			foreach (var str in strings) {
+				val.array_append_string (str);
+			}
+
+			this.environment.push (key, val);
 		}
 
 		/**
@@ -85,8 +91,14 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public void push_ints (string key, size_t length, ...) {
-			this.environment.push (key, new Ctpl.Value.arrayv (Ctpl.ValueType.INT, length, va_list ()));
+		public void push_ints (string key, long[] longs) {
+			var val = new Ctpl.Value.array (Ctpl.ValueType.INT, 0);
+
+			foreach (var i in longs) {
+				val.array_append_int (i);
+			}
+
+			this.environment.push (key, val);
 		}
 
 		/**
@@ -94,8 +106,14 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public void push_floats (string key, size_t length, ...) {
-			this.environment.push (key, new Ctpl.Value.arrayv (Ctpl.ValueType.FLOAT, length, va_list ()));
+		public void push_floats (string key, double[] floats) {
+			var val = new Ctpl.Value.array (Ctpl.ValueType.FLOAT, 0);
+
+			foreach (var f in floats) {
+				val.array_append_float (f);
+			}
+
+			this.environment.push (key, val);
 		}
 
 		/**
@@ -109,15 +127,15 @@ namespace Valum {
 			var arr = collection.to_array ();
 
 			if (Value.type_transformable(collection.element_type, typeof(long))) {
-				this.push_ints (key, arr.length, (long[]) arr);
+				this.push_ints (key, (long[]) arr);
 			}
 
 			else if (Value.type_transformable(collection.element_type, typeof(double))) {
-				this.push_floats (key, arr.length, (double[]) arr);
+				this.push_floats (key, (double[]) arr);
 			}
 
 			else if (collection.element_type == typeof(string)) {
-				this.push_strings (key, arr.length, (string[]) arr);
+				this.push_strings (key, (string[]) arr);
 			}
 
 			else {
@@ -182,45 +200,40 @@ namespace Valum {
 		 * @param value value that must respec one of the supported type
 		 */
 		public void push_value (string key, Value? val) {
+			// cover the null case
 			if (val == null) {
 				this.environment.push_string (key, "null");
-				return;
 			}
 
-			warning ("not implemented!");
-
-			return;
-
-			var v = (Value) val;
-
 			// coverts all Gee collections
-			if (Value.type_compatible (v.type (), typeof(Collection))) {
-				this.push_collection (key, (Collection) v.get_object ());
+			else if (Value.type_compatible (val.type (), typeof(Collection))) {
+				this.push_collection (key, (Collection) val.get_object ());
 			}
 
 			// converts all Gee maps
-			else if (Value.type_compatible (v.type (), typeof(Map))) {
-				this.push_map (key, (Map) v.get_object ());
+			else if (Value.type_compatible (val.type (), typeof(Map))) {
+				this.push_map (key, (Map) val.get_object ());
 			}
 
-			else if (Value.type_compatible (v.type (), typeof(HashTable))) {
-				this.push_hashtable (key, (HashTable) v.get_object ());
+			// converts HashTable
+			else if (Value.type_compatible (val.type (), typeof(HashTable))) {
+				this.push_hashtable (key, (HashTable) val.get_object ());
 			}
 
-			else if (v.type() == typeof(string)) {
-				this.environment.push_string (key, v.get_string ());
+			else if (val.type() == typeof(string)) {
+				this.environment.push_string (key, val.get_string ());
 			}
 
-			else if (Value.type_transformable(v.type (), typeof(double))) {
-				this.environment.push_float (key, v.get_double ());
+			else if (Value.type_transformable(val.type (), typeof(double))) {
+				this.environment.push_float (key, val.get_double ());
 			}
 
-			else if (Value.type_transformable(v.type (), typeof(long))) {
-				this.environment.push_int (key, v.get_int ());
+			else if (Value.type_transformable(val.type (), typeof(long))) {
+				this.environment.push_int (key, val.get_int ());
 			}
 
 			else {
-				this.environment.push_string (key, "unknown type %s for key %s".printf (v.type_name (), key));
+				this.environment.push_string (key, "unknown type %s for key %s".printf (val.type_name (), key));
 			}
 		}
 
