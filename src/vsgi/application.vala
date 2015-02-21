@@ -10,11 +10,11 @@
 [CCode (gir_namespace = "VSGI", gir_version = "0.1")]
 namespace VSGI {
 	/**
-	 * Application that handles Request and produce Response.
+	 * Application that handles {@link Request} and produce {@link Response}.
 	 *
 	 * @since 0.1
 	 */
-	public interface Application : Object {
+	public interface Application : GLib.Object {
 
 		/**
 		 * Signal handling a {@link Request} and producing a {@link Response}.

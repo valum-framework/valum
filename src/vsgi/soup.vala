@@ -105,33 +105,33 @@ namespace VSGI.Soup {
 
 		private global::Soup.Server server;
 
-		public Server (VSGI.Application app, uint port) throws Error {
-			base (app);
-			this.server = new global::Soup.Server (SERVER_PORT, 3003);
-		}
+		public Server (VSGI.Application application) {
+			Object (application: application, flags: ApplicationFlags.HANDLES_COMMAND_LINE);
+			this.server = new global::Soup.Server (global::Soup.SERVER_SERVER_HEADER, "Valum");
 
-		/**
-		 * Creates a Soup.Server, bind the application to it using a closure and
-		 * start the server.
-		 */
-		public override int run (string[]? args = null) {
-
-			ServerCallback soup_handler = (server, msg, path, query, client) => {
-
+			this.server.add_handler (null, (server, msg, path, query, client) => {
 				var req = new Request (msg, query);
 				var res = new Response (req, msg);
 
-				this.application.handle (req, res);
+				application.handle (req, res);
 
 				message ("%u %s %s".printf (res.status, req.method, req.uri.get_path ()));
-			};
+			});
 
-			this.server.add_handler (null, soup_handler);
+			this.add_main_option ("port", 'p', 0, OptionArg.INT, "port used to serve the HTTP server", "defaults to 3003");
+		}
 
-			message ("listening on http://%s:%u", server.interface.physical, server.interface.port);
+		public override int command_line (ApplicationCommandLine command_line) {
+			var options = command_line.get_options_dict ();
+			var port    = options.contains ("port") ? options.lookup_value ("port", VariantType.INT32).get_int32 () : 3003;
 
-			// run the server
-			this.server.run ();
+			this.server.listen_all (port, 0);
+
+			foreach (var uri in this.server.get_uris ()) {
+				message ("listening on %s://%s:%u", uri.scheme, uri.host, uri.port);
+			}
+
+			new MainLoop().run ();
 
 			return 0;
 		}

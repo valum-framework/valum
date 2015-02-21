@@ -1,37 +1,24 @@
 namespace VSGI {
 
 	/**
-	 * Server that handles a single Application.
+	 * Server that handles a single {@link VSGI.Application}.
+	 *
+	 * Once you have initialized a Server instance, start it by calling
+	 * {@link Server.run} with the command-line arguments.
 	 *
 	 * It is the server responsibility to close {@link Request} and
 	 * {@link Response} providen to the served {@link Application} if it has not
-	 * been done in the {@link Application.handler}.
+	 * been done in {@link Application.handle}.
 	 *
 	 * @since 0.1
 	 */
-	public abstract class Server : Object {
+	public abstract class Server : GLib.Application {
 
 		/**
-		 * Application handling incoming request.
-		 */
-		protected VSGI.Application application;
-
-		/**
-		 * Creates a new Server that serve a given application.
-		 *
-		 * @since 0.1
-		 *
-		 * @param app application served by this server.
-		 */
-		public Server (VSGI.Application app) {
-			this.application = app;
-		}
-
-		/**
-		 * Start listening on incoming requests.
+		 * Application being served.
 		 *
 		 * @since 0.1
 		 */
-		public abstract int run (string[]? args = null);
+		public VSGI.Application application { construct; get; }
 	}
 }

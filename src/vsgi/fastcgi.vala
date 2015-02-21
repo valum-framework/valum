@@ -196,37 +196,34 @@ namespace VSGI.FastCGI {
 
 		private request _request;
 
-		public Server (VSGI.Application app) {
-			base (app);
+		public Server (VSGI.Application application) {
+			Object (application: application, flags: ApplicationFlags.HANDLES_COMMAND_LINE);
 
-			init ();
+			this.add_main_option ("socket", 's', 0, OptionArg.STRING, "socket", null);
 
-			request.init (out this._request);
+			this.startup.connect (() => {
+				init ();
+			});
 		}
 
 		/**
-		 * Create a FastCGI Server from a socket.
-		 *
-		 * @since 0.1
-		 *
-		 * @param path    socket path or port number (port are written like :8080)
-		 * @param backlog listen queue depth
+		 * Handle the command line and setup the request.
 		 */
-		public Server.from_socket (VSGI.Application app, string path, int backlog) {
-			base (app);
+		public override int command_line (ApplicationCommandLine command_line) {
+			var source   = new TimeoutSource (0);
+			var mainloop = new MainLoop ();
 
-			init ();
+			var options     = command_line.get_options_dict ();
+			var socket_path = options.contains ("socket") ? options.lookup_value ("socket", VariantType.STRING).get_string () : "";
 
-			var socket = open_socket (path, 0);
+			message (socket_path);
 
-			assert (socket != -1);
+			var socket   = open_socket (socket_path, 0);
+
+			if (socket == -1)
+				error ("");
 
 			request.init (out this._request, socket);
-		}
-
-		public override int run (string[]? args = null) {
-			var loop = new MainLoop ();
-			var source = new TimeoutSource (0);
 
 			source.set_callback (() => {
 				// accept a new request
@@ -234,8 +231,8 @@ namespace VSGI.FastCGI {
 
 				if (status < 0) {
 					warning ("could not accept a request (code %d)", status);
+					mainloop.quit ();
 					this._request.close ();
-					loop.quit ();
 					return false;
 				}
 
@@ -259,9 +256,9 @@ namespace VSGI.FastCGI {
 				return true;
 			});
 
-			source.attach (loop.get_context ());
+			source.attach (mainloop.get_context ());
 
-			loop.run ();
+			mainloop.run ();
 
 			return 0;
 		}
