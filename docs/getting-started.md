@@ -22,7 +22,7 @@ app.get("", (req, res) => {
     writer.put_string ("Hello world!");
 });
 
-new SoupServer (app, 3003).listen ();
+new SoupServer (app, 3003).run ();
 ```
 
 Right now, CTPL and libfcgi are not providing Vala bindings, so you need to copy

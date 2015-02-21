@@ -283,6 +283,4 @@ app.handle.connect_after ((req, res) => {
 	}
 });
 
-var server = new VSGI.SoupServer (app, 3003);
-
-server.listen ();
+new VSGI.SoupServer (app, 3003).run ();

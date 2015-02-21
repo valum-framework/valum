@@ -28,7 +28,7 @@ app.get("lua", (req, res) => {
     writer.put_string (lua.run("scripts/hello.lua"));
 });
 
-new SoupServer (app, 3003).listen ();
+new SoupServer (app, 3003).run ();
 ```
 
 The sample Lua script contains:

@@ -17,7 +17,7 @@ app.get("", (req, res) => {
     writer.put_string ("Hello world!");
 });
 
-new SoupServer (app, 3003).listen ();
+new SoupServer (app, 3003).run ();
 ```
 
 Creating an application
@@ -59,5 +59,5 @@ It is also to use the `FastCGIServer`, but it needs a specific setup that is
 covered in the [FastCGI section](server/fastcgi.md) of the documentation.
 
 ```java
-new SoupServer (app, 3003).listen ();
+new SoupServer (app, 3003).run ();
 ```

@@ -45,5 +45,5 @@ public static void main (string[] args) {
 
 	var server = new VSGI.FastCGIServer.from_socket (app, args[1], 0);
 
-	server.listen ();
+	server.run (args);
 }

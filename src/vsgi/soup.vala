@@ -114,7 +114,7 @@ namespace VSGI {
 		 * Creates a Soup.Server, bind the application to it using a closure and
 		 * start the server.
 		 */
-		public override void listen () {
+		public override void run (string[]? args = null) {
 
 			Soup.ServerCallback soup_handler = (server, msg, path, query, client) => {
 
