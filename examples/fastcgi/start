@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
+basedir=$(dirname $0)
 socket=$(mktemp)
 
-spawn-fcgi -n -s $socket -- fastcgi $socket &
+spawn-fcgi -n -s $socket -- $basedir/fastcgi $socket &
 fastcgi --socket $socket --port 3003
