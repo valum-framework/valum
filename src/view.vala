@@ -2,7 +2,14 @@ using Gee;
 
 namespace Valum {
 	/**
-	 * View based on CTPL templating engine.
+	 * View based on {@link Ctpl} templating engine.
+	 *
+	 * Provide helpers for pushing common types into the template environment
+	 * such as Gee.Collection, Gee.Map, array of primitive and much more.
+	 *
+	 * This implementation include two rendering functions: {@link View.render}
+	 * and {@link View.splice}. The latter integrates very well with the
+	 * framework since {@link VSGI.Response} inherit from {@link OutputStream}.
 	 *
 	 * @since 0.1
 	 */
@@ -117,25 +124,23 @@ namespace Valum {
 		}
 
 		/**
-		 * Push a Gee.Collection into the environment.
+		 * Push a {@link Gee.Collection} into the environment.
          *
 		 * The element type can be either string, long or double.
 		 *
 		 * @since 0.1
 		 */
 		public void push_collection (string key, Collection collection) {
-			var arr = collection.to_array ();
-
-			if (Value.type_transformable(collection.element_type, typeof(long))) {
-				this.push_ints (key, (long[]) arr);
+			if (Value.type_compatible (collection.element_type, typeof(long))) {
+				this.push_ints (key, ((Collection<long>) collection).to_array ());
 			}
 
-			else if (Value.type_transformable(collection.element_type, typeof(double))) {
-				this.push_floats (key, (double[]) arr);
+			else if (Value.type_compatible (collection.element_type, typeof(double))) {
+				this.push_floats (key, ((Collection<double>) collection).to_array ());
 			}
 
-			else if (collection.element_type == typeof(string)) {
-				this.push_strings (key, (string[]) arr);
+			else if (Value.type_compatible (collection.element_type, typeof(string))) {
+				this.push_strings (key, ((Collection<string>) collection).to_array ());
 			}
 
 			else {
@@ -144,7 +149,9 @@ namespace Valum {
 		}
 
 		/**
-		 * Map are bound by composing the key with the entry key.
+		 * Push a {@link Gee.Map} into the environment.
+		 *
+		 * Value is infered using {@link View.push_value}.
 		 *
 		 * @since 0.1
 		 */
@@ -155,19 +162,51 @@ namespace Valum {
 			});
 		}
 
+		public void push_string_map (string key, Map<string, string> map) {
+			map.map_iterator().foreach((k, v) => {
+				this.push_string ("%s_%s".printf(key, k), v);
+				return true;
+			});
+		}
+
+		public void push_int_map (string key, Map<string, long> map) {
+			map.map_iterator().foreach((k, v) => {
+				this.push_int ("%s_%s".printf(key, k), v);
+				return true;
+			});
+		}
+
 		/**
+		 * Push a {@link Gee.MultiMap} of string into the environment.
+		 *
 		 * MultiMap are bound by composing the key with the entry key and associate
 		 * that value to an array.
 		 *
 		 * @since 0.1
 		 */
-		public void push_multimap (string key, MultiMap<string, Value?> multimap) {
+		public void push_string_multimap (string key, MultiMap<string, string> multimap) {
 			foreach (var k in multimap.get_keys ()) {
-				this.push_collection ("%s_%s".printf (key, k), multimap[k]);
+				this.push_strings ("%s_%s".printf (key, k), multimap[k].to_array ());
 			}
 		}
 
 		/**
+		 * Push a {@link Gee.MultiMap} of int into the environment.
+		 *
+		 * @since 0.1
+		 */
+		public void push_int_multimap (string key, MultiMap<string, long> multimap) {
+			foreach (var k in multimap.get_keys ()) {
+				this.push_ints ("%s_%s".printf (key, k), multimap[k].to_array ());
+			}
+		}
+
+		/**
+		 * Push a {@link GLib.HashTable} into the environment.
+		 *
+		 * Value is infered using {@link View.push_value}.
+		 *
+		 * @see   View.push_map
 		 * @since 0.1
 		 */
 		public void push_hashtable (string key, GLib.HashTable<string, Value?> ht) {
@@ -176,23 +215,31 @@ namespace Valum {
 			});
 		}
 
+		public void push_string_hashtable (string key, GLib.HashTable<string, string> ht) {
+			ht.foreach((k, v) => {
+				this.push_string ("%s_%s".printf (key, k), v);
+			});
+		}
+
+		public void push_int_hashtable (string key, GLib.HashTable<string, long> ht) {
+			ht.foreach((k, v) => {
+				this.push_int ("%s_%s".printf (key, k), v);
+			});
+		}
+
 		/**
-		 * Push an arbitrary value into the environment.
+		 * Push an arbitrary {@link GLib.Value} into the environment.
 		 *
-		 * Supports the following types:
+		 * Support is limited to what the environment can hold and the predefined
+		 * functions of this class.
 		 *
+		 * * null
 		 * * string
-		 * * double
 		 * * long
+		 * * double
 		 * * string[]
 		 * * double[]
 		 * * long[]
-		 * * Gee.Collection
-		 * * Gee.Map
-		 * * GLib.HashTable
-		 *
-		 * GLib lists (SList, List, Array, ...) are not supported as they do not
-		 * provide any way of infering their element type.
 		 *
 		 * @since 0.1
 		 *
@@ -205,31 +252,28 @@ namespace Valum {
 				this.environment.push_string (key, "null");
 			}
 
-			// coverts all Gee collections
-			else if (Value.type_compatible (val.type (), typeof(Collection))) {
-				this.push_collection (key, (Collection) val.get_object ());
-			}
-
-			// converts all Gee maps
-			else if (Value.type_compatible (val.type (), typeof(Map))) {
-				this.push_map (key, (Map) val.get_object ());
-			}
-
-			// converts HashTable
-			else if (Value.type_compatible (val.type (), typeof(HashTable))) {
-				this.push_hashtable (key, (HashTable) val.get_object ());
-			}
-
-			else if (val.type() == typeof(string)) {
+			else if (Value.type_compatible (val.type (), typeof(string))) {
 				this.environment.push_string (key, val.get_string ());
 			}
 
-			else if (Value.type_transformable(val.type (), typeof(double))) {
+			else if (Value.type_compatible (val.type (), typeof(long))) {
+				this.environment.push_int (key, val.get_int ());
+			}
+
+			else if (Value.type_compatible (val.type (), typeof(double))) {
 				this.environment.push_float (key, val.get_double ());
 			}
 
-			else if (Value.type_transformable(val.type (), typeof(long))) {
-				this.environment.push_int (key, val.get_int ());
+			else if (Value.type_compatible (val.type (), typeof(string[]))) {
+				this.push_strings (key, (string[]) val.get_pointer ());
+			}
+
+			else if (Value.type_compatible (val.type (), typeof(long[]))) {
+				this.push_ints (key, (long[]) val.get_pointer ());
+			}
+
+			else if (Value.type_compatible (val.type (), typeof(double[]))) {
+				this.push_floats (key, (double[]) val.get_pointer ());
 			}
 
 			else {
@@ -252,8 +296,8 @@ namespace Valum {
 		}
 
 		/**
-		 * Stream the template into a MemoryOutputStream and return the rendered
-		 * string.
+		 * Stream the template into a {@link MemoryOutputStream} and return the
+		 * rendered string.
 		 *
 		 * @since 0.0.1
 		 */

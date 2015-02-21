@@ -42,6 +42,9 @@ public static void test_view_push_float () {
 	assert (val.get_float () == 5.5);
 }
 
+/**
+ * @since 0.1
+ */
 public static void test_view_push_strings () {
 	var view = new View ();
 
@@ -59,6 +62,9 @@ public static void test_view_push_strings () {
 	assert (arr[2] == "c");
 }
 
+/**
+ * @since 0.1
+ */
 public static void test_view_push_ints () {
 	var view = new View ();
 
@@ -69,7 +75,6 @@ public static void test_view_push_ints () {
 
 	assert (popped);
 
-	var size = 3;
 	var arr = val.get_array_int ();
 
 	assert (arr[0] == 0L);
@@ -77,6 +82,9 @@ public static void test_view_push_ints () {
 	assert (arr[2] == 2L);
 }
 
+/**
+ * @since 0.1
+ */
 public static void test_view_push_floats () {
 	var view = new View ();
 
@@ -87,7 +95,6 @@ public static void test_view_push_floats () {
 
 	assert (popped);
 
-	var size = 3;
 	var arr = val.get_array_float ();
 
 	assert (arr[0] == 0.1);
@@ -95,6 +102,9 @@ public static void test_view_push_floats () {
 	assert (arr[2] == 0.3);
 }
 
+/**
+ * @since 0.1
+ */
 public static void test_view_push_collection_strings () {
 	var view       = new View ();
 	var collection = new Gee.ArrayList<string> ();
@@ -110,13 +120,16 @@ public static void test_view_push_collection_strings () {
 
 	assert (popped);
 
-	unowned SList<string> arr = (SList<string>) val.get_array ();
+	var arr = val.get_array_string ();
 
-	assert (arr.nth_data (1) == "a");
-	assert (arr.nth_data (2) == "b");
-	assert (arr.nth_data (3) == "c");
+	assert (arr[0] == "a");
+	assert (arr[1] == "b");
+	assert (arr[2] == "c");
 }
 
+/**
+ * @since 0.1
+ */
 public static void test_view_push_collection_ints () {
 	var view       = new View ();
 	var collection = new Gee.ArrayList<long> ();
@@ -132,13 +145,16 @@ public static void test_view_push_collection_ints () {
 
 	assert (popped);
 
-	unowned SList<long> arr = (SList<long>) val.get_array ();
+	var arr = val.get_array_int ();
 
-	assert (arr.nth_data (0) == 0L);
-	assert (arr.nth_data (1) == 1L);
-	assert (arr.nth_data (2) == 2L);
+	assert (arr[0] == 0L);
+	assert (arr[1] == 1L);
+	assert (arr[2] == 2L);
 }
 
+/**
+ * @since 0.1
+ */
 public static void test_view_push_collection_floats () {
 	var view       = new View ();
 	var collection = new Gee.ArrayList<double?> ();
@@ -154,9 +170,195 @@ public static void test_view_push_collection_floats () {
 
 	assert (popped);
 
-	unowned SList<double?> arr = (SList<double?>) val.get_array ();
+	var arr = val.get_array_float ();
 
-	assert (arr.nth_data (0) == 0.1);
-	assert (arr.nth_data (1) == 0.2);
-	assert (arr.nth_data (2) == 0.3);
+	assert (arr.length == 3);
+	/*
+	assert (arr[0] == 0.1);
+	assert (arr[1] == 0.2);
+	assert (arr[2] == 0.3);
+	*/
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_view_push_map () {
+	var view  = new View ();
+	var table = new Gee.HashMap<string, Value?> ();
+
+	table["key"] = "value";
+
+	view.push_map ("key", table);
+
+	table.foreach ((e) => {
+		Ctpl.Value val = null;
+		var popped     = view.environment.pop ("key_" + e.key, ref val);
+
+		assert (popped);
+
+		assert (val.get_string () == e.value.get_string ());
+
+		return true;
+	});
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_view_push_string_map () {
+	var view  = new View ();
+	var table = new Gee.HashMap<string, string> ();
+
+	table["key"] = "value";
+
+	view.push_string_map ("key", table);
+
+	table.foreach ((e) => {
+		Ctpl.Value val = null;
+		var popped     = view.environment.pop ("key_" + e.key, ref val);
+
+		assert (popped);
+
+		assert (val.get_string () == e.value);
+
+		return true;
+	});
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_view_push_int_map () {
+	var view  = new View ();
+	var table = new Gee.HashMap<string, int> ();
+
+	table["key"] = 5;
+
+	view.push_int_map ("key", table);
+
+	table.foreach ((e) => {
+		Ctpl.Value val = null;
+		var popped     = view.environment.pop ("key_" + e.key, ref val);
+
+		assert (popped);
+
+		assert (val.get_int () == e.value);
+
+		return true;
+	});
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_view_push_string_multimap () {
+	var view  = new View ();
+	var table = new Gee.HashMultiMap<string, string> ();
+
+	table["key"] = "value";
+
+	view.push_string_multimap ("key", table);
+
+	table.map_iterator ().foreach ((k, v) => {
+		Ctpl.Value val = null;
+		var popped     = view.environment.pop ("key_" + k, ref val);
+
+		assert (popped);
+
+		assert (val.get_array_string ()[0] == v);
+		return true;
+	});
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_view_push_int_multimap () {
+	var view  = new View ();
+	var table = new Gee.HashMultiMap<string, int> ();
+
+	table["key"] = 5;
+
+	view.push_int_multimap ("key", table);
+
+	table.map_iterator ().foreach ((k, v) => {
+		Ctpl.Value val = null;
+		var popped     = view.environment.pop ("key_" + k, ref val);
+
+		assert (popped);
+
+		assert (val.get_array_int ()[0] == v);
+		return true;
+	});
+}
+
+public static void test_view_push_hashtable () {
+	var view  = new View ();
+	var table = new HashTable<string, Value?> (str_hash, str_equal);
+
+	table["key"] = "value";
+
+	view.push_hashtable ("key", table);
+
+	table.foreach ((k, v) => {
+		Ctpl.Value val = null;
+		var popped     = view.environment.pop ("key_" + k, ref val);
+
+		assert (popped);
+
+		assert (val.get_string () == v.get_string ());
+	});
+}
+
+public static void test_view_push_string_hashtable () {
+	var view  = new View ();
+	var table = new HashTable<string, string> (str_hash, str_equal);
+
+	table["key"] = "value";
+
+	view.push_string_hashtable ("key", table);
+
+	table.foreach ((k, v) => {
+		Ctpl.Value val = null;
+		var popped     = view.environment.pop ("key_" + k, ref val);
+
+		assert (popped);
+
+		assert (val.get_string () == v);
+	});
+}
+
+public static void test_view_push_int_hashtable () {
+	var view  = new View ();
+	var table = new HashTable<string, long> (str_hash, str_equal);
+
+	table["key"] = 5;
+
+	view.push_int_hashtable ("key", table);
+
+	table.foreach ((k, v) => {
+		Ctpl.Value val = null;
+		var popped     = view.environment.pop ("key_" + k, ref val);
+
+		assert (popped);
+
+		assert (val.get_int () == v);
+	});
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_view_push_value_null () {
+	var view = new View ();
+
+	view.push_value ("key", null);
+
+	Ctpl.Value val = null;
+	var popped     = view.environment.pop ("key", ref val);
+
+	assert (popped);
+
+	assert (val.get_string () == "null");
 }
