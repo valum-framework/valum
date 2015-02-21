@@ -154,35 +154,22 @@ app.get("lua.haml", (req, res) => {
 
 // Ctpl template rendering
 app.get("ctpl/<foo>/<bar>", (req, res) => {
-
 	var tpl = new View.from_string("""
-	   <p> hello {foo} </p>
-	   <p> hello {bar} </p>
+	   <p>hello {foo}</p>
+	   <p>hello {bar}</p>
 	   <ul>
-		 { for el in arr }
-		   <li> { el } </li>
-		 { end }
+		 {for el in strings}
+		   <li>{el}</li>
+		 {end}
 	   </ul>
 	""");
 
-	var arr = new Gee.ArrayList<string> ();
-	arr.add("omg");
-	arr.add("typed hell");
-
-	tpl.environment.push_string ("foo", req.params["foo"]);
-	tpl.environment.push_string ("bar", req.params["bar"]);
-	tpl.push_collection ("arr", arr);
-	tpl.environment.push_int ("int", 1);
+	tpl.push_string ("foo", req.params["foo"]);
+	tpl.push_string ("bar", req.params["bar"]);
+	tpl.push_strings ("strings", {"a", "b", "c"});
+	tpl.push_int ("int", 1);
 
 	tpl.splice  (res);
-});
-
-// streamed Ctpl template
-app.get("ctpl/streamed", (req, res) => {
-
-	var tpl = new View.from_stream(resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
-
-	tpl.splice (res);
 });
 
 // memcached

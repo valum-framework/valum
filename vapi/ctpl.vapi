@@ -154,7 +154,7 @@ namespace Ctpl {
 		[CCode (has_construct_function = false)]
 		public Value ();
 		[CCode (has_construct_function = false)]
-		public Value.array (Ctpl.ValueType type, size_t count = 0);
+		public Value.array (Ctpl.ValueType type, size_t count, ...);
 		public void array_append (Ctpl.Value val);
 		public void array_append_float (double val);
 		public void array_append_int (long val);
@@ -173,9 +173,9 @@ namespace Ctpl {
 		public Value.float (double val);
 		public void free_value ();
 		public unowned GLib.SList get_array ();
-		public double get_array_float (size_t length);
-		public long get_array_int (size_t length);
-		public unowned global::string get_array_string (size_t length);
+		public double[] get_array_float ();
+		public long[] get_array_int ();
+		public unowned global::string[] get_array_string ();
 		public double get_float ();
 		public Ctpl.ValueType get_held_type ();
 		public long get_int ();
