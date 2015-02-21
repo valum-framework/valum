@@ -1,7 +1,12 @@
 #!/usr/bin/env sh
 
+set -e
+
 basedir=$(dirname $0)
 socket=$(mktemp)
 
-spawn-fcgi -n -s $socket -- $basedir/fastcgi $socket &
-fastcgi --socket $socket --port 3003
+# serve the socket on port 3003
+fastcgi --daemon --log $(mktemp) --pidfile $(mktemp) --socket $socket --port 3003
+
+# spawn a chrooted FastCGI process
+spawn-fcgi -n -s $socket -c $basedir -- $basedir/fastcgi $socket
