@@ -107,15 +107,20 @@ namespace VSGI.Soup {
 
 		public Server (VSGI.Application application) {
 			Object (application: application, flags: ApplicationFlags.HANDLES_COMMAND_LINE);
+
 			this.server = new global::Soup.Server (global::Soup.SERVER_SERVER_HEADER, "Valum");
 
 			this.server.add_handler (null, (server, msg, path, query, client) => {
+				this.hold ();
+
 				var req = new Request (msg, query);
 				var res = new Response (req, msg);
 
 				application.handle (req, res);
 
 				message ("%u %s %s".printf (res.status, req.method, req.uri.get_path ()));
+
+				this.release ();
 			});
 
 			this.add_main_option ("port", 'p', 0, OptionArg.INT, "port used to serve the HTTP server", "defaults to 3003");
@@ -131,7 +136,7 @@ namespace VSGI.Soup {
 				message ("listening on %s://%s:%u", uri.scheme, uri.host, uri.port);
 			}
 
-			new MainLoop().run ();
+			this.hold ();
 
 			return 0;
 		}

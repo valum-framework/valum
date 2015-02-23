@@ -202,42 +202,48 @@ namespace VSGI.FastCGI {
 			this.add_main_option ("socket", 's', 0, OptionArg.STRING, "socket", null);
 
 			this.startup.connect (() => {
-				init ();
+				var status = init ();
+				if (status != 0)
+					error ("code %u: failed to initialize FCGX library".printf (status));
 			});
+
+			this.shutdown.connect (shutdown_pending);
 		}
 
 		/**
 		 * Handle the command line and setup the request.
 		 */
 		public override int command_line (ApplicationCommandLine command_line) {
-			var source   = new TimeoutSource (0);
-			var mainloop = new MainLoop ();
-
 			var options     = command_line.get_options_dict ();
 			var socket_path = options.contains ("socket") ? options.lookup_value ("socket", VariantType.STRING).get_string () : "";
-
-			message (socket_path);
-
-			var socket   = open_socket (socket_path, 0);
+			var socket      = open_socket (socket_path, 0);
 
 			if (socket == -1)
-				error ("");
+				error ("could not open socket path %s".printf (socket_path));
 
-			request.init (out this._request, socket);
+			var request_status = request.init (out this._request, socket);
+
+			if (request_status != 0)
+				error ("code %u: could not initialize FCGX request".printf (request_status));
+
+			// trigger when data are available in the FastCGI socket
+			var source = new IOSource (new IOChannel.unix_new (socket), IOCondition.IN);
 
 			source.set_callback (() => {
 				// accept a new request
 				var status = this._request.accept ();
 
 				if (status < 0) {
-					warning ("could not accept a request (code %d)", status);
-					mainloop.quit ();
+					warning ("code %u: cannot not accept anymore request", status);
 					this._request.close ();
+					this.release ();
 					return false;
 				}
 
+				this.hold ();
+
 				foreach (var env in this._request.environment.get_all())
-				message (env);
+					message (env);
 
 				var req = new Request (this._request);
 				var res = new Response (req, this._request);
@@ -249,16 +255,20 @@ namespace VSGI.FastCGI {
 					this._request.out.set_exit_status (e.code);
 				}
 
+				// TODO: finish and release asynchronously
+
 				message ("%u %s %s".printf (res.status, req.method, req.uri.get_path ()));
 
 				this._request.finish ();
 
+				this.release ();
+
 				return true;
 			});
 
-			source.attach (mainloop.get_context ());
+			source.attach (MainContext.get_thread_default ());
 
-			mainloop.run ();
+			this.hold ();
 
 			return 0;
 		}
