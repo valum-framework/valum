@@ -27,12 +27,15 @@ app.handle.connect_after ((req, res) => {
 app.get("", (req, res) => {
 	var template = new View.from_stream(resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
 
-	template.environment.push_string ("path", req.uri.get_path ());
-	req.headers.foreach ((k, v) => {
-		template.environment.push_string ("headers_%s".printf(k), v);
-	});
-
 	template.splice (res);
+});
+
+app.get ("async", (req, res) => {
+	var template = new View.from_stream(resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
+
+	template.splice_async.begin (res, () => {
+		res.close ();
+	});
 });
 
 app.get ("query", (req, res) => {

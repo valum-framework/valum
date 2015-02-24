@@ -37,7 +37,8 @@ def build(bld):
         source       = bld.path.ant_glob('src/**/*.vala'),
         uselib       = ['GLIB', 'GIO', 'CTPL', 'GEE', 'SOUP', 'FCGI'],
         vapi_dirs    = ['vapi'],
-        install_path = '${LIBDIR}')
+        install_path = '${LIBDIR}',
+        threding     = True)
 
     # pkg-config file
     bld(
