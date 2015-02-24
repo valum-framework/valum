@@ -174,7 +174,7 @@ namespace Valum {
 		 * @since 0.1
 		 */
 		public void matcher (string method, Route.Matcher matcher, Route.Handler cb) {
-			this.route (method, new Route.from_matcher (this, matcher, cb));
+			this.route (method, new Route (this, matcher, cb));
 		}
 
 		/**

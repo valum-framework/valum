@@ -1,11 +1,15 @@
 using Valum;
 
 /**
- * TODO: test captures extraction
- *
  * @since 0.1
  */
-public void test_route_new () {}
+public void test_route () {
+	var route  = new Route (new Router (), (req) => { return true; }, (req, res) => {});
+	var req    = new TestRequest.with_uri (new Soup.URI ("http://localhost/5"));
+
+	assert (route.match (req));
+
+}
 
 /**
  * @since 0.1
@@ -75,17 +79,6 @@ public void test_route_from_regex_without_captures () {
 	// ensure params are still null if there is no captures
 	assert (route.match (req));
 	assert (req.params == null);
-}
-
-/**
- * @since 0.1
- */
-public void test_route_from_matcher () {
-	var route  = new Route.from_matcher (new Router (), (req) => { return true; }, (req, res) => {});
-	var req    = new TestRequest.with_uri (new Soup.URI ("http://localhost/5"));
-
-	assert (route.match (req));
-
 }
 
 /**

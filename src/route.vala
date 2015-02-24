@@ -17,9 +17,11 @@ namespace Valum {
 		private weak Router router;
 
 		/**
-		 * Match the request and populate the parameters.
+		 * Match the request and populate the {@link Request.params}.
 		 *
 		 * @since 0.1
+		 *
+		 * @param req request being matched
 		 */
 		public delegate bool Matcher (Request req);
 
@@ -27,15 +29,27 @@ namespace Valum {
 		 * Handle a pair of request and response.
 		 *
 		 * @since 0.0.1
+		 *
+		 * @throws Redirection perform a 3xx HTTP redirection
+		 * @throws ClientError trigger a 4xx client error
+		 * @throws ServerError trigger a 5xx server error
+		 *
+		 * @param req request being handled
+		 * @param res response to send back to the requester
 		 */
 		public delegate void Handler (Request req, Response res) throws Redirection, ClientError, ServerError;
 
 		/**
 		 * Create a Route using a custom matcher.
 		 *
+		 * This is the lowest-level mean to create a Route instance.
+		 *
+		 * The matcher should take in consideration the {@link Router.scopes}
+		 * stack if it has to deal with the {@link Request.uri}.
+		 *
 		 * @since 0.1
 		 */
-		public Route.from_matcher (Router router, Matcher matcher, Handler callback) {
+		public Route (Router router, Matcher matcher, Handler callback) {
 			this.router = router;
 			this.match  = matcher;
 			this.fire   = callback;
