@@ -100,28 +100,27 @@ app.scope("urlencoded-data", (inner) => {
 		var writer = new DataOutputStream(res);
 		writer.put_string(
 		"""
-	<!DOCTYPE html>
-	<html>
-	  <body>
-	    <form method="post">
-          <textarea name="data"></textarea>
-		  <button type="submit">submit</button>
-		</form>
-	  </body>
-	</html>
-	"""
-	);
+		<!DOCTYPE html>
+		<html>
+		  <body>
+			<form method="post">
+			  <textarea name="data"></textarea>
+			  <button type="submit">submit</button>
+			</form>
+		  </body>
+		</html>
+		""");
 	});
 
 	inner.post("", (req, res) => {
+		var writer = new DataOutputStream (res);
+		var data   = new MemoryOutputStream (null, realloc, free);
 
-		/*
-		var data = Soup.Form.decode ((string) req.body.data);
+		data.splice (req, OutputStreamSpliceFlags.CLOSE_SOURCE);
 
-		data.foreach((key, value) => {
-			res.append ("%s: %s".printf(key, value));
+		Soup.Form.decode ((string) data.get_data ()).foreach ((k, v) => {
+			writer.put_string ("%s: %s".printf (k, v));
 		});
-		*/
 	});
 });
 
@@ -200,15 +199,15 @@ app.get("memcached/set/<key>/<value>", (req, res) => {
 app.scope("admin", (adm) => {
 	adm.scope("fun", (fun) => {
 		fun.get("hack", (req, res) => {
-				var time = new DateTime.now_utc();
-				var writer = new DataOutputStream(res);
-				res.headers.set_content_type ("text/plain", null);
-				writer.put_string("It's %s around here!\n".printf(time.format("%H:%M")));
+			var time = new DateTime.now_utc();
+			var writer = new DataOutputStream(res);
+			res.headers.set_content_type ("text/plain", null);
+			writer.put_string("It's %s around here!\n".printf(time.format("%H:%M")));
 		});
 		fun.get("heck", (req, res) => {
-				var writer = new DataOutputStream(res);
-				res.headers.set_content_type ("text/plain", null);
-				writer.put_string("Wuzzup!");
+			var writer = new DataOutputStream(res);
+			res.headers.set_content_type ("text/plain", null);
+			writer.put_string("Wuzzup!");
 		});
 	});
 });
