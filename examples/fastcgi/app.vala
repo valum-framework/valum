@@ -1,6 +1,6 @@
 using Valum;
 
-public static void main (string[] args) {
+public static int main (string[] args) {
 	var app   = new Router ();
 	var timer = new Timer ();
 
@@ -38,12 +38,5 @@ public static void main (string[] args) {
 		writer.put_string ("404 - Not found");
 	});
 
-	if (args.length != 2)
-		error ("specify the FastCGI socket location ./fastcgi <socket>");
-
-	stdout.printf(args[1]);
-
-	var server = new VSGI.FastCGIServer.from_socket (app, args[1], 0);
-
-	server.run (args);
+	return new VSGI.FastCGIServer (app).run (args);
 }

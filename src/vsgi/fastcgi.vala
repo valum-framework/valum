@@ -13,7 +13,7 @@ namespace VSGI {
 		private new weak FastCGI.request request;
 
 		private string _method = Request.GET;
-		private Soup.URI _uri = new Soup.URI (null);
+		private Soup.URI _uri;
 		private HashTable<string, string>? _query = null;
 		private Soup.MessageHeaders _headers = new Soup.MessageHeaders (Soup.MessageHeadersType.REQUEST);
 
@@ -38,12 +38,21 @@ namespace VSGI {
 
 			var environment = this.request.environment;
 
+			this._uri = new Soup.URI (environment["PATH_TRANSLATED"]);
+
 			// nullables
 			this._uri.set_host (environment["SERVER_NAME"]);
 			this._uri.set_query (environment["QUERY_STRING"]);
 
+			// HTTP authentication credentials
+			this._uri.set_user (environment["REMOTE_USER"]);
+
 			if (environment["PATH_INFO"] != null)
 				this._uri.set_path ((string) environment["PATH_INFO"]);
+
+			// some server provide this one for the path
+			if (environment["REQUEST_URI"] != null)
+				this._uri.set_path ((string) environment["REQUEST_URI"]);
 
 			if (environment["SERVER_PORT"] != null)
 				this._uri.set_port (int.parse (environment["SERVER_PORT"]));
