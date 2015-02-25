@@ -69,11 +69,20 @@ namespace VSGI {
 		}
 
 		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
-			return this.request.in.read (buffer);
+			var read = this.request.in.read (buffer);
+
+			if (read == GLib.FileStream.EOF)
+				throw new IOError.FAILED ("code %u: could not read from stream".printf (this.request.in.get_error ()));
+
+			return read;
+		}
+
+		public bool flush (Cancellable? cancellable = null) {
+			return this.request.in.flush ();
 		}
 
 		public override bool close (Cancellable? cancellable = null) throws IOError {
-			return this.request.in.flush () && this.request.in.is_closed;
+			return this.request.in.is_closed;
 		}
 	}
 
@@ -109,7 +118,7 @@ namespace VSGI {
 		private ssize_t write_headers () throws IOError {
 			// headers cannot be rewritten
 			if (this.headers_written)
-				error ("HTTP headers have already been written");
+				error ("headers have already been written");
 
 			var headers = new StringBuilder ();
 
@@ -125,10 +134,10 @@ namespace VSGI {
 			headers.append ("\r\n");
 
 			// write headers in a single operation
-			ssize_t written = this.request.out.put_str (headers.str.data);
+			var written = this.request.out.puts (headers.str);
 
 			if (written == GLib.FileStream.EOF)
-				throw new IOError.FAILED ("could not write headers to stream");
+				return written;
 
 			// headers are written if the write operation is successful (rewritten otherwise)
 			this.headers_written = true;
@@ -136,9 +145,6 @@ namespace VSGI {
 			return written;
 		}
 
-		/**
-		 * Headers are written on the first call of write.
-		 */
 		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
 			// lock so that two threads would not write headers at the same time.
 			lock (this.headers_written) {
@@ -146,25 +152,29 @@ namespace VSGI {
 					this.write_headers ();
 			}
 
-			ssize_t written = this.request.out.put_str (buffer);
+			var written = this.request.out.put_str (buffer);
 
 			if (written == GLib.FileStream.EOF)
-				throw new IOError.FAILED ("could not write body to stream");
+				throw new IOError.FAILED ("code %u: could not write body to stream".printf (this.request.out.get_error ()));
 
 			return written;
 		}
 
+		/**
+		 * Headers are written on the first flush call.
+		 */
+		public override bool flush (Cancellable? cancellable = null) {
+			return this.request.out.flush ();
+		}
+
 		public override bool close (Cancellable? cancellable = null) throws IOError {
-			// write headers for empty message
+			// lock so that two threads would not write headers at the same time.
 			lock (this.headers_written) {
-				if (!this.headers_written) {
+				if (!this.headers_written)
 					this.write_headers ();
-				}
 			}
 
-			this.request.out.set_exit_status (0);
-
-			return this.request.out.flush () && this.request.out.is_closed;
+			return this.request.out.is_closed;
 		}
 	}
 
@@ -226,11 +236,15 @@ namespace VSGI {
 				var req = new VSGI.FastCGIRequest (this.request);
 				var res = new VSGI.FastCGIResponse (req, this.request);
 
-				this.application.handle (req, res);
+				try {
+					this.application.handle (req, res);
+				} catch (Error e) {
+					this.request.err.puts (e.message);
+					this.request.out.set_exit_status (e.code);
+				}
 
 				message ("%u %s %s".printf (res.status, req.method, req.uri.get_path ()));
 
-				// free the request
 				this.request.finish ();
 
 				return true;
