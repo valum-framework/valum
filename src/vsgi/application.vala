@@ -4,17 +4,11 @@
  *
  * It is minimalist and relies on libsoup, a good and stable HTTP library.
  *
- * Two implementation are planned: Soup.Server and FastCGI. The latter
- * integrates with pretty much any web server.
+ * Two implementation are available: libsoup built-in Soup.Server and FastCGI.
+ * The latter integrates with pretty much any web server.
  */
 [CCode (gir_namespace = "VSGI", gir_version = "0.1")]
 namespace VSGI {
-
-	/**
-	 * @since 0.1
-	 */
-	public const string APP_NAME = "VSGI";
-
 	/**
 	 * Application that handles Request and produce Response.
 	 *
@@ -23,7 +17,7 @@ namespace VSGI {
 	public interface Application : Object {
 
 		/**
-		 * Signal handling a Request and producing a Response.
+		 * Signal handling a {@link Request} and producing a {@link Response}.
 		 *
 		 * The rationale behind using a signal is that it allows binding of
 		 * callbacks before and after the default handler is executed, which

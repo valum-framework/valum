@@ -35,11 +35,12 @@ result!
 Use this setup to test your application before the deployment. To develop, it is
 generally more convenient to use the libsoup built-in HTTP server.
 
-Technically, you end-up with a FastCGI executable, so deploying it on a specific
-server is already documented.
+Technically, you end-up with a FastCGI executable, so deploying it on
+a specific server should be already documented.
 
-Apache
-------
+## Deploying a FastCGI application
+
+### Apache
 
 Under Apache, there are two mods available: `mod_fcgid` is more likely to be
 available as it is part of Apache and `mod_fastcgi` is developed by those who
@@ -48,8 +49,10 @@ did the FastCGI specifications.
  - [mod_fcgid](http://httpd.apache.org/mod_fcgid/)
  - [mod_fastcgi](http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html)
 
-Nginx
------
+### Nginx
 
-lighttpd
---------
+[ngx_http_fastcgi_module](http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html)
+
+### lighttpd
+
+[mod_fastcgi](http://redmine.lighttpd.net/projects/1/wiki/Docs_ModFastCGI)
