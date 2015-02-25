@@ -32,6 +32,6 @@ namespace VSGI {
 		 *
 		 * @since 0.1
 		 */
-		public abstract void run (string[]? args = null);
+		public abstract int run (string[]? args = null);
 	}
 }

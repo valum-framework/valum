@@ -215,7 +215,7 @@ namespace VSGI {
 			FastCGI.request.init (out this.request, socket);
 		}
 
-		public override void run (string[]? args = null) {
+		public override int run (string[]? args = null) {
 			var loop = new MainLoop ();
 			var source = new TimeoutSource (0);
 
@@ -253,6 +253,8 @@ namespace VSGI {
 			source.attach (loop.get_context ());
 
 			loop.run ();
+
+			return 0;
 		}
 	}
 }
