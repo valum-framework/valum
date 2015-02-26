@@ -199,7 +199,9 @@ namespace VSGI.FastCGI {
 		public Server (VSGI.Application application) {
 			Object (application: application, flags: ApplicationFlags.HANDLES_COMMAND_LINE);
 
-			this.add_main_option ("socket", 's', 0, OptionArg.STRING, "socket", null);
+			this.add_main_option ("socket", 's', 0, OptionArg.STRING, "path to the UNIX socket", null);
+			this.add_main_option ("port", 'p', 0, OptionArg.INT, "TCP port on this host", null);
+			this.add_main_option ("backlog", 'b', 0, OptionArg.INT, "listen queue depth used in the listen() call", "0");
 
 			this.startup.connect (() => {
 				var status = init ();
@@ -214,63 +216,110 @@ namespace VSGI.FastCGI {
 		 * Handle the command line and setup the request.
 		 */
 		public override int command_line (ApplicationCommandLine command_line) {
-			var options     = command_line.get_options_dict ();
-			var socket_path = options.contains ("socket") ? options.lookup_value ("socket", VariantType.STRING).get_string () : "";
-			var socket      = open_socket (socket_path, 0);
+			var options = command_line.get_options_dict ();
 
-			if (socket == -1)
-				error ("could not open socket path %s".printf (socket_path));
+			if (options.contains ("socket") && options.contains ("port")) {
+				GLib.stderr.printf ("--socket and --port must not be specified simultaneously");
+				return 1;
+			}
 
-			var request_status = request.init (out this._request, socket);
+			var backlog = options.contains ("backlog") ? options.lookup_value ("backlog", VariantType.INT32).get_int32 () : 0;
 
-			if (request_status != 0)
-				error ("code %u: could not initialize FCGX request".printf (request_status));
+			if (options.contains ("socket")) {
+				var socket_path = options.lookup_value ("socket", VariantType.STRING).get_string ();
+				var socket      = open_socket (socket_path, backlog);
 
-			// trigger when data are available in the FastCGI socket
-			var source = new IOSource (new IOChannel.unix_new (socket), IOCondition.IN);
+				if (socket == -1)
+					error ("could not open socket path %s".printf (socket_path));
 
-			source.set_callback (() => {
-				// accept a new request
-				var status = this._request.accept ();
+				var request_status = request.init (out this._request, socket);
 
-				if (status < 0) {
-					warning ("code %u: cannot not accept anymore request", status);
-					this._request.close ();
-					this.release ();
-					return false;
-				}
+				if (request_status != 0)
+					error ("code %u: could not initialize FCGX request from socket %s".printf (request_status, socket_path));
 
-				this.hold ();
+				var source = new IOSource (new IOChannel.unix_new (socket), IOCondition.IN);
 
-				foreach (var env in this._request.environment.get_all())
-					message (env);
+				source.set_callback (accept);
+				source.attach (MainContext.get_thread_default ());
 
-				var req = new Request (this._request);
-				var res = new Response (req, this._request);
+				message ("listening on %s (backlog %d)", socket_path, backlog);
+			}
 
-				try {
-					this.application.handle (req, res);
-				} catch (Error e) {
-					this._request.err.puts (e.message);
-					this._request.out.set_exit_status (e.code);
-				}
+			else if (options.contains ("port")) {
+				var port   = ":%d".printf(options.lookup_value ("port", VariantType.INT32).get_int32 ());
+				var socket = open_socket (port, backlog);
 
-				// TODO: finish and release asynchronously
+				if (socket == -1)
+					error ("could not open TCP socket at port %s".printf (port));
 
-				message ("%u %s %s".printf (res.status, req.method, req.uri.get_path ()));
+				var request_status = request.init (out this._request, socket);
 
-				this._request.finish ();
+				if (request_status != 0)
+					error ("code %u: could not initialize FCGX request from TCP socket at port %s".printf (request_status, port));
 
-				this.release ();
+				var source = new IOSource (new IOChannel.unix_new (socket), IOCondition.IN);
 
-				return true;
-			});
+				source.set_callback (accept);
+				source.attach (MainContext.get_thread_default ());
 
-			source.attach (MainContext.get_thread_default ());
+				message ("listening on tcp://0.0.0.0:%s (backlog %d)", port, backlog);
+			}
+
+			else {
+				var request_status = request.init (out this._request);
+
+				if (request_status != 0)
+					error ("code %u: could not initialize FCGX request using the default socket".printf (request_status));
+
+				var source = new TimeoutSource (0);
+
+				source.set_callback (accept);
+				source.attach (MainContext.get_thread_default ());
+
+				message ("listening the default socket");
+			}
 
 			this.hold ();
 
 			return 0;
+		}
+
+		/**
+		 * Accept a new request and serve it using the inner application.
+		 */
+		private bool accept () {
+			var status = this._request.accept ();
+
+			if (status < 0) {
+				warning ("code %u: cannot not accept anymore request", status);
+				this._request.close ();
+				this.release ();
+				return false;
+			}
+
+			this.hold ();
+
+			foreach (var env in this._request.environment.get_all())
+				message (env);
+
+			var req = new Request (this._request);
+			var res = new Response (req, this._request);
+
+			try {
+				this.application.handle (req, res);
+			} catch (Error e) {
+				this._request.err.puts (e.message);
+				this._request.out.set_exit_status (e.code);
+			}
+
+			message ("request %u: %u %s %s", this._request.request_id, res.status, req.method, req.uri.get_path ());
+
+			// TODO: finish asynchronously
+			this._request.finish ();
+
+			this.release ();
+
+			return true;
 		}
 	}
 }
