@@ -301,7 +301,28 @@ namespace FastCGI {
 		[CCode(cname = "requestId")]
 		public int request_id;
 		public int role;
-        public int listen_sock;
+
+        /* Don't use anything below here */
+        [Deprecated]
+        [CCode(cname = "ipcFd")]
+        public int ipc_fd;
+        [Deprecated]
+        [CCode(cname = "isBeginProcessed")]
+        public bool is_begin_processed;
+        [Deprecated]
+        [CCode(cname = "keepConnection")]
+        public bool keep_connection;
+        [Deprecated]
+        public int app_status;
+        [Deprecated]
+        [CCode(cname = "nWriters")]
+        public int number_of_writers;
+        [Deprecated]
+        public int flags;
+        [Deprecated]
+        [CCode(cname = "listen_sock")]
+        public int listen_socket;
+
 
 		/**
 		 * Accept a new request

@@ -9,7 +9,7 @@ namespace VSGI.FastCGI {
 	 * FastCGI Request implementation.
 	 *
 	 * The request keeps a strong reference to its inner {@link FastCGI.request} so
-	 * that it is being freed only when any processing involving this request is
+	 * that it is being freed only when any processing involving this._request is
 	 * done.
 	 */
 	class Request : VSGI.Request {
@@ -37,8 +37,8 @@ namespace VSGI.FastCGI {
 			get { return this._headers; }
 		}
 
-		public Request (int socket) {
-			var request_status = request.init (out this._request, socket);
+		public Request (GLib.Socket socket) {
+			var request_status = request.init (out this._request, socket.fd);
 
 			if (request_status != 0)
 				error ("code %u: could not initialize FCGX request".printf (request_status));
@@ -101,14 +101,14 @@ namespace VSGI.FastCGI {
 			var read = this._request.in.read (buffer);
 
 			if (read == GLib.FileStream.EOF)
-				throw new IOError.FAILED ("code %u: could not read from stream".printf (this._request.in.get_error ()));
+				throw new Error (IOError.quark (), FileUtils.error_from_errno (this._request.in.get_error ()), strerror (FileUtils.error_from_errno (this._request.in.get_error ())));
 
 			return read;
 		}
 
 		public override bool close (Cancellable? cancellable = null) throws IOError {
 			if (this._request.in.close () == -1)
-				throw new IOError.FAILED ("could not close the in stream");
+				throw new Error (IOError.quark (), FileUtils.error_from_errno (this._request.in.get_error ()), strerror (FileUtils.error_from_errno (this._request.in.get_error ())));
 
 			return this._request.in.is_closed;
 		}
@@ -176,7 +176,6 @@ namespace VSGI.FastCGI {
 		}
 
 		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
-			message ("writting..");
 			// lock so that two threads would not write headers at the same time.
 			lock (this.headers_written) {
 				if (!this.headers_written)
@@ -186,7 +185,7 @@ namespace VSGI.FastCGI {
 			var written = this.out.put_str (buffer);
 
 			if (written == GLib.FileStream.EOF)
-				throw new IOError.FAILED ("code %u: could not write body to stream".printf (this.out.get_error ()));
+				throw new Error (IOError.quark (), FileUtils.error_from_errno (this.out.get_error ()), strerror (FileUtils.error_from_errno (this.out.get_error ())));
 
 			return written;
 		}
@@ -198,8 +197,6 @@ namespace VSGI.FastCGI {
 			return this.out.flush ();
 		}
 
-		private bool finished = false;
-
 		public override bool close (Cancellable? cancellable = null) throws IOError {
 			// lock so that two threads would not write headers at the same time.
 			lock (this.headers_written) {
@@ -208,12 +205,12 @@ namespace VSGI.FastCGI {
 			}
 
 			if (this.err.close () == -1)
-				throw new IOError.FAILED ("could not close the err stream");
+				throw new Error (IOError.quark (), FileUtils.error_from_errno (this.err.get_error ()), strerror (FileUtils.error_from_errno (this.err.get_error ())));
 
 			if (this.out.close () == -1)
-				throw new IOError.FAILED ("could not close the out stream");
+				throw new Error (IOError.quark (), FileUtils.error_from_errno (this.out.get_error ()), strerror (FileUtils.error_from_errno (this.out.get_error ())));
 
-			return this.out.is_closed;
+			return this.err.is_closed && this.out.is_closed;
 		}
 	}
 
@@ -225,9 +222,9 @@ namespace VSGI.FastCGI {
 	public class Server : VSGI.Server {
 
 		/**
-		 *
+		 * FastCGI socket file descriptor.
 		 */
-		private int socket = 0;
+		private GLib.Socket socket;
 
 		public Server (VSGI.Application application) {
 			Object (application: application, flags: ApplicationFlags.HANDLES_COMMAND_LINE);
@@ -260,30 +257,20 @@ namespace VSGI.FastCGI {
 
 			if (options.contains ("socket")) {
 				var socket_path = options.lookup_value ("socket", VariantType.STRING).get_string ();
-				this.socket      = open_socket (socket_path, backlog);
+				this.socket     = new GLib.Socket.from_fd (open_socket (socket_path, backlog));
 
-				if (this.socket == -1)
+				if (!this.socket.is_connected ())
 					error ("could not open socket path %s".printf (socket_path));
-
-				var source = new IOSource (new IOChannel.unix_new (socket), IOCondition.IN);
-
-				source.set_callback (accept);
-				source.attach (MainContext.default ());
 
 				message ("listening on %s (backlog %d)", socket_path, backlog);
 			}
 
 			else if (options.contains ("port")) {
 				var port   = ":%d".printf(options.lookup_value ("port", VariantType.INT32).get_int32 ());
-				var socket = open_socket (port, backlog);
+				this.socket = new GLib.Socket.from_fd (open_socket (port, backlog));
 
-				if (socket == -1)
+				if (!this.socket.is_connected ())
 					error ("could not open TCP socket at port %s".printf (port));
-
-				var source = new IOSource (new IOChannel.unix_new (socket), IOCondition.IN);
-
-				source.set_callback (accept);
-				source.attach (MainContext.default ());
 
 				message ("listening on tcp://0.0.0.0:%s (backlog %d)", port, backlog);
 			}
@@ -293,34 +280,32 @@ namespace VSGI.FastCGI {
 				request req;
 				request.init (out req);
 
-				var source = new IOSource (new IOChannel.unix_new (req.listen_sock), IOCondition.IN);
+				this.socket = new GLib.Socket.from_fd (req.listen_socket);
 
 				// ...
 				req.close (false);
 
-				source.set_callback (accept);
-				source.attach (MainContext.default ());
-
 				message ("listening the default socket");
 			}
+
+			var source = new IOSource (new IOChannel.unix_new (socket.fd), IOCondition.IN);
+
+			source.set_callback (() => {
+				var req = new Request (this.socket);
+				var res = new Response (req, req._request.out, req._request.err);
+
+				this.application.handle (req, res);
+
+				message ("request %u: %u %s %s", req._request.request_id, res.status, req.method, req.uri.get_path ());
+
+				return true;
+			});
+
+			source.attach (MainContext.default ());
 
 			this.hold ();
 
 			return 0;
-		}
-
-		/**
-		 * Accept a new request and serve it using the inner application.
-		 */
-		private bool accept () {
-			var req = new Request (this.socket);
-			var res = new Response (req, req._request.out, req._request.err);
-
-			this.application.handle (req, res);
-
-			message ("request %u: %u %s %s", req._request.request_id, res.status, req.method, req.uri.get_path ());
-
-			return true;
 		}
 	}
 }
