@@ -38,5 +38,5 @@ public static int main (string[] args) {
 		writer.put_string ("404 - Not found");
 	});
 
-	return new VSGI.FastCGIServer (app).run (args);
+	return new VSGI.FastCGIServer (app.handler).run (args);
 }

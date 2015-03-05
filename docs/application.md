@@ -44,7 +44,7 @@ It is also to use the `FastCGIServer`, but it needs a specific setup that is
 covered in the [FastCGI section](server/fastcgi.md) of the documentation.
 
 ```java
-new SoupServer (app, 3003).run ();
+new SoupServer (app.handler, 3003).run ();
 ```
 It is also possible to use the [FastCGI server](server/fastcgi.md)
 implementation, but it needs a specific setup and a web server supporting the

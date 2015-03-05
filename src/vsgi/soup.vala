@@ -121,7 +121,7 @@ namespace VSGI {
 				var req = new SoupRequest (msg, query);
 				var res = new SoupResponse (req, msg);
 
-				this.application.handle (req, res);
+				this.application (req, res);
 
 				message ("%u %s %s".printf (res.status, req.method, req.uri.get_path ()));
 			};

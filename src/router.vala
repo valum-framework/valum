@@ -6,11 +6,11 @@ namespace Valum {
 	/**
 	 * @since 0.0.1
 	 */
-	public class Router : GLib.Object, VSGI.Application {
+	public class Router : GLib.Object {
 
 		/**
 		 * Registered types.
-         *
+		 *
 		 * @since 0.1
 		 */
 		public HashTable<string, Regex> types = new HashTable<string, Regex> (str_hash, str_equal);
@@ -129,7 +129,7 @@ namespace Valum {
 
 		/**
 		 * Bind a callback with a custom method.
-         *
+		 *
 		 * Useful if you need to support a non-standard HTTP method, otherwise you
 		 * should use the predefined methods.
 		 *
@@ -155,10 +155,10 @@ namespace Valum {
 
 		/**
 		 * Bind a callback with a custom method and regular expression.
-         *
+		 *
 		 * It is recommended to declare the Regex using the RegexCompileFlags.OPTIMIZE
 		 * flag as it will be used *very* often during the application process.
-         *
+		 *
 		 * @since 0.1
 		 *
 		 * @param method HTTP method
@@ -222,7 +222,7 @@ namespace Valum {
 		 * @param req request being handled.
 		 * @param res response being transmitted to the request client.
 		 */
-		public void handle (Request req, Response res) {
+		public virtual signal void handle (Request req, Response res) {
 			try {
 				// ensure at least one route has been declared with that method
 				if (this.routes.contains(req.method)) {
@@ -245,6 +245,22 @@ namespace Valum {
 			} catch (ServerError e) {
 				res.status = e.code;
 			}
+		}
+
+		/**
+		 * Provides VSGI.Application implementation so that a Router can be combined
+		 * with a {@link VSGI.Server} implementation.
+		 *
+		 * Typical run code should look like
+		 *
+		 * new SoupServer (app.handler).run (args);
+		 *
+		 * @since 0.1
+		 *
+		 * @see VSGI.Application
+		 */
+		public void handler (Request req, Response res) {
+			this.handle (req, res);
 		}
 	}
 }

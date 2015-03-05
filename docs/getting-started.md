@@ -24,7 +24,7 @@ app.get("", (req, res) => {
     writer.put_string ("Hello world!");
 });
 
-new SoupServer (app, 3003).run ();
+new SoupServer (app.handler, 3003).run ();
 ```
 
 ```

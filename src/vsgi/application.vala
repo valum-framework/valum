@@ -11,32 +11,22 @@
 namespace VSGI {
 
 	/**
-	 * @since 0.1
-	 */
-	public const string APP_NAME = "VSGI";
-
-	/**
-	 * Application that handles Request and produce Response.
+	 * VSGI application handling a {@link Request} and producing a
+	 * {@link Response}.
+	 *
+	 * A working application is easily defined when combined with a
+	 * {@link Server} implementation.
+	 *
+	 * new SoupServer ((req, res) => {
+	 *     res.write ("Hello world!".data);
+	 * });
 	 *
 	 * @since 0.1
+	 *
+	 * @param Request  req request providen to the application by a
+	 *                     VSGI.Server
+	 * @param Response res response where the application should produce its
+	 *                     output
 	 */
-	public interface Application : Object {
-
-		/**
-		 * Signal handling a Request and producing a Response.
-		 *
-		 * The rationale behind using a signal is that it allows binding of
-		 * callbacks before and after the default handler is executed, which
-		 * comes very handy for setup and teardown operations like database
-		 * connection.
-		 *
-		 * @since 0.1
-		 *
-		 * @param Request  req request providen to the application by a
-		 *                     VSGI.Server
-		 * @param Response res response where the application should produce its
-		 *                     output
-		 */
-		public virtual signal void handle (Request req, Response res) {}
-	}
+	public delegate void Application (Request req, Response res);
 }

@@ -246,7 +246,7 @@ namespace VSGI {
 				var res = new VSGI.FastCGIResponse (req, this.request);
 
 				try {
-					this.application.handle (req, res);
+					this.application (req, res);
 				} catch (Error e) {
 					this.request.err.puts (e.message);
 					this.request.out.set_exit_status (e.code);

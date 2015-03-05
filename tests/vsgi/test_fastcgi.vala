@@ -12,5 +12,5 @@ public static void test_fastcgi_listen () {
 
 	});
 
-	var server = new FastCGIServer (app);
+	var server = new FastCGIServer (app.handler);
 }
