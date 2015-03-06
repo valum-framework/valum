@@ -32,3 +32,40 @@ public static void test_router_scope () {
 
 	assert (response.status == 418);
 }
+
+/**
+ * @since 0.1
+ */
+public static void test_router_redirection () {
+	var router = new Router ();
+
+	router.get ("", (req, res) => {
+		throw new Redirection.MOVED_TEMPORARILY ("http://example.com");
+	});
+
+	var request = new TestRequest.with_uri (new Soup.URI ("http://localhost/"));
+	var response = new TestResponse (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (response.status == Soup.Status.MOVED_TEMPORARILY);
+	assert ("http://example.com" == response.headers.get_one ("Location"));
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_router_custom_method () {
+	var router = new Router ();
+
+	router.method ("TEST", "", (req, res) => {
+		res.status = 418;
+	});
+
+	var request = new TestRequest ("TEST", new Soup.URI ("http://localhost/"));
+	var response = new TestResponse (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (response.status == 418);
+}

@@ -1,10 +1,12 @@
+using Soup;
+
 /**
  * Test implementation of VSGI.Response to stub a response.
  */
 public class TestResponse : VSGI.Response {
 
 	private uint _status;
-	private Soup.MessageHeaders _headers;
+	private MessageHeaders _headers = new MessageHeaders (MessageHeadersType.RESPONSE);
 
 	public override uint status { get { return this._status; } set { this._status = value; } }
 
