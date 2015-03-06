@@ -74,11 +74,19 @@ If the rule system does not suit your needs, it is always possible to use
 regular expression.
 
 ```java
-app.regex (Request.GET, /^/home/?$/, (req, res) => {
+app.regex (Request.GET, /home/?/, (req, res) => {
     var writer = new DataOutputStream (res);
     writer.put_string ("Matched using a regular expression.");
 });
 ```
+
+Regex pattern is internally extracted, scoped, rooted, anchored and optimized.
+Ensure that the providen pattern
+
+ - does not use '^' and '\$' anchors
+ - matches after the scopes and leading '/' character
+ - is not pre-optimized, its pattern will be recompiled with
+   `RegexCompileFlags.OPTIMIZE` anyway
 
 Plumbering with Route
 ---------------------
