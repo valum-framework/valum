@@ -69,3 +69,26 @@ public static void test_router_custom_method () {
 
 	assert (response.status == 418);
 }
+
+/**
+ * @since 0.1
+ */
+public static void test_router_method_not_allowed () {
+	var router = new Router ();
+	
+	router.get ("", (req, res) => {
+		
+	});
+	
+	router.put ("", (req, res) => {
+		
+	});
+	
+	var request = new TestRequest ("POST", new Soup.URI ("http://localhost/"));
+	var response = new TestResponse (request, Soup.Status.METHOD_NOT_ALLOWED);
+	
+	router.handle (request, response);
+	
+	assert (response.status == 405);
+	assert ("PUT, GET" == response.headers.get_one ("Allow"));
+}
