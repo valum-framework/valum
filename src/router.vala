@@ -233,6 +233,14 @@ namespace Valum {
 							return;
 						}
 					}
+				} else {
+					foreach (var method in this.routes.get_keys ()) {
+						foreach (var route in this.routes[method].head) {
+							if (route.match (req)) {
+								throw new ClientError.METHOD_NOT_ALLOWED ("The method %s is not allowed for the request URI %s".printf (req.method, req.uri.to_string (false)));
+							}
+						}
+					}
 				}
 
 				throw new ClientError.NOT_FOUND ("The request URI %s was not found.".printf (req.uri.to_string (false)));
