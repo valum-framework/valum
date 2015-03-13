@@ -233,13 +233,20 @@ namespace Valum {
 							return;
 						}
 					}
+				// else search for the URI within the other methods
 				} else {
+					Array<string> allowed = new Array<string> ();
+					// foreach method search for the given URI
 					foreach (var method in this.routes.get_keys ()) {
 						foreach (var route in this.routes[method].head) {
 							if (route.match (req)) {
-								throw new ClientError.METHOD_NOT_ALLOWED ("The method %s is not allowed for the request URI %s".printf (req.method, req.uri.to_string (false)));
+								allowed.append_val (method);
 							}
 						}
+					}
+					
+					if (allowed.length > 0) {
+						throw new ClientError.METHOD_NOT_ALLOWED (string.joinv (", ", allowed.data));
 					}
 				}
 
@@ -248,6 +255,9 @@ namespace Valum {
 			} catch (Redirection r) {
 				res.status = r.code;
 				res.headers.append("Location", r.message);
+			} catch (ClientError.METHOD_NOT_ALLOWED e) {
+				res.status = e.code;
+				res.headers.append ("Allow", e.message);
 			} catch (ClientError e) {
 				res.status = e.code;
 			} catch (ServerError e) {
