@@ -241,6 +241,7 @@ namespace Valum {
 						foreach (var route in this.routes[method].head) {
 							if (route.match (req)) {
 								allowed.append_val (method);
+								break;
 							}
 						}
 					}
