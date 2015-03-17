@@ -9,6 +9,7 @@ public int main (string[] args) {
 	Test.add_func ("/router/custom_method", test_router_custom_method);
 	Test.add_func ("/router/scope", test_router_scope);
 	Test.add_func ("/router/redirection", test_router_redirection);
+	Test.add_func ("/router/method_not_allowed", test_router_method_not_allowed);
 
 	Test.add_func ("/route", test_route);
 	Test.add_func ("/route/from_rule", test_route_from_rule);
