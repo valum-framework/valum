@@ -233,22 +233,24 @@ namespace Valum {
 							return;
 						}
 					}
-				// else search for the URI within the other methods
-				} else {
-					Array<string> allowed = new Array<string> ();
-					// foreach method search for the given URI
-					foreach (var method in this.routes.get_keys ()) {
-						foreach (var route in this.routes[method].head) {
-							if (route.match (req)) {
-								allowed.append_val (method);
-								break;
-							}
+				}
+
+				// find routes from other methods matching this Request
+				var allowed = new StringBuilder ();
+				foreach (var method in this.routes.get_keys ()) {
+					foreach (var route in this.routes[method].head) {
+						if (route.match (req)) {
+							if (allowed.len > 0)
+								allowed.append (", ");
+							allowed.append (method);
+							break;
 						}
 					}
-					
-					if (allowed.length > 0) {
-						throw new ClientError.METHOD_NOT_ALLOWED (string.joinv (", ", allowed.data));
-					}
+				}
+
+				// a Route from another method allows this Request
+				if (allowed.len > 0) {
+					throw new ClientError.METHOD_NOT_ALLOWED (allowed.str);
 				}
 
 				throw new ClientError.NOT_FOUND ("The request URI %s was not found.".printf (req.uri.to_string (false)));

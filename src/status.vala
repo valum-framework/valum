@@ -36,6 +36,9 @@ namespace Valum {
 		PAYMENT_REQUIRED                = Status.PAYMENT_REQUIRED,
 		FORBIDDEN                       = Status.FORBIDDEN,
 		NOT_FOUND                       = Status.NOT_FOUND,
+		/**
+		 * The error message is used for the 'Allow' header value.
+		 */
 		METHOD_NOT_ALLOWED              = Status.METHOD_NOT_ALLOWED,
 		NOT_ACCEPTABLE                  = Status.NOT_ACCEPTABLE,
 		PROXY_AUTHENTICATION_REQUIRED   = Status.PROXY_AUTHENTICATION_REQUIRED,
