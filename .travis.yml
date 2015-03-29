@@ -9,7 +9,7 @@ before_install:
     - sudo apt-get install --yes valac-0.26 libglib2.0-dev libsoup2.4-dev
       libgee-0.8-dev libfcgi-dev libmemcached-dev libluajit-5.1-dev
       libctpl-dev python-pip
-    - sudo pip install mkdocs
+    - sudo pip install cpp-coveralls mkdocs
 
 before_script:
     - ./waf configure
@@ -18,3 +18,6 @@ before_script:
 script:
     - build/tests/tests
     - mkdocs build
+
+after_success:
+    - coveralls --build-root build

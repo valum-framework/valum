@@ -3,6 +3,7 @@ Valum micro-framework
 
 [![Build Status](https://travis-ci.org/valum-framework/valum.svg?branch=master)](https://travis-ci.org/valum-framework/valum)
 [![Documentation Status](https://readthedocs.org/projects/valum/badge/?version=latest)](https://readthedocs.org/projects/valum/?badge=latest)
+[![Coverage Status](https://coveralls.io/repos/valum-framework/valum/badge.svg?branch=master)](https://coveralls.io/r/valum-framework/valum?branch=master)
 
 Valum is a web micro-framework entirely written in the
 [Vala](https://wiki.gnome.org/Projects/Vala) programming language.

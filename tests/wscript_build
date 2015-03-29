@@ -3,8 +3,9 @@
 bld.program(
     packages     = ['glib-2.0'],
     target       = 'tests',
-    source       = ['tests.vala'] + bld.path.ant_glob('**/test_*.vala'),
     use          = 'valum',
-    uselib       = ['GLIB', 'CTPL', 'GEE', 'SOUP', 'FCGI'],
+    source       = ['tests.vala'] + bld.path.ant_glob('**/test_*.vala'),
+    uselib       = ['GLIB', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
+    cflags       = ['-fprofile-arcs', '-ftest-coverage'],
     vapi_dirs    = ['../vapi'],
     install_path = None)
