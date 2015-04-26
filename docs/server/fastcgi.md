@@ -38,6 +38,7 @@ generally more convenient to use the libsoup built-in HTTP server.
 Technically, you end-up with a FastCGI executable, so deploying it on
 a specific server should be already documented.
 
+
 ## Deploying a FastCGI application
 
 ### Apache
@@ -49,9 +50,11 @@ did the FastCGI specifications.
  - [mod_fcgid](http://httpd.apache.org/mod_fcgid/)
  - [mod_fastcgi](http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html)
 
+
 ### Nginx
 
 [ngx_http_fastcgi_module](http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html)
+
 
 ### lighttpd
 

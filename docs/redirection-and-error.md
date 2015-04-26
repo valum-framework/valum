@@ -8,6 +8,7 @@ the status and returning from the function.
 The Router handler will automatically catch these special errors and set the
 appropriate status code in the response for your convenience.
 
+
 ## Redirection (3xx)
 
 To perform a redirection, you have to throw a `Redirection` error and use the
@@ -22,6 +23,7 @@ app.get ("user/<id>/save", (req, res) => {
 });
 ```
 
+
 ## Client (4xx) and server (5xx) error
 
 Just like for redirection, client and server errors are thrown.
@@ -33,6 +35,7 @@ app.get ("not-found", (req, res) => {
     throw new ClientError.NOT_FOUND ("The requested URI was not found.");
 });
 ```
+
 
 ## Custom handling for status
 

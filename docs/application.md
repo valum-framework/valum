@@ -2,8 +2,8 @@ This section explains what is going on in a Valum web application using
 a sample that can be found in the [Gettings started](getting-started.md)
 section of the documentation.
 
-Creating an application
------------------------
+
+## Creating an application
 
 An application is an instance of the `Router` class.
 
@@ -11,8 +11,8 @@ An application is an instance of the `Router` class.
 var app = new Router ();
 ```
 
-Binding a route
----------------
+
+## Binding a route
 
 An application constitute of a list of routes matching user requests. To declare
 a route, the `Router` class provides useful helpers and low-level utilities.
@@ -34,18 +34,14 @@ processing. The callback receives two arguments:
 These two inherit respectively from `InputStream` and `OutputStream`, allowing
 any synchronous and asynchronous stream operations.
 
-Serving the application
------------------------
+
+## Serving the application
 
 This part is pretty straightforward: you create a server that will serve your
-application at port `3003`.
-
-It is also to use the `FastCGIServer`, but it needs a specific setup that is
-covered in the [FastCGI section](server/fastcgi.md) of the documentation.
+application at port `3003`. This will use the libsoup built-in HTTP server.
 
 ```java
 new SoupServer (app, 3003).run ();
 ```
-It is also possible to use the [FastCGI server](server/fastcgi.md)
-implementation, but it needs a specific setup and a web server supporting the
-FastCGI protocol.
+
+There is a [FastCGI implementation](server/fastcgi.md) for a live deployment.

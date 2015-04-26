@@ -5,8 +5,8 @@ facilities for computation and templating.
 Basically, we provide [CTPL](ctpl), but you might want to have something a
 little more powerful, so this section should fit your needs.
 
-Lua
----
+
+## Lua
 
 Valum currently supports embedded Lua as a templating and computation engine.
 
@@ -43,8 +43,8 @@ Resulting response
 <h1>Hello from Lua!!!</h1>
 ```
 
-Scheme (TODO)
--------------
+
+## Scheme (TODO)
 
 Scheme can be used to produce template or facilitate computation.
 

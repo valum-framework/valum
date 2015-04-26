@@ -1,5 +1,5 @@
 site_name: Valum
-repo_url: https://github.com/antono/valum
+repo_url: https://github.com/valum-framework/valum
 theme: readthedocs
 pages:
     - [index.md, Valum]

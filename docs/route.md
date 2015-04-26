@@ -5,6 +5,7 @@ Route is a structure that pairs a matcher and a handler.
  - the handler processes the [Request](vsgi/request.md) and produce a
    [Response](vsgi/response.md)
 
+
 ## Matching using a rule
 
 Rules are used by the HTTP methods alias and `method` function in [Router](router.md).
@@ -20,6 +21,7 @@ app.method (Request.GET, "your-rule/<int:id>", (req, res) => {
 
 });
 ```
+
 
 ### Rule syntax
 
@@ -39,6 +41,7 @@ These will respectively compile down to the following regular expressions
  - `^/user$`
  - `^/user/(?<id>\w+)$`
  - `^/user/(?<id>\d+)$`
+
 
 ### Types
 
@@ -85,6 +88,7 @@ app = new Router ();
 app.types["int"] = /-?\d+/;
 ```
 
+
 ## Matching using a regular expression
 
 If the rule system does not suit your needs, it is always possible to use
@@ -96,6 +100,7 @@ app.regex (Request.GET, /^\/home\/?$/, (req, res) => {
     writer.put_string ("Matched using a regular expression.");
 });
 ```
+
 
 ## Matching using a low-level matcher
 
@@ -128,21 +133,22 @@ app.route ("<any:path>", (req, res) => {
 });
 ```
 
+
 ## Combining custom matcher with existing matcher
 
 If all you want is to do some processing and fallback on a Regex or rule
 matching, you can combine instanciate directly a Route.
 
+Matcher should respect the _populate if match_ principle, so design it in a way
+that the request parameters remain untouched if the matcher happens not to
+accept the request.
+
 ```javascript
 app.matcher ("GET", (req) => {
     var route = new Route.from_rule (app, "your-rule");
 
-    if (route.match (req)) {
-        // database access only if the rule is respected
-        var user = new User (req.query["id"]);
-        return "admin" in user.roles && route.match (req);
-    }
-
-    return false;
+    // database access only if the rule is respected
+    var user = new User (req.query["id"]);
+    return "admin" in user.roles && route.match (req);
 });
 ```

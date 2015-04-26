@@ -1,12 +1,17 @@
 Assuming that Valum is [built and installed](installation.md) correctly, you
 are ready to create your first application!
 
-Valum is not designed to be installed as a shared library, but more like a set
-of build files and a static library that help one develop a web application.
+Valum is not designed to be installed as a shared library (at least for now),
+but more like a set of build files and tools helps one develop a web
+application.
+
+You can install the build files with `waf`, it will simplify the building
+process:
 
 ```bash
 sudo ./waf install
 ```
+
 
 ## Simple 'Hello world!' application
 
@@ -36,12 +41,17 @@ vapi/
     fcgi.vala
 ```
 
-## VAPI bindings
+
+### VAPI bindings
 
 [CTPL](ctpl.tuxfamily.org) and [FastCGI](http://www.fastcgi.com/drupal/) are
 not providing Vala bindings, so you need to copy them in your project `vapi`
 folder. You can find them in the
 [vapi folder of Valum](https://github.com/antono/valum/tree/master/vapi).
+
+You can also find more VAPIs in
+[nemequ/vala-extra-vapis](https://github.com/nemequ/vala-extra-vapis) GitHub
+repository.
 
 Unless you installed Valum with `--prefix=/usr`, you have to export `pkg-config`
 search path:
@@ -49,17 +59,21 @@ search path:
 ```bash
 export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 
+# generate the c sources
 valac --vapidir=vapi --pkg valum-0.1 --pkg libsoup-2.4 --pkg gee-0.8 \
                      --pkg ctpl --pkg fcgi \
       --ccode src/app.vala
 
+# compile and link against libvalum
 gcc $(pkg-config valum-0.1 --cflags --libs) -o build/app \
     src/app.c /usr/local/lib/libvalum-0.1.a
 
+# run the generated binary
 ./build/app
 ```
 
-## waf
+
+### Using a build tool (waf)
 
 It is preferable to use a build system like
 [waf](https://code.google.com/p/waf/) to automate all this process. Get
