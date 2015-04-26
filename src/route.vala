@@ -56,13 +56,37 @@ namespace Valum {
 		}
 
 		/**
-		 * Create a Route for a given callback using a Regex.
+		 * Create a Route for a given callback using a {@link Regex}.
+		 *
+		 * The providen regular expression pattern will be extracted, scoped, anchored
+		 * and optimized. This means you must not anchor the regex yourself with '^'
+		 * and '$' characters and providing a pre-optimized Regex is useless.
+		 *
+		 * Like for {@link Route.from_rule}, the regular expression starts matching
+		 * after the scopes and the leading '/' character.
 		 *
 		 * @since 0.1
 		 */
 		public Route.from_regex (Router router, Regex regex, Handler callback) throws RegexError {
 			this.router = router;
 			this.fire   = callback;
+
+			var pattern = new StringBuilder ("^");
+
+			// root the route
+			pattern.append ("/");
+
+			// scope the route
+			foreach (var scope in router.scopes.head) {
+				pattern.append (Regex.escape_string ("%s/".printf (scope)));
+			}
+
+			pattern.append (regex.get_pattern ());
+
+			pattern.append ("$");
+
+			// regex are optimized automatically :)
+			regex = new Regex (pattern.str, RegexCompileFlags.OPTIMIZE);
 
 			var captures      = new SList<string> ();
 			var capture_regex = new Regex ("\\(\\?<(\\w+)>.+\\)");
@@ -95,7 +119,8 @@ namespace Valum {
 		/**
 		 * Create a Route for a given callback from a rule.
          *
-		 * A rule will compile down to Regex.
+		 * Rule are scoped from the {@link Router.scope} fragment stack and compiled
+		 * down to {@link GLib.Regex}.
 		 *
 		 * @since 0.0.1
 		 */
@@ -107,6 +132,14 @@ namespace Valum {
 			var params      = param_regex.split_full (rule);
 			var captures    = new SList<string> ();
 			var route       = new StringBuilder ("^");
+
+			// root the route
+			route.append ("/");
+
+			// scope the route
+			foreach (var scope in router.scopes.head) {
+				route.append (Regex.escape_string ("%s/".printf (scope)));
+			}
 
 			foreach (var p in params) {
 				if (p[0] != '<') {

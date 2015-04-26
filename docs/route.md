@@ -73,16 +73,16 @@ It is possible to specify new types using the `types` map in `Router`. This
 example will define the `path` type matching words and slashes using a regular
 expression literal.
 
-```vala
+```javascript
 app.types["path"] = /[\\w\/]+/;
 ```
 
-All types are defined at construct time of the `Router` class, so it is
-possible to overwrite the built-in ones.
+Types are defined at construct time of the `Router` class. It is possible to
+overwrite the built-in type.
 
 If you would like `ìnt` to match negatives integer, you may just do:
 
-```vala
+```javascript
 app = new Router ();
 
 app.types["int"] = /-?\d+/;
@@ -92,10 +92,11 @@ app.types["int"] = /-?\d+/;
 ## Matching using a regular expression
 
 If the rule system does not suit your needs, it is always possible to use
-regular expression.
+regular expression. Regular expression will be automatically scoped, anchored
+and optimized.
 
 ```javascript
-app.regex (Request.GET, /^\/home\/?$/, (req, res) => {
+app.regex (Request.GET, /home\/?/, (req, res) => {
     var writer = new DataOutputStream (res);
     writer.put_string ("Matched using a regular expression.");
 });
