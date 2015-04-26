@@ -1,10 +1,14 @@
-HTTP methods
-------------
+Router is the core component of Valum. It dispatches request to the right
+handler and processes certain error conditions described in
+[Redirection and Error](redirection-and-error).
+
+
+## HTTP methods
 
 Callback can be connected to HTTP methods via a list of helpers having the
 `Route.Handler` signature:
 
-```java
+```javascript
 app.get ("rule", (req, res) => {});
 ```
 
@@ -19,7 +23,7 @@ Valum includes helpers for the HTTP/1.1 protocol and the extra TRACE method.
 
 Handling a `POST` request would be something like
 
-```java
+```javascript
 app.post ("login", (req, res) => {
     var data = Soup.Form.decode (req.body);
 
@@ -37,13 +41,14 @@ It is also possible to use a custom HTTP method via the `method` function.
 app.method ("METHOD", "rule", (req, res) => {});
 ```
 
-Scoping
--------
 
-The scope feature allow a scoped declaration of route by prepending `/<scope>`
-from scope a stack.
+## Scoping
 
-The Router maintains a scope stack so that when the program flows you enter a
+Scoping is a powerful prefixing mechanism for rules. Route declarations within
+a scope will be prefixed by `<scope>/`. There is an implicit initial scope so
+that all rules are automatically rooted.
+
+The `Router` maintains a scope stack so that when the program flows you enter a
 scope, it pushes the fragment on top of it and pop it when it gets out.
 
 ```java

@@ -3,8 +3,8 @@ a [response](vsgi/response).
 
 This is part of VSGI, a middleware upon which Valum is built.
 
-HTTP method
------------
+
+## HTTP method
 
 The Request class provides constants for the following HTTP methods:
 
@@ -30,21 +30,59 @@ app.method (Request.GET, "", (req, res) => {
 });
 ```
 
-Request parameters
-------------------
 
-As a facility to parametrize a `Request` instance, a `HashTable<string, string>`
-of parameters is providen by the request.
+## Request parameters
 
-In Valum, this hashtable will contain extracted captures with their respectives
-value from a [rule](route#rules) or a
-[regular expression](route#plumbering-with-regular-expression).
+Request parameters are metadata extracted by the `Route.Matcher` that matched
+the request you are handling. They can contain pretty much anything since
+a matcher can be any function accepting a `Request` instance.
 
-It is defaulted to `null` until a [matcher](route#plumbering-with-route)
-populates it.
+It is important to keep in mind that the request parameters result from a
+side-effect. If a matcher accept the request, it may populate the parameters.
+The matching process in `Router` guarantees that only one matcher can accept
+the request and thus populate the parameters.
 
-```java
+Request can be parametrized in a general manner
+
+ - extract data from the URI path like an integer identifier
+ - extract data from the headers such as the request refeerer
+
+The request parameters are stored in a `HashTable<string, string>` and can be
+accessed from the `Request.params` property.
+
+You can compose your own matcher to do any kind of processing, as long as you
+respect the _populate if match_ rule.
+
+```javascript
+app.matcher((req) => {
+    if (/* matching conditions */) {
+        req.params = new HashMap<string, string> ();
+
+        req.params["a"] = "b";
+
+        return true;
+    }
+    return false;
+}, (req, res) => {
+    // heavy computation...
+    res.write("Hello world!".data);
+});
+```
+
+`Route` created from a [rule](route#rules) or a
+[regular expression](route#plubbering-with-regular-expression) will populate
+the parameters with their named captures.
+
+```javascript
 app.get ("<int:i>", (req, res) => {
     var i = req.params["i"];
+});
+```
+
+Parameters default to `null` if it is not populated by any matchers.
+
+```javascript
+app.get ("", (req, res) => {
+    // req.params == null
 });
 ```

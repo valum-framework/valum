@@ -5,7 +5,7 @@ includedir=@includedir@
 
 Name: Valum
 Description: Web micro-framework written in Vala
-URL: https://github.com/antono/valum
+URL: https://github.com/valum-framework/valum
 Version: @VERSION@
 Requires: glib-2.0 gio-2.0 libsoup-2.4 gee-0.8 ctpl
 Cflags: -I${includedir}/valum-@MAJOR@.@MINOR@

@@ -1,8 +1,29 @@
-Route associate regular expression that matches request path with a callback
-that is executed on user request.
+Route is a structure that pairs a matcher and a handler.
 
-Rules
------
+ - the matcher tells if the Route accepts the given request and populate its
+   parameters
+ - the handler processes the [Request](vsgi/request.md) and produce a
+   [Response](vsgi/response.md)
+
+
+## Matching using a rule
+
+Rules are used by the HTTP methods alias and `method` function in [Router](router.md).
+
+```javascript
+// using an alias
+app.get ("your-rule/<int:id>", (req, res) => {
+
+});
+
+// using a method
+app.method (Request.GET, "your-rule/<int:id>", (req, res) => {
+
+});
+```
+
+
+### Rule syntax
 
 This class implements the rule system designed to simplify regular expression.
 
@@ -12,38 +33,38 @@ The following are rules examples:
  - `/user/<id>`
  - `/user/<int:id>`
 
+In this example, we call `id` a parameter and `int` a type. These two
+definitions will be important for the rest of the document.
+
 These will respectively compile down to the following regular expressions
 
  - `^/user$`
- - `^/user/(?<id>\w+)`
- - `^/user/(?<id>\d+)`
+ - `^/user/(?<id>\w+)$`
+ - `^/user/(?<id>\d+)$`
 
-In this example, we call `<id>` a parameter and `<int>` a type. These two
-definitions will be important for the rest of the document.
 
-Types
------
+### Types
 
 Valum provides the following built-in types
 
  - int that matches `\d+`
  - string that matches `\w+` (this one is implicit)
  - path that matches `[\w/]+`
- - any that matches `.+` asad
+ - any that matches `.+`
 
 Undeclared type is assumed to be `string`, this is what implicit meant.
 
-The `ìnt` type is useful for matching non-negative identifier such as database
+The `int` type is useful for matching non-negative identifier such as database
 primary key.
 
-the `path` type is useful for matching pieces of route including slashes and
-serve multiple subfolders.
+the `path` type is useful for matching pieces of route including slashes. You
+can use this one to serve a folders hierachy.
 
-The `any` type is useful to create catch-all route. The sample application shows
-an example for creating a 404 error page.
+The `any` type is useful to create catch-all route. The sample application
+shows an example for creating a 404 error page.
 
-```java
-app.get('<any:path>', (req, res) => {
+```javascript
+app.get("<any:path>", (req, res) => {
     res.status = 404;
 });
 ```
@@ -52,36 +73,36 @@ It is possible to specify new types using the `types` map in `Router`. This
 example will define the `path` type matching words and slashes using a regular
 expression literal.
 
-```java
+```vala
 app.types["path"] = /[\\w\/]+/;
 ```
 
-Types are defined at construct time of the `Router` class. It is possible to
-overwrite the built-in type.
+All types are defined at construct time of the `Router` class, so it is
+possible to overwrite the built-in ones.
 
 If you would like `ìnt` to match negatives integer, you may just do:
 
-```java
+```vala
 app = new Router ();
 
 app.types["int"] = /-?\d+/;
 ```
 
-Plumbering with regular expression
-----------------------------------
+
+## Matching using a regular expression
 
 If the rule system does not suit your needs, it is always possible to use
 regular expression.
 
-```java
-app.regex (Request.GET, /^/home/?$/, (req, res) => {
+```javascript
+app.regex (Request.GET, /^\/home\/?$/, (req, res) => {
     var writer = new DataOutputStream (res);
     writer.put_string ("Matched using a regular expression.");
 });
 ```
 
-Plumbering with Route
----------------------
+
+## Matching using a low-level matcher
 
 In some scenario, you need more than a just matching the request path using a
 regular expression. Internally, Route uses a matcher pattern and it is possible
@@ -89,7 +110,7 @@ to define them yourself.
 
 A matcher consist of a callback matching a given `Request` object.
 
-```java
+```javascript
 Route.Matcher matcher = (req) => { req.path == "/custom-matcher"; };
 
 app.matcher ("GET", matcher, (req, res) => {
@@ -101,7 +122,7 @@ app.matcher ("GET", matcher, (req, res) => {
 You could, for instance, match the request if the user is an administrator and
 fallback to a default route otherwise.
 
-```java
+```javascript
 app.matcher ("GET", (req) => {
     var user = new User (req.query["id"]);
     return "admin" in user.roles;
@@ -109,5 +130,25 @@ app.matcher ("GET", (req) => {
 
 app.route ("<any:path>", (req, res) => {
     res.status = 404;
+});
+```
+
+
+## Combining custom matcher with existing matcher
+
+If all you want is to do some processing and fallback on a Regex or rule
+matching, you can combine instanciate directly a Route.
+
+Matcher should respect the _populate if match_ principle, so design it in a way
+that the request parameters remain untouched if the matcher happens not to
+accept the request.
+
+```javascript
+app.matcher ("GET", (req) => {
+    var route = new Route.from_rule (app, "your-rule");
+
+    // database access only if the rule is respected
+    var user = new User (req.query["id"]);
+    return "admin" in user.roles && route.match (req);
 });
 ```

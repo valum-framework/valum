@@ -35,8 +35,9 @@ result!
 Use this setup to test your application before the deployment. To develop, it is
 generally more convenient to use the libsoup built-in HTTP server.
 
-Technically, you end-up with a FastCGI executable, so deploying it on a specific
-server is already documented.
+Technically, you end-up with a FastCGI executable, so deploying it on
+a specific server should be already documented.
+
 
 ## Apache
 
@@ -47,10 +48,12 @@ did the FastCGI specifications.
  - [mod_fcgid](http://httpd.apache.org/mod_fcgid/)
  - [mod_fastcgi](http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html)
 
+
 ## Nginx
 
 Nginx expect a process to be already spawned and will communicate with it using
 a port.
+
 
 ## lighttpd
 
