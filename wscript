@@ -3,9 +3,8 @@
 import glob
 
 APPNAME='valum'
-
-VERSION=(0,1,0)
-API_VERSION='.'.join(map(str,VERSION))
+VERSION='0.1.0-alpha'
+API_VERSION='0.1'
 
 top='.'
 out='build'
@@ -35,8 +34,8 @@ def build(bld):
     bld.stlib(
         packages     = ['glib-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'fcgi'],
         name         = 'valum',
-        target       = 'valum-{}.{}'.format(*VERSION),
-        gir          = 'Valum-{}.{}'.format(*VERSION),
+        target       = 'valum-{}'.format(API_VERSION),
+        gir          = 'Valum-{}'.format(API_VERSION),
         source       = bld.path.ant_glob('src/**/*.vala'),
         uselib       = ['GLIB', 'GIO', 'CTPL', 'GEE', 'SOUP', 'FCGI'],
         vapi_dirs    = ['vapi'],
@@ -45,12 +44,11 @@ def build(bld):
     # pkg-config file
     bld(
         features     = 'subst',
-        target       = 'valum-{}.{}.pc'.format(*VERSION),
+        target       = 'valum-{}.pc'.format(API_VERSION),
         source       = ['src/valum.pc.in'],
         install_path = '${LIBDIR}/pkgconfig',
-        VERSION      = API_VERSION,
-        MAJOR        = str(VERSION[0]),
-        MINOR        = str(VERSION[1]))
+        VERSION      = VERSION,
+        API_VERSION  = API_VERSION)
 
     # build examples recursively
     bld.recurse(glob.glob('examples/*'))
