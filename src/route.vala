@@ -85,23 +85,23 @@ namespace Valum {
 
 			pattern.append ("$");
 
-			// regex are optimized automatically :)
-			regex = new Regex (pattern.str, RegexCompileFlags.OPTIMIZE);
-
+			// extract the captures from the regular expression
 			var captures      = new SList<string> ();
 			var capture_regex = new Regex ("\\(\\?<(\\w+)>.+\\)");
 			MatchInfo capture_match_info;
 
-			// extract the captures from the regular expression
-			if (capture_regex.match (regex.get_pattern (), 0, out capture_match_info)) {
+			if (capture_regex.match (pattern.str, 0, out capture_match_info)) {
 				foreach (var capture in capture_match_info.fetch_all ()) {
 					captures.append (capture);
 				}
 			}
 
+			// regex are optimized automatically :)
+			var prepared_regex = new Regex (pattern.str, RegexCompileFlags.OPTIMIZE);
+
 			this.match = (req) => {
 				MatchInfo match_info;
-				if (regex.match (req.uri.get_path (), 0, out match_info)) {
+				if (prepared_regex.match (req.uri.get_path (), 0, out match_info)) {
 					if (captures.length () > 0) {
 						// populate the request parameters
 						var p = new HashTable<string, string?> (str_hash, str_equal);
