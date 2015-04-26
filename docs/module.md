@@ -1,12 +1,17 @@
-It is often useful to construct an application as a set of independant modules
-for decoupling the code or distributing reusable pieces.
+It is often useful to construct an application as a set of decoupled and
+reusable modules. This can easily be done with the `Router.Loader` delegate
+definition. A module is represented by a simple callback that takes a `Router`
+as input and register routes to it as a side-effect.
 
 Let's say you need an administration section:
 
 ```java
 using Valum;
 
-public static void admin_loader (Router admin) {
+/**
+ * Loads administrative routes on a provided router.
+ */
+public static Router.Loader admin_loader = (Router admin) {
     admin.get ("", (req, res) => {
         // ...
     });
@@ -20,10 +25,19 @@ using Valum;
 
 var app = new Router ();
 
-app.scope ("admin", (admin) => {
-    // scoped in /admin so we have the /admin/ route declared
-    admin_loader (admin);
-});
+admin_loader (app);
+```
+
+Since the `Router.scope` method takes a `Router.Loader` argument, you can
+simply scope your module route definitions. This way, all registered routes
+will be prefixed with `admin/`.
+
+```java
+using Valum;
+
+var app = new Router ();
+
+app.scope ("admin", admin_loader);
 ```
 
 If you distribute your code, use namespaces to avoid conflicts:

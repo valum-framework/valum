@@ -26,9 +26,11 @@ namespace Valum {
 		private Queue<string> scopes = new Queue<string> ();
 
 		/**
+		 * Loads route on a providen router.
+		 *
 		 * @since 0.0.1
 		 */
-		public delegate void NestedRouter (Valum.Router app);
+		public delegate void Loader (Valum.Router router);
 
 		/**
 		 * @since 0.0.1
@@ -204,9 +206,9 @@ namespace Valum {
 		 * @param fragment fragment to push on the scopes stack
 		 * @param router   nested router in the new scoped environment
 		 */
-		public void scope (string fragment, NestedRouter router) {
+		public void scope (string fragment, Loader loader) {
 			this.scopes.push_tail (fragment);
-			router (this);
+			loader (this);
 			this.scopes.pop_tail ();
 		}
 
