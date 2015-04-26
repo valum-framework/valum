@@ -73,13 +73,13 @@ namespace Valum {
 
 			var pattern = new StringBuilder ("^");
 
-			// scope the route
-			foreach (var scope in router.scopes.head) {
-				pattern.append (Regex.escape_string ("/%s".printf (scope)));
-			}
-
 			// root the route
 			pattern.append ("/");
+
+			// scope the route
+			foreach (var scope in router.scopes.head) {
+				pattern.append (Regex.escape_string ("%s/".printf (scope)));
+			}
 
 			pattern.append (regex.get_pattern ());
 
@@ -133,13 +133,13 @@ namespace Valum {
 			var captures    = new SList<string> ();
 			var route       = new StringBuilder ("^");
 
-			// scope the route
-			foreach (var scope in router.scopes.head) {
-				route.append (Regex.escape_string ("/%s".printf (scope)));
-			}
-
 			// root the route
 			route.append ("/");
+
+			// scope the route
+			foreach (var scope in router.scopes.head) {
+				route.append (Regex.escape_string ("%s/".printf (scope)));
+			}
 
 			foreach (var p in params) {
 				if (p[0] != '<') {
