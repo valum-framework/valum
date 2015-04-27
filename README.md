@@ -7,11 +7,23 @@ Valum micro-framework
 Valum is a web micro-framework entirely written in the
 [Vala](https://wiki.gnome.org/Projects/Vala) programming language.
 
+```vala
+var app = new Valum.Router ();
+
+app.get ("", (req, res) => {
+    res.write ("Hello world!".data);
+});
+
+new SoupServer (app).run ();
+```
+
+
 Installation
 ------------
 
 The installation process is fully documented in the
 [user documentation](http://valum.readthedocs.org/en/latest/installation/).
+
 
 Features
 --------
@@ -21,6 +33,7 @@ Features
  - complete integration of [FastCGI](http://www.fastcgi.com/drupal/) protocol
  - [CTPL](http://ctpl.tuxfamily.org/), a simple templating engine
  - extensive documentation available at [valum.readthedocs.org](http://valum.readthedocs.org/en/latest)
+
 
 Contributing
 ------------
@@ -43,6 +56,7 @@ changes
  * does not break api in minor release
  * breaks api in major (we like it that way!)
 
+
 Discussions and help
 --------------------
 
@@ -53,5 +67,3 @@ You can get help with Valum from different sources:
  - [Google+ page for Vala](https://plus.google.com/115393489934129239313/)
  - issues on [GitHub](https://github.com/antono/valum/issues) with the
    `question` label
-
-
