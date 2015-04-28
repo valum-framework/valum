@@ -2,6 +2,19 @@ This section explains what is going on in a Valum web application using
 a sample that can be found in the [Gettings started](getting-started.md)
 section of the documentation.
 
+## Choosing the VSGI implementation
+
+Choosing a VSGI implementation is just a matter of using the right namespace.
+Two implementations are currently available for now:
+
+ - libsoup built-in server
+ - FastCGI
+
+```javascript
+using Valum;
+using VSGI.Soup;
+```
+
 
 ## Creating an application
 
@@ -41,7 +54,7 @@ This part is pretty straightforward: you create a server that will serve your
 application at port `3003`. This will use the libsoup built-in HTTP server.
 
 ```java
-new SoupServer (app, 3003).run ();
+new Server (app, 3003).run ();
 ```
 
 There is a [FastCGI implementation](server/fastcgi.md) for a live deployment.

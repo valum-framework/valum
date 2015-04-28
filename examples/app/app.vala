@@ -1,5 +1,5 @@
 using Valum;
-using VSGI;
+using VSGI.Soup;
 
 var app = new Router();
 var lua = new Script.Lua();
@@ -258,17 +258,17 @@ app.get ("not-found", (req, res) => {
 	throw new ClientError.NOT_FOUND ("the given URL was not found");
 });
 
-app.method (Request.GET, "custom-method", (req, res) => {
+app.method (VSGI.Request.GET, "custom-method", (req, res) => {
 	var writer = new DataOutputStream(res);
 	writer.put_string (req.method);
 });
 
-app.regex (Request.GET, /custom-regular-expression/, (req, res) => {
+app.regex (VSGI.Request.GET, /custom-regular-expression/, (req, res) => {
 	var writer = new DataOutputStream(res);
 	writer.put_string ("This route was matched using a custom regular expression.");
 });
 
-app.matcher (Request.GET, (req) => { return req.uri.get_path () == "/custom-matcher"; }, (req, res) => {
+app.matcher (VSGI.Request.GET, (req) => { return req.uri.get_path () == "/custom-matcher"; }, (req, res) => {
 	var writer = new DataOutputStream(res);
 	writer.put_string ("This route was matched using a custom matcher.");
 });
@@ -283,4 +283,4 @@ app.handle.connect_after ((req, res) => {
 	}
 });
 
-new VSGI.SoupServer (app, 3003).run ();
+new Server (app, 3003).run ();

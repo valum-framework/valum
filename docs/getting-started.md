@@ -20,7 +20,7 @@ code is [available on GitHub](https://github.com/valum-framework/example).
 
 ```javascript
 using Valum;
-using VSGI;
+using VSGI.Soup;
 
 var app = new Router ();
 
@@ -29,7 +29,7 @@ app.get("", (req, res) => {
     writer.put_string ("Hello world!");
 });
 
-new SoupServer (app, 3003).run ();
+new Server (app, 3003).run ();
 ```
 
 ```

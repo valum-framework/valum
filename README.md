@@ -8,13 +8,16 @@ Valum is a web micro-framework entirely written in the
 [Vala](https://wiki.gnome.org/Projects/Vala) programming language.
 
 ```vala
-var app = new Valum.Router ();
+using Valum;
+using VSGI.Soup;
+
+var app = new Router ();
 
 app.get ("", (req, res) => {
     res.write ("Hello world!".data);
 });
 
-new SoupServer (app).run ();
+new Server (app).run ();
 ```
 
 

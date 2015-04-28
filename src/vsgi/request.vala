@@ -1,5 +1,6 @@
-namespace VSGI {
+using Soup;
 
+namespace VSGI {
 	/**
 	 * Request
 	 *
@@ -72,7 +73,7 @@ namespace VSGI {
 		 *
 		 * @since 0.1
 		 */
-		public abstract Soup.URI uri { get; }
+		public abstract URI uri { get; }
 
 		/**
 		 * HTTP query.
@@ -91,7 +92,7 @@ namespace VSGI {
 		 *
 		 * @since 0.0.1
 		 */
-		public abstract Soup.MessageHeaders headers { get; }
+		public abstract MessageHeaders headers { get; }
 
 		/**
 		 * Request cookies.
@@ -101,16 +102,16 @@ namespace VSGI {
 		 *
 		 * @since 0.1
 		 */
-		public SList<Soup.Cookie> cookies {
+		public SList<Cookie> cookies {
 			owned get {
-				var cookies = new SList<Soup.Cookie> ();
+				var cookies = new SList<Cookie> ();
 				var cookie_list = this.headers.get_list ("Cookie");
 
 				if (cookie_list == null)
 					return cookies;
 
 				foreach (var cookie in cookie_list.split ("; ")) {
-					cookies.prepend (Soup.Cookie.parse (cookie, this.uri));
+					cookies.prepend (Cookie.parse (cookie, this.uri));
 				}
 
 				cookies.reverse ();

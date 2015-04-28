@@ -1,5 +1,4 @@
 using Valum;
-using VSGI;
 
 /**
  * @since 0.1
@@ -12,5 +11,5 @@ public static void test_fastcgi_listen () {
 
 	});
 
-	var server = new FastCGIServer (app);
+	var server = new VSGI.FastCGI.Server (app);
 }

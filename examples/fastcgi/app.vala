@@ -1,4 +1,5 @@
 using Valum;
+using VSGI.FastCGI;
 
 public static int main (string[] args) {
 	var app   = new Router ();
@@ -38,5 +39,5 @@ public static int main (string[] args) {
 		writer.put_string ("404 - Not found");
 	});
 
-	return new VSGI.FastCGIServer (app).run (args);
+	return new Server (app).run (args);
 }

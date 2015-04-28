@@ -1,5 +1,6 @@
-namespace VSGI {
+using Soup;
 
+namespace VSGI {
 	/**
 	 * Response
 	 *
@@ -24,7 +25,7 @@ namespace VSGI {
 		 *
 		 * @since 0.0.1
 		 */
-		public abstract Soup.MessageHeaders headers { get; }
+		public abstract MessageHeaders headers { get; }
 
 		/**
 		 * Create a new Response instance.
@@ -42,7 +43,7 @@ namespace VSGI {
 		 *
 		 * @since 0.1
 		 */
-		public SList<Soup.Cookie> cookies {
+		public SList<Cookie> cookies {
 			set {
 				this.headers.remove ("Set-Cookie");
 
