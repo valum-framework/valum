@@ -1,4 +1,5 @@
 using Valum;
+using VSGI.Test;
 
 /**
  * @since 0.1
@@ -25,8 +26,8 @@ public static void test_router_scope () {
 		});
 	});
 
-	var request = new TestRequest.with_uri (new Soup.URI ("http://localhost/test/test"));
-	var response = new TestResponse (request, Soup.Status.OK);
+	var request = new Request.with_uri (new Soup.URI ("http://localhost/test/test"));
+	var response = new Response (request, Soup.Status.OK);
 
 	router.handle (request, response);
 
@@ -43,8 +44,8 @@ public static void test_router_redirection () {
 		throw new Redirection.MOVED_TEMPORARILY ("http://example.com");
 	});
 
-	var request = new TestRequest.with_uri (new Soup.URI ("http://localhost/"));
-	var response = new TestResponse (request, Soup.Status.OK);
+	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
 
 	router.handle (request, response);
 
@@ -62,8 +63,8 @@ public static void test_router_custom_method () {
 		res.status = 418;
 	});
 
-	var request = new TestRequest ("TEST", new Soup.URI ("http://localhost/"));
-	var response = new TestResponse (request, Soup.Status.OK);
+	var request = new Request ("TEST", new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
 
 	router.handle (request, response);
 
@@ -75,20 +76,20 @@ public static void test_router_custom_method () {
  */
 public static void test_router_method_not_allowed () {
 	var router = new Router ();
-	
+
 	router.get ("", (req, res) => {
-		
+
 	});
-	
+
 	router.put ("", (req, res) => {
-		
+
 	});
-	
-	var request = new TestRequest ("POST", new Soup.URI ("http://localhost/"));
-	var response = new TestResponse (request, Soup.Status.METHOD_NOT_ALLOWED);
-	
+
+	var request = new Request ("POST", new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.METHOD_NOT_ALLOWED);
+
 	router.handle (request, response);
-	
+
 	assert (response.status == 405);
 	assert ("PUT, GET" == response.headers.get_one ("Allow"));
 }
