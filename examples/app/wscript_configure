@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+bld.load('glib2')
+
 # optionals packages
 conf.check_cfg(package='libmemcached', uselib_store='MEMCACHED', args='--cflags --libs')
 conf.check_cfg(package='luajit', uselib_store='LUA', args='--cflags --libs')

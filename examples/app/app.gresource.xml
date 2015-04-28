@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+    <gresource>
+        <file>templates/home.html</file>
+        <file>templates/404.html</file>
+        <file>script/lua.vala</file>
+        <file>haml.lua</file>
+        <file>static/css/bootstrap.min.css</file>
+        <file>static/img/valum.png</file>
+    </gresource>
+</gresources>

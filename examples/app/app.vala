@@ -25,12 +25,14 @@ app.handle.connect_after ((req, res) => {
 
 // default route
 app.get("", (req, res) => {
-	var template =  new View.Tpl.from_path("examples/app/templates/home.html");
+	var template = new View.from_stream(resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
 
-	template.vars["path"] = req.uri.get_path ();
-	template.vars["headers"] = req.headers;
+	template.environment.push_string ("path", req.uri.get_path ());
+	req.headers.foreach ((k, v) => {
+		template.environment.push_string ("headers_%s".printf(k), v);
+	});
 
-	template.stream (res);
+	template.splice (res);
 });
 
 app.get ("query", (req, res) => {
@@ -98,28 +100,27 @@ app.scope("urlencoded-data", (inner) => {
 		var writer = new DataOutputStream(res);
 		writer.put_string(
 		"""
-	<!DOCTYPE html>
-	<html>
-	  <body>
-	    <form method="post">
-          <textarea name="data"></textarea>
-		  <button type="submit">submit</button>
-		</form>
-	  </body>
-	</html>
-	"""
-	);
+		<!DOCTYPE html>
+		<html>
+		  <body>
+			<form method="post">
+			  <textarea name="data"></textarea>
+			  <button type="submit">submit</button>
+			</form>
+		  </body>
+		</html>
+		""");
 	});
 
 	inner.post("", (req, res) => {
+		var writer = new DataOutputStream (res);
+		var data   = new MemoryOutputStream (null, realloc, free);
 
-		/*
-		var data = Soup.Form.decode ((string) req.body.data);
+		data.splice (req, OutputStreamSpliceFlags.CLOSE_SOURCE);
 
-		data.foreach((key, value) => {
-			res.append ("%s: %s".printf(key, value));
+		Soup.Form.decode ((string) data.get_data ()).foreach ((k, v) => {
+			writer.put_string ("%s: %s".printf (k, v));
 		});
-		*/
 	});
 });
 
@@ -152,35 +153,22 @@ app.get("lua.haml", (req, res) => {
 
 // Ctpl template rendering
 app.get("ctpl/<foo>/<bar>", (req, res) => {
-
-	var tpl = new View.Tpl.from_string("""
-	   <p> hello {foo} </p>
-	   <p> hello {bar} </p>
+	var tpl = new View.from_string("""
+	   <p>hello {foo}</p>
+	   <p>hello {bar}</p>
 	   <ul>
-		 { for el in arr }
-		   <li> { el } </li>
-		 { end }
+		 {for el in strings}
+		   <li>{el}</li>
+		 {end}
 	   </ul>
 	""");
 
-	var arr = new Gee.ArrayList<Value?>();
-	arr.add("omg");
-	arr.add("typed hell");
+	tpl.push_string ("foo", req.params["foo"]);
+	tpl.push_string ("bar", req.params["bar"]);
+	tpl.push_strings ("strings", {"a", "b", "c"});
+	tpl.push_int ("int", 1);
 
-	tpl.vars["foo"] = req.params["foo"];
-	tpl.vars["bar"] = req.params["bar"];
-	tpl.vars["arr"] = arr;
-	tpl.vars["int"] = 1;
-
-	tpl.stream (res);
-});
-
-// streamed Ctpl template
-app.get("ctpl/streamed", (req, res) => {
-
-	var tpl = new View.Tpl.from_path("examples/app/templates/home.html");
-
-	tpl.stream(res);
+	tpl.splice  (res);
 });
 
 // memcached
@@ -211,15 +199,15 @@ app.get("memcached/set/<key>/<value>", (req, res) => {
 app.scope("admin", (adm) => {
 	adm.scope("fun", (fun) => {
 		fun.get("hack", (req, res) => {
-				var time = new DateTime.now_utc();
-				var writer = new DataOutputStream(res);
-				res.headers.set_content_type ("text/plain", null);
-				writer.put_string("It's %s around here!\n".printf(time.format("%H:%M")));
+			var time = new DateTime.now_utc();
+			var writer = new DataOutputStream(res);
+			res.headers.set_content_type ("text/plain", null);
+			writer.put_string("It's %s around here!\n".printf(time.format("%H:%M")));
 		});
 		fun.get("heck", (req, res) => {
-				var writer = new DataOutputStream(res);
-				res.headers.set_content_type ("text/plain", null);
-				writer.put_string("Wuzzup!");
+			var writer = new DataOutputStream(res);
+			res.headers.set_content_type ("text/plain", null);
+			writer.put_string("Wuzzup!");
 		});
 	});
 });
@@ -230,23 +218,25 @@ app.get("static/<path:resource>.<any:type>", (req, res) => {
 	var resource = req.params["resource"];
 	var type     = req.params["type"];
 	var contents = new uint8[128];
+	var path     = "/static/%s.%s".printf (resource, type);
 	bool uncertain;
 
 	try {
-		var file = File.new_for_path ("examples/app/static/%s.%s".printf(resource, type));
+		var lookup = resources_lookup_data (path, ResourceLookupFlags.NONE);
 
-        // read 128 bytes for the content-type guess
-		file.read ().read (contents);
-		res.headers.set_content_type (ContentType.guess("%s.%s".printf(resource, type), contents, out uncertain), null);
+		// set the content-type based on a good guess
+		res.headers.set_content_type (ContentType.guess(path, lookup.get_data (), out uncertain), null);
 
 		if (uncertain)
 			warning ("could not infer content type of file %s.%s with certainty".printf (resource, type));
 
+		var file = resources_open_stream (path, ResourceLookupFlags.NONE);
+
 		// transfer the file
-		res.splice (file.read (), OutputStreamSpliceFlags.CLOSE_SOURCE);
-	} catch (FileError fe) {
+		res.splice (file, OutputStreamSpliceFlags.CLOSE_SOURCE);
+	} catch (Error e) {
 		res.status = 404;
-		writer.put_string (fe.message);
+		writer.put_string (e.message);
 	}
 });
 
@@ -275,11 +265,9 @@ app.matcher (VSGI.Request.GET, (req) => { return req.uri.get_path () == "/custom
 
 app.handle.connect_after ((req, res) => {
 	if (res.status == 404) {
-		var template = new View.Tpl.from_path("examples/app/templates/404.html");
-
-		template.vars["path"] = req.uri.get_path ();
-
-		template.stream (res);
+		var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));
+		template.environment.push_string ("path", req.uri.get_path ());
+		template.splice (res);
 	}
 });
 
