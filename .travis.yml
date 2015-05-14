@@ -12,7 +12,7 @@ before_install:
     - sudo pip install cpp-coveralls mkdocs
 
 before_script:
-    - ./waf configure
+    - ./waf configure --enable-gcov
     - ./waf build
 
 script:

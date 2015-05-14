@@ -13,6 +13,8 @@ out='build'
 def options(opt):
     opt.load('compiler_c')
 
+    opt.add_option('--enable-gcov', action='store_true', default=False, help='enable coverage with gcov')
+
 def configure(conf):
     conf.load('compiler_c vala')
 
@@ -25,7 +27,10 @@ def configure(conf):
     conf.check_cfg(package='libsoup-2.4', atleast_version='2.38', mandatory=True, uselib_store='SOUP', args='--cflags --libs')
 
     conf.check(lib='fcgi', mandatory=True, uselib_store='FCGI', args='--cflags --libs')
-    conf.check(lib='gcov', uselib_store='GCOV', args='--cflags --libs')
+
+    if conf.options.enable_gcov:
+        conf.check(lib='gcov', uselib_store='GCOV', args='--cflags --libs')
+        conf.env.append_unique('CFLAGS', ['-fprofile-arcs', '-ftest-coverage'])
 
     # configure examples
     conf.recurse(glob.glob('examples/*'))
@@ -38,7 +43,7 @@ def build(bld):
         target       = 'valum-{}.{}'.format(*VERSION),
         gir          = 'Valum-{}.{}'.format(*VERSION),
         source       = bld.path.ant_glob('src/**/*.vala'),
-        uselib       = ['GLIB', 'GIO', 'CTPL', 'GEE', 'SOUP', 'FCGI'],
+        uselib       = ['GLIB', 'GIO', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
         vapi_dirs    = ['vapi'],
         install_path = '${LIBDIR}')
 
@@ -52,8 +57,9 @@ def build(bld):
         MAJOR        = str(VERSION[0]),
         MINOR        = str(VERSION[1]))
 
-    # build examples recursively
+    # build examples
     bld.recurse(glob.glob('examples/*'))
 
     # build tests
     bld.recurse('tests')
+
