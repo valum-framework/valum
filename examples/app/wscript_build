@@ -7,6 +7,6 @@ bld.program(
    target       = 'app',
    use          = 'valum',
    source       = bld.path.ant_glob('**/*.vala') + ['app.gresource.xml'],
-   uselib       = ['GLIB', 'CTPL', 'GEE', 'SOUP', 'LUA', 'MEMCACHED'],
+   uselib       = ['GLIB', 'CTPL', 'GEE', 'SOUP', 'LUA', 'MEMCACHED', 'GCOV'],
    vapi_dirs    = ['../../vapi', 'vapi'],
    install_path = None)

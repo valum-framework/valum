@@ -10,12 +10,15 @@ before_install:
       libglib2.0-dev libsoup2.4-dev libgee-0.8-dev libfcgi-dev libmemcached-dev
       libluajit-5.1-dev
       libctpl-dev python-pip
-    - sudo pip install mkdocs
+    - sudo pip install cpp-coveralls mkdocs
 
 before_script:
-    - ./waf configure
+    - ./waf configure --enable-gcov
     - ./waf build
 
 script:
     - build/tests/tests
     - mkdocs build
+
+after_success:
+    - coveralls --build-root build --exclude build/examples --exclude build/tests

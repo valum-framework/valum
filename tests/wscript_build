@@ -5,6 +5,6 @@ bld.program(
     target       = 'tests',
     source       = ['tests.vala', 'vsgi/test.vala'] + bld.path.ant_glob('test_*.vala'),
     use          = 'valum',
-    uselib       = ['GLIB', 'CTPL', 'GEE', 'SOUP', 'FCGI'],
+    uselib       = ['GLIB', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
     vapi_dirs    = ['../vapi'],
     install_path = None)

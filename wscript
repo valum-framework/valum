@@ -12,6 +12,8 @@ out='build'
 def options(opt):
     opt.load('compiler_c')
 
+    opt.add_option('--enable-gcov', action='store_true', default=False, help='enable coverage with gcov')
+
 def configure(conf):
     conf.load('compiler_c vala')
 
@@ -21,8 +23,11 @@ def configure(conf):
     conf.check_cfg(package='gee-0.8', atleast_version='0.6.4', mandatory=True, uselib_store='GEE', args='--cflags --libs')
     conf.check_cfg(package='libsoup-2.4', atleast_version='2.38', mandatory=True, uselib_store='SOUP', args='--cflags --libs')
 
-    # libfcgi does not provide a .pc file...
     conf.check(lib='fcgi', mandatory=True, uselib_store='FCGI', args='--cflags --libs')
+
+    if conf.options.enable_gcov:
+        conf.check(lib='gcov', uselib_store='GCOV', args='--cflags --libs')
+        conf.env.append_unique('CFLAGS', ['-fprofile-arcs', '-ftest-coverage'])
 
     # configure examples
     conf.recurse(glob.glob('examples/*'))
@@ -35,7 +40,7 @@ def build(bld):
         target       = 'valum-{}'.format(API_VERSION),
         gir          = 'Valum-{}'.format(API_VERSION),
         source       = bld.path.ant_glob('src/**/*.vala'),
-        uselib       = ['GLIB', 'GIO', 'CTPL', 'GEE', 'SOUP', 'FCGI'],
+        uselib       = ['GLIB', 'GIO', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
         vapi_dirs    = ['vapi'],
         install_path = '${LIBDIR}')
 
@@ -48,8 +53,9 @@ def build(bld):
         VERSION      = VERSION,
         API_VERSION  = API_VERSION)
 
-    # build examples recursively
+    # build examples
     bld.recurse(glob.glob('examples/*'))
 
     # build tests
     bld.recurse('tests')
+
