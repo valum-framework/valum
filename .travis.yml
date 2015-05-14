@@ -20,4 +20,4 @@ script:
     - mkdocs build
 
 after_success:
-    - coveralls --build-root build
+    - coveralls --build-root build --exclude build/examples --exclude build/tests
