@@ -10,7 +10,7 @@ before_install:
       libglib2.0-dev libsoup2.4-dev libgee-0.8-dev libfcgi-dev libmemcached-dev
       libluajit-5.1-dev
       libctpl-dev python-pip
-    - sudo pip install cpp-coveralls mkdocs
+    - sudo pip install cpp-coveralls sphinx
 
 before_script:
     - ./waf configure --enable-gcov
@@ -18,7 +18,7 @@ before_script:
 
 script:
     - build/tests/tests
-    - mkdocs build
+    - sphinx-build docs build/docs
 
 after_success:
     - coveralls --build-root build --exclude build/examples --exclude build/tests

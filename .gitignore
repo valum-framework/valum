@@ -1,5 +1,9 @@
 ### Valum ###
-build/*
+build/
+
+
+### Sphinx ###
+docs/_build/
 
 
 ### Waf ###
