@@ -2,7 +2,7 @@ Valum micro-framework
 =====================
 
 [![Build Status](https://travis-ci.org/valum-framework/valum.svg?branch=master)](https://travis-ci.org/valum-framework/valum)
-[![Documentation Status](https://readthedocs.org/projects/valum/badge/?version=latest)](https://readthedocs.org/projects/valum/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/valum-framework/badge/?version=latest)](https://readthedocs.org/projects/valum-framework/?badge=latest)
 [![Coverage Status](https://coveralls.io/repos/valum-framework/valum/badge.svg?branch=master)](https://coveralls.io/r/valum-framework/valum?branch=master)
 
 Valum is a web micro-framework entirely written in the
@@ -26,7 +26,7 @@ Installation
 ------------
 
 The installation process is fully documented in the
-[user documentation](http://valum.readthedocs.org/en/latest/installation/).
+[user documentation](http://valum-framework.readthedocs.org/en/latest/installation.html).
 
 
 Features
