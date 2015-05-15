@@ -18,7 +18,7 @@ bindings <https://github.com/lighttpd/spawn-fcgi>`__, so you need to
 install the ``fcgi`` library. Both ``spawn-fcgi`` and ``npm`` should be
 found in your distribution repository.
 
-.. code:: bash
+.. code-block:: bash
 
     yum install fcgi spawn-fcgi npm     # Fedora
     apt-get install fcgi spawn-fcgi npm # Ubuntu and Debian
@@ -27,7 +27,7 @@ found in your distribution repository.
 Once done, build valum examples, spawn a FastCGI process and start the
 FastCGI web server.
 
-.. code:: bash
+.. code-block:: bash
 
     ./waf build
     spawn-fcgi -n -s valum.socket -- build/examples/fastcgi/fastcgi
@@ -69,6 +69,6 @@ An `example of
 configuration <https://github.com/valum-framework/valum/tree/master/examples/fastcgi/lighttpd.conf>`__
 is providen to get you started.
 
-.. code:: bash
+.. code-block:: bash
 
     lighttpd -D -f examples/fastcgi/lighttpd.conf

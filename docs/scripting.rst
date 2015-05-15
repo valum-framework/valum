@@ -38,7 +38,7 @@ engine.
 
 The sample Lua script contains:
 
-.. code:: lua
+.. code-block:: lua
 
     require 'markdown'
     return markdown("# Hello from Lua!!!")
@@ -46,7 +46,7 @@ The sample Lua script contains:
 
 Resulting response
 
-.. code:: html
+.. code-block:: html
 
     <h1>Hello from Lua!!!</h1>
 
@@ -64,7 +64,7 @@ Scheme can be used to produce template or facilitate computation.
 
 Scheme code:
 
-.. code:: scheme
+.. code-block:: scheme
 
     ;; VALUM_ROOT/scripts/hello.scm
     (+ 1 2 3)

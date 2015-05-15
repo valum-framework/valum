@@ -28,7 +28,7 @@ You can easily install the dependencies from a package manager.
 Debian and Ubuntu
 ~~~~~~~~~~~~~~~~~
 
-.. code:: bash
+.. code-block:: bash
 
     apt-get install git-core build-essential python valac libglib2.0-bin \
                     libglib2.0-dev libsoup2.4-dev libgee-0.8-dev libfcgi-dev \
@@ -37,7 +37,7 @@ Debian and Ubuntu
 Fedora
 ~~~~~~
 
-.. code:: bash
+.. code-block:: bash
 
     yum install git python vala glib2-devel libsoup-devel libgee-devel fcgi-devel \
                 memcached libmemcached-devel luajit-devel ctpl-devel
@@ -48,7 +48,7 @@ Download the sources
 You may either clone or download one of our
 `releases <https://github.com/antono/valum/releases>`__ from GitHub:
 
-.. code:: bash
+.. code-block:: bash
 
     git clone git://github.com/antono/valum.git && cd valum
 
@@ -57,7 +57,7 @@ Build
 
 Build Valum and run the tests to make sure everything is fine.
 
-.. code:: bash
+.. code-block:: bash
 
     ./waf configure
     ./waf build && ./build/tests/tests
@@ -71,7 +71,7 @@ the `libsoup built-in HTTP
 server <https://developer.gnome.org/libsoup/stable/libsoup-server-howto.html>`__
 and should run out of the box.
 
-.. code:: bash
+.. code-block:: bash
 
     ./build/example/app/app
 

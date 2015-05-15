@@ -11,7 +11,7 @@ web application.
 You can install the build files with ``waf``, it will simplify the
 building process:
 
-.. code:: bash
+.. code-block:: bash
 
     sudo ./waf install
 
@@ -61,7 +61,7 @@ GitHub repository.
 Unless you installed Valum with ``--prefix=/usr``, you have to export
 ``pkg-config`` search path:
 
-.. code:: bash
+.. code-block:: bash
 
     export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 
@@ -85,7 +85,7 @@ It is preferable to use a build system like
 Get a release of ``waf`` and copy this file under the name ``wscript``
 at the root of your project.
 
-.. code:: python
+.. code-block:: python
 
     #!/usr/bin/env python
 
@@ -108,7 +108,7 @@ at the root of your project.
 
 You should now be able to build by issuing the following commands:
 
-.. code:: bash
+.. code-block:: bash
 
     ./waf configure
     ./waf build

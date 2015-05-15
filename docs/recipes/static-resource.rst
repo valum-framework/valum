@@ -1,9 +1,8 @@
 Resources
 =========
 
-GLib provides an `resource
-api <http://valadoc.org/#!api=gio-2.0/GLib.Resource>`__ for bundling
-static resources and link them in the executable.
+GLib provides an `resource api <http://valadoc.org/#!api=gio-2.0/GLib.Resource>`__
+for bundling static resources and link them in the executable.
 
 An efficient approach to serve static content with Valum is to link and
 stream.
@@ -31,7 +30,7 @@ Let's say your project has a few resources:
 Setup a ``app.gresource.xml`` file that defines what resources will to
 be bundled.
 
-.. code:: xml
+.. code-block:: xml
 
     <?xml version="1.0" encoding="UTF-8"?>
     <gresources>
@@ -44,14 +43,14 @@ be bundled.
 
 You can test your setup with:
 
-.. code:: bash
+.. code-block:: bash
 
     glib-compile-resource app.gresource.xml
 
 Latest version of ``waf`` automatically link ``*.gresource.xml`` if you
 load the ``glib2`` plugin and add the file to your sources.
 
-.. code:: python
+.. code-block:: python
 
     bld.load('glib2')
 
