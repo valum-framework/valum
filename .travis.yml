@@ -10,7 +10,7 @@ before_install:
       libglib2.0-dev libsoup2.4-dev libgee-0.8-dev libfcgi-dev libmemcached-dev
       libluajit-5.1-dev
       libctpl-dev python-pip
-    - sudo pip install cpp-coveralls sphinx
+    - sudo pip install cpp-coveralls sphinx PyYAML
 
 before_script:
     - ./waf configure --enable-gcov
