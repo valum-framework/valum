@@ -228,7 +228,7 @@ namespace Valum {
 
 			try {
 				// ensure at least one route has been declared with that method
-				if (this.routes.contains(req.method)) {
+				if (this.routes.contains (req.method)) {
 					// find a route that may handle the request
 					foreach (var route in this.routes[req.method].head) {
 						if (route.match (req)) {

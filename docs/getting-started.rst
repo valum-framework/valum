@@ -1,26 +1,35 @@
 Quickstart
 ==========
 
-Assuming that Valum is `built and installed <installation.md>`__
-correctly, you are ready to create your first application!
+Assuming that Valum is built and installed correctly (view :doc:`installation`
+for more details), you are ready to create your first application!
 
 Valum is not designed to be installed as a shared library (at least for
-now), but more like a set of build files and tools helps one develop a
-web application.
+now), but more like a set of build files and tools helps one develop a web
+application.
 
-You can install the build files with ``waf``, it will simplify the
-building process:
+You can install the build files with ``waf``, it will simplify the building
+process:
 
 .. code-block:: bash
 
     sudo ./waf install
 
+Unless you installed Valum with ``--prefix=/usr``, you have to export
+``pkg-config`` search path:
+
+.. code-block:: bash
+
+    export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+
 Simple 'Hello world!' application
 ---------------------------------
 
-You can use this sample application and project structure as a basis.
-The full code is `available on
-GitHub <https://github.com/valum-framework/example>`__.
+You can use this sample application and project structure as a basis. The full
+`example is available on GitHub`_ and is kept up-to-date with the latest
+changes in the framework.
+
+.. _example is available on GitHub: https://github.com/valum-framework/example
 
 .. code:: vala
 
@@ -34,7 +43,10 @@ GitHub <https://github.com/valum-framework/example>`__.
         writer.put_string ("Hello world!");
     });
 
-    new Server (app, 3003).run ();
+    new Server (app).run ({"app", "--port", "3003"});
+
+Typically, the ``run`` function would contain CLI argument to make runtime
+parametrizable.
 
 ::
 
@@ -46,24 +58,26 @@ GitHub <https://github.com/valum-framework/example>`__.
         fcgi.vala
 
 VAPI bindings
-~~~~~~~~~~~~~
+-------------
 
-`CTPL <ctpl.tuxfamily.org>`__ and
-`FastCGI <http://www.fastcgi.com/drupal/>`__ are not providing Vala
-bindings, so you need to copy them in your project ``vapi`` folder. You
-can find them in the `vapi folder of
-Valum <https://github.com/antono/valum/tree/master/vapi>`__.
+`CTPL`_ and `FastCGI`_ are not providing Vala bindings, so you need to copy
+them in your project ``vapi`` folder. They are included in Valum's `vapi
+folder`_.
 
-You can also find more VAPIs in
-`nemequ/vala-extra-vapis <https://github.com/nemequ/vala-extra-vapis>`__
-GitHub repository.
+You can also find more VAPIs in `nemequ/vala-extra-vapis`_ GitHub repository.
 
-Unless you installed Valum with ``--prefix=/usr``, you have to export
-``pkg-config`` search path:
+.. _CTPL: ctpl.tuxfamily.org
+.. _FastCGI: http://www.fastcgi.com/drupal/
+.. _vapi folder: https://github.com/antono/valum/tree/master/vapi
+.. _nemequ/vala-extra-vapis: https://github.com/nemequ/vala-extra-vapis
+
+Building manually
+-----------------
+
+Building manually requires to launch multiple executables that will generate
+the C sources and compile against libvalum.
 
 .. code-block:: bash
-
-    export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 
     # generate the c sources
     valac --vapidir=vapi --pkg valum-0.1 --pkg libsoup-2.4 --pkg gee-0.8 \
@@ -77,13 +91,14 @@ Unless you installed Valum with ``--prefix=/usr``, you have to export
     # run the generated binary
     ./build/app
 
-Using a build tool (waf)
-~~~~~~~~~~~~~~~~~~~~~~~~
+Building with waf
+-----------------
 
-It is preferable to use a build system like
-`waf <https://code.google.com/p/waf/>`__ to automate all this process.
-Get a release of ``waf`` and copy this file under the name ``wscript``
+It is preferable to use a build system like `waf`_ to automate all this
+process. Get a release of ``waf`` and copy this file under the name ``wscript``
 at the root of your project.
+
+.. _waf: https://code.google.com/p/waf/
 
 .. code-block:: python
 

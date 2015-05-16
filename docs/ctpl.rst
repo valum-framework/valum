@@ -1,9 +1,9 @@
 CTPL
 ====
 
-Valum provides
-`CTPL <http://ctpl.tuxfamily.org/doc/unstable/ctpl-CtplEnviron.html>`__
-as a view engine.
+Valum provides `CTPL`_ integration as a basic view engine.
+
+.. _CTPL: http://ctpl.tuxfamily.org/doc/unstable/ctpl-CtplEnviron.html
 
 Three primitive types and one composite type are supported:
 
@@ -27,7 +27,9 @@ The ``View`` class provides constructors to create views from
     var template = new View.from_path ("path/to/your/template.tpl");
 
 It is a good practice to bundle static data in the executable using
-`GLib.Resource <http://valadoc.org/#!api=gio-2.0/GLib.Resource>`__.
+`GLib.Resource`_.
+
+.. _GLib.Resource: http://valadoc.org/#!api=gio-2.0/GLib.Resource
 
 .. code:: vala
 
@@ -36,10 +38,10 @@ It is a good practice to bundle static data in the executable using
 Environment
 -----------
 
-A ``View`` instance provides an ``Ctpl.Environ`` environment from which
-you can push and pop variables. CTPL environment operations are fully
-documented at
-`ctpl.tuxfamily.org <http://ctpl.tuxfamily.org/doc/unstable/ctpl-CtplEnviron.html>`__.
+A ``View`` instance provides an `Ctpl.Environ`_ environment from which you can
+push and pop variables.
+
+.. _Ctpl.Environ: http://ctpl.tuxfamily.org/doc/unstable/ctpl-CtplEnviron.html
 
 .. code:: vala
 
@@ -47,19 +49,19 @@ documented at
 
     template.environment.push_int ("a", 1);
 
-Valum provides helpers for dumping ``GLib.HashTable``,
-``Gee.Collection``, ``Gee.Map`` and ``Gee.MultiMap`` as well as array of
-``double``, ``long`` and ``string``.
+Valum provides helpers for dumping `GLib.HashTable`_, `Gee.Collection`_,
+`Gee.Map`_ and `Gee.MultiMap`_ as well as array of ``double``, ``long`` and
+``string``.
 
-::
+.. code:: vala
 
     double[] dbs = {8.2, 12.3, 2};
 
     template.push_string ("key", "value");
     template.push_doubles ("key", dbs);
 
-``HashTable``, ``Map`` and ``MultiMap`` are pushed by pushing all their
-entries ony-by-one. Generated environment keys are the simple
+`GLib.HashTable`_, `Gee.Map`_ and `Gee.MultiMap`_ are pushed by pushing all
+their entries ony-by-one. Generated environment keys are the simple
 concatenation of the providen key, a underscore (``_``) and the entry
 key.
 
@@ -72,11 +74,16 @@ key.
 
     template.push_map ("map", map); // map_key and map_key2 will be pushed
 
+.. _GLib.HashTable: http://valadoc.org/#!api=glib-2.0/GLib.HashTable
+.. _Gee.Collection: http://valadoc.org/#!api=gee-0.10/Gee.Collection
+.. _Gee.Map: http://valadoc.org/#!api=gee-0.10/Gee.Map
+.. _Gee.MultiMap: http://valadoc.org/#!api=gee-0.10/Gee.MultiMap
+
 Streaming views
 ---------------
 
-The best way of rendering a view is by streaming it directly into a
-``Response`` instance with the ``splice`` function. This way, your
+The best way of rendering a view is by streaming it directly into
+a :doc:`vsgi/response` instance with the ``splice`` function. This way, your
 application can produce very big output efficiently.
 
 .. code:: vala

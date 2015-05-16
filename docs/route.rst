@@ -5,14 +5,40 @@ Route is a structure that pairs a matcher and a handler.
 
 -  the matcher tells if the Route accepts the given request and populate
    its parameters
--  the handler processes the `Request <vsgi/request.md>`__ and produce a
-   `Response <vsgi/response.md>`__
+-  the handler processes the :doc:`vsgi/request` and produce a :doc:`vsgi/response`.
+
+Matcher
+-------
+
+Request parameters
+~~~~~~~~~~~~~~~~~~
+
+It is important to keep in mind that the request parameters result from
+a side-effect. If a matcher accept the request, it may populate the parameters.
+The matching process in :doc:`router` guarantees that only one matcher can
+accept the request and thus populate the parameters.
+
+Request can be parametrized in a general manner:
+
+-  extract data from the URI path like an integer identifier
+-  extract data from the headers such as the request refeerer
+
+:doc:`../route` created from a rule or a regular expression will populate the
+parameters with their named captures.
+
+.. code:: vala
+
+    app.get ("<int:i>", (req, res) => {
+        var i = req.params["i"];
+    });
+
+Parameters default to ``null`` if it is not populated by any matchers.
 
 Matching using a rule
----------------------
+~~~~~~~~~~~~~~~~~~~~~
 
 Rules are used by the HTTP methods alias and ``method`` function in
-`Router <router.md>`__.
+:doc:`router`.
 
 .. code:: vala
 
@@ -29,8 +55,7 @@ Rules are used by the HTTP methods alias and ``method`` function in
 Rule syntax
 ~~~~~~~~~~~
 
-This class implements the rule system designed to simplify regular
-expression.
+This class implements the rule system designed to simplify regular expression.
 
 The following are rules examples:
 
@@ -38,11 +63,10 @@ The following are rules examples:
 -  ``/user/<id>``
 -  ``/user/<int:id>``
 
-In this example, we call ``id`` a parameter and ``int`` a type. These
-two definitions will be important for the rest of the document.
+In this example, we call ``id`` a parameter and ``int`` a type. These wo
+definitions will be important for the rest of the document.
 
-These will respectively compile down to the following regular
-expressions
+These will respectively compile down to the following regular expressions
 
 -  ``^/user$``
 -  ``^/user/(?<id>\w+)$``
@@ -64,11 +88,11 @@ meant.
 The ``int`` type is useful for matching non-negative identifier such as
 database primary key.
 
-the ``path`` type is useful for matching pieces of route including
-slashes. You can use this one to serve a folders hierachy.
+the ``path`` type is useful for matching pieces of route including slashes. You
+can use this one to serve a folders hierachy.
 
-The ``any`` type is useful to create catch-all route. The sample
-application shows an example for creating a 404 error page.
+The ``any`` type is useful to create catch-all route. The sample application
+shows an example for creating a 404 error page.
 
 .. code:: vala
 
@@ -76,16 +100,16 @@ application shows an example for creating a 404 error page.
         res.status = 404;
     });
 
-It is possible to specify new types using the ``types`` map in
-``Router``. This example will define the ``path`` type matching words
-and slashes using a regular expression literal.
+It is possible to specify new types using the ``types`` map in ``Router``. This
+example will define the ``path`` type matching words and slashes using
+a regular expression literal.
 
 .. code:: vala
 
     app.types["path"] = /[\\w\/]+/;
 
-Types are defined at construct time of the ``Router`` class. It is
-possible to overwrite the built-in type.
+Types are defined at construct time of the ``Router`` class. It is possible to
+overwrite the built-in type.
 
 If you would like ``ìnt`` to match negatives integer, you may just do:
 
@@ -96,11 +120,11 @@ If you would like ``ìnt`` to match negatives integer, you may just do:
     app.types["int"] = /-?\d+/;
 
 Matching using a regular expression
------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If the rule system does not suit your needs, it is always possible to
-use regular expression. Regular expression will be automatically scoped,
-anchored and optimized.
+If the rule system does not suit your needs, it is always possible to use
+regular expression. Regular expression will be automatically scoped, anchored
+and optimized.
 
 .. code:: vala
 
@@ -109,12 +133,12 @@ anchored and optimized.
         writer.put_string ("Matched using a regular expression.");
     });
 
-Matching using a low-level matcher
-----------------------------------
+Matching using a callback
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In some scenario, you need more than a just matching the request path
-using a regular expression. Internally, Route uses a matcher pattern and
-it is possible to define them yourself.
+In some scenario, you need more than a just matching the request path using
+a regular expression. Internally, Route uses a matcher pattern and it is
+possible to define them yourself.
 
 A matcher consist of a callback matching a given ``Request`` object.
 
@@ -127,8 +151,8 @@ A matcher consist of a callback matching a given ``Request`` object.
         writer.put_string ("Matched using a custom matcher.");
     });
 
-You could, for instance, match the request if the user is an
-administrator and fallback to a default route otherwise.
+You could, for instance, match the request if the user is an administrator and
+fallback to a default route otherwise.
 
 .. code:: vala
 
@@ -142,14 +166,14 @@ administrator and fallback to a default route otherwise.
     });
 
 Combining custom matcher with existing matcher
-----------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If all you want is to do some processing and fallback on a Regex or rule
 matching, you can combine instanciate directly a Route.
 
-Matcher should respect the *populate if match* principle, so design it
-in a way that the request parameters remain untouched if the matcher
-happens not to accept the request.
+Matcher should respect the *populate if match* principle, so design it in a way
+that the request parameters remain untouched if the matcher happens not to
+accept the request.
 
 .. code:: vala
 
@@ -160,3 +184,49 @@ happens not to accept the request.
         var user = new User (req.query["id"]);
         return "admin" in user.roles && route.match (req);
     });
+
+Handler
+-------
+
+Handler process a a pair of :doc:`vsgi/request` and :doc:`vsgi/response` and
+can throw various status code during the processing to handle cases that breaks
+the code flow conveniently.
+
+The definition of a handler is the following:
+
+.. code:: vala
+
+    delegate void Handler (Request req, Response res) throws Redirection, ClientError, ServerError
+
+See :doc:`redirection-and-error` for more details on what can be throws during
+the processing of a handler.
+
+.. code:: vala
+
+    app.get ("redirection", (req, res) => {
+        throw new Redirection.MOVED_TEMPORAIRLY ("http://example.com");
+    });
+
+Handlers execute in asynchronous context, which means that two handlers can
+execute concurrently, but not necessary in parallel (you have to enable
+threding for that). It is fine to block as long as you are processing the
+response.
+
+If you have to process work and you are done with the response, use the
+asynchronous stream operations to avoid blocking either the response or the
+work.
+
+.. code:: vala
+
+    app.get ("", (req, res) => {
+        // write now and block
+        res.write ("Hello world!".data);
+
+        res.write_async.begin ("Hello world!".data, (obj, r) => {
+            var written = res.write_async.end (r);
+            res.close ();
+        });
+
+        // keep processing while the response is begin written
+    });
+

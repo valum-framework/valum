@@ -1,29 +1,28 @@
 Installation
 ============
 
+We use the `waf build system`_ and distribute it with the sources. All you need
+is a `Python interpreter`_ to configure and build Valum.
+
 Dependencies
 ------------
 
-Valum has the following dependencies:
-
 -  vala
+-  waf
 -  glib-2.0 (>=2.32)
 -  gio-2.0 (>=2.32)
 -  libsoup-2.4 (>=2.38)
 -  libgee-0.8 (>=0.6.4)
 -  ctpl (>=3.3)
 
-Examples depend on
+You can also install additionnal dependencies to build the examples.
 
 -  libmemcached
 -  libluajit
 -  memcached
 
-We use the `waf build system <https://code.google.com/p/waf/>`__ and
-distribute it with the sources. All you need is a `Python
-interpreter <https://www.python.org/>`__.
-
-You can easily install the dependencies from a package manager.
+.. _waf build system: https://code.google.com/p/waf/
+.. _Python interpreter: https://www.python.org/
 
 Debian and Ubuntu
 ~~~~~~~~~~~~~~~~~
@@ -45,8 +44,9 @@ Fedora
 Download the sources
 --------------------
 
-You may either clone or download one of our
-`releases <https://github.com/antono/valum/releases>`__ from GitHub:
+You may either clone or download one of our `releases`_ from GitHub:
+
+.. _releases: https://github.com/antono/valum/releases
 
 .. code-block:: bash
 
@@ -74,5 +74,3 @@ and should run out of the box.
 .. code-block:: bash
 
     ./build/example/app/app
-
-Visit http://localhost:3003 on your favourite web browser.

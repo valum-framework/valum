@@ -62,12 +62,10 @@ it using a port.
 lighttpd
 --------
 
-lighttpd spawn a process and communicate with it through a socket or a
-port.
+lighttpd spawn a process and communicate with it through a socket or a port. An
+`example of configuration`_ is providen to get you started.
 
-An `example of
-configuration <https://github.com/valum-framework/valum/tree/master/examples/fastcgi/lighttpd.conf>`__
-is providen to get you started.
+.. _example of configuration: https://github.com/valum-framework/valum/tree/master/examples/fastcgi/lighttpd.conf
 
 .. code-block:: bash
 

@@ -1,22 +1,21 @@
 Router
 ======
 
-Router is the core component of Valum. It dispatches request to the
-right handler and processes certain error conditions described in
-`Redirection and Error <redirection-and-error>`__.
+Router is the core component of Valum. It dispatches request to the right
+handler and processes certain error conditions described in
+:doc:`redirection-and-error`.
 
 HTTP methods
 ------------
 
-Callback can be connected to HTTP methods via a list of helpers having
-the ``Route.Handler`` signature:
+Callback can be connected to HTTP methods via a list of helpers having the
+``Route.Handler`` delegate signature:
 
 .. code:: vala
 
     app.get ("rule", (req, res) => {});
 
-Valum includes helpers for the HTTP/1.1 protocol and the extra TRACE
-method.
+Helpers for the HTTP/1.1 protocol and the extra ``TRACE`` methods are included.
 
 -  ``get``
 -  ``post``
@@ -49,13 +48,12 @@ function.
 Scoping
 -------
 
-Scoping is a powerful prefixing mechanism for rules. Route declarations
-within a scope will be prefixed by ``<scope>/``. There is an implicit
-initial scope so that all rules are automatically rooted.
+Scoping is a powerful prefixing mechanism for rules. Route declarations within
+a scope will be prefixed by ``<scope>/``. There is an implicit initial scope so
+that all rules are automatically rooted.
 
-The ``Router`` maintains a scope stack so that when the program flows
-you enter a scope, it pushes the fragment on top of it and pop it when
-it gets out.
+The ``Router`` maintains a scope stack so that when the program flows you enter
+a scope, it pushes the fragment on top of it and pop it when it gets out.
 
 .. code:: vala
 

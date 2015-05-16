@@ -1,40 +1,50 @@
 Scripting
 =========
 
-Through `Vala VAPI
-bindings <https://wiki.gnome.org/Projects/Vala/Bindings>`__, application
-written on Valum can support multiple interpreters and JIT providing
-facilities for computation and templating.
+Through `Vala VAPI bindings <https://wiki.gnome.org/Projects/Vala/Bindings>`__,
+application written with Valum can embed multiple interpreters and JIT to
+provide facilities for computation and templating.
 
-Basically, we provide `CTPL <ctpl>`__, but you might want to have
-something a little more powerful, so this section should fit your needs.
+:doc:`ctpl` integration is provided, but if you need something more powerful,
+this document will cover exactly what you need.
 
 Lua
 ---
 
-Valum currently supports embedded Lua as a templating and computation
-engine.
+`luajit`_ ships with a VAPI you can use to access a Lua VM, just add
+``--pkg lua`` to ``valac``.
+
+.. _luajit: http://luajit.org/
+
+.. code:: bash
+
+    valac --pkg valum-0.1 --pkg lua app.vala
 
 .. code:: vala
 
     using Valum;
+    using VSGI.Soup;
+    using Lua;
 
-    var app = new Router();
-    var lua = new Script.Lua();
+    var app = new Router ();
+    var lua = new LuaVM ();
 
     // GET /lua
-    app.get("lua", (req, res) => {
+    app.get ("lua", (req, res) => {
         var writer = new DataOutputStream (res);
 
-        writer.put_string (lua.eval("""
+        // evaluate a string containing Lua code
+        writer.put_string (lua.do_string (
+        """
         require "markdown"
         return markdown('## Hello from lua.eval!')
         """));
 
-        writer.put_string (lua.run("scripts/hello.lua"));
+        // evaluate a file containing Lua code
+        writer.put_string (lua.do_file ("scripts/hello.lua"));
     });
 
-    new SoupServer (app, 3003).run ();
+    new Soup (app).run ();
 
 The sample Lua script contains:
 
@@ -57,7 +67,7 @@ Scheme can be used to produce template or facilitate computation.
 
 .. code:: vala
 
-    app.get("hello.scm", (req, res) => {
+    app.get ("hello.scm", (req, res) => {
         var writer = new DataOutputStream (res);
         res.put_string (scm.run ("scripts/hello.scm"));
     });
