@@ -17,12 +17,10 @@ namespace VSGI {
 	public interface Application : GLib.Object {
 
 		/**
-		 * Signal handling a {@link Request} and producing a {@link Response}.
+		 * Entrypoint for the processing of an application.
 		 *
-		 * The rationale behind using a signal is that it allows binding of
-		 * callbacks before and after the default handler is executed, which
-		 * comes very handy for setup and teardown operations like database
-		 * connection.
+		 * Each requests are begin processed asynchronously so that they are
+		 * fundamentally design not to block one another.
 		 *
 		 * @since 0.1
 		 *
@@ -31,6 +29,6 @@ namespace VSGI {
 		 * @param Response res response where the application should produce its
 		 *                     output
 		 */
-		public virtual signal void handle (Request req, Response res) {}
+		public abstract async void handle (Request req, Response res);
 	}
 }

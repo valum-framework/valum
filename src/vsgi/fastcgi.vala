@@ -11,6 +11,9 @@ namespace VSGI.FastCGI {
 	 * The request keeps a strong reference to its inner {@link FastCGI.request} so
 	 * that it is being freed only when any processing involving this._request is
 	 * done.
+	 *
+	 * The constructor will block until a request is accepted so that the object can
+	 * exclusively own the {@link FastCGI.request} instance.
 	 */
 	class Request : VSGI.Request {
 
@@ -19,7 +22,7 @@ namespace VSGI.FastCGI {
 		private HashTable<string, string>? _query = null;
 		private MessageHeaders _headers = new MessageHeaders (MessageHeadersType.REQUEST);
 
-		public request _request;
+		public global::FastCGI.request _request;
 
 		public override URI uri { get { return this._uri; } }
 
@@ -38,7 +41,7 @@ namespace VSGI.FastCGI {
 		}
 
 		public Request (GLib.Socket socket) {
-			var request_status = request.init (out this._request, socket.fd);
+			var request_status = global::FastCGI.request.init (out this._request, socket.fd);
 
 			if (request_status != 0)
 				error ("code %u: could not initialize FCGX request".printf (request_status));
@@ -78,19 +81,19 @@ namespace VSGI.FastCGI {
 
 			var headers = new StringBuilder();
 
+			// extract HTTP headers, they are prefixed by 'HTTP_' in environment variables
 			foreach (var variable in this._request.environment.get_all ()) {
-				// headers are prefixed with HTTP_
 				if (variable.has_prefix ("HTTP_")) {
 					var parts = variable.split("=", 2);
 					headers.append ("%s: %s\r\n".printf(parts[0].substring(5).replace("_", "-").casefold(), parts[1]));
 				}
 			}
 
-			headers_parse (headers.str, (int) headers.len, this._headers);
+			global::Soup.headers_parse (headers.str, (int) headers.len, this._headers);
 		}
 
 		/**
-		 *
+		 * Finish and close the {@link FastCGI.request} instance.
 		 */
 		~Request () {
 			this._request.finish ();
@@ -140,7 +143,7 @@ namespace VSGI.FastCGI {
 		public override MessageHeaders headers { get { return this._headers; } }
 
 		public Response (Request req, Stream @out, Stream err) {
-			base (req);
+			Object (request: req);
 			this.out = @out;
 			this.err = err;
 		}
@@ -227,7 +230,7 @@ namespace VSGI.FastCGI {
 		private GLib.Socket socket;
 
 		public Server (VSGI.Application application) {
-			Object (application: application, flags: ApplicationFlags.HANDLES_COMMAND_LINE);
+			Object (application: application);
 
 			this.add_main_option ("socket", 's', 0, OptionArg.STRING, "path to the UNIX socket", null);
 			this.add_main_option ("port", 'p', 0, OptionArg.INT, "TCP port on this host", null);
@@ -242,18 +245,16 @@ namespace VSGI.FastCGI {
 			this.shutdown.connect (shutdown_pending);
 		}
 
-		/**
-		 * Handle the command line and setup the request.
-		 */
-		public override int command_line (ApplicationCommandLine command_line) {
-			var options = command_line.get_options_dict ();
-
+		public override int handle_local_options (VariantDict options) {
 			if (options.contains ("socket") && options.contains ("port")) {
 				GLib.stderr.printf ("--socket and --port must not be specified simultaneously");
 				return 1;
 			}
 
 			var backlog = options.contains ("backlog") ? options.lookup_value ("backlog", VariantType.INT32).get_int32 () : 0;
+			var timeout = options.contains ("timeout") ? options.lookup_value ("timeout", VariantType.INT32).get_int32 () : 60000;
+
+			this.set_inactivity_timeout (timeout);
 
 			if (options.contains ("socket")) {
 				var socket_path = options.lookup_value ("socket", VariantType.STRING).get_string ();
@@ -288,24 +289,35 @@ namespace VSGI.FastCGI {
 				message ("listening the default socket");
 			}
 
+			return -1; // continue processing
+		}
+
+
+		/**
+		 * Handle the command line and setup the request.
+		 */
+		public override void activate () {
+			this.hold ();
+
 			var source = new IOSource (new IOChannel.unix_new (socket.fd), IOCondition.IN);
 
 			source.set_callback (() => {
+				this.hold ();
+
 				var req = new Request (this.socket);
 				var res = new Response (req, req._request.out, req._request.err);
 
-				this.application.handle (req, res);
-
-				message ("request %u: %u %s %s", req._request.request_id, res.status, req.method, req.uri.get_path ());
+				this.application.handle.begin (req, res, () => {
+					message ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
+					this.release ();
+				});
 
 				return true;
 			});
 
 			source.attach (MainContext.default ());
 
-			this.hold ();
-
-			return 0;
+			this.release ();
 		}
 	}
 }

@@ -9,9 +9,11 @@ namespace VSGI {
 	public abstract class Response : OutputStream {
 
 		/**
+		 * Request to which this response is responding.
+		 *
 		 * @since 0.1
 		 */
-		protected Request request;
+		public weak Request request { construct; get; }
 
 		/**
 		 * Response status.
@@ -26,17 +28,6 @@ namespace VSGI {
 		 * @since 0.0.1
 		 */
 		public abstract MessageHeaders headers { get; }
-
-		/**
-		 * Create a new Response instance.
-		 *
-		 * @since 0.1
-		 *
-		 * @param request Request that originated this response
-		 */
-		public Response (Request request) {
-			this.request = request;
-		}
 
 		/**
 		 * Property for the Set-Cookie header.

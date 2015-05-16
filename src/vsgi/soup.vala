@@ -76,7 +76,7 @@ namespace VSGI.Soup {
 		}
 
 		public Response (Request req, Message msg) {
-			base (req);
+			Object (request: req);
 			this.message = msg;
 		}
 
@@ -106,39 +106,45 @@ namespace VSGI.Soup {
 		private global::Soup.Server server;
 
 		public Server (VSGI.Application application) {
-			Object (application: application, flags: ApplicationFlags.HANDLES_COMMAND_LINE);
+			Object (application: application);
 
 			this.server = new global::Soup.Server (global::Soup.SERVER_SERVER_HEADER, "Valum");
 
+			this.add_main_option ("port", 'p', 0, OptionArg.INT, "port used to serve the HTTP server", "3003");
+			this.add_main_option ("timeout", 't', 0, OptionArg.INT, "inactivity timeout in ms", "60000");
+		}
+
+		public override int handle_local_options (VariantDict options) {
+			var port    = options.contains ("port") ? options.lookup_value ("port", VariantType.INT32).get_int32 () : 3003;
+			var timeout = options.contains ("timeout") ? options.lookup_value ("timeout", VariantType.INT32).get_int32 () : 60000;
+
+			this.server.listen_all (port, 0);
+			this.set_inactivity_timeout (timeout);
+
+			return -1; // continue processing
+		}
+
+		public override void activate () {
+			this.hold ();
+
+			// register a catch-all handler
 			this.server.add_handler (null, (server, msg, path, query, client) => {
 				this.hold ();
 
 				var req = new Request (msg, query);
 				var res = new Response (req, msg);
 
-				application.handle (req, res);
-
-				message ("%u %s %s".printf (res.status, req.method, req.uri.get_path ()));
-
-				this.release ();
+				this.application.handle.begin (req, res, () => {
+					message ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
+					this.release ();
+				});
 			});
-
-			this.add_main_option ("port", 'p', 0, OptionArg.INT, "port used to serve the HTTP server", "defaults to 3003");
-		}
-
-		public override int command_line (ApplicationCommandLine command_line) {
-			var options = command_line.get_options_dict ();
-			var port    = options.contains ("port") ? options.lookup_value ("port", VariantType.INT32).get_int32 () : 3003;
-
-			this.server.listen_all (port, 0);
 
 			foreach (var uri in this.server.get_uris ()) {
 				message ("listening on %s://%s:%u", uri.scheme, uri.host, uri.port);
 			}
 
-			this.hold ();
-
-			return 0;
+			this.release ();
 		}
 	}
 }

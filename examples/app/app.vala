@@ -12,11 +12,11 @@ app.types["permutations"] = /abc|acb|bac|bca|cab|cba/;
 
 var timer  = new Timer ();
 
-app.handle.connect ((req, res) => {
+app.setup.connect ((req, res) => {
 	timer.start();
 });
 
-app.handle.connect_after ((req, res) => {
+app.teardown.connect ((req, res) => {
 	timer.stop ();
 	var elapsed = timer.elapsed ();
 	res.headers.append ("X-Runtime", "%8.3fms".printf(elapsed * 1000));
@@ -266,7 +266,7 @@ app.matcher (VSGI.Request.GET, (req) => { return req.uri.get_path () == "/custom
 	writer.put_string ("This route was matched using a custom matcher.");
 });
 
-app.handle.connect_after ((req, res) => {
+app.teardown.connect ((req, res) => {
 	if (res.status == 404) {
 		var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));
 		template.environment.push_string ("path", req.uri.get_path ());
