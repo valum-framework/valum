@@ -70,7 +70,7 @@ namespace VSGI.Test {
 		}
 
 		public Response (Request req, uint status) {
-			base (req);
+			Object (request: req);
 			this._status = status;
 		}
 

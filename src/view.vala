@@ -282,7 +282,7 @@ namespace Valum {
 		}
 
 		/**
-		 * Splice the template into a given OutputStream.
+		 * Splice the template into a given {@link OutputStream}.
 		 *
 		 * This is used to render a template directly into a stream and avoid
 		 * memory overhead if the template is heavy.
@@ -292,6 +292,15 @@ namespace Valum {
 		 * @param output OutputStream into which the template will be spliced.
 		 */
 		public void splice (OutputStream output) throws IOError, Ctpl.IOError {
+			Ctpl.parser_parse (this.tree, this.environment, new Ctpl.OutputStream (output));
+		}
+
+		/**
+		 * Splice the template asynchronously into a given {@link OutputStream}.
+		 *
+		 * @since 0.1
+		 */
+		public async void splice_async (OutputStream output) throws IOError, Ctpl.IOError {
 			Ctpl.parser_parse (this.tree, this.environment, new Ctpl.OutputStream (output));
 		}
 

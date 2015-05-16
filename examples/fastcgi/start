@@ -9,4 +9,4 @@ socket=$(mktemp)
 fastcgi --daemon --log $(mktemp) --pidfile $(mktemp) --socket $socket --port 3003
 
 # spawn a chrooted FastCGI process
-spawn-fcgi -n -s $socket -c $basedir -- $basedir/fastcgi $socket
+spawn-fcgi -n -s $socket -c $basedir -- $basedir/fastcgi --socket $socket

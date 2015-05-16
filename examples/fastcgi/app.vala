@@ -2,24 +2,13 @@ using Valum;
 using VSGI.FastCGI;
 
 public static int main (string[] args) {
-	var app   = new Router ();
-	var timer = new Timer ();
-
-	app.handle.connect ((req, res) => {
-		timer.start();
-	});
-
-	app.handle.connect_after ((req, res) => {
-		timer.stop ();
-		var elapsed = timer.elapsed ();
-		res.headers.append ("X-Runtime", "%8.3fms".printf (elapsed * 1000));
-		message ("%s computed in %8.3fms", req.uri.get_path (), elapsed * 1000);
-	});
+	var app = new Router ();
 
 	// default route
 	app.get("", (req, res) => {
-		var writer = new DataOutputStream (res);
-		writer.put_string ("Hello world!");
+		res.write_async.begin ("Hello world!".data, Priority.HIGH, null, (obj, r) => {
+			var written = res.write_async.end (r);
+		});
 	});
 
 	app.get ("random/<int:size>", (req, res) => {

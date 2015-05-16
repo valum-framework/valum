@@ -76,7 +76,7 @@ namespace VSGI.Soup {
 		}
 
 		public Response (Request req, Message msg) {
-			base (req);
+			Object (request: req);
 			this.message = msg;
 		}
 
@@ -105,35 +105,46 @@ namespace VSGI.Soup {
 
 		private global::Soup.Server server;
 
-		public Server (VSGI.Application app, uint port) throws Error {
-			base (app);
-			this.server = new global::Soup.Server (SERVER_PORT, 3003);
+		public Server (VSGI.Application application) {
+			Object (application: application);
+
+			this.server = new global::Soup.Server (global::Soup.SERVER_SERVER_HEADER, "Valum");
+
+			this.add_main_option ("port", 'p', 0, OptionArg.INT, "port used to serve the HTTP server", "3003");
+			this.add_main_option ("timeout", 't', 0, OptionArg.INT, "inactivity timeout in ms", "60000");
 		}
 
-		/**
-		 * Creates a Soup.Server, bind the application to it using a closure and
-		 * start the server.
-		 */
-		public override int run (string[]? args = null) {
+		public override int handle_local_options (VariantDict options) {
+			var port    = options.contains ("port") ? options.lookup_value ("port", VariantType.INT32).get_int32 () : 3003;
+			var timeout = options.contains ("timeout") ? options.lookup_value ("timeout", VariantType.INT32).get_int32 () : 60000;
 
-			ServerCallback soup_handler = (server, msg, path, query, client) => {
+			this.server.listen_all (port, 0);
+			this.set_inactivity_timeout (timeout);
+
+			return -1; // continue processing
+		}
+
+		public override void activate () {
+			this.hold ();
+
+			// register a catch-all handler
+			this.server.add_handler (null, (server, msg, path, query, client) => {
+				this.hold ();
 
 				var req = new Request (msg, query);
 				var res = new Response (req, msg);
 
-				this.application.handle (req, res);
+				this.application.handle.begin (req, res, () => {
+					message ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
+					this.release ();
+				});
+			});
 
-				message ("%u %s %s".printf (res.status, req.method, req.uri.get_path ()));
-			};
+			foreach (var uri in this.server.get_uris ()) {
+				message ("listening on %s://%s:%u", uri.scheme, uri.host, uri.port);
+			}
 
-			this.server.add_handler (null, soup_handler);
-
-			message ("listening on http://%s:%u", server.interface.physical, server.interface.port);
-
-			// run the server
-			this.server.run ();
-
-			return 0;
+			this.release ();
 		}
 	}
 }

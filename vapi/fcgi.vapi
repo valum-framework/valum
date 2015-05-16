@@ -113,6 +113,20 @@ namespace FastCGI {
 		[CCode(cname = "FCGX_FFlush")]
 		public bool flush();
 
+        /**
+         * Closes the stream.  For writers, flushes any buffered output.
+         *
+         * Close is not a very useful operation since FCGX_Accept does it
+         * implicitly.  Closing the out stream before the err stream results in
+         * an extra write if there's nothing in the err stream, and therefore
+         * reduces performance.
+         *
+         * @return EOF (-1) if an error occurred.
+         */
+        [CCode(cname = "FCGX_FClose")]
+        public int close ();
+
+
 		/**
 		 * Return the stream error code.
 		 * @return 0 means no error, > 0 is an errno(2) error, < 0 is an FastCGI error.
@@ -287,6 +301,28 @@ namespace FastCGI {
 		[CCode(cname = "requestId")]
 		public int request_id;
 		public int role;
+
+        /* Don't use anything below here */
+        [Deprecated]
+        [CCode(cname = "ipcFd")]
+        public int ipc_fd;
+        [Deprecated]
+        [CCode(cname = "isBeginProcessed")]
+        public bool is_begin_processed;
+        [Deprecated]
+        [CCode(cname = "keepConnection")]
+        public bool keep_connection;
+        [Deprecated]
+        public int app_status;
+        [Deprecated]
+        [CCode(cname = "nWriters")]
+        public int number_of_writers;
+        [Deprecated]
+        public int flags;
+        [Deprecated]
+        [CCode(cname = "listen_sock")]
+        public int listen_socket;
+
 
 		/**
 		 * Accept a new request
