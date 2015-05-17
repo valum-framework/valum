@@ -1,37 +1,38 @@
 namespace VSGI {
 
 	/**
-	 * Server that handles a single Application.
+	 * Server that feeds a {@link VSGI.Application} with incoming requests.
 	 *
-	 * It is the server responsibility to close {@link Request} and
-	 * {@link Response} providen to the served {@link Application} if it has not
-	 * been done in the {@link Application.handler}.
+	 * Once you have initialized a Server instance, start it by calling
+	 * {@link Server.run} with the command-line arguments or a set of predefined
+	 * arguments.
+     *
+	 * Implementation must take the served application as a single argument.
+	 *
+	 * Handling of CLI arguments should occur in {@link GLib.Application.handle_local_options}
+	 * and the server should start processing in {@link GLib.Application.activate}.
+	 *
+	 * {@link GLib.Application.hold} and {@link GLib.Application.release} are
+	 * called whenever a request is processing starts and completes so that the
+	 * process timeout properly if it's out of work.
 	 *
 	 * @since 0.1
 	 */
-	public abstract class Server : Object {
+	public abstract class Server : GLib.Application {
 
 		/**
-		 * Application handling incoming request.
-		 */
-		protected VSGI.Application application;
-
-		/**
-		 * Creates a new Server that serve a given application.
+		 * Application being served.
 		 *
 		 * @since 0.1
-		 *
-		 * @param app application served by this server.
 		 */
-		public Server (VSGI.Application app) {
-			this.application = app;
+		public VSGI.Application application { construct; get; }
+
+		/**
+		 * Process a pair of request and response.
+		 *
+		 * @since 0.1
+		 */
+		protected void process (Request req, Response res) {
 		}
-
-		/**
-		 * Start listening on incoming requests.
-		 *
-		 * @since 0.1
-		 */
-		public abstract int run (string[]? args = null);
 	}
 }

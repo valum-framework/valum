@@ -1,47 +1,60 @@
 Persistency
 ===========
 
+Multiple persistency solutions have bindings in Vala and can be used by Valum.
+
+-  `libgda`_ for relational databases and more
+-  `memcached`_
+-  `redis-glib`_
+-  `mongodb-glib`_
+-  `couchdb-glib`_ which is supported by the Ubuntu team
+
+.. _libgda: https://developer.gnome.org/libgda/stable/
+.. _memcached: http://memcached.org/
+.. _redis-glib: https://github.com/chergert/redis-glib
+.. _mongodb-glib: https://github.com/chergert/mongo-glib
+.. _couchdb-glib: https://launchpad.net/couchdb-glib
+
+One good general approach is to use a per-process connection pool since
+handlers are executing in asynchronous context, your application will greatly
+benefit from multiple connections.
+
 Memcached
 ---------
 
+You can use `libmemcached.vapi`_ to access a Memcached cache storage, it is
+maintained in nemequ/vala-extra-vapis GitHub repository.
+
+.. _libmemcached.vapi: https://github.com/nemequ/vala-extra-vapis/blob/master/libmemcached.vapi
+
 .. code:: vala
 
-    var mc = new Valum.NoSQL.Memcached();
+    using Valum;
+    using VSGI.Soup;
 
-    // GET /hello
-    app.get("hello", (req, res) => {
-      var value = mc.get("hello");
-      res.append(value);
-      mc.set("hello", @"Updated $value");
+    var app       = new Router ();
+    var memcached = new Memcached.Context ();
+
+    app.get ("<key>", (req, res) => {
+        var key = req.params["key"];
+
+        int32 flags;
+        Memcached.ReturnCode error;
+        var value = memcached.get ("hello", out flags, out error);
+
+        res.write (value);
     });
 
-Redis (TODO)
-------------
+    app.post ("<key>", (req, res) => {
+        var key    = req.params["key"];
+        var buffer = new MemoryOutputStream.resizable ();
 
-We need vapi for hiredis: https://github.com/antirez/hiredis
+        // fill the buffer with the request body
+        buffer.splice (req);
 
-.. code:: vala
+        int32 flags;
+        Memcached.ReturnCode error;
+        var value = memcached.get ("hello", out flags, out error);
 
-    var redis = new Valum.NoSQL.Redis();
-
-    app.get("hello", (req, res) => {
-      var value = redis.get("hello");
-      res.append(value);
-      redis.set("hello", @"Updated $value");
-    });
-
-MongoDB (TODO)
---------------
-
-This is not yet implemented. But mongo client for vala is on the way:
-https://github.com/chergert/mongo-glib
-
-.. code:: vala
-
-    var mongo = new Valum.NoSQL.Mongo();
-
-    // GET /hello.json
-    app.get("hello.json", (req, res) => {
-      res.mime = "application/json";
-      res.append(mongo.find("hello"));
+        res.write (value);
     });

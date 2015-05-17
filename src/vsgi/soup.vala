@@ -76,7 +76,7 @@ namespace VSGI.Soup {
 		}
 
 		public Response (Request req, Message msg) {
-			base (req);
+			Object (request: req);
 			this.message = msg;
 		}
 
@@ -105,35 +105,65 @@ namespace VSGI.Soup {
 
 		private global::Soup.Server server;
 
-		public Server (VSGI.Application app, uint port) throws Error {
-			base (app);
-			this.server = new global::Soup.Server (SERVER_PORT, 3003);
+		public Server (VSGI.Application application) {
+			Object (application: application, flags: ApplicationFlags.HANDLES_COMMAND_LINE);
+
+#if SOUP_2_48
+			this.server = new global::Soup.Server (global::Soup.SERVER_SERVER_HEADER, "Valum");
+#else
+			this.server = new global::Soup.Server (global::Soup.SERVER_SERVER_HEADER, "Valum",
+						                           global::Soup.SERVER_PORT, 3003);
+#endif
+
+#if GIO_2_42
+			this.add_main_option ("port", 'p', 0, OptionArg.INT, "port used to serve the HTTP server", "3003");
+			this.add_main_option ("timeout", 't', 0, OptionArg.INT, "inactivity timeout in ms", "60000");
+#endif
 		}
 
-		/**
-		 * Creates a Soup.Server, bind the application to it using a closure and
-		 * start the server.
-		 */
-		public override int run (string[]? args = null) {
+		public override int command_line (ApplicationCommandLine command_line) {
+#if GIO_2_40
+			var options = command_line.get_options_dict ();
+			var port    = options.contains ("port") ? options.lookup_value ("port", VariantType.INT32).get_int32 () : 3003;
+			var timeout = options.contains ("timeout") ? options.lookup_value ("timeout", VariantType.INT32).get_int32 () : 60000;
+#else
+			var port    = 3003;
+			var timeout = 60000;
+#endif
 
-			ServerCallback soup_handler = (server, msg, path, query, client) => {
+			this.hold ();
+
+#if SOUP_2_48
+			this.server.listen_all (port, 0);
+#endif
+
+			this.set_inactivity_timeout (timeout);
+
+			// register a catch-all handler
+			this.server.add_handler (null, (server, msg, path, query, client) => {
+				this.hold ();
 
 				var req = new Request (msg, query);
 				var res = new Response (req, msg);
 
-				this.application.handle (req, res);
+				this.application.handle.begin (req, res, () => {
+					message ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
+					this.release ();
+				});
+			});
 
-				message ("%u %s %s".printf (res.status, req.method, req.uri.get_path ()));
-			};
+#if SOUP_2_48
+			foreach (var uri in this.server.get_uris ()) {
+				message ("listening on %s://%s:%u", uri.scheme, uri.host, uri.port);
+			}
+#else
+			this.server.run_async ();
+			message ("listening on http://0.0.0.0:%u", this.server.port);
+#endif
 
-			this.server.add_handler (null, soup_handler);
+			this.release ();
 
-			message ("listening on http://%s:%u", server.interface.physical, server.interface.port);
-
-			// run the server
-			this.server.run ();
-
-			return 0;
+			return 0; // continue processing
 		}
 	}
 }

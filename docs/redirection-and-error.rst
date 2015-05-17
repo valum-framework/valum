@@ -1,13 +1,14 @@
 Redirection and Error
 =====================
 
-Redirection, client and server errors are handled via a simple
-`exception <https://wiki.gnome.org/Projects/Vala/Manual/Errors>`__
+Redirection, client and server errors are handled via a simple `exception`_
 mechanism.
 
-In a `Route <route.md>`__ callback, you may throw any of
-``Redirection``, ``ClientError`` and ``ServerError`` predefined error
-domains rather than setting the status and returning from the function.
+.. _exception: https://wiki.gnome.org/Projects/Vala/Manual/Errors
+
+In a :doc:`route` callback, you may throw any of ``Redirection``,
+``ClientError`` and ``ServerError`` predefined error domains rather than
+setting the status and returning from the function.
 
 The Router handler will automatically catch these special errors and set
 the appropriate status code in the response for your convenience.
@@ -44,12 +45,12 @@ enumerations.
 Custom handling for status
 --------------------------
 
-To do custom handling for specific status, bind a callback after the
-router handler execution.
+To do custom handling for specific status, bind a callback to the ``teardown``
+signal, it is executed after the processing of a client request.
 
 .. code:: vala
 
-    app.handle.connect_after ((req, res) => {
+    app.teardown.connect ((req, res) => {
         if (res.status == Soup.Status.NOT_FOUND) {
             // produce a 404 page...
         }

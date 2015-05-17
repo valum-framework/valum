@@ -35,6 +35,20 @@ namespace Valum {
 		public delegate void Loader (Valum.Router router);
 
 		/**
+		 * Signal called before a request is being processed.
+		 */
+		public virtual signal void setup (Request req, Response res) {
+			res.status = Soup.Status.OK;
+			res.headers.set_content_type ("text/html", null);
+			res.cookies = req.cookies;
+		}
+
+		/**
+		 * Called after a request has been processed.
+		 */
+		public signal void teardown (Request req, Response res);
+
+		/**
 		 * @since 0.0.1
 		 */
 		public Router () {
@@ -43,28 +57,6 @@ namespace Valum {
 			this.types["string"] = /\w+/;
 			this.types["path"]   = /[\w\/]+/;
 			this.types["any"]    = /.+/;
-
-			this.handle.connect ((req, res) => {
-				res.status = Soup.Status.OK;
-				res.headers.set_content_type ("text/html", null);
-			});
-
-			// filter and transmit cookies from request to response
-			this.handle.connect ((req, res) => {
-				var cookies = req.cookies;
-				var kept    = new SList<Soup.Cookie> ();
-
-				foreach (var cookie in cookies) {
-					// filter expired or unapplying cookies
-					if (cookie.domain_matches (req.uri.get_host ()) && cookie.applies_to_uri (req.uri) && !cookie.expires.is_past ()) {
-						kept.prepend (cookie);
-					}
-				}
-
-				kept.reverse ();
-
-				res.cookies = kept;
-			});
 		}
 
 		/**
@@ -217,10 +209,12 @@ namespace Valum {
 		 * @param req request being handled.
 		 * @param res response being transmitted to the request client.
 		 */
-		public void handle (Request req, Response res) {
+		public async void handle (Request req, Response res) {
+			setup (req, res);
+
 			try {
 				// ensure at least one route has been declared with that method
-				if (this.routes.contains(req.method)) {
+				if (this.routes.contains (req.method)) {
 					// find a route that may handle the request
 					foreach (var route in this.routes[req.method].head) {
 						if (route.match (req)) {
@@ -260,6 +254,8 @@ namespace Valum {
 				res.status = e.code;
 			} catch (ServerError e) {
 				res.status = e.code;
+			} finally {
+				teardown (req, res);
 			}
 		}
 	}

@@ -1,54 +1,39 @@
 FastCGI
 =======
 
-This section covers how to deploy a FastCGI application written in Vala.
+A FastCGI application is a simple process that communicate with a HTTP server
+through unix or TCP a socket according to a specification.
 
-In order to test your application, you will need to spawn a FastCGI
-process and setup a web server that can communicate with it.
+VSGI use `Vala fcgi bindings`_ to provide a compliant FastCGI implementation.
+See :doc:`../installation` for more information about the framework
+dependencies.
 
-FastCGI uses unix socket for bidirectional communication.
+.. _Vala fcgi bindings: http://www.masella.name/~andre/vapis/fcgi/index.htm
 
-For testing, you can use `lighthttpd
-spawn-fcgi <https://github.com/lighttpd/spawn-fcgi>`__ utility along
-with this `FastCGI server <https://github.com/iriscouch/fastcgi>`__
-written with Node.js.
+`lighttpd`_ can be used to develop and potentially deploy your application. An
+`example of configuration`_ file is available in the fastcgi example folder.
 
-Valum use `Vala fcgi
-bindings <https://github.com/lighttpd/spawn-fcgi>`__, so you need to
-install the ``fcgi`` library. Both ``spawn-fcgi`` and ``npm`` should be
-found in your distribution repository.
+.. _lighttpd: http://www.lighttpd.net/
+.. _example of configuration: https://github.com/valum-framework/valum/tree/master/examples/fastcgi/lighttpd.conf
 
-.. code-block:: bash
-
-    yum install fcgi spawn-fcgi npm     # Fedora
-    apt-get install fcgi spawn-fcgi npm # Ubuntu and Debian
-    npm install -G fastcgi
-
-Once done, build valum examples, spawn a FastCGI process and start the
-FastCGI web server.
+You can run the FastCGI example with lighttpd:
 
 .. code-block:: bash
 
+    ./waf configure
     ./waf build
-    spawn-fcgi -n -s valum.socket -- build/examples/fastcgi/fastcgi
-    fastcgi --socket valum.socket --port 3003
+    sudo ./waf install
 
-Point your browser at `http://localhost:3000 <http://localhost:3003>`__
-to see the result!
+    export LD_LIBRARY_PATH=/usr/local/lib64
 
-Use this setup to test your application before the deployment. To
-develop, it is generally more convenient to use the libsoup built-in
-HTTP server.
-
-Technically, you end-up with a FastCGI executable, so deploying it on a
-specific server should be already documented.
+    lighttpd -D -f examples/fastcgi/lighttpd.conf
 
 Apache
 ------
 
-Under Apache, there are two mods available: ``mod_fcgid`` is more likely
-to be available as it is part of Apache and ``mod_fastcgi`` is developed
-by those who did the FastCGI specifications.
+Under Apache, there are two mods available: ``mod_fcgid`` is more likely to be
+available as it is part of Apache and ``mod_fastcgi`` is developed by those who
+did the FastCGI specifications.
 
 -  `mod\_fcgid <http://httpd.apache.org/mod_fcgid/>`__
 -  `mod\_fastcgi <http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html>`__
@@ -56,19 +41,10 @@ by those who did the FastCGI specifications.
 Nginx
 -----
 
-Nginx expect a process to be already spawned and will communicate with
-it using a port.
+Nginx expect a process to be already spawned and will communicate with it using
+a TCP port or a socket path. Read more about `ngx_http_fastcgi_module`_.
 
-lighttpd
---------
+You can spawn a process with `spawn-fcgi`_, an utility part of lighttpd.
 
-lighttpd spawn a process and communicate with it through a socket or a
-port.
-
-An `example of
-configuration <https://github.com/valum-framework/valum/tree/master/examples/fastcgi/lighttpd.conf>`__
-is providen to get you started.
-
-.. code-block:: bash
-
-    lighttpd -D -f examples/fastcgi/lighttpd.conf
+.. _ngx_http_fastcgi_module: http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html
+.. _spawn-fcgi: https://github.com/lighttpd/spawn-fcgi

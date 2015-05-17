@@ -1,23 +1,22 @@
 Resources
 =========
 
-GLib provides an `resource api <http://valadoc.org/#!api=gio-2.0/GLib.Resource>`__
-for bundling static resources and link them in the executable.
+GLib provides a powerful `resource api`_ for bundling static resources and
+optionally link them in the executable.
 
-An efficient approach to serve static content with Valum is to link and
-stream.
+.. _resource api: http://valadoc.org/#!api=gio-2.0/GLib.Resource
 
 It has a few advantages:
 
--  content is compiled with the executable or bundled separately, so it
-   loads lightning fast
--  resource api is simpler than file api
--  application do not have to deal with resource location or minimally
-   if a separate bundle is used
+-  resources can be compiled in the text segment of the executable, providing
+   lightning fast loading time
+-  resource api is simpler than file api and avoids IOError handling
+-  application do not have to deal with its resource location or minimally if
+   a separate bundle is used
 
-This only applies to small and static resources as it will grow the size
-of the executable. If you have to change your resources at runtime, it
-will require an additionnal compilation step.
+This only applies to small and static resources as it will grow the size of the
+executable. Also, if the resources are compiled in your executable, changing
+them will require a recompilation.
 
 Integration
 -----------
@@ -47,20 +46,20 @@ You can test your setup with:
 
     glib-compile-resource app.gresource.xml
 
-Latest version of ``waf`` automatically link ``*.gresource.xml`` if you
-load the ``glib2`` plugin and add the file to your sources.
+Latest version of ``waf`` automatically link ``*.gresource.xml`` if you load
+the ``glib2`` plugin and add the file to your sources.
 
 .. code-block:: python
 
     bld.load('glib2')
 
     bld.program(
-       packages  = ['glib-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'lua', 'libmemcached'],
+       packages  = ['valum-0.1'],
        target    = 'app',
-       use       = 'valum',
        source    = bld.path.ant_glob('**/*.vala') + ['app.gresource.xml'],
-       uselib    = ['GLIB', 'CTPL', 'GEE', 'SOUP', 'LUA', 'MEMCACHED'],
-       vapi_dirs = ['../../vapi', 'vapi'])
+       uselib    = ['VALUM'])
 
-The sample application example serve its static resources this way if
-you need a more concrete example.
+The `app example`_ serves its static resources this way if you need a code
+reference.
+
+.. _app example: https://github.com/valum-framework/valum/tree/master/examples/app

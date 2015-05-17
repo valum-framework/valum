@@ -1,26 +1,27 @@
 Quickstart
 ==========
 
-Assuming that Valum is `built and installed <installation.md>`__
-correctly, you are ready to create your first application!
+Assuming that Valum is built and installed correctly (view :doc:`installation`
+for more details), you are ready to create your first application!
 
-Valum is not designed to be installed as a shared library (at least for
-now), but more like a set of build files and tools helps one develop a
-web application.
-
-You can install the build files with ``waf``, it will simplify the
-building process:
+Unless you installed Valum with ``--prefix=/usr``, you have to export
+``PKG_CONFIG_PATH`` and ``LD_LIBRARY_PATH``.
 
 .. code-block:: bash
 
-    sudo ./waf install
+    export PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig
+    export LD_LIBRARY_PATH=/usr/local/lib64
+
+On 32-bit systems, just specify ``lib``.
 
 Simple 'Hello world!' application
 ---------------------------------
 
-You can use this sample application and project structure as a basis.
-The full code is `available on
-GitHub <https://github.com/valum-framework/example>`__.
+You can use this sample application and project structure as a basis. The full
+`example is available on GitHub`_ and is kept up-to-date with the latest
+changes in the framework.
+
+.. _example is available on GitHub: https://github.com/valum-framework/example
 
 .. code:: vala
 
@@ -30,11 +31,16 @@ GitHub <https://github.com/valum-framework/example>`__.
     var app = new Router ();
 
     app.get("", (req, res) => {
-        var writer = new DataOutputStream (res);
-        writer.put_string ("Hello world!");
+        res.write ("Hello world!".data);
     });
 
-    new Server (app, 3003).run ();
+    new Server (app).run ({"app", "--port", "3003"});
+
+Typically, the ``run`` function contains CLI argument to make runtime the
+parametrizable.
+
+It is suggested to use the following structure for your project, but you can do
+pretty much what you think is the best for your needs.
 
 ::
 
@@ -46,44 +52,44 @@ GitHub <https://github.com/valum-framework/example>`__.
         fcgi.vala
 
 VAPI bindings
-~~~~~~~~~~~~~
+-------------
 
-`CTPL <ctpl.tuxfamily.org>`__ and
-`FastCGI <http://www.fastcgi.com/drupal/>`__ are not providing Vala
-bindings, so you need to copy them in your project ``vapi`` folder. You
-can find them in the `vapi folder of
-Valum <https://github.com/antono/valum/tree/master/vapi>`__.
+`CTPL`_ and `FastCGI`_ are not providing Vala bindings, so you need to copy
+them in your project ``vapi`` folder. They are included in Valum's `vapi
+folder`_.
 
-You can also find more VAPIs in
-`nemequ/vala-extra-vapis <https://github.com/nemequ/vala-extra-vapis>`__
-GitHub repository.
+You can also find more VAPIs in `nemequ/vala-extra-vapis`_ GitHub repository.
 
-Unless you installed Valum with ``--prefix=/usr``, you have to export
-``pkg-config`` search path:
+.. _CTPL: ctpl.tuxfamily.org
+.. _FastCGI: http://www.fastcgi.com/drupal/
+.. _vapi folder: https://github.com/antono/valum/tree/master/vapi
+.. _nemequ/vala-extra-vapis: https://github.com/nemequ/vala-extra-vapis
+
+Building manually
+-----------------
+
+Building manually by invoking ``valac`` requires that you specifically link
+against the shared library. Eventually, Valum will be distributed in standard
+locations, so this wont be necessary.
 
 .. code-block:: bash
 
-    export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+    valac --pkg valum-0.1 --vapidir=vapi
+          -X -I/usr/local/include/valum-0.1 -X -lvalum-0.1 # compiler options
+          src/app.vala
+          -o build/app
 
-    # generate the c sources
-    valac --vapidir=vapi --pkg valum-0.1 --pkg libsoup-2.4 --pkg gee-0.8 \
-                         --pkg ctpl --pkg fcgi \
-          --ccode src/app.vala
+    # if installed in default location /usr
+    valac --pkg valum-0.1 src/app.vala -o build/app
 
-    # compile and link against libvalum
-    gcc $(pkg-config valum-0.1 --cflags --libs) -o build/app \
-        src/app.c /usr/local/lib/libvalum-0.1.a
+Building with waf
+-----------------
 
-    # run the generated binary
-    ./build/app
-
-Using a build tool (waf)
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-It is preferable to use a build system like
-`waf <https://code.google.com/p/waf/>`__ to automate all this process.
-Get a release of ``waf`` and copy this file under the name ``wscript``
+It is preferable to use a build system like `waf`_ to automate all this
+process. Get a release of ``waf`` and copy this file under the name ``wscript``
 at the root of your project.
+
+.. _waf: https://code.google.com/p/waf/
 
 .. code-block:: python
 
@@ -103,8 +109,7 @@ at the root of your project.
             target    = 'app',
             source    = 'src/app.vala',
             uselib    = ['VALUM'],
-            vapi_dirs = ['vapi'],
-            stlib     = ['valum-0.1'])
+            vapi_dirs = ['vapi'])
 
 You should now be able to build by issuing the following commands:
 
@@ -112,3 +117,10 @@ You should now be able to build by issuing the following commands:
 
     ./waf configure
     ./waf build
+
+Running the example
+-------------------
+
+.. code-block:: bash
+
+    build/app
