@@ -254,9 +254,9 @@ namespace Valum {
 				res.status = e.code;
 			} catch (ServerError e) {
 				res.status = e.code;
+			} finally {
+				teardown (req, res);
 			}
-
-			teardown (req, res);
 		}
 	}
 }
