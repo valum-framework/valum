@@ -22,7 +22,10 @@ namespace VSGI.FastCGI {
 		private HashTable<string, string>? _query = null;
 		private MessageHeaders _headers = new MessageHeaders (MessageHeadersType.REQUEST);
 
-		public global::FastCGI.request _request;
+		/**
+		 *
+		 */
+		private unowned Stream @in;
 
 		public override URI uri { get { return this._uri; } }
 
@@ -40,20 +43,10 @@ namespace VSGI.FastCGI {
 			get { return this._headers; }
 		}
 
-		public Request (GLib.Socket socket) {
-			var request_status = global::FastCGI.request.init (out this._request, socket.fd);
+		public Request (global::FastCGI.request request) {
+			this.in = request.in;
 
-			if (request_status != 0)
-				error ("code %u: could not initialize FCGX request".printf (request_status));
-
-			var status = this._request.accept ();
-
-			if (status < 0) {
-				this._request.close ();
-				error ("request %u: cannot not accept anymore request (status %u)", this._request.request_id, status);
-			}
-
-			var environment = this._request.environment;
+			var environment = request.environment;
 
 			// nullables
 			this._uri.set_host (environment["SERVER_NAME"]);
@@ -79,10 +72,10 @@ namespace VSGI.FastCGI {
 			if (environment["QUERY_STRING"] != null)
 				this._query = Form.decode ((string) environment["QUERY_STRING"]);
 
-			var headers = new StringBuilder();
+			var headers = new StringBuilder ();
 
 			// extract HTTP headers, they are prefixed by 'HTTP_' in environment variables
-			foreach (var variable in this._request.environment.get_all ()) {
+			foreach (var variable in environment.get_all ()) {
 				if (variable.has_prefix ("HTTP_")) {
 					var parts = variable.split("=", 2);
 					headers.append ("%s: %s\r\n".printf(parts[0].substring(5).replace("_", "-").casefold(), parts[1]));
@@ -92,28 +85,20 @@ namespace VSGI.FastCGI {
 			global::Soup.headers_parse (headers.str, (int) headers.len, this._headers);
 		}
 
-		/**
-		 * Finish and close the {@link FastCGI.request} instance.
-		 */
-		~Request () {
-			this._request.finish ();
-			this._request.close (false); // keep the socket open
-		}
-
 		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
-			var read = this._request.in.read (buffer);
+			var read = this.in.read (buffer);
 
 			if (read == GLib.FileStream.EOF)
-				throw new Error (IOError.quark (), FileUtils.error_from_errno (this._request.in.get_error ()), strerror (FileUtils.error_from_errno (this._request.in.get_error ())));
+				throw new Error (IOError.quark (), FileUtils.error_from_errno (this.in.get_error ()), strerror (FileUtils.error_from_errno (this.in.get_error ())));
 
 			return read;
 		}
 
 		public override bool close (Cancellable? cancellable = null) throws IOError {
-			if (this._request.in.close () == -1)
-				throw new Error (IOError.quark (), FileUtils.error_from_errno (this._request.in.get_error ()), strerror (FileUtils.error_from_errno (this._request.in.get_error ())));
+			if (this.in.close () == -1)
+				throw new Error (IOError.quark (), FileUtils.error_from_errno (this.in.get_error ()), strerror (FileUtils.error_from_errno (this.in.get_error ())));
 
-			return this._request.in.is_closed;
+			return this.in.is_closed;
 		}
 	}
 
@@ -304,11 +289,30 @@ namespace VSGI.FastCGI {
 			source.set_callback (() => {
 				this.hold ();
 
-				var req = new Request (this.socket);
-				var res = new Response (req, req._request.out, req._request.err);
+				global::FastCGI.request request;
 
-				this.application.handle.begin (req, res, () => {
+				// accept a request
+				var request_status = global::FastCGI.request.init (out request, socket.fd);
+
+				if (request_status != 0)
+					error ("code %u: could not initialize FCGX request".printf (request_status));
+
+				var status = request.accept ();
+
+				if (status < 0) {
+					request.close ();
+					error ("request %u: cannot not accept anymore request (status %u)", request.request_id, status);
+				}
+
+				var req = new Request (request);
+				var res = new Response (req, request.out, request.err);
+
+				this.application.handle (req, res, () => {
 					message ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
+
+					request.finish ();
+					request.close (false); // keep the socket open
+
 					this.release ();
 				});
 

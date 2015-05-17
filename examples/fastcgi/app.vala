@@ -6,9 +6,7 @@ public static int main (string[] args) {
 
 	// default route
 	app.get("", (req, res) => {
-		res.write_async.begin ("Hello world!".data, Priority.HIGH, null, (obj, r) => {
-			var written = res.write_async.end (r);
-		});
+		res.write ("Hello world!".data);
 	});
 
 	app.get ("random/<int:size>", (req, res) => {

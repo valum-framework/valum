@@ -30,14 +30,6 @@ app.get("", (req, res) => {
 	template.splice (res);
 });
 
-app.get ("async", (req, res) => {
-	var template = new View.from_stream(resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
-
-	template.splice_async.begin (res, () => {
-		res.close ();
-	});
-});
-
 app.get ("query", (req, res) => {
 	var writer = new DataOutputStream(res);
 
