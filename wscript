@@ -34,7 +34,7 @@ def configure(conf):
 
 def build(bld):
     # build a static library
-    bld.stlib(
+    bld.shlib(
         packages     = ['glib-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'fcgi'],
         name         = 'valum',
         target       = 'valum-{}'.format(API_VERSION),

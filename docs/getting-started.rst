@@ -4,23 +4,15 @@ Quickstart
 Assuming that Valum is built and installed correctly (view :doc:`installation`
 for more details), you are ready to create your first application!
 
-Valum is not designed to be installed as a shared library (at least for
-now), but more like a set of build files and tools helps one develop a web
-application.
-
-You can install the build files with ``waf``, it will simplify the building
-process:
-
-.. code-block:: bash
-
-    sudo ./waf install
-
 Unless you installed Valum with ``--prefix=/usr``, you have to export
-``pkg-config`` search path:
+``PKG_CONFIG_PATH`` and ``LD_LIBRARY_PATH``.
 
 .. code-block:: bash
 
-    export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+    export PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig
+    export LD_LIBRARY_PATH=/usr/local/lib64
+
+On 32-bit systems, just specify ``lib``.
 
 Simple 'Hello world!' application
 ---------------------------------
@@ -39,14 +31,16 @@ changes in the framework.
     var app = new Router ();
 
     app.get("", (req, res) => {
-        var writer = new DataOutputStream (res);
-        writer.put_string ("Hello world!");
+        res.write ("Hello world!".data);
     });
 
     new Server (app).run ({"app", "--port", "3003"});
 
-Typically, the ``run`` function would contain CLI argument to make runtime
+Typically, the ``run`` function contains CLI argument to make runtime the
 parametrizable.
+
+It is suggested to use the following structure for your project, but you can do
+pretty much what you think is the best for your needs.
 
 ::
 
@@ -74,22 +68,19 @@ You can also find more VAPIs in `nemequ/vala-extra-vapis`_ GitHub repository.
 Building manually
 -----------------
 
-Building manually requires to launch multiple executables that will generate
-the C sources and compile against libvalum.
+Building manually by invoking ``valac`` requires that you specifically link
+against the shared library. Eventually, Valum will be distributed in standard
+locations, so this wont be necessary.
 
 .. code-block:: bash
 
-    # generate the c sources
-    valac --vapidir=vapi --pkg valum-0.1 --pkg libsoup-2.4 --pkg gee-0.8 \
-                         --pkg ctpl --pkg fcgi \
-          --ccode src/app.vala
+    valac --pkg valum-0.1 --vapidir=vapi
+          -X -I/usr/local/include/valum-0.1 -X -lvalum-0.1 # compiler options
+          src/app.vala
+          -o build/app
 
-    # compile and link against libvalum
-    gcc $(pkg-config valum-0.1 --cflags --libs) -o build/app \
-        src/app.c /usr/local/lib/libvalum-0.1.a
-
-    # run the generated binary
-    ./build/app
+    # if installed in default location /usr
+    valac --pkg valum-0.1 src/app.vala -o build/app
 
 Building with waf
 -----------------
@@ -118,8 +109,7 @@ at the root of your project.
             target    = 'app',
             source    = 'src/app.vala',
             uselib    = ['VALUM'],
-            vapi_dirs = ['vapi'],
-            stlib     = ['valum-0.1'])
+            vapi_dirs = ['vapi'])
 
 You should now be able to build by issuing the following commands:
 
@@ -127,3 +117,10 @@ You should now be able to build by issuing the following commands:
 
     ./waf configure
     ./waf build
+
+Running the example
+-------------------
+
+.. code-block:: bash
+
+    build/app
