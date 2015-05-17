@@ -17,13 +17,26 @@ def options(opt):
 def configure(conf):
     conf.load('compiler_c vala')
 
-    conf.check_cfg(package='glib-2.0', atleast_version='2.32', mandatory=True, uselib_store='GLIB', args='--cflags --libs')
+    conf.check_cfg(package='glib-2.0', atleast_version='2.32', uselib_store='GLIB', args='--cflags --libs')
     conf.check_cfg(package='gio-2.0', atleast_version='2.32', uselib_store='GIO', args='--cflags --libs')
-    conf.check_cfg(package='ctpl', atleast_version='0.3.3', mandatory=True, uselib_store='CTPL', args='--cflags --libs')
-    conf.check_cfg(package='gee-0.8', atleast_version='0.6.4', mandatory=True, uselib_store='GEE', args='--cflags --libs')
-    conf.check_cfg(package='libsoup-2.4', atleast_version='2.38', mandatory=True, uselib_store='SOUP', args='--cflags --libs')
+    conf.check_cfg(package='ctpl', atleast_version='0.3.3', uselib_store='CTPL', args='--cflags --libs')
+    conf.check_cfg(package='gee-0.8', atleast_version='0.6.4', uselib_store='GEE', args='--cflags --libs')
+    conf.check_cfg(package='libsoup-2.4', atleast_version='2.38',uselib_store='SOUP', args='--cflags --libs')
 
-    conf.check(lib='fcgi', mandatory=True, uselib_store='FCGI', args='--cflags --libs')
+    # gio (>=2.40) is necessary for CLI arguments parsing
+    if conf.check_cfg(package='gio-2.0', atleast_version='2.40', mandatory=False, uselib_store='GLIB', args='--cflags --libs'):
+        conf.env.append_unique('VALAFLAGS', ['--define=GIO_2_40'])
+
+    # gio (>=2.42) is necessary for add_main_option
+    if conf.check_cfg(package='gio-2.0', atleast_version='2.42', mandatory=False, uselib_store='GLIB', args='--cflags --libs'):
+        conf.env.append_unique('VALAFLAGS', ['--define=GIO_2_42'])
+
+    # libsoup (>=2.48) is necessary for the new server API
+    if conf.check_cfg(package='libsoup-2.4', atleast_version='2.48', mandatory=False, uselib_store='SOUP', args='--cflags --libs'):
+        conf.env.append_unique('VALAFLAGS', ['--define=SOUP_2_48'])
+
+    # other dependencies
+    conf.check(lib='fcgi', uselib_store='FCGI', args='--cflags --libs')
 
     if conf.options.enable_gcov:
         conf.check(lib='gcov', uselib_store='GCOV', args='--cflags --libs')

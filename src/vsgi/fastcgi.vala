@@ -215,11 +215,13 @@ namespace VSGI.FastCGI {
 		private GLib.Socket socket;
 
 		public Server (VSGI.Application application) {
-			Object (application: application);
+			Object (application: application, flags: ApplicationFlags.HANDLES_COMMAND_LINE);
 
+#if GIO_2_42
 			this.add_main_option ("socket", 's', 0, OptionArg.STRING, "path to the UNIX socket", null);
 			this.add_main_option ("port", 'p', 0, OptionArg.INT, "TCP port on this host", null);
 			this.add_main_option ("backlog", 'b', 0, OptionArg.INT, "listen queue depth used in the listen() call", "0");
+#endif
 
 			this.startup.connect (() => {
 				var status = init ();
@@ -230,7 +232,10 @@ namespace VSGI.FastCGI {
 			this.shutdown.connect (shutdown_pending);
 		}
 
-		public override int handle_local_options (VariantDict options) {
+		public override int command_line (ApplicationCommandLine command_line) {
+#if GIO_2_40
+			var options = command_line.get_options_dict ();
+
 			if (options.contains ("socket") && options.contains ("port")) {
 				GLib.stderr.printf ("--socket and --port must not be specified simultaneously");
 				return 1;
@@ -238,9 +243,13 @@ namespace VSGI.FastCGI {
 
 			var backlog = options.contains ("backlog") ? options.lookup_value ("backlog", VariantType.INT32).get_int32 () : 0;
 			var timeout = options.contains ("timeout") ? options.lookup_value ("timeout", VariantType.INT32).get_int32 () : 60000;
+#else
+			var timeout = 60000;
+#endif
 
 			this.set_inactivity_timeout (timeout);
 
+#if GIO_2_40
 			if (options.contains ("socket")) {
 				var socket_path = options.lookup_value ("socket", VariantType.STRING).get_string ();
 				this.socket     = new GLib.Socket.from_fd (open_socket (socket_path, backlog));
@@ -261,7 +270,9 @@ namespace VSGI.FastCGI {
 				message ("listening on tcp://0.0.0.0:%s (backlog %d)", port, backlog);
 			}
 
-			else {
+			else
+#endif
+			{
 				// we just need to know the socket file descriptor...
 				request req;
 				request.init (out req);
@@ -274,14 +285,6 @@ namespace VSGI.FastCGI {
 				message ("listening the default socket");
 			}
 
-			return -1; // continue processing
-		}
-
-
-		/**
-		 * Handle the command line and setup the request.
-		 */
-		public override void activate () {
 			this.hold ();
 
 			var source = new IOSource (new IOChannel.unix_new (socket.fd), IOCondition.IN);
@@ -322,6 +325,8 @@ namespace VSGI.FastCGI {
 			source.attach (MainContext.default ());
 
 			this.release ();
+
+			return 0;
 		}
 	}
 }

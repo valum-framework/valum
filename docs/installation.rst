@@ -15,6 +15,12 @@ Dependencies
 -  libgee-0.8 (>=0.6.4)
 -  ctpl (>=3.3)
 
+Recent dependencies will enable more advanced features such as CLI parsing and
+libsoup new server API.
+
+-  gio-2.0 (>=2.40)
+-  libsoup-2.4 (>=2.48)
+
 You can also install additionnal dependencies to build the examples.
 
 -  libmemcached
