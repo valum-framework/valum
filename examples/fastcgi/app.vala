@@ -5,7 +5,7 @@ public static int main (string[] args) {
 	var app = new Router ();
 
 	// default route
-	app.get("", (req, res) => {
+	app.get ("", (req, res) => {
 		res.write ("Hello world!".data);
 	});
 
@@ -19,7 +19,7 @@ public static int main (string[] args) {
 		}
 	});
 
-	app.get("<any:path>", (req, res) => {
+	app.get ("<any:path>", (req, res) => {
 		res.status = 404;
 
 		var writer = new DataOutputStream (res);
