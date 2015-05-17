@@ -40,21 +40,7 @@ namespace Valum {
 		public virtual signal void setup (Request req, Response res) {
 			res.status = Soup.Status.OK;
 			res.headers.set_content_type ("text/html", null);
-
-			// filter and transmit cookies from request to response
-			var cookies = req.cookies;
-			var kept    = new SList<Soup.Cookie> ();
-
-			foreach (var cookie in cookies) {
-				// filter expired or unapplying cookies
-				if (cookie.domain_matches (req.uri.get_host ()) && cookie.applies_to_uri (req.uri) && !cookie.expires.is_past ()) {
-					kept.prepend (cookie);
-				}
-			}
-
-			kept.reverse ();
-
-			res.cookies = kept;
+			res.cookies = req.cookies;
 		}
 
 		/**
