@@ -3,8 +3,8 @@ Module
 
 It is often useful to construct an application as a set of decoupled and
 reusable modules. This can easily be done with the ``Router.Loader`` delegate
-definition. A module is represented by a simple callback that takes
-a :doc:`router` as input and register routes to it as a side-effect.
+which is used for the scope feature. A module is represented by a simple
+callback that takes a :doc:`router` as input and register some routes on it.
 
 Let's say you need an administration section:
 
@@ -12,10 +12,7 @@ Let's say you need an administration section:
 
     using Valum;
 
-    /**
-     * Loads administrative routes on a provided router.
-     */
-    public static Router.Loader admin_loader = (Router admin) {
+    public static Router.Loader admin_loader = (admin) {
         admin.get ("", (req, res) => {
             // ...
         });

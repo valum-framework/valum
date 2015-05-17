@@ -7,6 +7,9 @@ is a `Python interpreter`_ to configure and build Valum.
 Dependencies
 ------------
 
+The following dependencies are minimal to build the framework under Ubuntu
+12.04 LTS.
+
 -  vala
 -  waf
 -  glib-2.0 (>=2.32)
@@ -15,11 +18,11 @@ Dependencies
 -  libgee-0.8 (>=0.6.4)
 -  ctpl (>=3.3)
 
-Recent dependencies will enable more advanced features such as CLI parsing and
-libsoup new server API.
+Recent dependencies will enable more advanced features.
 
--  gio-2.0 (>=2.40)
--  libsoup-2.4 (>=2.48)
+-  gio-2.0 (>=2.40) CLI arguments parsing
+-  gio-2.0 (>=2.42) uses ``add_menu_option`` to generate help with ``--help``
+-  libsoup-2.4 (>=2.48) new server API
 
 You can also install additionnal dependencies to build the examples.
 
