@@ -221,6 +221,7 @@ namespace VSGI.FastCGI {
 			this.add_main_option ("socket", 's', 0, OptionArg.STRING, "path to the UNIX socket", null);
 			this.add_main_option ("port", 'p', 0, OptionArg.INT, "TCP port on this host", null);
 			this.add_main_option ("backlog", 'b', 0, OptionArg.INT, "listen queue depth used in the listen() call", "0");
+			this.add_main_option ("timeout", 't', 0, OptionArg.INT, "inactivity timeout in ms", "0");
 #endif
 
 			this.startup.connect (() => {
@@ -229,7 +230,7 @@ namespace VSGI.FastCGI {
 					error ("code %u: failed to initialize FCGX library".printf (status));
 			});
 
-			this.shutdown.connect (shutdown_pending);
+			this.shutdown.connect (global::FastCGI.shutdown_pending);
 		}
 
 		public override int command_line (ApplicationCommandLine command_line) {
@@ -242,12 +243,10 @@ namespace VSGI.FastCGI {
 			}
 
 			var backlog = options.contains ("backlog") ? options.lookup_value ("backlog", VariantType.INT32).get_int32 () : 0;
-			var timeout = options.contains ("timeout") ? options.lookup_value ("timeout", VariantType.INT32).get_int32 () : 60000;
-#else
-			var timeout = 60000;
-#endif
+			var timeout = options.contains ("timeout") ? options.lookup_value ("timeout", VariantType.INT32).get_int32 () : 0;
 
 			this.set_inactivity_timeout (timeout);
+#endif
 
 #if GIO_2_40
 			if (options.contains ("socket")) {
@@ -324,7 +323,9 @@ namespace VSGI.FastCGI {
 
 			source.attach (MainContext.default ());
 
-			this.release ();
+			// keep alive if there is no timeout
+			if (this.get_inactivity_timeout () > 0)
+				this.release ();
 
 			return 0;
 		}

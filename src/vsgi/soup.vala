@@ -117,7 +117,7 @@ namespace VSGI.Soup {
 
 #if GIO_2_42
 			this.add_main_option ("port", 'p', 0, OptionArg.INT, "port used to serve the HTTP server", "3003");
-			this.add_main_option ("timeout", 't', 0, OptionArg.INT, "inactivity timeout in ms", "60000");
+			this.add_main_option ("timeout", 't', 0, OptionArg.INT, "inactivity timeout in ms", "0");
 #endif
 		}
 
@@ -125,10 +125,10 @@ namespace VSGI.Soup {
 #if GIO_2_40
 			var options = command_line.get_options_dict ();
 			var port    = options.contains ("port") ? options.lookup_value ("port", VariantType.INT32).get_int32 () : 3003;
-			var timeout = options.contains ("timeout") ? options.lookup_value ("timeout", VariantType.INT32).get_int32 () : 60000;
+			var timeout = options.contains ("timeout") ? options.lookup_value ("timeout", VariantType.INT32).get_int32 () : 0;
 #else
 			var port    = 3003;
-			var timeout = 60000;
+			var timeout = 0;
 #endif
 
 			this.hold ();
@@ -161,7 +161,9 @@ namespace VSGI.Soup {
 			message ("listening on http://0.0.0.0:%u", this.server.port);
 #endif
 
-			this.release ();
+			// keep alive if timeout is 0
+			if (this.get_inactivity_timeout () > 0)
+				this.release ();
 
 			return 0; // continue processing
 		}
