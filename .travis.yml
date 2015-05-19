@@ -21,4 +21,5 @@ script:
     - sphinx-build docs build/docs
 
 after_success:
-    - coveralls --build-root build --exclude build/examples --exclude build/tests
+    - coveralls --repo-token $COVERALLS_TOKEN --build-root build
+                --exclude build/examples --exclude build/tests
