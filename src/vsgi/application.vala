@@ -17,7 +17,21 @@ namespace VSGI {
 	public interface Application : GLib.Object {
 
 		/**
-		 * Entrypoint for the processing of an application.
+		 * Process a pair of request and response.
+		 *
+		 * Blocks until the response have been fully processed.
+		 *
+		 * @since 0.1
+		 *
+		 * @param Request  req request providen to the application by a
+		 *                     VSGI.Server
+		 * @param Response res response where the application should produce its
+		 *                     output
+		 */
+		public abstract void handle (Request req, Response res);
+
+		/**
+		 * Process a pair of request and response asynchronously.
 		 *
 		 * Each requests are begin processed asynchronously so that they are
 		 * fundamentally design not to block one another.
@@ -29,6 +43,6 @@ namespace VSGI {
 		 * @param Response res response where the application should produce its
 		 *                     output
 		 */
-		public abstract async void handle (Request req, Response res);
+		public abstract async void handle_async (Request req, Response res);
 	}
 }

@@ -198,18 +198,9 @@ namespace Valum {
 		}
 
 		/**
-		 * Signal handling the request.
-		 *
-		 * It is possible to bind a callback to be executed before and after
-		 * this signal so that you can have setup and teardown operations (ex.
-		 * closing the database connection, sending mails).
-		 *
-		 * @since 0.1
-		 *
-		 * @param req request being handled.
-		 * @param res response being transmitted to the request client.
+		 * {@inheritDoc}
 		 */
-		public async void handle (Request req, Response res) {
+		public void handle (Request req, Response res) {
 			setup (req, res);
 
 			try {
@@ -257,6 +248,13 @@ namespace Valum {
 			} finally {
 				teardown (req, res);
 			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public async void handle_async (Request req, Response res) {
+			this.handle (req, res);
 		}
 	}
 }

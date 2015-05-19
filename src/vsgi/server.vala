@@ -18,7 +18,7 @@ namespace VSGI {
 	 *
 	 * @since 0.1
 	 */
-	public abstract class Server : GLib.Application {
+	public class Server : GLib.Application {
 
 		/**
 		 * Application being served.
@@ -26,13 +26,5 @@ namespace VSGI {
 		 * @since 0.1
 		 */
 		public VSGI.Application application { construct; get; }
-
-		/**
-		 * Process a pair of request and response.
-		 *
-		 * @since 0.1
-		 */
-		protected void process (Request req, Response res) {
-		}
 	}
 }

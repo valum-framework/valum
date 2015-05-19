@@ -146,7 +146,7 @@ namespace VSGI.Soup {
 				var req = new Request (msg, query);
 				var res = new Response (req, msg);
 
-				this.application.handle.begin (req, res, () => {
+				this.application.handle_async (req, res, () => {
 					message ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
 					this.release ();
 				});
