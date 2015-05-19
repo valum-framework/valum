@@ -51,7 +51,8 @@ function.
 
     app.method ("METHOD", "rule", (req, res) => {});
 
-:doc:`request` provide an enumeration of HTTP methods for your convenience.
+:doc:`vsgi/request` provide an enumeration of HTTP methods for your
+convenience.
 
 .. code:: vala
 

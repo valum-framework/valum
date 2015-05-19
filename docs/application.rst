@@ -27,7 +27,7 @@ Creating an application
 
 An application is defined by a class that implements the ``VSGI.Application``
 interface. It declares a simple ``handle`` async function that takes
-a :doc:`request` and :doc:`response` as input and process them.
+a :doc:`vsgi/request` and :doc:`vsgi/response` as input and process them.
 
 Valum provides a :doc:`router`, which provides powerful facilities for routing
 client requests. Your application is therefore an instance of that class.
