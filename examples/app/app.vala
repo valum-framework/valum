@@ -17,6 +17,14 @@ app.get ("", (req, res) => {
 	template.stream (res);
 });
 
+app.methods ({VSGI.Request.GET, VSGI.Request.POST}, "get-and-post", (req, res) => {
+	res.write ("Matches GET and POST".data);
+});
+
+app.all ("all", (req, res) => {
+	res.write ("Matches all HTTP methods".data);
+});
+
 app.get ("query", (req, res) => {
 	var writer = new DataOutputStream (res);
 
