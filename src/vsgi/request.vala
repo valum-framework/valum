@@ -2,7 +2,7 @@ using Soup;
 
 namespace VSGI {
 	/**
-	 * Request
+	 * Request representing a request of a resource.
 	 *
 	 * @since 0.0.1
 	 */
@@ -32,7 +32,7 @@ namespace VSGI {
 		 * @link  http://tools.ietf.org/html/rfc5789
 		 * @since 0.1
 		 */
-		public const string PATCH   = "PATCH";
+		public const string PATCH = "PATCH";
 
 		/**
 		 * List of all supported HTTP methods.
@@ -64,9 +64,7 @@ namespace VSGI {
 		public abstract string method { owned get; }
 
 		/**
-		 * Request URI
-         *
-		 * The implementation is based on libsoup.
+		 * Request URI.
          *
 		 * The URI, protocol and HTTP query and other request information is
 		 * made available through this property.

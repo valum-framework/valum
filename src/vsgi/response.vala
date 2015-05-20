@@ -2,7 +2,7 @@ using Soup;
 
 namespace VSGI {
 	/**
-	 * Response
+	 * Response representing a request resource.
 	 *
 	 * @since 0.0.1
 	 */
@@ -30,7 +30,10 @@ namespace VSGI {
 		public abstract MessageHeaders headers { get; }
 
 		/**
-		 * Property for the Set-Cookie header.
+		 * Response cookies.
+		 *
+		 * If set, the 'Set-Cookie' headers will be removed and replaced by
+		 * the new values.
 		 *
 		 * @since 0.1
 		 */

@@ -10,7 +10,7 @@
 [CCode (gir_namespace = "VSGI", gir_version = "0.1")]
 namespace VSGI {
 	/**
-	 * Application that handles {@link Request} and produce {@link Response}.
+	 * Application that handles a pair of {@link Request} and {@link Response}.
 	 *
 	 * @since 0.1
 	 */
@@ -35,6 +35,9 @@ namespace VSGI {
 		 *
 		 * Each requests are begin processed asynchronously so that they are
 		 * fundamentally design not to block one another.
+		 *
+		 * This would typically just call handle, but implementation can do
+		 * processing specific to an asynchronous handling.
 		 *
 		 * @since 0.1
 		 *

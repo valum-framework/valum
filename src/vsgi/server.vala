@@ -4,17 +4,17 @@ namespace VSGI {
 	 * Server that feeds a {@link VSGI.Application} with incoming requests.
 	 *
 	 * Once you have initialized a Server instance, start it by calling
-	 * {@link Server.run} with the command-line arguments or a set of predefined
-	 * arguments.
+	 * {@link Server.run} with the command-line arguments, a set of predefined
+	 * arguments or nothing at all.
      *
-	 * Implementation must take the served application as a single argument.
-	 *
-	 * Handling of CLI arguments should occur in {@link GLib.Application.handle_local_options}
-	 * and the server should start processing in {@link GLib.Application.activate}.
+	 * Implementation must take the served application as a single argument for
+	 * consistency.
 	 *
 	 * {@link GLib.Application.hold} and {@link GLib.Application.release} are
 	 * called whenever a request is processing starts and completes so that the
-	 * process timeout properly if it's out of work.
+	 * process timeout properly if a default timeout is set. A timeout of '0'
+	 * means to keep the server alive, which can be implemented by never
+	 * releasing the initial hold.
 	 *
 	 * @since 0.1
 	 */

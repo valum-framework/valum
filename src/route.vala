@@ -1,9 +1,15 @@
+using GLib;
 using VSGI;
 
 namespace Valum {
 
 	/**
-	 * Route that matches Request path.
+	 * Route provides a {@link Route.Matcher} and {@link Route.Handler} to
+	 * respectively match and handle a {@link VSGI.Request} and
+	 * {@link VSGI.Response}.
+	 *
+	 * Route can be declared using the rule system, a regular expression or an
+	 * arbitrary request-matching callback.
 	 *
 	 * @since 0.0.1
 	 */
@@ -12,12 +18,16 @@ namespace Valum {
 		/**
 		 * Router that declared this route.
          *
-		 * This is used to hold parameters types.
+		 * This is used to hold parameters types and have an access to the
+		 * scope stack.
 		 */
 		private weak Router router;
 
 		/**
 		 * Match the request and populate the {@link Request.params}.
+		 *
+		 * It is important for a matcher to populate the {@link Request.params}
+		 * only if it matches the request.
 		 *
 		 * @since 0.1
 		 *
@@ -119,8 +129,11 @@ namespace Valum {
 		/**
 		 * Create a Route for a given callback from a rule.
          *
-		 * Rule are scoped from the {@link Router.scope} fragment stack and compiled
-		 * down to {@link GLib.Regex}.
+		 * Rule are scoped from the {@link Router.scope} fragment stack and
+		 * compiled down to {@link GLib.Regex}.
+		 *
+		 * Rule start matching after the first '/' character of the request URI
+		 * path.
 		 *
 		 * @since 0.0.1
 		 */
@@ -186,20 +199,13 @@ namespace Valum {
 		 * Matches the given request and populate its parameters on success.
          *
 		 * @since 0.0.1
-		 *
-		 * @param req request that is being matched
 		 */
 		public Matcher match;
 
 		/**
-		 * Fire a request-response couple.
-		 *
-		 * This will apply the callback on the request and response.
+		 * Apply the handler on the request and response.
          *
 		 * @since 0.0.1
-		 *
-		 * @param req
-		 * @param res
 		 */
 		public unowned Handler fire;
 	}
