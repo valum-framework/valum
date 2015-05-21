@@ -230,16 +230,10 @@ namespace Valum {
 		/**
 		 * Push an arbitrary {@link GLib.Value} into the environment.
 		 *
-		 * Support is limited to what the environment can hold and the predefined
-		 * functions of this class.
+		 * Support is limited to what the environment can hold.
 		 *
 		 * * null
 		 * * string
-		 * * long
-		 * * double
-		 * * string[]
-		 * * double[]
-		 * * long[]
 		 *
 		 * @since 0.1
 		 *
@@ -252,28 +246,8 @@ namespace Valum {
 				this.environment.push_string (key, "null");
 			}
 
-			else if (Value.type_compatible (val.type (), typeof(string))) {
+			else if (val.holds (typeof (string))) {
 				this.environment.push_string (key, val.get_string ());
-			}
-
-			else if (Value.type_compatible (val.type (), typeof(long))) {
-				this.environment.push_int (key, val.get_int ());
-			}
-
-			else if (Value.type_compatible (val.type (), typeof(double))) {
-				this.environment.push_float (key, val.get_double ());
-			}
-
-			else if (Value.type_compatible (val.type (), typeof(string[]))) {
-				this.push_strings (key, (string[]) val.get_pointer ());
-			}
-
-			else if (Value.type_compatible (val.type (), typeof(long[]))) {
-				this.push_ints (key, (long[]) val.get_pointer ());
-			}
-
-			else if (Value.type_compatible (val.type (), typeof(double[]))) {
-				this.push_floats (key, (double[]) val.get_pointer ());
 			}
 
 			else {

@@ -17,6 +17,203 @@ public static void test_router () {
 /**
  * @since 0.1
  */
+public static void test_router_get () {
+	var router = new Router ();
+
+	router.get ("", (req, res) => {
+		res.status = 418;
+	});
+
+	var request  = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (418 == response.status);
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_router_post () {
+	var router = new Router ();
+
+	router.post ("", (req, res) => {
+		res.status = 418;
+	});
+
+	var request  = new Request (VSGI.Request.POST, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (418 == response.status);
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_router_put () {
+	var router = new Router ();
+
+	router.put ("", (req, res) => {
+		res.status = 418;
+	});
+
+	var request  = new Request (VSGI.Request.PUT, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (418 == response.status);
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_router_delete () {
+	var router = new Router ();
+
+	router.delete ("", (req, res) => {
+		res.status = 418;
+	});
+
+	var request  = new Request (VSGI.Request.DELETE, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (418 == response.status);
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_router_head () {
+	var router = new Router ();
+
+	router.head ("", (req, res) => {
+		res.status = 418;
+	});
+
+	var request  = new Request (VSGI.Request.HEAD, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (418 == response.status);
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_router_options () {
+	var router = new Router ();
+
+	router.options ("", (req, res) => {
+		res.status = 418;
+	});
+
+	var request  = new Request (VSGI.Request.OPTIONS, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (418 == response.status);
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_router_trace () {
+	var router = new Router ();
+
+	router.trace ("", (req, res) => {
+		res.status = 418;
+	});
+
+	var request  = new Request (VSGI.Request.TRACE, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (418 == response.status);
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_router_connect () {
+	var router = new Router ();
+
+	router.connect ("", (req, res) => {
+		res.status = 418;
+	});
+
+	var request  = new Request (VSGI.Request.CONNECT, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (418 == response.status);
+}
+/**
+ * @since 0.1
+ */
+public static void test_router_patch () {
+	var router = new Router ();
+
+	router.patch ("", (req, res) => {
+		res.status = 418;
+	});
+
+	var request  = new Request (VSGI.Request.PATCH, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (418 == response.status);
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_router_regex () {
+	var router = new Router ();
+
+	router.regex (VSGI.Request.GET, /home/, (req, res) => {
+		res.status = 418;
+	});
+
+	var request  = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/home"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (418 == response.status);
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_router_matcher () {
+	var router = new Router ();
+
+	router.matcher (VSGI.Request.GET, (req) => { return req.uri.get_path () == "/"; }, (req, res) => {
+		res.status = 418;
+	});
+
+	var request  = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (418 == response.status);
+}
+
+/**
+ * @since 0.1
+ */
 public static void test_router_scope () {
 	var router = new Router ();
 
@@ -51,6 +248,21 @@ public static void test_router_redirection () {
 
 	assert (response.status == Soup.Status.MOVED_TEMPORARILY);
 	assert ("http://example.com" == response.headers.get_one ("Location"));
+}
+
+public static void test_router_server_error () {
+	var router = new Router ();
+
+	router.get ("", (req, res) => {
+		throw new ServerError.INTERNAL_SERVER_ERROR ("Teapot's burning!");
+	});
+
+	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (response.status == Soup.Status.INTERNAL_SERVER_ERROR);
 }
 
 /**

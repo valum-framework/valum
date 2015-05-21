@@ -3,6 +3,51 @@ using Valum;
 /**
  * @since 0.1
  */
+public static void test_view_from_string () {
+	var view = new View.from_string ("{hello_world}");
+
+	view.environment.push_string ("hello_world", "test");
+
+	assert ("test" == view.render ());
+
+	// rerender a view
+	assert ("test" == view.render ());
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_view_from_path () {
+	try {
+		var view = new View.from_path ("tests/data/ctpl-template.html");
+
+		view.environment.push_string ("hello_world", "test");
+
+		assert ("test\n" == view.render ());
+	} catch (IOError ioe) {
+		Test.fail ();
+	}
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_view_from_stream () {
+	try {
+		var @in  = File.new_for_path ("tests/data/ctpl-template.html").read ();
+		var view = new View.from_stream (@in);
+
+		view.environment.push_string ("hello_world", "test");
+
+		assert ("test\n" == view.render ());
+	} catch (IOError ioe) {
+		Test.fail ();
+	}
+}
+
+/**
+ * @since 0.1
+ */
 public static void test_view_push_string () {
 	var view = new View ();
 	view.push_string ("key", "value");
@@ -178,6 +223,24 @@ public static void test_view_push_collection_floats () {
 	assert (arr[1] == 0.2);
 	assert (arr[2] == 0.3);
 	*/
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_view_push_collection_unknown_type () {
+	var view       = new View ();
+	var collection = new Gee.ArrayList<Variant> ();
+
+	collection.add (new Variant.int32 (5));
+
+	view.push_collection ("key", collection);
+
+	Ctpl.Value val = null;
+	var popped     = view.environment.pop ("key", ref val);
+
+	assert (popped);
+	assert ("could not infer type GVariant of key" == val.get_string ());
 }
 
 /**
@@ -361,4 +424,35 @@ public static void test_view_push_value_null () {
 	assert (popped);
 
 	assert (val.get_string () == "null");
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_view_push_value_string () {
+	var view = new View ();
+
+	view.push_value ("key", "hello world!");
+
+	Ctpl.Value val = null;
+	var popped     = view.environment.pop ("key", ref val);
+
+	assert (popped);
+
+	assert (val.get_string () == "hello world!");
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_view_push_value_unknown_type () {
+	var view = new View ();
+
+	view.push_value ("key", 5);
+
+	Ctpl.Value val = null;
+	var popped     = view.environment.pop ("key", ref val);
+
+	assert (popped);
+	assert ("unknown type gint for key key" == val.get_string ());
 }
