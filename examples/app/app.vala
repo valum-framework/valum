@@ -256,6 +256,16 @@ app.matcher (VSGI.Request.GET, (req) => { return req.uri.get_path () == "/custom
 	writer.put_string ("This route was matched using a custom matcher.");
 });
 
+var api = new Router ();
+
+api.get ("repository/<name>", (req, res) => {
+	var name = req.params["name"];
+	res.write (name.data);
+});
+
+// delegate all other GET requests to a subrouter
+app.get ("<any:path>", api.handle);
+
 app.teardown.connect ((req, res) => {
 	if (res.status == 404) {
 		var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));

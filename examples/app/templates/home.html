@@ -8,7 +8,7 @@
     <link rel="shortcut icon" href="/static/img/valum.png">
   </head>
   <body>
-    <a href="https://github.com/antono/valum">
+    <a href="https://github.com/valum-framework/valum">
       <img style="position: absolute; top: 0; right: 0; border: 0;"
            src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67"
            alt="Fork Valum on GitHub"
@@ -51,23 +51,31 @@
               <p>
                 This is a real Vala web application running on libsoup built-in HTTP server and we got real examples!
               </p>
+              <h4>Basics</h4>
               <ul class="list-inline">
                 <li><a href="/hello">Hello world!</a></li>
                 <li><a href="/hello/">Hello world! (with a trailing slash)</a></li>
                 <li><a href="/query?foo=bar">HTTP query</a></li>
                 <li><a href="/headers">HTTP headers</a></li>
-                <li><a href="/hello/world">route parameter</a></li>
-                <li><a href="/users/4/edit">typed route parameter</a></li>
-                <li><a href="/custom-route-type/abc">custom typed route parameter (permutations of abc)</a></li>
-                <li><a href="/custom-regular-expression">route using a custom regular expression</a></li>
-                <li><a href="/custom-matcher">route using a custom matcher</a></li>
-                <li><a href="/custom-method">route using a custom HTTP method</a></li>
-                <li><a href="/admin/fun/hack">scoped routing</a></li>
+                <li><a href="/cookies">cookies</a></li>
                 <li><a href="/redirect">redirection</a></li>
                 <li><a href="/asdasd">not found</a></li>
                 <li><a href="/not-found">not found (thrown)</a></li>
-                <li><a href="/cookies">cookies</a></li>
                 <li><a href="/urlencoded-data/">parse url-encoded data</a></li>
+              </ul>
+              <h4>Router features</h4>
+              <ul class="list-inline">
+                <li><a href="/hello/world">route parameter</a></li>
+                <li><a href="/users/4/edit">typed route parameter</a></li>
+                <li><a href="/custom-route-type/abc">custom typed route parameter (permutations of abc)</a></li>
+                <li><a href="/custom-regular-expression">route using a regular expression</a></li>
+                <li><a href="/custom-matcher">route using a matcher callback</a></li>
+                <li><a href="/custom-method">route using a custom HTTP method</a></li>
+                <li><a href="/admin/fun/hack">scoped routing</a></li>
+                <li><a href="/repository/valum">subrouter</a></li>
+              </ul>
+              <h4>Extras</h4>
+              <ul class="list-inline">
                 <li><a href="/lua">lua scripting</a></li>
                 <li><a href="/ctpl/foo/bar">CTPL templating</a></li>
                 <li><a href="/memcached/get/bar">memcached (get value)</a></li>

@@ -305,3 +305,24 @@ public static void test_router_method_not_allowed () {
 	assert (response.status == 405);
 	assert ("PUT, GET" == response.headers.get_one ("Allow"));
 }
+
+/**
+ * @since 0.1
+ */
+public static void test_router_subrouting () {
+	var router    = new Router ();
+	var subrouter = new Router ();
+
+	subrouter.get ("", (req, res) => {
+		res.status = 418;
+	});
+
+	router.get ("", subrouter.handle);
+
+	var request = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.NOT_FOUND);
+
+	router.handle (request, response);
+
+	assert (418 == response.status);
+}

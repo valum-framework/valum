@@ -114,7 +114,7 @@ a future release.
 Setup and teardown signals
 --------------------------
 
-Valum's Router define ``setup`` and ``teardown`` signals which are called
+Valum's Router defines ``setup`` and ``teardown`` signals which are called
 before and after a request processing.
 
 .. code:: vala
@@ -157,3 +157,33 @@ you must check if it is closed.
         if (!res.is_closed)
             res.write ("I can still write!".data);
     })
+
+Subrouting
+----------
+
+Since ``VSGI.Application`` handler is type compatible with ``Route.Handler``,
+it is possible to delegate request handling to another VSGI-compliant
+application.
+
+.. code:: vala
+
+    var app = new Router ();
+    var api = new Router ();
+
+    // delegate all GET requests to api router
+    app.get ("<any:any>", api.handle);
+
+This feature can be used to combine independently working applications in
+a single one, as opposed to :doc:`module`, which are designed to be
+specifically integrated in a working application.
+
+It is important to be cautious since the pair of request-response may be the
+target of side-effects such as:
+
+-  parent router ``setup`` and ``teardown`` signals can operate before and
+   after the delegated handler
+-  matcher that matched the request before being delegated may initialize the
+   :doc:`vsgi/request` parameters
+
+In the example, the ``<any:any>`` parameter will initialize the
+:doc:`vsgi/request` parameters.
