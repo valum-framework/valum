@@ -34,7 +34,7 @@ namespace Ctpl {
 		public int ref_count;
 		public weak GLib.InputStream stream;
 		[CCode (has_construct_function = false)]
-		public InputStream (GLib.InputStream stream, string name);
+		public InputStream (GLib.InputStream stream, string? name);
 		public bool eof () throws GLib.Error;
 		public bool eof_fast ();
 		[CCode (has_construct_function = false)]
