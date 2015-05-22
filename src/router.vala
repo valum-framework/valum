@@ -56,8 +56,9 @@ namespace Valum {
 		}
 
 		/**
-		 * Teardown a request after it has been processed even if an
-		 * {@link Error} is thrown during the handling.
+		 * Teardown a request after it has been processed even if a
+		 * {@link Redirection}, {@link ClientError} or {@link ServerError} is
+		 * thrown during the handling.
 		 *
 		 * @since 0.1
 		 */
@@ -131,8 +132,9 @@ namespace Valum {
 		}
 
 		/**
+		 * [[http://tools.ietf.org/html/rfc5789]]
+		 *
 		 * @since 0.0.1
-		 * @url   http://tools.ietf.org/html/rfc5789
 		 */
 		public void patch (string rule, Route.Handler cb) throws RegexError {
 			this.method (Request.PATCH, rule, cb);
@@ -208,7 +210,7 @@ namespace Valum {
 		 * @since 0.0.1
 		 *
 		 * @param fragment fragment to push on the scopes stack
-		 * @param router   nested router in the new scoped environment
+		 * @param loader   nests a router in the new scoped environment
 		 */
 		public void scope (string fragment, Loader loader) {
 			this.scopes.push_tail (fragment);

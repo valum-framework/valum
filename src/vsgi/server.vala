@@ -4,8 +4,8 @@ namespace VSGI {
 	 * Server that feeds a {@link VSGI.Application} with incoming requests.
 	 *
 	 * Once you have initialized a Server instance, start it by calling
-	 * {@link Server.run} with the command-line arguments, a set of predefined
-	 * arguments or nothing at all.
+	 * {@link GLib.Application.run} with the command-line arguments, a set of
+	 * predefined arguments or nothing at all.
      *
 	 * Implementation must take the served application as a single argument for
 	 * consistency.

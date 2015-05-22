@@ -10,7 +10,8 @@ namespace Valum {
 	 *
 	 * This implementation include two rendering functions: {@link View.render}
 	 * and {@link View.splice}. The latter integrates very well with the
-	 * framework since {@link VSGI.Response} inherit from {@link OutputStream}.
+	 * framework since {@link VSGI.Response} inherit from
+	 * {@link GLib.OutputStream}.
 	 *
 	 * @since 0.1
 	 */
@@ -245,8 +246,8 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 *
-		 * @param key   key for the value pushed in the environment
-		 * @param value value that must respec one of the supported type
+		 * @param key key for the value pushed in the environment
+		 * @param val value that must respec one of the supported type
 		 */
 		public void push_value (string key, Value? val) {
 			// cover the null case
@@ -264,7 +265,7 @@ namespace Valum {
 		}
 
 		/**
-		 * Splice the template into a given {@link OutputStream}.
+		 * Splice the template into a given {@link GLib.OutputStream}.
 		 *
 		 * This is used to render a template directly into a stream and avoid
 		 * memory overhead if the template is heavy.
@@ -278,7 +279,7 @@ namespace Valum {
 		}
 
 		/**
-		 * Splice the template asynchronously into a given {@link OutputStream}.
+		 * Splice the template asynchronously into a given {@link GLib.OutputStream}.
 		 *
 		 * @since 0.1
 		 *
@@ -289,8 +290,8 @@ namespace Valum {
 		}
 
 		/**
-		 * Stream the template into a {@link MemoryOutputStream} and return the
-		 * rendered string.
+		 * Stream the template into a {@link GLib.MemoryOutputStream} and return
+		 * the rendered string.
 		 *
 		 * @since 0.0.1
 		 */
