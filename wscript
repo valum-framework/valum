@@ -16,7 +16,7 @@ def options(opt):
     opt.add_option('--enable-threading', action='store_true', default=False, help='enable threading support with GThread')
 
 def configure(conf):
-    conf.load('compiler_c vala')
+    conf.load('compiler_c vala valadoc')
 
     conf.check_cfg(package='glib-2.0', atleast_version='2.32', uselib_store='GLIB', args='--cflags --libs')
     conf.check_cfg(package='gio-2.0', atleast_version='2.32', uselib_store='GIO', args='--cflags --libs')
@@ -51,6 +51,7 @@ def configure(conf):
     conf.recurse(glob.glob('examples/*'))
 
 def build(bld):
+    bld.load('valadoc')
     # build a static library
     bld.shlib(
         packages     = ['glib-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'fcgi'],
@@ -70,6 +71,17 @@ def build(bld):
         install_path = '${LIBDIR}/pkgconfig',
         VERSION      = VERSION,
         API_VERSION  = API_VERSION)
+
+    # generate the api documentation
+    bld(
+        features        = 'valadoc',
+        packages        = ['glib-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'fcgi'],
+        files           = bld.path.ant_glob('src/**/*.vala'),
+        package_name    = 'valum-{}'.format(API_VERSION),
+        package_version = VERSION,
+        output_dir      = 'valum-{}'.format(API_VERSION),
+        force           = True,
+        vapi_dirs       = ['vapi'])
 
     # build examples
     bld.recurse(glob.glob('examples/*'))
