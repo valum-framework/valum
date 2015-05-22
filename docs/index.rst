@@ -29,6 +29,7 @@ Table Of Contents
     application
     vsgi/request
     vsgi/response
+    vsgi/server
     redirection-and-error
     route
     router
@@ -39,5 +40,6 @@ Table Of Contents
     ctpl
     persistency
     scripting
+    hacking
     about/gnu-lgpl-v3.0
 
