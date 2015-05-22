@@ -51,6 +51,8 @@ def configure(conf):
     # other dependencies
     conf.check(lib='fcgi', uselib_store='FCGI', args='--cflags --libs')
 
+    conf.find_program('valadoc', mandatory=False)
+
     if conf.options.enable_gcov:
         conf.check(lib='gcov', uselib_store='GCOV', args='--cflags --libs')
         conf.env.append_unique('CFLAGS', ['-fprofile-arcs', '-ftest-coverage'])
@@ -94,9 +96,21 @@ def build(bld):
         header_path     = None,
         install_path    = None)
 
+    # generate the api documentation
+    if bld.env.VALADOC:
+        bld.load('valadoc')
+        bld(
+            features        = 'valadoc',
+            packages        = ['glib-2.0', 'gio-2.0', 'gio-unix-2.0',  'libsoup-2.4', 'fcgi'],
+            files           = bld.path.ant_glob('src/*.vala'),
+            package_name    = 'valum',
+            package_version = VERSION,
+            output_dir      = 'apidocs',
+            force           = True,
+            vapi_dirs       = ['vapi'])
+
     # build examples
     if bld.env.ENABLE_EXAMPLES:
         bld.recurse(glob.glob('examples/*'))
 
     bld.recurse(['data', 'docs', 'tests', 'vapi'])
-
