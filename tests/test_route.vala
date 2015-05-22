@@ -9,7 +9,6 @@ public void test_route () {
 	var req    = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 
 	assert (route.match (req));
-
 }
 
 /**
@@ -50,6 +49,13 @@ public void test_route_from_rule_without_captures () {
 	// ensure params are still null if there is no captures
 	assert (matches);
 	assert (req.params == null);
+}
+
+/**
+ * @since 0.1
+ */
+public void test_route_from_rule_undefined_type () {
+	var route  = new Route.from_rule (new Router (), "<uint:unknown_type>", (req, res) => {});
 }
 
 /**
