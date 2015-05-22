@@ -24,18 +24,20 @@ Helpers for the HTTP/1.1 protocol and the extra ``TRACE`` methods are included.
 -  ``connect``
 -  ``trace``
 
-Handling a ``POST`` request would be something like
+This is an example of ``POST`` request handling using `Soup.Form`_ to decode
+the ``application/x-www-form-urlencoded`` body of the :doc:`vsgi/request`.
+
+.. _Soup.Form: http://valadoc.org/#!api=libsoup-2.4/Soup.Form
 
 .. code:: vala
 
     app.post ("login", (req, res) => {
-		var writer = new DataOutputStream (res);
-		var buffer = new MemoryOutputStream (null, realloc, free);
+        var buffer = new MemoryOutputStream (null, realloc, free);
 
-        # consume the body
-		buffer.splice (req, OutputStreamSpliceFlags.CLOSE_SOURCE);
+        // consume the request body
+        buffer.splice (req, OutputStreamSpliceFlags.CLOSE_SOURCE);
 
-		var data = Soup.Form.decode ((string) buffer.get_data ());
+        var data = Soup.Form.decode ((string) buffer.get_data ());
 
         var username = data["username"];
         var password = data["password"];
