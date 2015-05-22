@@ -29,6 +29,7 @@ Table Of Contents
     application
     vsgi/request
     vsgi/response
+    vsgi/server
     redirection-and-error
     route
     router
