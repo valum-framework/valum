@@ -1,15 +1,18 @@
+using GLib;
 using VSGI;
 
 [CCode (gir_namespace = "Valum", gir_version = "0.1")]
 namespace Valum {
 
 	/**
+	 * Dispatches incoming requests to the appropriate registered handler.
+	 *
 	 * @since 0.0.1
 	 */
-	public class Router : GLib.Object, VSGI.Application {
+	public class Router : Object, VSGI.Application {
 
 		/**
-		 * Registered types.
+		 * Registered types used to extract {@link VSGI.Request} parameters.
          *
 		 * @since 0.1
 		 */
@@ -21,21 +24,30 @@ namespace Valum {
 		private HashTable<string, Queue<Route>> routes = new HashTable<string, Queue<Route>> (str_hash, str_equal);
 
 		/**
-		 * Stack of scope.
+		 * Stack of scopes.
 		 *
 		 * @since 0.1
 		 */
 		public Queue<string> scopes = new Queue<string> ();
 
 		/**
-		 * Loads route on a providen router.
+		 * Loads {@link Route} instances on a provided router.
+		 *
+		 * This is used for scoping and as a general definition for callback
+		 * taking a {@link Router} as parameter like modules.
 		 *
 		 * @since 0.0.1
 		 */
 		public delegate void Loader (Valum.Router router);
 
 		/**
-		 * Signal called before a request is being processed.
+		 * Setup a request before its processing begins.
+		 *
+		 * The default handler initializes the response with sane default such
+		 * as 200 status code, 'text/html' content type and request cookies. Use
+		 * 'connect_after' if you want to override any of these defaults.
+		 *
+		 * @since 0.1
 		 */
 		public virtual signal void setup (Request req, Response res) {
 			res.status = Soup.Status.OK;
@@ -44,7 +56,11 @@ namespace Valum {
 		}
 
 		/**
-		 * Called after a request has been processed.
+		 * Teardown a request after it has been processed even if a
+		 * {@link Redirection}, {@link ClientError} or {@link ServerError} is
+		 * thrown during the handling.
+		 *
+		 * @since 0.1
 		 */
 		public signal void teardown (Request req, Response res);
 
@@ -116,16 +132,17 @@ namespace Valum {
 		}
 
 		/**
+		 * [[http://tools.ietf.org/html/rfc5789]]
+		 *
 		 * @since 0.0.1
-		 * @url   http://tools.ietf.org/html/rfc5789
 		 */
 		public void patch (string rule, Route.Handler cb) throws RegexError {
 			this.method (Request.PATCH, rule, cb);
 		}
 
 		/**
-		 * Bind a callback with a custom method.
-         *
+		 * Bind a callback with a custom HTTP method and a rule.
+		 *
 		 * Useful if you need to support a non-standard HTTP method, otherwise you
 		 * should use the predefined methods.
 		 *
@@ -133,39 +150,43 @@ namespace Valum {
 		 *
 		 * @param method HTTP method
 		 * @param rule   rule
-		 * @param cb     callback to be called on request matching the method and the
-		 *               rule.
+		 * @param cb     callback used to process the pair of request and response.
 		 */
 		public void method (string method, string rule, Route.Handler cb) throws RegexError {
 			this.route (method, new Route.from_rule (this, rule, cb));
 		}
 
 		/**
-		 * Bind a callback with a custom method and regular expression.
-         *
-		 * It is recommended to declare the Regex using the RegexCompileFlags.OPTIMIZE
-		 * flag as it will be used *very* often during the application process.
-         *
+		 * Bind a callback with a custom HTTP method and regular expression.
+		 *
+		 * The regular expression will be scoped, anchored and optimized by the
+		 * {@link Route} automatically.
+		 *
 		 * @since 0.1
 		 *
 		 * @param method HTTP method
 		 * @param regex  regular expression matching the request path.
+		 * @param cb     callback used to process the pair of request and response.
 		 */
 		public void regex (string method, Regex regex, Route.Handler cb) throws RegexError {
 			this.route (method, new Route.from_regex (this, regex, cb));
 		}
 
 		/**
-		 * Bind a callback with a custom method and matcher.
+		 * Bind a callback with a custom HTTP method and a matcher callback.
 		 *
 		 * @since 0.1
+		 *
+		 * @param method  HTTP method
+		 * @param matcher callback used to match the request
+		 * @param cb      callback used to process the pair of request and response.
 		 */
 		public void matcher (string method, Route.Matcher matcher, Route.Handler cb) {
 			this.route (method, new Route (this, matcher, cb));
 		}
 
 		/**
-		 * Bind a callback with a custom method and route.
+		 * Bind a {@link Route} to a custom HTTP method.
 		 *
 		 * This is a low-level function and should be used with care.
 		 *
@@ -181,15 +202,15 @@ namespace Valum {
 		}
 
 		/**
-		 * Add a fragment to the scope stack and nest a router in this
-		 * new environment.
+		 * Add a fragment to the scope stack and nest a router in this new
+		 * environment.
 		 *
-		 * Scoping will only work with rules
+		 * Scoping will only work with rules and regular expressions.
 		 *
 		 * @since 0.0.1
 		 *
 		 * @param fragment fragment to push on the scopes stack
-		 * @param router   nested router in the new scoped environment
+		 * @param loader   nests a router in the new scoped environment
 		 */
 		public void scope (string fragment, Loader loader) {
 			this.scopes.push_tail (fragment);

@@ -4,12 +4,14 @@ namespace Valum {
 	/**
 	 * View based on {@link Ctpl} templating engine.
 	 *
-	 * Provide helpers for pushing common types into the template environment
-	 * such as Gee.Collection, Gee.Map, array of primitive and much more.
+	 * Provides helpers for pushing common data types into the template
+	 * environment such as {@link Gee.Collection}, {@link Gee.Map}, array of
+	 * primitive and much more.
 	 *
 	 * This implementation include two rendering functions: {@link View.render}
 	 * and {@link View.splice}. The latter integrates very well with the
-	 * framework since {@link VSGI.Response} inherit from {@link OutputStream}.
+	 * framework since {@link VSGI.Response} inherit from
+	 * {@link GLib.OutputStream}.
 	 *
 	 * @since 0.1
 	 */
@@ -79,7 +81,7 @@ namespace Valum {
 		}
 
 		/**
-		 * Push an array of string into the environment.
+		 * Push an array of strings into the environment.
 		 *
 		 * @since 0.1
 		 */
@@ -94,7 +96,7 @@ namespace Valum {
 		}
 
 		/**
-		 * Push an array of long into the environment.
+		 * Push an array of longs into the environment.
 		 *
 		 * @since 0.1
 		 */
@@ -109,7 +111,7 @@ namespace Valum {
 		}
 
 		/**
-		 * Push an array of double into the environment.
+		 * Push an array of doubles into the environment.
 		 *
 		 * @since 0.1
 		 */
@@ -126,7 +128,8 @@ namespace Valum {
 		/**
 		 * Push a {@link Gee.Collection} into the environment.
          *
-		 * The element type can be either string, long or double.
+		 * The element data type can be compatible with either string, long or
+		 * double.
 		 *
 		 * @since 0.1
 		 */
@@ -162,6 +165,9 @@ namespace Valum {
 			});
 		}
 
+		/**
+		 * @since 0.1
+		 */
 		public void push_string_map (string key, Map<string, string> map) {
 			map.map_iterator().foreach((k, v) => {
 				this.push_string ("%s_%s".printf(key, k), v);
@@ -169,6 +175,9 @@ namespace Valum {
 			});
 		}
 
+		/**
+		 * @since 0.1
+		 */
 		public void push_int_map (string key, Map<string, long> map) {
 			map.map_iterator().foreach((k, v) => {
 				this.push_int ("%s_%s".printf(key, k), v);
@@ -237,8 +246,8 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 *
-		 * @param key   key for the value pushed in the environment
-		 * @param value value that must respec one of the supported type
+		 * @param key key for the value pushed in the environment
+		 * @param val value that must respec one of the supported type
 		 */
 		public void push_value (string key, Value? val) {
 			// cover the null case
@@ -256,7 +265,7 @@ namespace Valum {
 		}
 
 		/**
-		 * Splice the template into a given {@link OutputStream}.
+		 * Splice the template into a given {@link GLib.OutputStream}.
 		 *
 		 * This is used to render a template directly into a stream and avoid
 		 * memory overhead if the template is heavy.
@@ -270,17 +279,19 @@ namespace Valum {
 		}
 
 		/**
-		 * Splice the template asynchronously into a given {@link OutputStream}.
+		 * Splice the template asynchronously into a given {@link GLib.OutputStream}.
 		 *
 		 * @since 0.1
+		 *
+		 * @param output OutputStream into which the template will be spliced.
 		 */
 		public async void splice_async (OutputStream output) throws IOError, Ctpl.IOError {
 			Ctpl.parser_parse (this.tree, this.environment, new Ctpl.OutputStream (output));
 		}
 
 		/**
-		 * Stream the template into a {@link MemoryOutputStream} and return the
-		 * rendered string.
+		 * Stream the template into a {@link GLib.MemoryOutputStream} and return
+		 * the rendered string.
 		 *
 		 * @since 0.0.1
 		 */

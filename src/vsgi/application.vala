@@ -1,3 +1,5 @@
+using GLib;
+
 /**
  * VSGI is an set of abstraction and implementations used to build generic web
  * application in Vala.
@@ -10,11 +12,12 @@
 [CCode (gir_namespace = "VSGI", gir_version = "0.1")]
 namespace VSGI {
 	/**
-	 * Application that handles {@link Request} and produce {@link Response}.
+	 * Application that handles a pair of {@link VSGI.Request} and
+	 * {@link VSGI.Response}.
 	 *
 	 * @since 0.1
 	 */
-	public interface Application : GLib.Object {
+	public interface Application : Object {
 
 		/**
 		 * Process a pair of request and response.
@@ -23,10 +26,9 @@ namespace VSGI {
 		 *
 		 * @since 0.1
 		 *
-		 * @param Request  req request providen to the application by a
-		 *                     VSGI.Server
-		 * @param Response res response where the application should produce its
-		 *                     output
+		 * @param req request providen to the application by a
+		 *            {@link VSGI.Server}
+		 * @param res response where the application should produce its output
 		 */
 		public abstract void handle (Request req, Response res);
 
@@ -36,12 +38,14 @@ namespace VSGI {
 		 * Each requests are begin processed asynchronously so that they are
 		 * fundamentally design not to block one another.
 		 *
+		 * This would typically just call handle, but implementation can do
+		 * processing specific to an asynchronous handling.
+		 *
 		 * @since 0.1
 		 *
-		 * @param Request  req request providen to the application by a
-		 *                     VSGI.Server
-		 * @param Response res response where the application should produce its
-		 *                     output
+		 * @param req request providen to the application by a
+		 *            {@link VSGI.Server}
+		 * @param res response where the application should produce its output
 		 */
 		public abstract async void handle_async (Request req, Response res);
 	}

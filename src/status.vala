@@ -3,13 +3,12 @@ using Soup;
 namespace Valum {
 
 	/**
-	 * Redirection
+	 * Redirection corresponding to the 3xx HTTP status codes.
 	 *
-	 * The error message will be used in the Location header.
+	 * The error message will be used in the 'Location' header.
 	 *
-	 * These are designed to be thrown in {@link Route.RouteCallback}.
-	 *
-	 * @see Soup.Status
+	 * @see   Soup.Status
+	 * @since 0.1
 	 */
 	public errordomain Redirection {
 		MULTIPLE_CHOICES               = Status.MULTIPLE_CHOICES,
@@ -24,11 +23,10 @@ namespace Valum {
 	}
 
 	/**
-	 * Client errors
+	 * Client errors corresponding to the 4xx HTTP status codes.
 	 *
-	 * These can be thrown in {@link Route.RouteCallback}.
-	 *
-	 * @see Soup.Status
+	 * @see   Soup.Status
+	 * @since 0.1
 	 */
 	public errordomain ClientError {
 		BAD_REQUEST                     = Status.BAD_REQUEST,
@@ -60,11 +58,10 @@ namespace Valum {
 	}
 
 	/**
-	 * Server errors.
+	 * Server errors corresponding to the 5xx HTTP status codes.
 	 *
-	 * These can be thrown in {@link Route.RouteCallback}.
-	 *
-	 * @see Soup.Status
+	 * @see   Soup.Status
+	 * @since 0.1
 	 */
 	public errordomain ServerError {
 		INTERNAL_SERVER_ERROR      = Status.INTERNAL_SERVER_ERROR,

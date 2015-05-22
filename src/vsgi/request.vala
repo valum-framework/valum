@@ -2,7 +2,7 @@ using Soup;
 
 namespace VSGI {
 	/**
-	 * Request
+	 * Request representing a request of a resource.
 	 *
 	 * @since 0.0.1
 	 */
@@ -11,7 +11,8 @@ namespace VSGI {
 		/**
 		 * HTTP/1.1 standard methods.
 		 *
-		 * @link  http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
+		 * [[http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html]]
+		 *
 		 * @since 0.1
 		 */
 		public const string OPTIONS = "OPTIONS";
@@ -26,13 +27,14 @@ namespace VSGI {
 		/**
 		 * PATCH method defined in RFC5789.
 		 *
+		 * [[http://tools.ietf.org/html/rfc5789]]
+		 *
 		 * This is a proposed standard, it is not part of the current HTTP/1.1
 		 * protocol.
 		 *
-		 * @link  http://tools.ietf.org/html/rfc5789
 		 * @since 0.1
 		 */
-		public const string PATCH   = "PATCH";
+		public const string PATCH = "PATCH";
 
 		/**
 		 * List of all supported HTTP methods.
@@ -44,9 +46,9 @@ namespace VSGI {
 		/**
 		 * Parameters for the request.
 		 *
-		 * @since 0.0.1
-		 *
 		 * These should be extracted from the URI path.
+		 *
+		 * @since 0.0.1
 		 */
 		public HashTable<string, string?>? @params = null;
 
@@ -64,9 +66,7 @@ namespace VSGI {
 		public abstract string method { owned get; }
 
 		/**
-		 * Request URI
-         *
-		 * The implementation is based on libsoup.
+		 * Request URI.
          *
 		 * The URI, protocol and HTTP query and other request information is
 		 * made available through this property.

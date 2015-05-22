@@ -1,9 +1,15 @@
+using GLib;
 using VSGI;
 
 namespace Valum {
 
 	/**
-	 * Route that matches Request path.
+	 * Route provides a {@link Route.Matcher} and {@link Route.Handler} to
+	 * respectively match and handle a {@link VSGI.Request} and
+	 * {@link VSGI.Response}.
+	 *
+	 * Route can be declared using the rule system, a regular expression or an
+	 * arbitrary request-matching callback.
 	 *
 	 * @since 0.0.1
 	 */
@@ -12,12 +18,16 @@ namespace Valum {
 		/**
 		 * Router that declared this route.
          *
-		 * This is used to hold parameters types.
+		 * This is used to hold parameters types and have an access to the
+		 * scope stack.
 		 */
 		private weak Router router;
 
 		/**
-		 * Match the request and populate the {@link Request.params}.
+		 * Match the request and populate the {@link VSGI.Request.params}.
+		 *
+		 * It is important for a matcher to populate the
+		 * {@link VSGI.Request.params} only if it matches the request.
 		 *
 		 * @since 0.1
 		 *
@@ -45,7 +55,7 @@ namespace Valum {
 		 * This is the lowest-level mean to create a Route instance.
 		 *
 		 * The matcher should take in consideration the {@link Router.scopes}
-		 * stack if it has to deal with the {@link Request.uri}.
+		 * stack if it has to deal with the {@link VSGI.Request.uri}.
 		 *
 		 * @since 0.1
 		 */
@@ -56,14 +66,15 @@ namespace Valum {
 		}
 
 		/**
-		 * Create a Route for a given callback using a {@link Regex}.
+		 * Create a Route for a given callback using a {@link GLib.Regex}.
 		 *
-		 * The providen regular expression pattern will be extracted, scoped, anchored
-		 * and optimized. This means you must not anchor the regex yourself with '^'
-		 * and '$' characters and providing a pre-optimized Regex is useless.
+		 * The providen regular expression pattern will be extracted, scoped,
+		 * anchored and optimized. This means you must not anchor the regex
+		 * yourself with '^' and '$' characters and providing a pre-optimized
+		 * {@link GLib.Regex} is useless.
 		 *
-		 * Like for {@link Route.from_rule}, the regular expression starts matching
-		 * after the scopes and the leading '/' character.
+		 * Like for the rules, the regular expression starts matching after the
+		 * scopes and the leading '/' character.
 		 *
 		 * @since 0.1
 		 */
@@ -119,8 +130,11 @@ namespace Valum {
 		/**
 		 * Create a Route for a given callback from a rule.
          *
-		 * Rule are scoped from the {@link Router.scope} fragment stack and compiled
-		 * down to {@link GLib.Regex}.
+		 * Rule are scoped from the {@link Router.scope} fragment stack and
+		 * compiled down to {@link GLib.Regex}.
+		 *
+		 * Rule start matching after the first '/' character of the request URI
+		 * path.
 		 *
 		 * @since 0.0.1
 		 */
@@ -186,20 +200,13 @@ namespace Valum {
 		 * Matches the given request and populate its parameters on success.
          *
 		 * @since 0.0.1
-		 *
-		 * @param req request that is being matched
 		 */
 		public Matcher match;
 
 		/**
-		 * Fire a request-response couple.
-		 *
-		 * This will apply the callback on the request and response.
+		 * Apply the handler on the request and response.
          *
 		 * @since 0.0.1
-		 *
-		 * @param req
-		 * @param res
 		 */
 		public unowned Handler fire;
 	}
