@@ -224,6 +224,11 @@ namespace Valum {
 		public void handle (Request req, Response res) {
 			setup (req, res);
 
+			// teardown the response before the stream is closed
+			res.end.connect (() => {
+				teardown (req, res);
+			});
+
 			try {
 				// ensure at least one route has been declared with that method
 				if (this.routes.contains (req.method)) {
@@ -269,13 +274,9 @@ namespace Valum {
 			} finally {
 				teardown (req, res);
 			}
-		}
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public async void handle_async (Request req, Response res) {
-			this.handle (req, res);
+			// in case of exception, always end the response properly
+			res.end ();
 		}
 	}
 }

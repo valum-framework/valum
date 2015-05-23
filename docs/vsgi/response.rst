@@ -1,6 +1,14 @@
 Response
 ========
 
+Responses are representing resources requested by a client. They are actively
+streamed across the network, preferably using non-blocking asynchronous I/O.
+
+Any operations on a response must eventually invoke ``end``, this is how it is
+figured out that the response has completed its processing and resources
+associated to it can be released. This enables the possibility to keep
+a reference to the response in `AsyncResult`.
+
 Status
 ------
 
@@ -83,3 +91,6 @@ a great incidence on the application throughput.
         // send a success mail
         Mailer.send ("johndoe@example.com", "Had to close that stream mate!");
     });
+
+End the response
+---------------
