@@ -2,6 +2,8 @@ using Soup;
 
 /**
  * Soup implementation of VSGI.
+ *
+ * @since 0.1
  */
 namespace VSGI.Soup {
 
@@ -10,11 +12,11 @@ namespace VSGI.Soup {
 	 */
 	class Request : VSGI.Request {
 
-		public Message message { construct; get; }
-
 		private HashTable<string, string>? _query;
 
 		public override HTTPVersion http_version { get { return this.message.http_version; } }
+
+		public Message message { construct; get; }
 
 		public override string method { owned get { return this.message.method ; } }
 
@@ -28,37 +30,9 @@ namespace VSGI.Soup {
 			}
 		}
 
-		public Request (Message msg, HashTable<string, string>? query) {
-			Object (message: msg);
+		public Request (Message msg, InputStream body, HashTable<string, string>? query) {
+			Object (message: msg, body: body);
 			this._query = query;
-		}
-
-		/**
-		 * Offset from which the response body is being read.
-		 */
-		private int64 offset = 0;
-
-		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) {
-			var chunk = this.message.request_body.get_chunk (offset);
-
-			/* potentially more data... */
-			if (chunk == null)
-				return -1;
-
-			// copy the data into the buffer
-			Memory.copy (buffer, chunk.data, chunk.length);
-
-			offset += chunk.length;
-
-			return (ssize_t) chunk.length;
-		}
-
-		/**
-		 * This will complete the request MessageBody.
-		 */
-		public override bool close (Cancellable? cancellable = null) {
-			this.message.request_body.complete ();
-			return true;
 		}
 	}
 
@@ -78,23 +52,28 @@ namespace VSGI.Soup {
 			get { return this.message.response_headers; }
 		}
 
-		public Response (Request req, Message msg) {
-			Object (request: req, message: msg);
+		private OutputStream _body = null;
+
+		public override OutputStream body {
+			get {
+				if (this._body != null)
+					return this._body;
+
+				this.write_status_line ();
+
+				this.write_headers ();
+
+				this._body = output_stream;
+
+				if (this.headers.get_encoding () == Encoding.CHUNKED)
+					this._body = new ChunkedOutputStream (output_stream);
+
+				return this._body;
+			}
 		}
 
-		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) {
-			this.message.response_body.append_take (buffer);
-			return buffer.length;
-		}
-
-		/**
-		 * This will complete the response MessageBody.
-		 *
-		 * Once called, you will not be able to alter the stream.
-		 */
-		public override bool close (Cancellable? cancellable = null) {
-			this.message.response_body.complete ();
-			return true;
+		public Response (Request req, Message msg, OutputStream output_stream) {
+			Object (request: req, message: msg, output_stream: output_stream);
 		}
 	}
 
@@ -152,14 +131,21 @@ namespace VSGI.Soup {
 			this.server.add_handler (null, (server, msg, path, query, client) => {
 				this.hold ();
 
-				var req = new Request (msg, query);
-				var res = new Response (req, msg);
+				var connection = client.steal_connection ();
+
+				var req = new Request (msg, new MemoryInputStream.from_data (msg.request_body.data, null), query);
+				var res = new Response (req, msg, connection.output_stream);
+
+				res.headers.append ("Transfer-Encoding", "chunked");
+
+				res.end.connect_after (() => {
+					connection.close_async (Priority.DEFAULT, null, () => {
+						message ("%s: %u %s %s", get_application_id (), res.status, res.request.method, res.request.uri.get_path ());
+						this.release ();
+					});
+				});
 
 				this.application.handle (req, res);
-
-				message ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
-
-				this.release ();
 			});
 
 #if SOUP_2_48
