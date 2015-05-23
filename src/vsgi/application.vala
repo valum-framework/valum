@@ -29,6 +29,7 @@ namespace VSGI {
 		 * @param req request providen to the application by a
 		 *            {@link VSGI.Server}
 		 * @param res response where the application should produce its output
+		 * @param end called to end the processing of the response
 		 */
 		public abstract void handle (Request req, Response res);
 	}

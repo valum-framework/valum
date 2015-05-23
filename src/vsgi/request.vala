@@ -6,7 +6,7 @@ namespace VSGI {
 	 *
 	 * @since 0.0.1
 	 */
-	public abstract class Request : InputStream {
+	public abstract class Request : Object {
 
 		/**
 		 * HTTP/1.1 standard methods.
@@ -124,5 +124,12 @@ namespace VSGI {
 				return cookies;
 			}
 		}
+
+		/**
+		 * Request body.
+		 *
+		 * @since 0.2
+		 */
+		public InputStream body { construct; get; }
 	}
 }

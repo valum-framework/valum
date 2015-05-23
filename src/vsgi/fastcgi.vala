@@ -3,8 +3,80 @@ using Soup;
 
 /**
  * FastCGI implementation of VSGI.
+ *
+ * @since 0.1
  */
 namespace VSGI.FastCGI {
+	class StreamInputStream : InputStream {
+
+		public unowned global::FastCGI.Stream stream { construct; get; }
+
+		public StreamInputStream (global::FastCGI.Stream stream) {
+			Object (stream: stream);
+		}
+
+		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
+			var read = this.stream.read (buffer);
+
+			if (read == GLib.FileStream.EOF)
+				throw new Error (IOError.quark (), FileUtils.error_from_errno (this.stream.get_error ()), strerror (FileUtils.error_from_errno (this.stream.get_error ())));
+
+			return read;
+		}
+
+		public override bool close (Cancellable? cancellable = null) throws IOError {
+			if (this.stream.close () == -1)
+				throw new Error (IOError.quark (),
+						         FileUtils.error_from_errno (this.stream.get_error ()),
+								 strerror (FileUtils.error_from_errno (this.stream.get_error ())));
+
+			return this.stream.is_closed;
+		}
+	}
+
+	class StreamOutputStream : OutputStream {
+
+		public unowned global::FastCGI.Stream @out { construct; get; }
+
+		public unowned global::FastCGI.Stream err { construct; get; }
+
+		public StreamOutputStream (global::FastCGI.Stream @out, global::FastCGI.Stream err) {
+			Object (@out: @out, err: err);
+		}
+
+		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
+			var written = this.out.put_str (buffer);
+
+			if (written == GLib.FileStream.EOF)
+				throw new Error (IOError.quark (),
+						         FileUtils.error_from_errno (this.out.get_error ()),
+								 strerror (FileUtils.error_from_errno (this.out.get_error ())));
+
+			return written;
+		}
+
+		/**
+		 * Headers are written on the first flush call.
+		 */
+		public override bool flush (Cancellable? cancellable = null) {
+			return this.out.flush ();
+		}
+
+		public override bool close (Cancellable? cancellable = null) throws IOError {
+			if (this.out.close () == -1)
+				throw new Error (IOError.quark (),
+						         FileUtils.error_from_errno (this.out.get_error ()),
+								 strerror (FileUtils.error_from_errno (this.out.get_error ())));
+
+			if (this.err.close () == -1)
+				throw new Error (IOError.quark (),
+						         FileUtils.error_from_errno (this.err.get_error ()),
+								 strerror (FileUtils.error_from_errno (this.err.get_error ())));
+
+			return this.out.is_closed && this.err.is_closed;
+		}
+	}
+
 	/**
 	 * FastCGI Request implementation.
 	 *
@@ -22,11 +94,6 @@ namespace VSGI.FastCGI {
 		private URI _uri = new URI (null);
 		private HashTable<string, string>? _query = null;
 		private MessageHeaders _headers = new MessageHeaders (MessageHeadersType.REQUEST);
-
-		/**
-		 *
-		 */
-		private unowned Stream @in;
 
 		public override HTTPVersion http_version {
 			get { return this._http_version; }
@@ -49,7 +116,7 @@ namespace VSGI.FastCGI {
 		}
 
 		public Request (global::FastCGI.request request) {
-			this.in = request.in;
+			Object (body: new StreamInputStream (request.in));
 
 			var environment = request.environment;
 
@@ -95,22 +162,6 @@ namespace VSGI.FastCGI {
 
 			global::Soup.headers_parse (headers.str, (int) headers.len, this._headers);
 		}
-
-		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
-			var read = this.in.read (buffer);
-
-			if (read == GLib.FileStream.EOF)
-				throw new Error (IOError.quark (), FileUtils.error_from_errno (this.in.get_error ()), strerror (FileUtils.error_from_errno (this.in.get_error ())));
-
-			return read;
-		}
-
-		public override bool close (Cancellable? cancellable = null) throws IOError {
-			if (this.in.close () == -1)
-				throw new Error (IOError.quark (), FileUtils.error_from_errno (this.in.get_error ()), strerror (FileUtils.error_from_errno (this.in.get_error ())));
-
-			return this.in.is_closed;
-		}
 	}
 
 	/**
@@ -118,98 +169,30 @@ namespace VSGI.FastCGI {
 	 */
 	class Response : VSGI.Response {
 
-		private unowned Stream @out;
-		private unowned Stream err;
-
-		/**
-		 * Tells if the headers part of the HTTP message has been written to the
-		 * output stream.
-		 */
-		private bool headers_written = false;
-
 		private uint _status;
 
 		private MessageHeaders _headers = new MessageHeaders (MessageHeadersType.RESPONSE);
 
 		public override uint status {
 			get { return this._status; }
-			set { this._status = value; }
+			set {
+				this._status = value;
+				// update the 'Status' header
+				this._headers.replace ("Status", "%u %s".printf (value, Status.get_phrase (value)));
+			}
 		}
 
 		public override MessageHeaders headers { get { return this._headers; } }
 
 		public Response (Request req, Stream @out, Stream err) {
-			Object (request: req);
-			this.out = @out;
-			this.err = err;
-		}
-
-		private ssize_t write_headers () throws IOError {
-			// headers cannot be rewritten
-			if (this.headers_written)
-				error ("headers have already been written");
-
-			var headers = new StringBuilder ();
-
-			// status
-			headers.append ("Status: %u %s\r\n".printf (this.status, Status.get_phrase (this.status)));
-
-			// headers
-			this.headers.foreach ((k, v) => {
-				headers.append ("%s: %s\r\n".printf(k, v));
-			});
-
-			// newline preceeding the body
-			headers.append ("\r\n");
-
-			// write headers in a single operation
-			var written = this.out.puts (headers.str);
-
-			if (written == GLib.FileStream.EOF)
-				return written;
-
-			// headers are written if the write operation is successful (rewritten otherwise)
-			this.headers_written = true;
-
-			return written;
-		}
-
-		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
-			// lock so that two threads would not write headers at the same time.
-			lock (this.headers_written) {
-				if (!this.headers_written)
-					this.write_headers ();
-			}
-
-			var written = this.out.put_str (buffer);
-
-			if (written == GLib.FileStream.EOF)
-				throw new Error (IOError.quark (), FileUtils.error_from_errno (this.out.get_error ()), strerror (FileUtils.error_from_errno (this.out.get_error ())));
-
-			return written;
+			Object (request: req, output_stream: new StreamOutputStream (@out, err));
 		}
 
 		/**
-		 * Headers are written on the first flush call.
+		 * The status line is part of the headers, so nothing has to be done here.
 		 */
-		public override bool flush (Cancellable? cancellable = null) {
-			return this.out.flush ();
-		}
-
-		public override bool close (Cancellable? cancellable = null) throws IOError {
-			// lock so that two threads would not write headers at the same time.
-			lock (this.headers_written) {
-				if (!this.headers_written)
-					this.write_headers ();
-			}
-
-			if (this.err.close () == -1)
-				throw new Error (IOError.quark (), FileUtils.error_from_errno (this.err.get_error ()), strerror (FileUtils.error_from_errno (this.err.get_error ())));
-
-			if (this.out.close () == -1)
-				throw new Error (IOError.quark (), FileUtils.error_from_errno (this.out.get_error ()), strerror (FileUtils.error_from_errno (this.out.get_error ())));
-
-			return this.err.is_closed && this.out.is_closed;
+		protected override ssize_t write_status_line () throws IOError {
+			return 0;
 		}
 	}
 
@@ -316,14 +299,14 @@ namespace VSGI.FastCGI {
 				var req = new Request (request);
 				var res = new Response (req, request.out, request.err);
 
+				res.end.connect_after (() => {
+					message ("%s: %u %s %s", get_application_id (), res.status, res.request.method, res.request.uri.get_path ());
+					request.finish ();
+					request.close (false); // keep the socket open
+					release ();
+				});
+
 				this.application.handle (req, res);
-
-				message ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
-
-				request.finish ();
-				request.close (false); // keep the socket open
-
-				this.release ();
 
 				return true;
 			});
