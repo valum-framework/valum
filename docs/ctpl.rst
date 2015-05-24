@@ -83,12 +83,12 @@ Streaming views
 ---------------
 
 The best way of rendering a view is by streaming it directly into
-a :doc:`vsgi/response` instance with the ``splice`` function. This way, your
+a :doc:`vsgi/response` instance with the ``stream`` function. This way, your
 application can produce very big output efficiently.
 
 .. code:: vala
 
     app.get ("", (req, res) => {
         var template = new View.from_string ("");
-        template.splice (res);
+        template.stream (res);
     });
