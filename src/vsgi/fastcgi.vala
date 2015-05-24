@@ -309,7 +309,7 @@ namespace VSGI.FastCGI {
 				var req = new Request (request);
 				var res = new Response (req, request.out, request.err);
 
-				this.application.handle_async (req, res, () => {
+				this.application.handle_async.begin (req, res, () => {
 					message ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
 
 					request.finish ();
