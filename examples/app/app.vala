@@ -27,7 +27,7 @@ app.teardown.connect ((req, res) => {
 app.get ("", (req, res) => {
 	var template = new View.from_stream (resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
 
-	template.splice (res);
+	template.stream (res);
 });
 
 app.get ("query", (req, res) => {
@@ -165,7 +165,7 @@ app.get ("ctpl/<foo>/<bar>", (req, res) => {
 	tpl.push_strings ("strings", {"a", "b", "c"});
 	tpl.push_int ("int", 1);
 
-	tpl.splice  (res);
+	tpl.stream (res);
 });
 
 // memcached
@@ -270,7 +270,7 @@ app.teardown.connect ((req, res) => {
 	if (res.status == 404) {
 		var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));
 		template.environment.push_string ("path", req.uri.get_path ());
-		template.splice (res);
+		template.stream (res);
 	}
 });
 

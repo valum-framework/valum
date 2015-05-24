@@ -9,7 +9,7 @@ namespace Valum {
 	 * primitive and much more.
 	 *
 	 * This implementation include two rendering functions: {@link View.render}
-	 * and {@link View.splice}. The latter integrates very well with the
+	 * and {@link View.stream}. The latter integrates very well with the
 	 * framework since {@link VSGI.Response} inherit from
 	 * {@link GLib.OutputStream}.
 	 *
@@ -265,27 +265,16 @@ namespace Valum {
 		}
 
 		/**
-		 * Splice the template into a given {@link GLib.OutputStream}.
+		 * Stream the template into a given {@link GLib.OutputStream}.
 		 *
 		 * This is used to render a template directly into a stream and avoid
 		 * memory overhead if the template is heavy.
 		 *
 		 * @since 0.1
 		 *
-		 * @param output OutputStream into which the template will be spliced.
+		 * @param output OutputStream into which the template will be streamed.
 		 */
-		public void splice (OutputStream output) throws IOError, Ctpl.IOError {
-			Ctpl.parser_parse (this.tree, this.environment, new Ctpl.OutputStream (output));
-		}
-
-		/**
-		 * Splice the template asynchronously into a given {@link GLib.OutputStream}.
-		 *
-		 * @since 0.1
-		 *
-		 * @param output OutputStream into which the template will be spliced.
-		 */
-		public async void splice_async (OutputStream output) throws IOError, Ctpl.IOError {
+		public void stream (OutputStream output) throws IOError, Ctpl.IOError {
 			Ctpl.parser_parse (this.tree, this.environment, new Ctpl.OutputStream (output));
 		}
 
@@ -298,7 +287,7 @@ namespace Valum {
 		public string render () throws IOError, Ctpl.IOError {
 			var mem_stream = new MemoryOutputStream (null, realloc, free);
 
-			this.splice (mem_stream);
+			this.stream (mem_stream);
 
 			return (string) mem_stream.get_data();
 		}
