@@ -184,6 +184,29 @@ namespace VSGI.FastCGI {
 
 		public override MessageHeaders headers { get { return this._headers; } }
 
+		/**
+		 * Tells if the head of the response has been written.
+		 */
+		private bool head_written = false;
+
+		/**
+		 * The HTTP server already handles the 'Transfer-Encoding' header.
+		 */
+		public override OutputStream body {
+			get {
+				if (this.head_written)
+					return this.output_stream;
+
+				this.write_status_line ();
+
+				this.write_headers ();
+
+				this.head_written = true;
+
+				return this.output_stream;
+			}
+		}
+
 		public Response (Request req, Stream @out, Stream err) {
 			Object (request: req, output_stream: new StreamOutputStream (@out, err));
 		}
