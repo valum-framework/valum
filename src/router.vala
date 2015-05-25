@@ -284,12 +284,15 @@ namespace Valum {
 		 * {@inheritDoc}
 		 *
 		 * The response is initialized with sane default such as 200 status
-		 * code, 'text/html' content type and request cookies.
+		 * code, 'text/html' content type, 'chunked' transfer encoding and
+		 * request cookies.
 		 */
 		public void handle (Request req, Response res) {
 			// sane initialization
 			res.status = Soup.Status.OK;
 			res.headers.set_content_type ("text/html", null);
+			if (req.http_version == Soup.HTTPVersion.@1_1)
+				res.headers.set_encoding (Soup.Encoding.CHUNKED);
 			res.cookies = req.cookies;
 
 			// teardown the response before the stream is closed
