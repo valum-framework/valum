@@ -14,6 +14,8 @@ namespace VSGI.Soup {
 
 		private HashTable<string, string>? _query;
 
+		public override HTTPVersion http_version { get { return this.message.http_version; } }
+
 		public override string method { owned get { return this.message.method ; } }
 
 		public override URI uri { get { return this.message.uri; } }

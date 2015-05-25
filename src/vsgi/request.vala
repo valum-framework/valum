@@ -53,6 +53,11 @@ namespace VSGI {
 		public HashTable<string, string?>? @params { get; set; default = null; }
 
 		/**
+		 * Request HTTP version.
+		 */
+		public abstract HTTPVersion http_version { get; }
+
+		/**
 		 * Request HTTP method
 		 *
 		 * Should be one of OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT
