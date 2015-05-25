@@ -17,6 +17,7 @@ namespace VSGI.FastCGI {
 	 */
 	class Request : VSGI.Request {
 
+		private HTTPVersion _http_version = HTTPVersion.@1_0;
 		private string _method = VSGI.Request.GET;
 		private URI _uri = new URI (null);
 		private HashTable<string, string>? _query = null;
@@ -27,16 +28,20 @@ namespace VSGI.FastCGI {
 		 */
 		private unowned Stream @in;
 
+		public override HTTPVersion http_version {
+			get { return this._http_version; }
+		}
+
+		public override string method {
+			owned get { return this._method; }
+		}
+
 		public override URI uri { get { return this._uri; } }
 
 		public override HashTable<string, string>? query {
 			get {
 				return this._query;
 			}
-		}
-
-		public override string method {
-			owned get { return this._method; }
 		}
 
 		public override MessageHeaders headers {
@@ -47,6 +52,14 @@ namespace VSGI.FastCGI {
 			this.in = request.in;
 
 			var environment = request.environment;
+
+			if (environment["SERVER_PROTOCOL"] != null)
+				this._http_version = environment["SERVER_PROTOCOL"] == "HTTP/1.1" ?
+					HTTPVersion.@1_1 :
+					HTTPVersion.@1_0; // fallback if it's not reckognized
+
+			if (environment["REQUEST_METHOD"] != null)
+				this._method = (string) environment["REQUEST_METHOD"];
 
 			// nullables
 			this._uri.set_host (environment["SERVER_NAME"]);
@@ -64,9 +77,6 @@ namespace VSGI.FastCGI {
 
 			if (environment["SERVER_PORT"] != null)
 				this._uri.set_port (int.parse (environment["SERVER_PORT"]));
-
-			if (environment["REQUEST_METHOD"] != null)
-				this._method = (string) environment["REQUEST_METHOD"];
 
 			// parse the HTTP query
 			if (environment["QUERY_STRING"] != null)
