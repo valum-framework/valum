@@ -49,14 +49,14 @@ namespace VSGI {
 		}
 
 		/**
-		 * Response raw stream.
+		 * Response raw body.
 		 *
 		 * @since 0.2
 		 */
-		public OutputStream output_stream { construct; protected get; }
+		public OutputStream raw_body { construct; protected get; }
 
 		/**
-		 * Placeholder for the stream used in body property.
+		 * Placeholder for the filtered raw body.
 		 */
 		private OutputStream? _body = null;
 
@@ -77,15 +77,21 @@ namespace VSGI {
 				if (this._body != null)
 					return this._body;
 
-				this.write_status_line ();
+				if (!this.status_line_written) {
+					this.write_status_line ();
+					this.status_line_written = true;
+				}
 
-				this.write_headers ();
+				if (!this.headers_written) {
+					this.write_headers ();
+					this.headers_written = true;
+				}
 
-				this._body = this.output_stream;
+				this._body = this.raw_body;
 
 				// filter the stream properly
 				if (this.headers.get_encoding () == Encoding.CHUNKED) {
-					this._body = new ChunkedOutputStream (output_stream);
+					this._body = new ChunkedOutputStream (raw_body);
 				}
 
 				return this._body;
@@ -93,8 +99,14 @@ namespace VSGI {
 		}
 
 		/**
-		 * Write the HTTP status line in the response stream.
+		 * @since 0.2
+		 */
+		protected bool status_line_written = false;
+
+		/**
+		 * Write the HTTP status line in the response raw body.
 		 *
+		 * It is invoked once when the body is accessed for the first time.
 		 * This must be invoked before any headers writing operations,
 		 * preferably with the response status property and protocol
 		 * version.
@@ -106,11 +118,16 @@ namespace VSGI {
 		 */
 		protected virtual ssize_t write_status_line () throws IOError {
 			var status_line = "%s %u %s\r\n".printf ("HTTP/1.1", status, Status.get_phrase (status));
-			return this.output_stream.write (status_line.data);
+			return this.raw_body.write (status_line.data);
 		}
 
 		/**
-		 * Write the given headers in the response stream.
+		 * @since 0.2
+		 */
+		protected bool headers_written = false;
+
+		/**
+		 * Write the headers in the response raw body.
 		 *
 		 * It is invoked once before the body is written and can be invoked
 		 * later to produce multipart messages.
@@ -124,11 +141,11 @@ namespace VSGI {
 
 			// headers
 			this.headers.foreach ((k, v) => {
-				written += this.output_stream.write ("%s: %s\r\n".printf (k, v).data);
+				written += this.raw_body.write ("%s: %s\r\n".printf (k, v).data);
 			});
 
 			// newline preceeding the body
-			written += this.output_stream.write ("\r\n".data);
+			written += this.raw_body.write ("\r\n".data);
 
 			return written;
 		}
@@ -137,13 +154,21 @@ namespace VSGI {
 		 * End the {@link Response} processing and notify that event to the
 		 * listeners.
 		 *
-		 * The default handler will close the body.
+		 * The default handler will write the status line, write the response
+		 * headers and close the body if any of these is not already done.
 		 *
 		 * @since 0.2
 		 */
 		public virtual signal void end () {
-			if (!this.body.is_closed ())
-				this.body.close ();
+			if (!this.status_line_written) {
+				this.write_status_line ();
+				this.status_line_written = true;
+			}
+
+			if (!this.headers_written) {
+				this.write_headers ();
+				this.headers_written = true;
+			}
 		}
 	}
 
