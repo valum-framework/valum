@@ -6,7 +6,6 @@ public static int main (string[] args) {
 
 	// default route
 	app.get ("", (req, res) => {
-		res.headers.set_encoding (Soup.Encoding.CHUNKED);
 		res.body.write ("Hello world!".data);
 		res.end ();
 	});
