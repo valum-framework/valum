@@ -52,8 +52,8 @@ namespace VSGI.Soup {
 			get { return this.message.response_headers; }
 		}
 
-		public Response (Request req, Message msg, OutputStream output_stream) {
-			Object (request: req, message: msg, output_stream: output_stream);
+		public Response (Request req, Message msg, OutputStream raw_body) {
+			Object (request: req, message: msg, raw_body: raw_body);
 		}
 	}
 
@@ -115,8 +115,6 @@ namespace VSGI.Soup {
 
 				var req = new Request (msg, new MemoryInputStream.from_data (msg.request_body.data, null), query);
 				var res = new Response (req, msg, connection.output_stream);
-
-				res.headers.append ("Transfer-Encoding", "chunked");
 
 				res.end.connect_after (() => {
 					connection.close_async (Priority.DEFAULT, null, () => {
