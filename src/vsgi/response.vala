@@ -67,12 +67,8 @@ namespace VSGI {
 		 * line and headers will be written in the response stream. Subsequent
 		 * accesses will remain the stream untouched.
 		 *
-		 * The provided stream is safe for transfer encoding, so unless the
-		 * server technology guarantees that already, VSGI provide basic stream
-		 * filters for that purpose.
-		 *
-		 * The default implementation is to return the output_stream property,
-		 * assuming that the server does transfer encoding properly.
+		 * The provided stream is safe for transfer encoding and will filter
+		 * the stream properly if it's chunked.
 		 *
 		 * @since 0.2
 		 */
@@ -86,6 +82,11 @@ namespace VSGI {
 				this.write_headers ();
 
 				this._body = this.output_stream;
+
+				// filter the stream properly
+				if (this.headers.get_encoding () == Encoding.CHUNKED) {
+					this._body = new ChunkedOutputStream (output_stream);
+				}
 
 				return this._body;
 			}
@@ -181,8 +182,7 @@ namespace VSGI {
 		/**
 		 * {@inheritDoc}
 		 *
-		 * Closing the stream will write 5 bytes if the choosed encoding is
-		 * {@link Soup.Encoding.CHUNKED}.
+		 * Closing the stream will write 5 bytes to end the chunking properly.
 		 *
 		 * @since 0.2
 		 */

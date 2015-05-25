@@ -52,26 +52,6 @@ namespace VSGI.Soup {
 			get { return this.message.response_headers; }
 		}
 
-		private OutputStream _body = null;
-
-		public override OutputStream body {
-			get {
-				if (this._body != null)
-					return this._body;
-
-				this.write_status_line ();
-
-				this.write_headers ();
-
-				this._body = output_stream;
-
-				if (this.headers.get_encoding () == Encoding.CHUNKED)
-					this._body = new ChunkedOutputStream (output_stream);
-
-				return this._body;
-			}
-		}
-
 		public Response (Request req, Message msg, OutputStream output_stream) {
 			Object (request: req, message: msg, output_stream: output_stream);
 		}
