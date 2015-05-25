@@ -44,14 +44,18 @@ namespace Valum {
 		 * Setup a request before its processing begins.
 		 *
 		 * The default handler initializes the response with sane default such
-		 * as 200 status code, 'text/html' content type and request cookies. Use
-		 * 'connect_after' if you want to override any of these defaults.
+		 * as 200 status code, 'text/html' content type, 'chunked' transfer
+		 * encoding and request cookies.
+		 *
+		 * Use 'connect_after' if you want to override any of these defaults.
 		 *
 		 * @since 0.1
 		 */
 		public virtual signal void setup (Request req, Response res) {
 			res.status = Soup.Status.OK;
 			res.headers.set_content_type ("text/html", null);
+			if (req.http_version == Soup.HTTPVersion.@1_1)
+				res.headers.set_encoding (Soup.Encoding.CHUNKED);
 			res.cookies = req.cookies;
 		}
 
