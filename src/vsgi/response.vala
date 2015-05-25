@@ -13,7 +13,7 @@ namespace VSGI {
 		 *
 		 * @since 0.1
 		 */
-		public weak Request request { construct; get; }
+		public Request request { construct; get; }
 
 		/**
 		 * Response status.

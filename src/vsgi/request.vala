@@ -50,7 +50,7 @@ namespace VSGI {
 		 *
 		 * @since 0.0.1
 		 */
-		public HashTable<string, string?>? @params = null;
+		public HashTable<string, string?>? @params { get; set; default = null; }
 
 		/**
 		 * Request HTTP method

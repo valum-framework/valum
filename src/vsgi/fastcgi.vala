@@ -212,7 +212,7 @@ namespace VSGI.FastCGI {
 		/**
 		 * FastCGI socket file descriptor.
 		 */
-		private GLib.Socket socket;
+		public GLib.Socket? socket { get; set; default = null; }
 
 		public Server (VSGI.Application application) {
 			Object (application: application, flags: ApplicationFlags.HANDLES_COMMAND_LINE);

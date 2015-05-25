@@ -10,7 +10,8 @@ namespace VSGI.Soup {
 	 */
 	class Request : VSGI.Request {
 
-		private Message message;
+		public Message message { construct; get; }
+
 		private HashTable<string, string>? _query;
 
 		public override string method { owned get { return this.message.method ; } }
@@ -26,7 +27,7 @@ namespace VSGI.Soup {
 		}
 
 		public Request (Message msg, HashTable<string, string>? query) {
-			this.message = msg;
+			Object (message: msg);
 			this._query = query;
 		}
 
@@ -64,7 +65,7 @@ namespace VSGI.Soup {
 	 */
 	class Response : VSGI.Response {
 
-		private Message message;
+		public Message message { construct; get; }
 
 		public override uint status {
 			get { return this.message.status_code; }
@@ -76,8 +77,7 @@ namespace VSGI.Soup {
 		}
 
 		public Response (Request req, Message msg) {
-			Object (request: req);
-			this.message = msg;
+			Object (request: req, message: msg);
 		}
 
 		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) {
@@ -103,17 +103,23 @@ namespace VSGI.Soup {
 	 */
 	public class Server : VSGI.Server {
 
-		private global::Soup.Server server;
+		/**
+		 * @since 0.1
+		 */
+		public global::Soup.Server server { construct; get; }
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public Server (VSGI.Application application) {
-			Object (application: application, flags: ApplicationFlags.HANDLES_COMMAND_LINE);
-
 #if SOUP_2_48
-			this.server = new global::Soup.Server (global::Soup.SERVER_SERVER_HEADER, "Valum");
+			var server = new global::Soup.Server (global::Soup.SERVER_SERVER_HEADER, "Valum");
 #else
-			this.server = new global::Soup.Server (global::Soup.SERVER_SERVER_HEADER, "Valum",
+			var server = new global::Soup.Server (global::Soup.SERVER_SERVER_HEADER, "Valum",
 						                           global::Soup.SERVER_PORT, 3003);
 #endif
+
+			Object (application: application, flags: ApplicationFlags.HANDLES_COMMAND_LINE, server: server);
 
 #if GIO_2_42
 			this.add_main_option ("port", 'p', 0, OptionArg.INT, "port used to serve the HTTP server", "3003");
