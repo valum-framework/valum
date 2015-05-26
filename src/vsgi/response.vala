@@ -55,81 +55,114 @@ namespace VSGI {
 			}
 		}
 
-		private OutputStream? _body = null;
-
 		/**
 		 * Response body.
 		 *
 		 * On the first attempt to access the response body stream, the status
-		 * line and headers will be written in the response stream. Subsequent
-		 * accesses will remain the stream untouched.
+		 * line and headers will be written synchronously in the response
+		 * stream. {@link VSGI.Response.write_head_async} have to be used
+		 * explicitly to perform a non-blocking operation.
 		 *
 		 * The provided stream is safe for transfer encoding and will filter
 		 * the stream properly if it's chunked.
 		 *
+		 * Apply filters on the base_stream to make it usable
+		 *
+		 * Typically, this would involve appling chunked encoding, buffering,
+		 * transparent compression and other kind of filters required by the
+		 * implementation.
+		 *
+		 * For CGI-ish protocols, the server will generally deal with transfer
+		 * encoding automatically, so the default implementation is to simply
+		 * return the base_stream.
 		 * @since 0.2
 		 */
 		public virtual OutputStream body {
 			get {
-				// body have been filtered or redirected
-				if (this._body != null)
-					return this._body;
+				// write head synchronously
+				if (!this.head_written)
+					this.write_head ();
 
-				this.write_status_line ();
+				assert (this.head_written);
 
-				this.write_headers ();
-
-				this._body = this.connection.output_stream;
-
-				return this._body;
-			}
-			set {
-				this._body = value;
+				return this.connection.output_stream;
 			}
 		}
 
 		/**
-		 * Write the HTTP status line in the response raw body.
-		 *
-		 * It is invoked once when the body is accessed for the first time.
-		 *
-		 * This must be invoked before any headers writing operations,
-		 * preferably with the response status property and protocol
-		 * version.
+		 * Tells if the head has been written in the connection {@link OutputStream}.
 		 *
 		 * @since 0.2
-		 *
-		 * @param status   response status code
-		 * @param protocol HTTP protocol and version, eg. HTTP/1.1
 		 */
-		protected virtual ssize_t write_status_line () throws IOError {
-			var status_line = "%s %u %s\r\n".printf (this.request.http_version == HTTPVersion.@1_0 ? "HTTP/1.0" : "HTTP/1.1",
-			                                         status,
-			                                         Status.get_phrase (status));
-			return this.connection.output_stream.write (status_line.data);
-		}
+		protected bool head_written = false;
 
 		/**
-		 * Write the headers in the response raw body.
+		 * Produce the head of this response including the status line, the
+		 * headers and the newline preceeding the body as it would be written in
+		 * the base stream.
 		 *
-		 * It is invoked once when the body is accessed for the first time.
+		 * The default implementation will produce a valid HTTP/1.1 head
+		 * including the status line and headers.
 		 *
 		 * @since 0.2
-		 *
-		 * @param headers headers to write in the response stream
 		 */
-		protected virtual ssize_t write_headers () throws IOError {
-			var headers = new StringBuilder ();
+		protected virtual uint8[] build_head () {
+			var head = new StringBuilder ();
+
+			// status line
+			head.append ("%s %u %s\r\n".printf (this.request.http_version == HTTPVersion.@1_0 ? "HTTP/1.0" : "HTTP/1.1",
+						status,
+						Status.get_phrase (status)));
 
 			// headers
 			this.headers.foreach ((k, v) => {
-				headers.append ("%s: %s\r\n".printf (k, v));
+				head.append ("%s: %s\r\n".printf (k, v));
 			});
 
 			// newline preceeding the body
-			headers.append ("\r\n");
+			head.append ("\r\n");
 
-			return this.connection.output_stream.write (headers.str.data);
+			return head.str.data;
+		}
+
+		/**
+		 * Write status line and headers into the base stream.
+		 *
+		 * This is invoked automatically when accessing the response body for
+		 * the first time.
+		 *
+		 * @since 0.2
+		 */
+		public ssize_t write_head (Cancellable? cancellable = null) throws IOError {
+			if (this.head_written) {
+				warning ("head has already been written");
+				return 0;
+			}
+
+			var written = this.connection.output_stream.write (this.build_head (), cancellable);
+
+			this.head_written = true;
+
+			return written;
+		}
+
+		/**
+		 * Write status line and headers asynchronously.
+		 *
+		 * @since 0.2
+		 */
+		public async ssize_t write_head_async (int priority = GLib.Priority.DEFAULT,
+			                                   Cancellable? cancellable = null) throws IOError {
+			if (this.head_written) {
+				warning ("head has already been written");
+				return 0;
+			}
+
+			var written = yield this.connection.output_stream.write_async (this.build_head (), priority, cancellable);
+
+			this.head_written = true;
+
+			return written;
 		}
 	}
 }

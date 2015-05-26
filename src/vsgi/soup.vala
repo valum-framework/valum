@@ -73,34 +73,6 @@ namespace VSGI.Soup {
 			get { return this.message.response_headers; }
 		}
 
-		private OutputStream? _body = null;
-
-		public override OutputStream body {
-			get {
-				// body have been filtered or redirected
-				if (this._body != null)
-					return this._body;
-
-				this.write_status_line ();
-
-				this.write_headers ();
-
-				this._body = this.connection.output_stream;
-
-#if SOUP_2_50
-				// filter the stream properly
-				if (this.request.http_version == HTTPVersion.@1_1 && this.headers.get_encoding () == Encoding.CHUNKED) {
-					this._body = new ConverterOutputStream (this._body, new ChunkedConverter ());
-				}
-#endif
-
-				return this._body;
-			}
-			set {
-				this._body = value;
-			}
-		}
-
 		/**
 		 * {@inheritDoc}
 		 *
@@ -110,6 +82,43 @@ namespace VSGI.Soup {
 		 */
 		public Response (Request req, Message msg, IOStream connection) {
 			Object (request: req, message: msg, connection: connection);
+		}
+
+#if SOUP_2_50
+		/**
+		 * Placeholder for the filtered body.
+		 */
+		private OutputStream? filtered_body = null;
+#endif
+
+		/**
+		 * {@inheritDoc}
+		 *
+		 * If libsoup-2.4 (>=2.50) is available and the http_version in the
+		 * {@link Request} is set to 'HTTP/1.1', chunked encoding will be
+		 * applied.
+		 */
+		protected override OutputStream body {
+			get {
+				if (!this.head_written)
+					this.write_head ();
+
+#if SOUP_2_50
+				if (this.filtered_body != null)
+					return this.filtered_body;
+
+				// filter the stream properly
+				if (this.request.http_version == HTTPVersion.@1_1 && this.headers.get_encoding () == Encoding.CHUNKED) {
+					this.filtered_body = new ConverterOutputStream (this.connection.output_stream, new ChunkedConverter ());
+				} else {
+					this.filtered_body = this.connection.output_stream;
+				}
+
+				return this.filtered_body;
+#else
+				return this.connection.output_stream;
+#endif
+			}
 		}
 	}
 
@@ -204,8 +213,10 @@ namespace VSGI.Soup {
 #if !SOUP_2_50
 		/**
 		 * Represents a connection between the server and the client for older
-		 * version of libsoup-2.4 (<2.50). It essentially complement the lack of
-		 * {@link Soup.ClientContext.steal_connection}.
+		 * version of libsoup-2.4 (<2.50). It essentially complements the lack
+		 * of {@link Soup.ClientContext.steal_connection}.
+		 *
+		 * @since 0.2
 		 */
 		private class Connection : IOStream {
 
@@ -216,31 +227,41 @@ namespace VSGI.Soup {
 
 			public global::Soup.Message message { construct; get; }
 
-			public InputStream input_stream {
+			public override InputStream input_stream {
 				get {
 					return this._input_stream;
 				}
 			}
 
-			public OutputStream output_stream {
+			public override OutputStream output_stream {
 				get {
 					return this._output_stream;
 				}
 			}
 
+			/**
+			 * {@inheritDoc}
+			 *
+			 * @param server  used to pause and unpause the message from and
+			 *                until the connection lives
+			 * @param message message wrapped to provide the IOStream
+			 */
 			public Connection (global::Soup.Server server, global::Soup.Message message) {
 				Object (server: server, message: message);
 
 				this._input_stream  = new MemoryInputStream.from_data (message.request_body.data, null);
-				this._output_stream = new MemoryOutputStream (message.response_body.data, realloc, free));
+				this._output_stream = new MemoryOutputStream (message.response_body.data, realloc, free);
 
 				// prevent the server from completing the message
-				this.server.pause_message (msg);
+				this.server.pause_message (message);
 			}
 
 			~Connection () {
+				// explicitly complete the body
+				this.message.response_body.complete ();
+
 				// resume I/O operations
-				this.server.unpause_message (msg);
+				this.server.unpause_message (message);
 			}
 		}
 #endif
