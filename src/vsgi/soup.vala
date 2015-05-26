@@ -76,7 +76,7 @@ namespace VSGI.Soup {
 #if SOUP_2_50
 				// filter the stream properly
 				if (this.headers.get_encoding () == Encoding.CHUNKED) {
-					this._body = new ChunkedOutputStream (base_stream);
+					this._body = new ConverterOutputStream (this.base_stream, new ChunkedConverter ());
 					return this._body;
 				}
 #endif
