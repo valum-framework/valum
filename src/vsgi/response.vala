@@ -63,6 +63,10 @@ namespace VSGI {
 		/**
 		 * Response body.
 		 *
+		 * The body should be setted with a {@link FilterOutputStream} wrapping
+		 * the current body. This can be used to implement specific
+		 * 'Content-Encoding'.
+		 *
 		 * On the first attempt to access the response body stream, the status
 		 * line and headers will be written in the response stream. Subsequent
 		 * accesses will remain the stream untouched.
@@ -95,6 +99,9 @@ namespace VSGI {
 				}
 
 				return this._body;
+			}
+			set {
+				this._body = value;
 			}
 		}
 

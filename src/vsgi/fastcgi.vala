@@ -183,7 +183,11 @@ namespace VSGI.FastCGI {
 
 		public override MessageHeaders headers { get { return this._headers; } }
 
+		private OutputStream? _body = null;
+
 		/**
+		 * {@inheritDoc}
+		 *
 		 * The HTTP server already handles the 'Transfer-Encoding' header.
 		 */
 		public override OutputStream body {
@@ -201,7 +205,14 @@ namespace VSGI.FastCGI {
 					this.headers_written = true;
 				}
 
+				// body has been filtered
+				if (this._body != null)
+					return this._body;
+
 				return this.raw_body;
+			}
+			set {
+				this._body = body;
 			}
 		}
 
