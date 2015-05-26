@@ -13,6 +13,7 @@ def options(opt):
     opt.load('compiler_c')
 
     opt.add_option('--enable-gcov', action='store_true', default=False, help='enable coverage with gcov')
+    opt.add_option('--enable-threading', action='store_true', default=False, help='enable threading support with GThread')
 
 def configure(conf):
     conf.load('compiler_c vala')
@@ -46,6 +47,10 @@ def configure(conf):
         conf.check(lib='gcov', uselib_store='GCOV', args='--cflags --libs')
         conf.env.append_unique('CFLAGS', ['-fprofile-arcs', '-ftest-coverage'])
 
+    if conf.options.enable_threading:
+        conf.check_cfg(package='gthread-2.0', atleast_version='2.32')
+        conf.env.append_unique('VALAFLAGS', ['--thread'])
+
     # configure examples
     conf.recurse(glob.glob('examples/*'))
 
@@ -59,8 +64,7 @@ def build(bld):
         source       = bld.path.ant_glob('src/**/*.vala'),
         uselib       = ['GLIB', 'GIO', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
         vapi_dirs    = ['vapi'],
-        install_path = '${LIBDIR}',
-        threding     = True)
+        install_path = '${LIBDIR}')
 
     # pkg-config file
     bld(
