@@ -284,10 +284,23 @@ namespace VSGI.FastCGI {
 		}
 
 		/**
-		 * The status line is part of the headers, so nothing has to be done here.
+		 * {@inheritDoc}
+		 *
+		 * CGI protocols does not have a status line. They use the 'Status'
+		 * header instead.
 		 */
-		protected override ssize_t write_status_line () throws IOError {
-			return 0;
+		public override uint8[] build_head () {
+			var head = new StringBuilder ();
+
+			// headers containing the status line
+			this.headers.foreach ((k, v) => {
+				head.append ("%s: %s\r\n".printf (k, v));
+			});
+
+			// newline preceeding the body
+			head.append ("\r\n");
+
+			return head.str.data;
 		}
 	}
 

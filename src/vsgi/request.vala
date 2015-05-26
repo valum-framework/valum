@@ -132,23 +132,17 @@ namespace VSGI {
 			}
 		}
 
-		private InputStream? _body = null;
-
 		/**
 		 * Request body.
 		 *
+		 * The provided stream is filtered by the implementation according to
+		 * the 'Transfer-Encoding' header value.
+		 *
 		 * @since 0.2
 		 */
-		public InputStream body {
-			get {
-				// body has been filtered or redirected
-				if (this._body != null)
-					return this._body;
-
+		public virtual InputStream body {
+			owned get {
 				return this.connection.input_stream;
-			}
-			set {
-				this._body = value;
 			}
 		}
 	}

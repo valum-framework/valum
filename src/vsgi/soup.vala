@@ -73,34 +73,6 @@ namespace VSGI.Soup {
 			get { return this.message.response_headers; }
 		}
 
-		private OutputStream? _body = null;
-
-		public override OutputStream body {
-			get {
-				// body have been filtered or redirected
-				if (this._body != null)
-					return this._body;
-
-				this.write_status_line ();
-
-				this.write_headers ();
-
-				this._body = this.connection.output_stream;
-
-#if SOUP_2_50
-				// filter the stream properly
-				if (this.request.http_version == HTTPVersion.@1_1 && this.headers.get_encoding () == Encoding.CHUNKED) {
-					this._body = new ConverterOutputStream (this._body, new ChunkedConverter ());
-				}
-#endif
-
-				return this._body;
-			}
-			set {
-				this._body = value;
-			}
-		}
-
 		/**
 		 * {@inheritDoc}
 		 *
@@ -110,6 +82,27 @@ namespace VSGI.Soup {
 		 */
 		public Response (Request req, Message msg, IOStream connection) {
 			Object (request: req, message: msg, connection: connection);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 *
+		 * If libsoup-2.4 (>=2.50) is available and the http_version in the
+		 * {@link Request} is set to 'HTTP/1.1', chunked encoding will be
+		 * applied.
+		 */
+		protected override OutputStream body {
+			owned get {
+				if (!this.head_written)
+					this.write_head ();
+#if SOUP_2_50
+				// filter the stream properly
+				if (this.request.http_version == HTTPVersion.@1_1 && this.headers.get_encoding () == Encoding.CHUNKED) {
+					return new ConverterOutputStream (this.connection.output_stream, new ChunkedConverter ());
+				}
+#endif
+				return this.connection.output_stream;
+			}
 		}
 	}
 

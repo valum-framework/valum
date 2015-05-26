@@ -35,9 +35,9 @@ app.get ("gzip", (req, res) => {
 	var template = new View.from_stream (resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
 
 	res.headers.append ("Content-Encoding", "gzip");
-	res.body = new ConverterOutputStream (res.body, new ZlibCompressor (ZlibCompressorFormat.GZIP));
+	var writer = new ConverterOutputStream (res.body, new ZlibCompressor (ZlibCompressorFormat.GZIP));
 
-	template.stream (res.body);
+	template.stream (writer);
 });
 
 app.get ("query", (req, res) => {
