@@ -30,6 +30,7 @@ Table Of Contents
     vsgi/request
     vsgi/response
     vsgi/server
+    vsgi/converters
     redirection-and-error
     route
     router
