@@ -31,22 +31,5 @@ namespace VSGI {
 		 * @param res response where the application should produce its output
 		 */
 		public abstract void handle (Request req, Response res);
-
-		/**
-		 * Process a pair of request and response asynchronously.
-		 *
-		 * Each requests are begin processed asynchronously so that they are
-		 * fundamentally design not to block one another.
-		 *
-		 * This would typically just call handle, but implementation can do
-		 * processing specific to an asynchronous handling.
-		 *
-		 * @since 0.1
-		 *
-		 * @param req request providen to the application by a
-		 *            {@link VSGI.Server}
-		 * @param res response where the application should produce its output
-		 */
-		public abstract async void handle_async (Request req, Response res);
 	}
 }

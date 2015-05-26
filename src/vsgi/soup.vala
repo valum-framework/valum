@@ -154,16 +154,11 @@ namespace VSGI.Soup {
 				var req = new Request (msg, query);
 				var res = new Response (req, msg);
 
-				this.application.handle_async.begin (req, res, () => {
-					// resume I/O on the message
-					server.unpause_message (msg);
-					message ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
-					this.release ();
-				});
+				this.application.handle (req, res);
 
-				// pause I/O, otherwise the message is sent after this handler,
-				// but asynchronous operations might be occuring.
-				server.pause_message (msg);
+				message ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
+
+				this.release ();
 			});
 
 #if SOUP_2_48

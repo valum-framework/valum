@@ -270,12 +270,5 @@ namespace Valum {
 				teardown (req, res);
 			}
 		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public async void handle_async (Request req, Response res) {
-			this.handle (req, res);
-		}
 	}
 }
