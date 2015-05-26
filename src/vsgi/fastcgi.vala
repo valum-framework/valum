@@ -185,7 +185,7 @@ namespace VSGI.FastCGI {
 		public override MessageHeaders headers { get { return this._headers; } }
 
 		public Response (Request req, Stream @out, Stream err) {
-			Object (request: req, raw_body: new StreamOutputStream (@out, err));
+			Object (request: req, base_stream: new StreamOutputStream (@out, err));
 		}
 
 		/**

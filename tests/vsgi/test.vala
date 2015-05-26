@@ -30,7 +30,7 @@ namespace VSGI.Test {
 		}
 
 		public Request (string method, URI uri, HashTable<string, string>? query = null) {
-			Object (body: null);
+			Object (base_stream: new MemoryInputStream ());
 			this._method = method;
 			this._uri    = uri;
 			this._query  = query;
@@ -66,7 +66,7 @@ namespace VSGI.Test {
 		}
 
 		public Response (Request req, uint status) {
-			Object (request: req, body: null);
+			Object (request: req, base_stream: new MemoryOutputStream (null, realloc, free));
 			this._status = status;
 		}
 	}

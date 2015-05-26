@@ -53,6 +53,11 @@ namespace VSGI {
 		public HashTable<string, string?>? @params { get; set; default = null; }
 
 		/**
+		 *
+		 */
+		public InputStream base_stream { construct; protected get; }
+
+		/**
 		 * Request HTTP version.
 		 */
 		public abstract HTTPVersion http_version { get; }
@@ -130,6 +135,6 @@ namespace VSGI {
 		 *
 		 * @since 0.2
 		 */
-		public InputStream body { construct; get; }
+		public InputStream body { get; set; }
 	}
 }

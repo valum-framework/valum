@@ -17,6 +17,11 @@ namespace VSGI {
 		public Request request { construct; get; }
 
 		/**
+		 * @since 0.2
+		 */
+		public OutputStream base_stream { construct; protected get; }
+
+		/**
 		 * Response status.
 		 *
 		 * @since 0.0.1
@@ -48,12 +53,7 @@ namespace VSGI {
 			}
 		}
 
-		/**
-		 * Response raw body.
-		 *
-		 * @since 0.2
-		 */
-		public OutputStream raw_body { construct; protected get; }
+		private OutputStream? _body = null;
 
 		/**
 		 * Response body.
@@ -69,8 +69,12 @@ namespace VSGI {
 		 */
 		public virtual OutputStream body {
 			get {
+				// body have been filtered or redirected
+				if (this._body != null)
+					return this._body;
+
 				if (this.headers_written)
-					return this.raw_body;
+					return this.base_stream;
 
 				if (!this.status_line_written) {
 					this.write_status_line ();
@@ -82,7 +86,10 @@ namespace VSGI {
 					this.headers_written = true;
 				}
 
-				return this.raw_body;
+				return this.base_stream;
+			}
+			set {
+				this._body = value;
 			}
 		}
 
@@ -106,7 +113,7 @@ namespace VSGI {
 		 */
 		protected virtual ssize_t write_status_line () throws IOError {
 			var status_line = "%s %u %s\r\n".printf ("HTTP/1.1", status, Status.get_phrase (status));
-			return this.raw_body.write (status_line.data);
+			return this.base_stream.write (status_line.data);
 		}
 
 		/**
@@ -129,11 +136,11 @@ namespace VSGI {
 
 			// headers
 			this.headers.foreach ((k, v) => {
-				written += this.raw_body.write ("%s: %s\r\n".printf (k, v).data);
+				written += this.base_stream.write ("%s: %s\r\n".printf (k, v).data);
 			});
 
 			// newline preceeding the body
-			written += this.raw_body.write ("\r\n".data);
+			written += this.base_stream.write ("\r\n".data);
 
 			return written;
 		}
