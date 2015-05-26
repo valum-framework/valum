@@ -184,28 +184,6 @@ namespace VSGI.FastCGI {
 
 		public override MessageHeaders headers { get { return this._headers; } }
 
-		/**
-		 * The HTTP server already handles the 'Transfer-Encoding' header.
-		 */
-		public override OutputStream body {
-			get {
-				if (this.headers_written)
-					return this.raw_body;
-
-				if (!this.status_line_written) {
-					this.write_status_line ();
-					this.status_line_written = true;
-				}
-
-				if (!this.headers_written) {
-					this.write_headers ();
-					this.headers_written = true;
-				}
-
-				return this.raw_body;
-			}
-		}
-
 		public Response (Request req, Stream @out, Stream err) {
 			Object (request: req, raw_body: new StreamOutputStream (@out, err));
 		}

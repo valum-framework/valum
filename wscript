@@ -36,6 +36,10 @@ def configure(conf):
     if conf.check_cfg(package='libsoup-2.4', atleast_version='2.48', mandatory=False, uselib_store='SOUP', args='--cflags --libs'):
         conf.env.append_unique('VALAFLAGS', ['--define=SOUP_2_48'])
 
+    # libsoup (>=2.50) for steal_connection
+    if conf.check_cfg(package='libsoup-2.4', atleast_version='2.50', mandatory=False, uselib_store='SOUP', args='--cflags --libs'):
+        conf.env.append_unique('VALAFLAGS', ['--define=SOUP_2_50'])
+
     # other dependencies
     conf.check(lib='fcgi', uselib_store='FCGI', args='--cflags --libs')
 
