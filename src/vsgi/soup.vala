@@ -52,6 +52,35 @@ namespace VSGI.Soup {
 			get { return this.message.response_headers; }
 		}
 
+		private OutputStream? _body = null;
+
+		public override OutputStream body {
+			get {
+				if (this._body != null)
+					return this._body;
+
+				if (!this.status_line_written) {
+					this.write_status_line ();
+					this.status_line_written = true;
+				}
+
+				if (!this.headers_written) {
+					this.write_headers ();
+					this.headers_written = true;
+				}
+
+#if SOUP_2_50
+				// filter the stream properly
+				if (this.headers.get_encoding () == Encoding.CHUNKED) {
+					this._body = new ChunkedOutputStream (raw_body);
+				}
+#endif
+
+				return this._body;
+
+			}
+		}
+
 		public Response (Request req, Message msg, OutputStream raw_body) {
 			Object (request: req, message: msg, raw_body: raw_body);
 		}
@@ -111,16 +140,29 @@ namespace VSGI.Soup {
 			this.server.add_handler (null, (server, msg, path, query, client) => {
 				this.hold ();
 
-				var connection = client.steal_connection ();
+				var input_stream  = new MemoryInputStream.from_data (msg.request_body.data, null);
 
-				var req = new Request (msg, new MemoryInputStream.from_data (msg.request_body.data, null), query);
-				var res = new Response (req, msg, connection.output_stream);
+#if SOUP_2_50
+				var connection = client.steal_connection ();
+				var output_stream = connection.output_stream;
+#else
+				var output_stream = new MemoryOutputStream (msg.response_body.data, realloc, free);
+#endif
+
+				var req = new Request (msg, input_stream, query);
+				var res = new Response (req, msg, output_stream);
 
 				res.end.connect_after (() => {
+#if SOUP_2_50
 					connection.close_async (Priority.DEFAULT, null, () => {
 						message ("%s: %u %s %s", get_application_id (), res.status, res.request.method, res.request.uri.get_path ());
 						this.release ();
 					});
+#else
+					msg.response_body.complete ();
+					message ("%s: %u %s %s", get_application_id (), res.status, res.request.method, res.request.uri.get_path ());
+					this.release ();
+#endif
 				});
 
 				this.application.handle (req, res);
