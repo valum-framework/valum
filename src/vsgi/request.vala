@@ -53,6 +53,13 @@ namespace VSGI {
 		public HashTable<string, string?>? @params { get; set; default = null; }
 
 		/**
+		 * Raw stream used by the implementation.
+		 *
+		 * @since 0.2
+		 */
+		public InputStream base_stream { construct; protected get; }
+
+		/**
 		 * Request HTTP version.
 		 */
 		public abstract HTTPVersion http_version { get; }
@@ -125,11 +132,24 @@ namespace VSGI {
 			}
 		}
 
+		private InputStream? _body = null;
+
 		/**
 		 * Request body.
 		 *
 		 * @since 0.2
 		 */
-		public InputStream body { construct; get; }
+		public InputStream body {
+			get {
+				// body has been filtered or redirected
+				if (this._body != null)
+					return this._body;
+
+				return this.base_stream;
+			}
+			set {
+				this._body = value;
+			}
+		}
 	}
 }
