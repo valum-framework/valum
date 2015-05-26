@@ -30,8 +30,8 @@ namespace VSGI.Soup {
 			}
 		}
 
-		public Request (Message msg, InputStream body, HashTable<string, string>? query) {
-			Object (message: msg, body: body);
+		public Request (Message msg, InputStream base_stream, HashTable<string, string>? query) {
+			Object (message: msg, base_stream: base_stream);
 			this._query = query;
 		}
 	}
@@ -56,8 +56,12 @@ namespace VSGI.Soup {
 
 		public override OutputStream body {
 			get {
+				// body have been filtered or redirected
 				if (this._body != null)
 					return this._body;
+
+				if (this.headers_written)
+					return this.base_stream;
 
 				if (!this.status_line_written) {
 					this.write_status_line ();
@@ -72,17 +76,20 @@ namespace VSGI.Soup {
 #if SOUP_2_50
 				// filter the stream properly
 				if (this.headers.get_encoding () == Encoding.CHUNKED) {
-					this._body = new ChunkedOutputStream (raw_body);
+					this._body = new ChunkedOutputStream (base_stream);
+					return this._body;
 				}
 #endif
 
-				return this._body;
-
+				return this.base_stream;
+			}
+			set {
+				this._body = value;
 			}
 		}
 
-		public Response (Request req, Message msg, OutputStream raw_body) {
-			Object (request: req, message: msg, raw_body: raw_body);
+		public Response (Request req, Message msg, OutputStream base_stream) {
+			Object (request: req, message: msg, base_stream: base_stream);
 		}
 	}
 
