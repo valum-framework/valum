@@ -56,11 +56,6 @@ namespace VSGI {
 		public OutputStream raw_body { construct; protected get; }
 
 		/**
-		 * Placeholder for the filtered raw body.
-		 */
-		private OutputStream? _body = null;
-
-		/**
 		 * Response body.
 		 *
 		 * On the first attempt to access the response body stream, the status
@@ -74,8 +69,8 @@ namespace VSGI {
 		 */
 		public virtual OutputStream body {
 			get {
-				if (this._body != null)
-					return this._body;
+				if (this.headers_written)
+					return this.raw_body;
 
 				if (!this.status_line_written) {
 					this.write_status_line ();
@@ -87,14 +82,7 @@ namespace VSGI {
 					this.headers_written = true;
 				}
 
-				this._body = this.raw_body;
-
-				// filter the stream properly
-				if (this.headers.get_encoding () == Encoding.CHUNKED) {
-					this._body = new ChunkedOutputStream (raw_body);
-				}
-
-				return this._body;
+				return this.raw_body;
 			}
 		}
 
