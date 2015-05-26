@@ -130,6 +130,6 @@ namespace VSGI {
 		 *
 		 * @since 0.2
 		 */
-		public InputStream body { construct; get; }
+		public InputStream body { get; construct set; }
 	}
 }
