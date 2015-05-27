@@ -31,7 +31,7 @@ Lua
 
     // GET /lua
     app.get ("lua", (req, res) => {
-        var writer = new DataOutputStream (res);
+        var writer = new DataOutputStream (res.body);
 
         // evaluate a string containing Lua code
         writer.put_string (lua.do_string (
@@ -68,8 +68,8 @@ Scheme can be used to produce template or facilitate computation.
 .. code:: vala
 
     app.get ("hello.scm", (req, res) => {
-        var writer = new DataOutputStream (res);
-        res.put_string (scm.run ("scripts/hello.scm"));
+        var writer = new DataOutputStream (res.body);
+        writer.put_string (scm.run ("scripts/hello.scm"));
     });
 
 Scheme code:

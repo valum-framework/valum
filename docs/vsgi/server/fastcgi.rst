@@ -5,7 +5,7 @@ A FastCGI application is a simple process that communicate with a HTTP server
 through unix or TCP a socket according to a specification.
 
 VSGI use `Vala fcgi bindings`_ to provide a compliant FastCGI implementation.
-See :doc:`../installation` for more information about the framework
+See :doc:`../../installation` for more information about the framework
 dependencies.
 
 .. _Vala fcgi bindings: http://www.masella.name/~andre/vapis/fcgi/index.htm
