@@ -34,11 +34,22 @@ app.get ("", (req, res) => {
 });
 
 app.methods ({VSGI.Request.GET, VSGI.Request.POST}, "get-and-post", (req, res) => {
-	res.write ("Matches GET and POST".data);
+	res.body.write ("Matches GET and POST".data);
 });
 
 app.all ("all", (req, res) => {
-	res.write ("Matches all HTTP methods".data);
+	res.body.write ("Matches all HTTP methods".data);
+});
+
+// default route
+app.get ("gzip", (req, res) => {
+	var template = new View.from_stream (resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
+
+	res.headers.append ("Content-Encoding", "gzip");
+	res.body = new ConverterOutputStream (res.body, new ZlibCompressor (ZlibCompressorFormat.GZIP));
+
+	template.stream (res.body);
+	res.end ();
 });
 
 app.get ("query", (req, res) => {
