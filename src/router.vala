@@ -55,15 +55,6 @@ namespace Valum {
 		public delegate void NextCallback (Value? state = null) throws Informational, Success, Redirection, ClientError, ServerError;
 
 		/**
-		 * Teardown a request after it has been processed even if a
-		 * {@link Redirection}, {@link ClientError} or {@link ServerError} is
-		 * thrown during the handling.
-		 *
-		 * @since 0.1
-		 */
-		public signal void teardown (Request req, Response res);
-
-		/**
 		 * @since 0.0.1
 		 */
 		public Router () {
@@ -355,8 +346,6 @@ namespace Valum {
 				res.headers.append ("Upgrade", c.message);
 			} catch (Error e) {
 				res.status = e.code;
-			} finally {
-				teardown (req, res);
 			}
 		}
 	}
