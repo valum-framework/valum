@@ -224,9 +224,10 @@ namespace Valum {
 					route.fire (req, res, () => {
 						unowned List<Route> current = routes.find (route);
 						// keep routing if there are more routes to explore
-						if (current.next != null) {
-							perform_routing (current.next, req, res);
-						}
+						if (current.next != null)
+							if (perform_routing (current.next, req, res))
+								return;
+						throw new ClientError.NOT_FOUND ("The request URI %s was not found.".printf (req.uri.to_string (false)));
 					});
 					return true;
 				}

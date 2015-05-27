@@ -353,3 +353,25 @@ public static void test_router_next () {
 
 	assert (418 == response.status);
 }
+
+public static void test_router_next_not_found () {
+	var router = new Router ();
+
+	router.get ("", (req, res, next) => {
+		next ();
+	});
+
+	// should recurse a bit in process_routing
+	router.get ("", (req, res, next) => {
+		next ();
+	});
+
+	// no more route matching
+
+	var request = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (404 == response.status);
+}

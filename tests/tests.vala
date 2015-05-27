@@ -29,6 +29,7 @@ public int main (string[] args) {
 	Test.add_func ("/router/subrouting", test_router_subrouting);
 
 	Test.add_func ("/router/next", test_router_next);
+	Test.add_func ("/router/next/not_found", test_router_next_not_found);
 
 	Test.add_func ("/route", test_route);
 	Test.add_func ("/route/from_rule", test_route_from_rule);
