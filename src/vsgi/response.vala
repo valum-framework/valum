@@ -75,30 +75,18 @@ namespace VSGI {
 				if (this._body != null)
 					return this._body;
 
-				if (this.headers_written)
-					return this.base_stream;
+				this.write_status_line ();
 
-				if (!this.status_line_written) {
-					this.write_status_line ();
-					this.status_line_written = true;
-				}
+				this.write_headers ();
 
-				if (!this.headers_written) {
-					this.write_headers ();
-					this.headers_written = true;
-				}
+				this._body = this.base_stream;
 
-				return this.base_stream;
+				return this._body;
 			}
 			set {
 				this._body = value;
 			}
 		}
-
-		/**
-		 * @since 0.2
-		 */
-		protected bool status_line_written = false;
 
 		/**
 		 * Write the HTTP status line in the response raw body.
@@ -118,11 +106,6 @@ namespace VSGI {
 			var status_line = "%s %u %s\r\n".printf ("HTTP/1.1", status, Status.get_phrase (status));
 			return this.base_stream.write (status_line.data);
 		}
-
-		/**
-		 * @since 0.2
-		 */
-		protected bool headers_written = false;
 
 		/**
 		 * Write the headers in the response raw body.
@@ -158,20 +141,12 @@ namespace VSGI {
 		 * @since 0.2
 		 */
 		public virtual signal void end () {
-			if (!this.status_line_written) {
-				this.write_status_line ();
-				this.status_line_written = true;
-			}
-
-			if (!this.headers_written) {
-				this.write_headers ();
-				this.headers_written = true;
-			}
-
 			// close the request body
 			this.request.body.close ();
 
 			// close this response body
+			// accessing the body for the first time will write the status line
+			// and headers
 			this.body.close ();
 		}
 	}
