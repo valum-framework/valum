@@ -10,19 +10,6 @@ mcd.add_server ("127.0.0.1", 11211);
 // extra route types
 app.types["permutations"] = /abc|acb|bac|bca|cab|cba/;
 
-var timer  = new Timer ();
-
-app.setup.connect ((req, res) => {
-	timer.start ();
-});
-
-app.teardown.connect ((req, res) => {
-	timer.stop ();
-	var elapsed = timer.elapsed ();
-	res.headers.append ("X-Runtime", "%8.3fms".printf (elapsed * 1000));
-	message ("%s computed in %8.3fms", req.uri.get_path (), elapsed * 1000);
-});
-
 // default route
 app.get ("", (req, res) => {
 	var template = new View.from_stream (resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));

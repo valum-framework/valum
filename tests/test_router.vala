@@ -326,3 +326,30 @@ public static void test_router_subrouting () {
 
 	assert (418 == response.status);
 }
+
+/**
+ * @since 0.1
+ */
+public static void test_router_next () {
+	var router = new Router ();
+
+	router.get ("", (req, res, next) => {
+		next ();
+	});
+
+	// should recurse a bit in process_routing
+	router.get ("", (req, res, next) => {
+		next ();
+	});
+
+	router.get ("", (req, res, next) => {
+		res.status = 418;
+	});
+
+	var request = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.NOT_FOUND);
+
+	router.handle (request, response);
+
+	assert (418 == response.status);
+}

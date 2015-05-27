@@ -41,19 +41,11 @@ namespace Valum {
 		public delegate void Loader (Valum.Router router);
 
 		/**
-		 * Setup a request before its processing begins.
-		 *
-		 * The default handler initializes the response with sane default such
-		 * as 200 status code, 'text/html' content type and request cookies. Use
-		 * 'connect_after' if you want to override any of these defaults.
+		 * Keeps routing the {@link VSGI.Request} and {@link VSGI.Response}.
 		 *
 		 * @since 0.1
 		 */
-		public virtual signal void setup (Request req, Response res) {
-			res.status = Soup.Status.OK;
-			res.headers.set_content_type ("text/html", null);
-			res.cookies = req.cookies;
-		}
+		public delegate void Next () throws Redirection, ClientError, ServerError;
 
 		/**
 		 * Teardown a request after it has been processed even if a
@@ -219,21 +211,47 @@ namespace Valum {
 		}
 
 		/**
+		 * Perform the routing given a specific list of routes.
+		 *
+		 * @param routes
+		 * @param req
+		 * @param res
+		 * @return tells if something matched during the routing process
+		 */
+		private bool perform_routing (List<Route> routes, Request req, Response res) throws Redirection, ClientError, ServerError {
+			foreach (var route in routes) {
+				if (route.match (req)) {
+					route.fire (req, res, () => {
+						unowned List<Route> current = routes.find (route);
+						// keep routing if there are more routes to explore
+						if (current.next != null) {
+							perform_routing (current.next, req, res);
+						}
+					});
+					return true;
+				}
+			}
+			return false;
+		}
+
+		/**
 		 * {@inheritDoc}
+		 *
+		 * The response is initialized with sane default such as 200 status
+		 * code, 'text/html' content type and request cookies.
 		 */
 		public void handle (Request req, Response res) {
-			setup (req, res);
+			// sane initialization
+			res.status = Soup.Status.OK;
+			res.headers.set_content_type ("text/html", null);
+			res.cookies = req.cookies;
 
 			try {
 				// ensure at least one route has been declared with that method
 				if (this.routes.contains (req.method)) {
 					// find a route that may handle the request
-					foreach (var route in this.routes[req.method].head) {
-						if (route.match (req)) {
-							route.fire (req, res);
-							return;
-						}
-					}
+					if (this.perform_routing (this.routes[req.method].head, req, res))
+						return; // something matched
 				}
 
 				// find routes from other methods matching this Request

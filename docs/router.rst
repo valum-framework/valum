@@ -111,53 +111,6 @@ a future release.
         // matches /users
     });
 
-Setup and teardown signals
---------------------------
-
-Valum's Router defines ``setup`` and ``teardown`` signals which are called
-before and after a request processing.
-
-.. code:: vala
-
-    app.setup.connect ((req, res) => {
-        // called before a request is being processed
-    });
-
-The default handler of the ``setup`` signal will initialize the response object
-with some sane defaults:
-
--  200 status code
--  ``text/html`` content type
--  request cookies
-
-If you want to override any of the defaults, you must bind a callback with
-``connect_after`` as it will be executed after the default handler.
-
-.. code:: vala
-
-    app.setup.connect_after ((req, res) => {
-        res.status = Soup.Status.NOT_FOUND;
-    });
-
-The ``teardown`` signal is executed in a finally clause, which means that it
-will be triggered even if an error is thrown in the matched route handler.
-
-.. code:: vala
-
-    app.teardown.connect ((req, res) => {
-        // called after a request has been processed
-    })
-
-It might not be possible to write in the response body in the ``teardown``, so
-you must check if it is closed.
-
-.. code:: vala
-
-    app.teardown.connect ((req, res) => {
-        if (!res.is_closed)
-            res.write ("I can still write!".data);
-    })
-
 Subrouting
 ----------
 
@@ -187,3 +140,21 @@ target of side-effects such as:
 
 In the example, the ``<any:any>`` parameter will initialize the
 :doc:`vsgi/request` parameters.
+
+Next
+----
+
+The :doc:`route` handler takes a callback as an optional third argument. This
+callback is a continuation that will continue the routing process to the next
+matching route.
+
+.. code:: vala
+
+    app.get ("", (req, res, next) => {
+        message ("pre");
+        next (); // keep routing
+    });
+
+    app.get ("", (req, res) => {
+        // this is invoked!
+    });
