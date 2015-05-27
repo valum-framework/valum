@@ -68,16 +68,16 @@ from `GLib.OutputStream`_.
 Closing the response
 --------------------
 
-In GIO, streams are automatically closed when they get out of sight due
-to reference counting. This is a particulary useful behiaviour for
-asynchronous operations as references to requests or responses will
-persist in a callback.
+It is possible to close the response ``body`` by invoking ``close`` on that
+property to notify the request client that all data has been sent.
 
-You do not have to close your streams (in general), but it can be a
-useful to:
+Ending the response would typically close both request and response bodies, but
+closing them explicitly can yield interesting advantages:
 
 -  avoid undesired read or write operation
 -  release the stream if it's not involved in a expensive processing
+-  closing the stream asynchronously with ``close_async`` can provide better
+   performances
 
 This is a typical example where closing the response manually will have
 a great incidence on the application throughput.
@@ -90,6 +90,17 @@ a great incidence on the application throughput.
 
         // send a success mail
         Mailer.send ("johndoe@example.com", "Had to close that stream mate!");
+    });
+
+This is an example of asynchronously closing the response body to improve I/O
+performances.
+
+.. code:: vala
+
+    app.get ("", (req, res) => {
+        res.body.close_async (Priority.DEFAULT, null, () => {
+            res.end ();
+        });
     });
 
 End the response

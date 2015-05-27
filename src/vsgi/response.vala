@@ -152,7 +152,8 @@ namespace VSGI {
 		 * listeners.
 		 *
 		 * The default handler will write the status line, write the response
-		 * headers and close the body if any of these is not already done.
+		 * headers and close the request and response bodies if any of these is
+		 * not done already.
 		 *
 		 * @since 0.2
 		 */
@@ -166,6 +167,12 @@ namespace VSGI {
 				this.write_headers ();
 				this.headers_written = true;
 			}
+
+			// close the request body
+			this.request.body.close ();
+
+			// close this response body
+			this.body.close ();
 		}
 	}
 }
