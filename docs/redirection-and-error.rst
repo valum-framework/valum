@@ -10,7 +10,7 @@ In a :doc:`route` callback, you may throw any of ``Redirection``,
 ``ClientError`` and ``ServerError`` predefined error domains rather than
 setting the status and returning from the function.
 
-The Router handler will automatically catch these special errors and set
+The :doc:`router` handler will automatically catch these special errors and set
 the appropriate status code in the response for your convenience.
 
 Redirection (3xx)
@@ -40,6 +40,22 @@ enumerations.
 
     app.get ("not-found", (req, res) => {
         throw new ClientError.NOT_FOUND ("The requested URI was not found.");
+    });
+
+Errors in next
+--------------
+
+The ``next`` continuation is designed to throw these specific errors so that
+the :doc:`router` can handle them properly.
+
+.. code:: vala
+
+    app.get ("", (req, res, next) => {
+        next (); // will throw a 404
+    });
+
+    app.get ("", (req, res) => {
+        throw new ClientError.NOT_FOUND ("");
     });
 
 Custom handling for status
