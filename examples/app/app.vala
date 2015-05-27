@@ -311,15 +311,13 @@ api.get ("repository/<name>", (req, res) => {
 	res.end ();
 });
 
-// delegate all other GET requests to a subrouter
-app.get ("<any:path>", api.handle);
+// delegate requests to a subrouter
+app.get ("repository/<any:path>", api.handle);
 
-app.teardown.connect ((req, res) => {
-	if (res.status == 404) {
-		var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));
-		template.environment.push_string ("path", req.uri.get_path ());
-		template.stream (res.body);
-	}
+app.get ("<any:any>", (req, res) => {
+	var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));
+	template.environment.push_string ("path", req.uri.get_path ());
+	template.stream (res.body);
 });
 
 new Server (app).run ({"app", "--port", "3003"});
