@@ -140,3 +140,21 @@ target of side-effects such as:
 
 In the example, the ``<any:any>`` parameter will initialize the
 :doc:`vsgi/request` parameters.
+
+Next
+----
+
+The :doc:`route` handler takes a callback as an optional third argument. This
+callback is a continuation that will continue the routing process to the next
+matching route.
+
+.. code:: vala
+
+    app.get ("", (req, res, next) => {
+        message ("pre");
+        next (); // keep routing
+    });
+
+    app.get ("", (req, res) => {
+        // this is invoked!
+    });
