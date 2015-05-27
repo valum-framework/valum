@@ -48,15 +48,6 @@ namespace Valum {
 		public delegate void Next () throws Redirection, ClientError, ServerError;
 
 		/**
-		 * Teardown a request after it has been processed even if a
-		 * {@link Redirection}, {@link ClientError} or {@link ServerError} is
-		 * thrown during the handling.
-		 *
-		 * @since 0.1
-		 */
-		public signal void teardown (Request req, Response res);
-
-		/**
 		 * @since 0.0.1
 		 */
 		public Router () {
@@ -249,11 +240,6 @@ namespace Valum {
 				res.headers.set_encoding (Soup.Encoding.CHUNKED);
 			res.cookies = req.cookies;
 
-			// teardown the response before the stream is closed
-			res.end.connect (() => {
-				teardown (req, res);
-			});
-
 			try {
 				// ensure at least one route has been declared with that method
 				if (this.routes.contains (req.method)) {
@@ -292,8 +278,6 @@ namespace Valum {
 				res.status = e.code;
 			} catch (ServerError e) {
 				res.status = e.code;
-			} finally {
-				teardown (req, res);
 			}
 
 			// in case of exception, always end the response properly
