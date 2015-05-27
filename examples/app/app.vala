@@ -44,6 +44,18 @@ app.all (null, (req, res, next) => {
 
 app.all ("all", (req, res) => {
 	res.body.write ("Matches all HTTP methods".data);
+	res.end ();
+});
+
+// default route
+app.get ("gzip", (req, res) => {
+	var template = new View.from_stream (resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
+
+	res.headers.append ("Content-Encoding", "gzip");
+	res.body = new ConverterOutputStream (res.body, new ZlibCompressor (ZlibCompressorFormat.GZIP));
+
+	template.stream (res.body);
+	res.end ();
 });
 
 app.get ("query", (req, res) => {
