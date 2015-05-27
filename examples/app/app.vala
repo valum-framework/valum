@@ -192,6 +192,14 @@ app.scope ("admin", (adm) => {
 	});
 });
 
+app.get ("next", (req, res, next) => {
+	next ();
+});
+
+app.get ("next", (req, res) => {
+	res.write ("Matched by the next route in the queue.".data);
+});
+
 // serve static resource using a path route parameter
 app.get ("static/<path:resource>.<any:type>", (req, res) => {
 	var writer = new DataOutputStream (res);
