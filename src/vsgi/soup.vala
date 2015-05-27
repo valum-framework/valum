@@ -60,28 +60,20 @@ namespace VSGI.Soup {
 				if (this._body != null)
 					return this._body;
 
-				if (this.headers_written)
-					return this.base_stream;
+				this.write_status_line ();
 
-				if (!this.status_line_written) {
-					this.write_status_line ();
-					this.status_line_written = true;
-				}
+				this.write_headers ();
 
-				if (!this.headers_written) {
-					this.write_headers ();
-					this.headers_written = true;
-				}
+				this._body = this.base_stream;
 
 #if SOUP_2_50
 				// filter the stream properly
 				if (this.headers.get_encoding () == Encoding.CHUNKED) {
-					this._body = new ConverterOutputStream (this.base_stream, new ChunkedConverter ());
-					return this._body;
+					this._body = new ConverterOutputStream (this._body, new ChunkedConverter ());
 				}
 #endif
 
-				return this.base_stream;
+				return this._body;
 			}
 			set {
 				this._body = value;
