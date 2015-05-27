@@ -300,10 +300,10 @@ namespace VSGI.FastCGI {
 				var res = new Response (req, request.out, request.err);
 
 				res.end.connect_after (() => {
-					message ("%s: %u %s %s", get_application_id (), res.status, res.request.method, res.request.uri.get_path ());
 					request.finish ();
 					request.close (false); // keep the socket open
-					release ();
+					message ("%s: %u %s %s", get_application_id (), res.status, res.request.method, res.request.uri.get_path ());
+					this.release ();
 				});
 
 				this.application.handle (req, res);
