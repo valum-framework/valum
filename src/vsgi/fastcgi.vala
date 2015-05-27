@@ -61,12 +61,14 @@ namespace VSGI.FastCGI {
 			if (environment["REQUEST_METHOD"] != null)
 				this._method = (string) environment["REQUEST_METHOD"];
 
-			// nullables
-			this._uri.set_host (environment["SERVER_NAME"]);
-			this._uri.set_query (environment["QUERY_STRING"]);
+			if (environment["HTTPS"] != null && environment["HTTPS"] == "on")
+				this._uri.set_scheme ("https");
 
-			// HTTP authentication credentials
 			this._uri.set_user (environment["REMOTE_USER"]);
+			this._uri.set_host (environment["SERVER_NAME"]);
+
+			if (environment["SERVER_PORT"] != null)
+				this._uri.set_port (int.parse (environment["SERVER_PORT"]));
 
 			if (environment["PATH_INFO"] != null)
 				this._uri.set_path ((string) environment["PATH_INFO"]);
@@ -75,8 +77,7 @@ namespace VSGI.FastCGI {
 			if (environment["REQUEST_URI"] != null)
 				this._uri.set_path ((string) environment["REQUEST_URI"]);
 
-			if (environment["SERVER_PORT"] != null)
-				this._uri.set_port (int.parse (environment["SERVER_PORT"]));
+			this._uri.set_query (environment["QUERY_STRING"]);
 
 			// parse the HTTP query
 			if (environment["QUERY_STRING"] != null)
