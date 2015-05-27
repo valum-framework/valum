@@ -5,10 +5,14 @@ Server provide HTTP technologies integrations under a common interface. They
 inherit from `GLib.Application`_, providing an optimal integration with the
 host environment.
 
-The following implementations are available:
+.. toctree::
+    :caption: Table of Contents
 
--  libsoup built-in HTTP server
--  FastCGI
+    soup
+    fastcgi
+
+General
+-------
 
 Basically, you have access to a `DBusConnection`_ to communicate with other
 process and a `GLib.MainLoop`_ to process events and asynchronous work.
@@ -70,7 +74,7 @@ CLI arguments, so you must write your code in a ``main`` function.
         var app = new Router;
 
         app.get ("", (req, res) => {
-            res.write ("Hello world!".data);
+            res.body.write ("Hello world!".data);
         });
 
         return new Server (app).run (args);

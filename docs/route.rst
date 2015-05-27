@@ -145,7 +145,7 @@ and optimized.
 .. code:: vala
 
     app.regex (Request.GET, /home\/?/, (req, res) => {
-        var writer = new DataOutputStream (res);
+        var writer = new DataOutputStream (res.body);
         writer.put_string ("Matched using a regular expression.");
     });
 
@@ -163,7 +163,7 @@ A matcher consist of a callback matching a given ``Request`` object.
     Route.MatcherCallback matcher = (req) => { req.path == "/custom-matcher"; };
 
     app.matcher ("GET", matcher, (req, res) => {
-        var writer = new DataOutputStream (res);
+        var writer = new DataOutputStream (res.body);
         writer.put_string ("Matched using a custom matcher.");
     });
 
@@ -175,7 +175,9 @@ fallback to a default route otherwise.
     app.matcher ("GET", (req) => {
         var user = new User (req.query["id"]);
         return "admin" in user.roles;
-    }, (req, res) => {});
+    }, (req, res) => {
+        // ...
+    });
 
     app.route ("<any:path>", (req, res) => {
         res.status = 404;
