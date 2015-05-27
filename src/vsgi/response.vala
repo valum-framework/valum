@@ -103,7 +103,9 @@ namespace VSGI {
 		 * @param protocol HTTP protocol and version, eg. HTTP/1.1
 		 */
 		protected virtual ssize_t write_status_line () throws IOError {
-			var status_line = "%s %u %s\r\n".printf ("HTTP/1.1", status, Status.get_phrase (status));
+			var status_line = "%s %u %s\r\n".printf (this.request.http_version == HTTPVersion.@1_0 ? "HTTP/1.0" : "HTTP/1.1",
+			                                         status,
+			                                         Status.get_phrase (status));
 			return this.base_stream.write (status_line.data);
 		}
 
