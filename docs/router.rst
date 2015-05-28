@@ -94,6 +94,51 @@ otherwise you will experience inconsistencies.
         // matches /home
     });
 
+Status handling
+---------------
+
+Thrown status code can be handled by a :doc:`route` handler callback.
+
+The received :doc:`vsgi/request` and :doc:`vsgi/response` object are in the
+same state they were when the status was thrown, except for the request
+parameters that contains two additional keys:
+
+-  ``code`` for the status code
+-  ``message`` for the status message
+
+.. _GLib.Error
+
+.. code:: vala
+
+    app.status (Soup.Status.NOT_FOUND, (req, res) => {
+        res.end ();
+    });
+
+Similarly to conventional request handling, the ``next`` continuation can be
+invoked to jump to the next status handler in the queue.
+
+.. code:: vala
+
+    app.status (Soup.Status.NOT_FOUND, (req, res, next) => {
+        next ();
+    });
+
+    app.status (Soup.Status.NOT_FOUND, (req, res) => {
+        res.status = 404;
+        res.body.write ("Not found!".data);
+        res.end ();
+    });
+
+:doc:`redirection-and-error` can be thrown during the status handling, they
+will be caught by the ``Router`` and processed accordingly.
+
+.. code:: vala
+
+    // turns any 404 into a permanent redirection
+    app.status (Soup.Status.NOT_FOUND, (req, res) => {
+        throw new Redirection.PERMANENT ("http://example.com");
+    });
+
 Scoping
 -------
 
@@ -167,3 +212,4 @@ matching route.
     app.get ("", (req, res) => {
         // this is invoked!
     });
+
