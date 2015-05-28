@@ -11,6 +11,7 @@ using GLib;
  */
 [CCode (gir_namespace = "VSGI", gir_version = "0.1")]
 namespace VSGI {
+
 	/**
 	 * Application that handles a pair of {@link VSGI.Request} and
 	 * {@link VSGI.Response}.
@@ -20,17 +21,24 @@ namespace VSGI {
 	public interface Application : Object {
 
 		/**
-		 * Process a pair of request and response.
+		 * End the processing of the {@link VSGI.Application}.
 		 *
-		 * Blocks until the response have been fully processed.
+		 * This delegate is generally provided by the server implementation to free
+		 * resources related to a client request.
+		 *
+		 * @since 0.2
+		 */
+		public delegate void EndCallback ();
+
+		/**
+		 * Process a pair of request and response.
 		 *
 		 * @since 0.1
 		 *
-		 * @param req request providen to the application by a
-		 *            {@link VSGI.Server}
-		 * @param res response where the application should produce its output
-		 * @param end called to end the processing of the response
+		 * @param req request representing a request resource
+		 * @param res response
+		 * @param end end the processing of the client request
 		 */
-		public abstract void handle (Request req, Response res);
+		public abstract void handle (Request req, Response res, EndCallback end);
 	}
 }

@@ -176,7 +176,7 @@ namespace VSGI.Soup {
 				var req = new Request (msg, input_stream, query);
 				var res = new Response (req, msg, output_stream);
 
-				res.end.connect_after (() => {
+				this.application.handle (req, res, () => {
 #if SOUP_2_50
 					connection.close_async.begin (Priority.DEFAULT, null, () => {
 						message ("%s: %u %s %s", get_application_id (), res.status, res.request.method, res.request.uri.get_path ());
@@ -188,8 +188,6 @@ namespace VSGI.Soup {
 					this.release ();
 #endif
 				});
-
-				this.application.handle (req, res);
 			});
 
 #if SOUP_2_48

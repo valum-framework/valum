@@ -131,25 +131,5 @@ namespace VSGI {
 
 			return this.base_stream.write (headers.str.data);
 		}
-
-		/**
-		 * End the {@link Response} processing and notify that event to the
-		 * listeners.
-		 *
-		 * The default handler will write the status line, write the response
-		 * headers and close the request and response bodies if any of these is
-		 * not done already.
-		 *
-		 * @since 0.2
-		 */
-		public virtual signal void end () {
-			// close the request body
-			this.request.body.close ();
-
-			// close this response body
-			// accessing the body for the first time will write the status line
-			// and headers
-			this.body.close ();
-		}
 	}
 }

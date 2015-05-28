@@ -254,14 +254,14 @@ namespace Valum {
 		 * @param res
 		 * @return tells if something matched during the routing process
 		 */
-		private bool perform_routing (List<Route> routes, Request req, Response res) throws Redirection, ClientError, ServerError {
+		private bool perform_routing (List<Route> routes, Request req, Response res, VSGI.Application.EndCallback end) throws Redirection, ClientError, ServerError {
 			foreach (var route in routes) {
 				if (route.match (req)) {
-					route.fire (req, res, () => {
+					route.fire (req, res, end, () => {
 						unowned List<Route> current = routes.find (route);
 						// keep routing if there are more routes to explore
 						if (current.next != null)
-							if (perform_routing (current.next, req, res))
+							if (perform_routing (current.next, req, res, end))
 								return;
 						throw new ClientError.NOT_FOUND ("The request URI %s was not found.".printf (req.uri.to_string (false)));
 					});
@@ -278,7 +278,7 @@ namespace Valum {
 		 * code, 'text/html' content type, 'chunked' transfer encoding and
 		 * request cookies.
 		 */
-		public void handle (Request req, Response res) {
+		public void handle (Request req, Response res, VSGI.Application.EndCallback end) {
 			// sane initialization
 			res.status = Soup.Status.OK;
 			res.headers.set_content_type ("text/html", null);
@@ -291,20 +291,21 @@ namespace Valum {
 					// ensure at least one route has been declared with that method
 					if (this.routes.contains (req.method)) {
 						// find a route that may handle the request
-						if (this.perform_routing (this.routes[req.method].head, req, res))
+						if (this.perform_routing (this.routes[req.method].head, req, res, end))
 							return; // something matched
 					}
 
-				// find routes from other methods matching this Request
-				var allowed = new StringBuilder ();
-				foreach (var method in this.routes.get_keys ()) {
-					if (method != req.method)
-						foreach (var route in this.routes[method].head) {
-							if (route.match (req)) {
-								if (allowed.len > 0)
-									allowed.append (", ");
-								allowed.append (method);
-								break;
+					// find routes from other methods matching this Request
+					var allowed = new StringBuilder ();
+					foreach (var method in this.routes.get_keys ()) {
+						if (method != req.method) {
+							foreach (var route in this.routes[method].head) {
+								if (route.match (req)) {
+									if (allowed.len > 0)
+										allowed.append (", ");
+									allowed.append (method);
+									break;
+								}
 							}
 						}
 					}
@@ -326,7 +327,7 @@ namespace Valum {
 
 					// handle using a registered status handler
 					if (this.status_handlers.contains (e.code)) {
-						if (this.perform_routing (this.status_handlers[e.code].head, req, res))
+						if (this.perform_routing (this.status_handlers[e.code].head, req, res, end))
 							return;
 					}
 
@@ -346,7 +347,7 @@ namespace Valum {
 			}
 
 			// in case of exception, always end the response properly
-			res.end ();
+			end ();
 		}
 	}
 }

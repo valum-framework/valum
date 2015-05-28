@@ -5,12 +5,12 @@ public static int main (string[] args) {
 	var app = new Router ();
 
 	// default route
-	app.get ("", (req, res) => {
+	app.get ("", (req, res, end) => {
 		res.body.write ("Hello world!".data);
-		res.end ();
+		end ();
 	});
 
-	app.get ("random/<int:size>", (req, res) => {
+	app.get ("random/<int:size>", (req, res, end) => {
 		var size   = int.parse (req.params["size"]);
 		var writer = new DataOutputStream (res.body);
 
@@ -19,16 +19,16 @@ public static int main (string[] args) {
 			writer.put_uint32 (Random.next_int ());
 		}
 
-		res.end ();
+		end ();
 	});
 
-	app.get ("<any:path>", (req, res) => {
+	app.get ("<any:path>", (req, res, end) => {
 		res.status = 404;
 
 		var writer = new DataOutputStream (res.body);
 		writer.put_string ("404 - Not found");
 
-		res.end ();
+		end ();
 	});
 
 	return new Server (app).run (args);
