@@ -269,12 +269,11 @@ api.get ("repository/<name>", (req, res) => {
 // delegate all other GET requests to a subrouter
 app.get ("<any:path>", api.handle);
 
-app.teardown.connect ((req, res) => {
-	if (res.status == 404) {
-		var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));
-		template.environment.push_string ("path", req.uri.get_path ());
-		template.stream (res);
-	}
+app.status (Soup.Status.NOT_FOUND, (req, res) => {
+	res.status = Soup.Status.NOT_FOUND;
+	var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));
+	template.environment.push_string ("path", req.uri.get_path ());
+	template.stream (res);
 });
 
 new Server (app).run ({"app", "--port", "3003"});
