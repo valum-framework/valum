@@ -10,14 +10,35 @@ In a :doc:`route` callback, you may throw any of ``Redirection``,
 ``ClientError`` and ``ServerError`` predefined error domains rather than
 setting the status and returning from the function.
 
-The :doc:`router` handler will automatically catch these special errors and set
-the appropriate status code in the response for your convenience.
+It is possible to connect a callback on the :doc:`router` to handle a specific
+status code. Otherwise, the router will simply set the status code in the
+response and set headers for specific errors.
+
+.. code:: vala
+
+    app.status (Soup.Status.PERMANENT, (req, res) => {
+        res.status = Soup.Status.PERMANENT;
+    });
+
+The error message may be used to fill specific :doc:`vsgi/response` headers.
+The following table describe how the router deal with specific error messages.
+
++--------------------------------+----------+
+| Error                          | Header   |
++================================+==========+
+| Redirection.*                  | Location |
++--------------------------------+----------+
+| ClientError.METHOD_NOT_ALLOWED | Accept   |
++--------------------------------+----------+
 
 Redirection (3xx)
 -----------------
 
 To perform a redirection, you have to throw a ``Redirection`` error and use the
-message as a redirect URL.
+message as a redirect URL. The :doc:`router` will automatically set the
+``Location`` header accordingly.
+
+Redirections are enumerated in ``Redirection`` enumeration.
 
 .. code:: vala
 
@@ -31,9 +52,8 @@ message as a redirect URL.
 Client (4xx) and server (5xx) error
 -----------------------------------
 
-Just like for redirection, client and server errors are thrown.
-
-Errors are predefined in ``ClientError`` and ``ServerError`` enumerations.
+Like for redirections, client and server errors are thrown. Errors are
+predefined in ``ClientError`` and ``ServerError`` enumerations.
 
 .. code:: vala
 
@@ -55,18 +75,4 @@ the :doc:`router` can handle them properly.
 
     app.get ("", (req, res) => {
         throw new ClientError.NOT_FOUND ("");
-    });
-
-Custom handling for status
---------------------------
-
-To do custom handling for specific status, bind a callback to the ``teardown``
-signal, it is executed after the processing of a client request.
-
-.. code:: vala
-
-    app.teardown.connect ((req, res) => {
-        if (res.status == Soup.Status.NOT_FOUND) {
-            // produce a 404 page...
-        }
     });
