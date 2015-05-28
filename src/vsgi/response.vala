@@ -119,17 +119,17 @@ namespace VSGI {
 		 * @param headers headers to write in the response stream
 		 */
 		protected virtual ssize_t write_headers () throws IOError {
-			ssize_t written = 0;
+			var headers = new StringBuilder ();
 
 			// headers
 			this.headers.foreach ((k, v) => {
-				written += this.base_stream.write ("%s: %s\r\n".printf (k, v).data);
+				headers.append ("%s: %s\r\n".printf (k, v));
 			});
 
 			// newline preceeding the body
-			written += this.base_stream.write ("\r\n".data);
+			headers.append ("\r\n");
 
-			return written;
+			return this.base_stream.write (headers.str.data);
 		}
 
 		/**

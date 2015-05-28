@@ -153,7 +153,7 @@ namespace VSGI.Soup {
 
 				res.end.connect_after (() => {
 #if SOUP_2_50
-					connection.close_async (Priority.DEFAULT, null, () => {
+					connection.close_async.begin (Priority.DEFAULT, null, () => {
 						message ("%s: %u %s %s", get_application_id (), res.status, res.request.method, res.request.uri.get_path ());
 						this.release ();
 					});
