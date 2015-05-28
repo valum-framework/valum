@@ -178,6 +178,48 @@ public static void test_router_patch () {
 /**
  * @since 0.1
  */
+public static void test_router_methods () {
+	var router = new Router ();
+
+	router.methods ({VSGI.Request.GET, VSGI.Request.POST}, "", (req, res) => {
+		res.status = 418;
+	});
+
+	string[] methods = {VSGI.Request.GET, VSGI.Request.POST};
+
+	foreach (var method in methods) {
+		var request  = new Request (method, new Soup.URI ("http://localhost/"));
+		var response = new Response (request, Soup.Status.OK);
+
+		router.handle (request, response);
+
+		assert (418 == response.status);
+	}
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_router_all () {
+	var router = new Router ();
+
+	router.all ("", (req, res) => {
+		res.status = 418;
+	});
+
+	foreach (var method in VSGI.Request.METHODS) {
+		var request  = new Request (method, new Soup.URI ("http://localhost/"));
+		var response = new Response (request, Soup.Status.OK);
+
+		router.handle (request, response);
+
+		assert (418 == response.status);
+	}
+}
+
+/**
+ * @since 0.1
+ */
 public static void test_router_regex () {
 	var router = new Router ();
 

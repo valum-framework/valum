@@ -60,8 +60,17 @@ convenience.
 
     app.method (Request.GET, "rule", (req, res) => {});
 
-Capture of multiple methods for the same handler is planned for the next minor
-release.
+Multiple methods can be captured with ``methods`` and ``all``.
+
+.. code:: vala
+
+    app.all ("", (req, res) => {
+        // matches all methods registered in VSGI.Request.METHODS
+    });
+
+    app.methods (Request.GET, Request.POST, "", (req, res) => {
+        // matches GET and POST
+    });
 
 Regular expression
 ------------------

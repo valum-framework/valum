@@ -23,6 +23,9 @@ public int main (string[] args) {
 	Test.add_func ("/router/connect", test_router_connect);
 	Test.add_func ("/router/patch", test_router_patch);
 
+	Test.add_func ("/router/methods", test_router_methods);
+	Test.add_func ("/router/all", test_router_all);
+
 	Test.add_func ("/router/regex", test_router_regex);
 	Test.add_func ("/router/matcher", test_router_matcher);
 

@@ -133,7 +133,7 @@ namespace Valum {
 		}
 
 		/**
-		 * Bind a callback with a custom HTTP method and a rule.
+		 * Bind a callback with a custom method.
 		 *
 		 * Useful if you need to support a non-standard HTTP method, otherwise you
 		 * should use the predefined methods.
@@ -146,6 +146,31 @@ namespace Valum {
 		 */
 		public void method (string method, string rule, Route.Handler cb) throws RegexError {
 			this.route (method, new Route.from_rule (this, rule, cb));
+		}
+
+		/**
+		 * Bind a callback to all HTTP methods defined in
+		 * {@link VSGI.Router.METHODS}.
+		 *
+		 * @since 0.1
+		 */
+		public void all (string rule, Route.Handler cb) throws RegexError {
+			this.methods (Request.METHODS, rule, cb);
+		}
+
+		/**
+		 * Bind a callback to a list of HTTP methods.
+		 *
+		 * @since 0.1
+		 *
+		 * @param methods methods to which the callback will be bound
+		 * @param rule    rule
+		 */
+		public void methods (string[] methods, string rule, Route.Handler cb) {
+			var route = new Route.from_rule (this, rule, cb);
+			foreach (var method in methods) {
+				this.route (method, route);
+			}
 		}
 
 		/**
