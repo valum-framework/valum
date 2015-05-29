@@ -351,6 +351,20 @@ public static void test_router_method_not_allowed () {
 /**
  * @since 0.1
  */
+public static void test_router_not_found () {
+	var router = new Router ();
+
+	var request = new Request ("GET", new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (Soup.Status.NOT_FOUND == response.status);
+}
+
+/**
+ * @since 0.1
+ */
 public static void test_router_subrouting () {
 	var router    = new Router ();
 	var subrouter = new Router ();
@@ -416,4 +430,30 @@ public static void test_router_next_not_found () {
 	router.handle (request, response);
 
 	assert (404 == response.status);
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_router_next_propagate_error () {
+	var router = new Router ();
+
+	router.get ("", (req, res, next) => {
+		next ();
+	});
+
+	router.get ("", (req, res, next) => {
+		next ();
+	});
+
+	router.get ("", (req, res, next) => {
+		throw new ClientError.UNAUTHORIZED ("");
+	});
+
+	var request = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (401 == response.status);
 }
