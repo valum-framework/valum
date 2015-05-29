@@ -1,7 +1,7 @@
-Persistency
+Persistence
 ===========
 
-Multiple persistency solutions have bindings in Vala and can be used by Valum.
+Multiple persistence solutions have bindings in Vala and can be used by Valum.
 
 -  `libgda`_ for relational databases and more
 -  `memcached`_

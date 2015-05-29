@@ -16,8 +16,8 @@ the appropriate status code in the response for your convenience.
 Redirection (3xx)
 -----------------
 
-To perform a redirection, you have to throw a ``Redirection`` error and
-use the message as a redirect URL.
+To perform a redirection, you have to throw a ``Redirection`` error and use the
+message as a redirect URL.
 
 .. code:: vala
 
@@ -33,8 +33,7 @@ Client (4xx) and server (5xx) error
 
 Just like for redirection, client and server errors are thrown.
 
-Errors are predefined in ``ClientError`` and ``ServerError``
-enumerations.
+Errors are predefined in ``ClientError`` and ``ServerError`` enumerations.
 
 .. code:: vala
 

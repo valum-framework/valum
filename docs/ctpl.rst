@@ -10,13 +10,13 @@ Three primitive types and one composite type are supported:
 -  ``int``
 -  ``float``
 -  ``string``
--  ``array`` of preceeding types (but not of ``array``)
+-  ``array`` of preceding types (but not of ``array``)
 
 Creating views
 --------------
 
-The ``View`` class provides constructors to create views from
-``string``, file path and ``InputStream``.
+The ``View`` class provides constructors to create views from ``string``, file
+path and ``InputStream``.
 
 .. code:: vala
 
@@ -27,7 +27,8 @@ The ``View`` class provides constructors to create views from
     var template = new View.from_path ("path/to/your/template.tpl");
 
 It is a good practice to bundle static data in the executable using
-`GLib.Resource`_.
+`GLib.Resource`_. This practice is covered in the
+:doc:`recipes/static-resource` document.
 
 .. _GLib.Resource: http://valadoc.org/#!api=gio-2.0/GLib.Resource
 
@@ -62,8 +63,7 @@ Valum provides helpers for dumping `GLib.HashTable`_, `Gee.Collection`_,
 
 `GLib.HashTable`_, `Gee.Map`_ and `Gee.MultiMap`_ are pushed by pushing all
 their entries ony-by-one. Generated environment keys are the simple
-concatenation of the providen key, a underscore (``_``) and the entry
-key.
+concatenation of the provided key, a underscore (``_``) and the entry key.
 
 .. code:: vala
 

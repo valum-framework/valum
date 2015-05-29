@@ -7,8 +7,8 @@ Valum web micro-framework
 .. image:: https://coveralls.io/repos/valum-framework/valum/badge.svg?branch=master
     :target: https://coveralls.io/r/valum-framework/valum?branch=master
 
-Valum is a web micro-framework written in Vala licensed under the LGPLv3. Its
-source code and releases are available on GitHub: `valum-framework/valum`_.
+Valum is a web micro-framework written in Vala and licensed under the LGPLv3.
+Its source code and releases are available on GitHub: `valum-framework/valum`_.
 
 This user documentation aims to be as complete as possible and covers topics
 that are not directly related to the framework, but essential for web

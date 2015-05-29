@@ -4,7 +4,7 @@ Quickstart
 Assuming that Valum is built and installed correctly (view :doc:`installation`
 for more details), you are ready to create your first application!
 
-Unless you installed Valum with ``--prefix=/usr``, you have to export
+Unless you installed Valum with ``--prefix=/usr``, you might have to export
 ``PKG_CONFIG_PATH`` and ``LD_LIBRARY_PATH``.
 
 .. code-block:: bash
