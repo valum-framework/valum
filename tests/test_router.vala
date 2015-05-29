@@ -351,6 +351,37 @@ public static void test_router_method_not_allowed () {
 /**
  * @since 0.1
  */
+public static void test_router_method_not_allowed_excludes_request_method () {
+	var router = new Router ();
+
+	var get_matched  = 0;
+	var post_matched = 0;
+
+	// matching, but not the same HTTP method
+	router.matcher (VSGI.Request.GET, () => { get_matched++; return true; }, (req, res) => {
+
+	});
+
+	// not matching, but same HTTP method
+	router.matcher (VSGI.Request.POST, () => { post_matched++; return false; }, (req, res) => {
+
+	});
+
+	var request = new Request ("POST", new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.METHOD_NOT_ALLOWED);
+
+	router.handle (request, response);
+
+	assert (post_matched == 1); // matched only once during initial lookup
+	assert (get_matched == 1);
+
+	assert (response.status == 405);
+	assert ("GET" == response.headers.get_one ("Allow"));
+}
+
+/**
+ * @since 0.1
+ */
 public static void test_router_not_found () {
 	var router = new Router ();
 

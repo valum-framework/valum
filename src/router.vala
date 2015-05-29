@@ -283,14 +283,15 @@ namespace Valum {
 				// find routes from other methods matching this Request
 				var allowed = new StringBuilder ();
 				foreach (var method in this.routes.get_keys ()) {
-					foreach (var route in this.routes[method].head) {
-						if (route.match (req)) {
-							if (allowed.len > 0)
-								allowed.append (", ");
-							allowed.append (method);
-							break;
+					if (method != req.method)
+						foreach (var route in this.routes[method].head) {
+							if (route.match (req)) {
+								if (allowed.len > 0)
+									allowed.append (", ");
+								allowed.append (method);
+								break;
+							}
 						}
-					}
 				}
 
 				// a Route from another method allows this Request

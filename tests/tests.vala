@@ -11,6 +11,8 @@ public int main (string[] args) {
 
 	Test.add_func ("/router/redirection", test_router_redirection);
 	Test.add_func ("/router/method_not_allowed", test_router_method_not_allowed);
+	Test.add_func ("/router/method_not_allowed/excludes_request_method",
+			       test_router_method_not_allowed_excludes_request_method);
 	Test.add_func ("/router/not_found", test_router_not_found);
 	Test.add_func ("/router/server_error", test_router_server_error);
 
