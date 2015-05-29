@@ -208,6 +208,6 @@ namespace Valum {
          *
 		 * @since 0.0.1
 		 */
-		public unowned Handler fire;
+		public Handler fire;
 	}
 }
