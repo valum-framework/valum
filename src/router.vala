@@ -75,56 +75,56 @@ namespace Valum {
 		/**
 		 * @since 0.0.1
 		 */
-		public new void get (string rule, Route.HandlerCallback cb) throws RegexError {
+		public new void get (string? rule, Route.HandlerCallback cb) throws RegexError {
 			this.method (Request.GET, rule, cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void post (string rule, Route.HandlerCallback cb) throws RegexError {
+		public void post (string? rule, Route.HandlerCallback cb) throws RegexError {
 			this.method (Request.POST, rule, cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void put (string rule, Route.HandlerCallback cb) throws RegexError {
+		public void put (string? rule, Route.HandlerCallback cb) throws RegexError {
 			this.method (Request.PUT, rule, cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void delete (string rule, Route.HandlerCallback cb) throws RegexError {
+		public void delete (string? rule, Route.HandlerCallback cb) throws RegexError {
 			this.method (Request.DELETE, rule, cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void head (string rule, Route.HandlerCallback cb) throws RegexError {
+		public void head (string? rule, Route.HandlerCallback cb) throws RegexError {
 			this.method (Request.HEAD, rule, cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void options(string rule, Route.HandlerCallback cb) throws RegexError {
+		public void options(string? rule, Route.HandlerCallback cb) throws RegexError {
 			this.method (Request.OPTIONS, rule, cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void trace (string rule, Route.HandlerCallback cb) throws RegexError {
+		public void trace (string? rule, Route.HandlerCallback cb) throws RegexError {
 			this.method (Request.TRACE, rule, cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public new void connect (string rule, Route.HandlerCallback cb) throws RegexError {
+		public new void connect (string? rule, Route.HandlerCallback cb) throws RegexError {
 			this.method (Request.CONNECT, rule, cb);
 		}
 
@@ -133,7 +133,7 @@ namespace Valum {
 		 *
 		 * @since 0.0.1
 		 */
-		public void patch (string rule, Route.HandlerCallback cb) throws RegexError {
+		public void patch (string? rule, Route.HandlerCallback cb) throws RegexError {
 			this.method (Request.PATCH, rule, cb);
 		}
 
@@ -149,7 +149,7 @@ namespace Valum {
 		 * @param rule   rule
 		 * @param cb     callback used to process the pair of request and response.
 		 */
-		public void method (string method, string rule, Route.HandlerCallback cb) throws RegexError {
+		public void method (string method, string? rule, Route.HandlerCallback cb) throws RegexError {
 			this.route (method, new Route.from_rule (this, rule, cb));
 		}
 
@@ -159,7 +159,7 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public void all (string rule, Route.HandlerCallback cb) throws RegexError {
+		public void all (string? rule, Route.HandlerCallback cb) throws RegexError {
 			this.methods (Request.METHODS, rule, cb);
 		}
 
@@ -171,7 +171,7 @@ namespace Valum {
 		 * @param methods methods to which the callback will be bound
 		 * @param rule    rule
 		 */
-		public void methods (string[] methods, string rule, Route.HandlerCallback cb) {
+		public void methods (string[] methods, string? rule, Route.HandlerCallback cb) {
 			var route = new Route.from_rule (this, rule, cb);
 			foreach (var method in methods) {
 				this.route (method, route);
