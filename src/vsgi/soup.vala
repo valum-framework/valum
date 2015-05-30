@@ -10,12 +10,17 @@ namespace VSGI.Soup {
 	/**
 	 * Soup Request
 	 */
-	class Request : VSGI.Request {
+	public class Request : VSGI.Request {
 
 		private HashTable<string, string>? _query;
 
 		public override HTTPVersion http_version { get { return this.message.http_version; } }
 
+		/**
+		 * Message underlying this request.
+		 *
+		 * @since 0.2
+		 */
 		public Message message { construct; get; }
 
 		public override string method { owned get { return this.message.method ; } }
@@ -30,6 +35,14 @@ namespace VSGI.Soup {
 			}
 		}
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @since 0.2
+		 *
+		 * @param msg   message underlying this request
+		 * @param query parsed HTTP query provided by {@link Soup.ServerCallback}
+		 */
 		public Request (Message msg, InputStream base_stream, HashTable<string, string>? query) {
 			Object (message: msg, base_stream: base_stream);
 			this._query = query;
@@ -39,8 +52,13 @@ namespace VSGI.Soup {
 	/**
 	 * Soup Response
 	 */
-	class Response : VSGI.Response {
+	public class Response : VSGI.Response {
 
+		/**
+		 * Message underlying this response.
+		 *
+		 * @since 0.2
+		 */
 		public Message message { construct; get; }
 
 		public override uint status {
@@ -80,6 +98,13 @@ namespace VSGI.Soup {
 			}
 		}
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @since 0.2
+		 *
+		 * @param msg message underlying this response
+		 */
 		public Response (Request req, Message msg, OutputStream base_stream) {
 			Object (request: req, message: msg, base_stream: base_stream);
 		}
