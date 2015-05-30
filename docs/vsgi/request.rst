@@ -38,7 +38,7 @@ The request parameters are stored in a `GLib.HashTable`_ of ``string`` to
 ``string`` and can be accessed from the ``Request.params`` property. It's used
 as a general metadata storage for requests.
 
-.. _Glib.HashTable: http://valadoc.org/#!api=glib-2.0/GLib.HashTable<F37>
+.. _Glib.HashTable: http://valadoc.org/#!api=glib-2.0/GLib.HashTable
 
 .. code:: vala
 
@@ -49,9 +49,9 @@ as a general metadata storage for requests.
 It is used to store named captures from rule and regular expression
 :doc:`../route` and as a general storage for custom matcher.
 
-Request parameters are metadata extracted by the ``Route.Matcher`` that matched
-the request you are handling. They can contain pretty much anything since
-a matcher can be any function accepting a ``Request`` instance.
+Request parameters are metadata extracted by the ``Route.MatcherCallback`` that
+matched the request you are handling. They can contain pretty much anything
+since a matcher can be any function accepting a ``Request`` instance.
 
 The parameter defaults to ``null`` if it is not populated.
 

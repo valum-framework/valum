@@ -144,7 +144,7 @@ A matcher consist of a callback matching a given ``Request`` object.
 
 .. code:: vala
 
-    Route.Matcher matcher = (req) => { req.path == "/custom-matcher"; };
+    Route.MatcherCallback matcher = (req) => { req.path == "/custom-matcher"; };
 
     app.matcher ("GET", matcher, (req, res) => {
         var writer = new DataOutputStream (res);
@@ -196,7 +196,7 @@ The definition of a handler is the following:
 
 .. code:: vala
 
-    delegate void Handler (Request req, Response res) throws Redirection, ClientError, ServerError
+    delegate void HandlerCallback (Request req, Response res, NextCallback) throws Redirection, ClientError, ServerError;
 
 See :doc:`redirection-and-error` for more details on what can be throws during
 the processing of a handler.
@@ -206,27 +206,3 @@ the processing of a handler.
     app.get ("redirection", (req, res) => {
         throw new Redirection.MOVED_TEMPORAIRLY ("http://example.com");
     });
-
-Handlers execute in asynchronous context, which means that two handlers can
-execute concurrently, but not necessary in parallel (you have to enable
-threding for that). It is fine to block as long as you are processing the
-response.
-
-If you have to process work and you are done with the response, use the
-asynchronous stream operations to avoid blocking either the response or the
-work.
-
-.. code:: vala
-
-    app.get ("", (req, res) => {
-        // write now and block
-        res.write ("Hello world!".data);
-
-        res.write_async.begin ("Hello world!".data, (obj, r) => {
-            var written = res.write_async.end (r);
-            res.close ();
-        });
-
-        // keep processing while the response is begin written
-    });
-

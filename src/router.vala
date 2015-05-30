@@ -38,14 +38,14 @@ namespace Valum {
 		 *
 		 * @since 0.0.1
 		 */
-		public delegate void Loader (Valum.Router router);
+		public delegate void LoaderCallback (Valum.Router router);
 
 		/**
 		 * Keeps routing the {@link VSGI.Request} and {@link VSGI.Response}.
 		 *
 		 * @since 0.1
 		 */
-		public delegate void Next () throws Redirection, ClientError, ServerError;
+		public delegate void NextCallback () throws Redirection, ClientError, ServerError;
 
 		/**
 		 * Teardown a request after it has been processed even if a
@@ -70,56 +70,56 @@ namespace Valum {
 		/**
 		 * @since 0.0.1
 		 */
-		public new void get (string rule, Route.Handler cb) throws RegexError {
+		public new void get (string rule, Route.HandlerCallback cb) throws RegexError {
 			this.method (Request.GET, rule, cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void post (string rule, Route.Handler cb) throws RegexError {
+		public void post (string rule, Route.HandlerCallback cb) throws RegexError {
 			this.method (Request.POST, rule, cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void put (string rule, Route.Handler cb) throws RegexError {
+		public void put (string rule, Route.HandlerCallback cb) throws RegexError {
 			this.method (Request.PUT, rule, cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void delete (string rule, Route.Handler cb) throws RegexError {
+		public void delete (string rule, Route.HandlerCallback cb) throws RegexError {
 			this.method (Request.DELETE, rule, cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void head (string rule, Route.Handler cb) throws RegexError {
+		public void head (string rule, Route.HandlerCallback cb) throws RegexError {
 			this.method (Request.HEAD, rule, cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void options(string rule, Route.Handler cb) throws RegexError {
+		public void options(string rule, Route.HandlerCallback cb) throws RegexError {
 			this.method (Request.OPTIONS, rule, cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void trace (string rule, Route.Handler cb) throws RegexError {
+		public void trace (string rule, Route.HandlerCallback cb) throws RegexError {
 			this.method (Request.TRACE, rule, cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public new void connect (string rule, Route.Handler cb) throws RegexError {
+		public new void connect (string rule, Route.HandlerCallback cb) throws RegexError {
 			this.method (Request.CONNECT, rule, cb);
 		}
 
@@ -128,7 +128,7 @@ namespace Valum {
 		 *
 		 * @since 0.0.1
 		 */
-		public void patch (string rule, Route.Handler cb) throws RegexError {
+		public void patch (string rule, Route.HandlerCallback cb) throws RegexError {
 			this.method (Request.PATCH, rule, cb);
 		}
 
@@ -144,7 +144,7 @@ namespace Valum {
 		 * @param rule   rule
 		 * @param cb     callback used to process the pair of request and response.
 		 */
-		public void method (string method, string rule, Route.Handler cb) throws RegexError {
+		public void method (string method, string rule, Route.HandlerCallback cb) throws RegexError {
 			this.route (method, new Route.from_rule (this, rule, cb));
 		}
 
@@ -154,7 +154,7 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public void all (string rule, Route.Handler cb) throws RegexError {
+		public void all (string rule, Route.HandlerCallback cb) throws RegexError {
 			this.methods (Request.METHODS, rule, cb);
 		}
 
@@ -166,7 +166,7 @@ namespace Valum {
 		 * @param methods methods to which the callback will be bound
 		 * @param rule    rule
 		 */
-		public void methods (string[] methods, string rule, Route.Handler cb) {
+		public void methods (string[] methods, string rule, Route.HandlerCallback cb) {
 			var route = new Route.from_rule (this, rule, cb);
 			foreach (var method in methods) {
 				this.route (method, route);
@@ -185,7 +185,7 @@ namespace Valum {
 		 * @param regex  regular expression matching the request path.
 		 * @param cb     callback used to process the pair of request and response.
 		 */
-		public void regex (string method, Regex regex, Route.Handler cb) throws RegexError {
+		public void regex (string method, Regex regex, Route.HandlerCallback cb) throws RegexError {
 			this.route (method, new Route.from_regex (this, regex, cb));
 		}
 
@@ -198,7 +198,7 @@ namespace Valum {
 		 * @param matcher callback used to match the request
 		 * @param cb      callback used to process the pair of request and response.
 		 */
-		public void matcher (string method, Route.Matcher matcher, Route.Handler cb) {
+		public void matcher (string method, Route.MatcherCallback matcher, Route.HandlerCallback cb) {
 			this.route (method, new Route (this, matcher, cb));
 		}
 
@@ -229,7 +229,7 @@ namespace Valum {
 		 * @param fragment fragment to push on the scopes stack
 		 * @param loader   nests a router in the new scoped environment
 		 */
-		public void scope (string fragment, Loader loader) {
+		public void scope (string fragment, LoaderCallback loader) {
 			this.scopes.push_tail (fragment);
 			loader (this);
 			this.scopes.pop_tail ();

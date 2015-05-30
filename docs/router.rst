@@ -9,7 +9,7 @@ HTTP methods
 ------------
 
 Callback can be connected to HTTP methods via a list of helpers having the
-``Route.Handler`` delegate signature:
+``Route.HandlerCallback`` delegate signature:
 
 .. code:: vala
 
@@ -123,9 +123,9 @@ a future release.
 Subrouting
 ----------
 
-Since ``VSGI.Application`` handler is type compatible with ``Route.Handler``,
-it is possible to delegate request handling to another VSGI-compliant
-application.
+Since ``VSGI.Application`` handler is type compatible with
+``Route.HandlerCallback``, it is possible to delegate request handling to
+another VSGI-compliant application.
 
 .. code:: vala
 

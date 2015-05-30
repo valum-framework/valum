@@ -4,7 +4,7 @@ using VSGI;
 namespace Valum {
 
 	/**
-	 * Route provides a {@link Route.Matcher} and {@link Route.Handler} to
+	 * Route provides a {@link Route.MatcherCallback} and {@link Route.HandlerCallback} to
 	 * respectively match and handle a {@link VSGI.Request} and
 	 * {@link VSGI.Response}.
 	 *
@@ -33,7 +33,7 @@ namespace Valum {
 		 *
 		 * @param req request being matched
 		 */
-		public delegate bool Matcher (Request req);
+		public delegate bool MatcherCallback (Request req);
 
 		/**
 		 * Handle a pair of request and response.
@@ -47,7 +47,7 @@ namespace Valum {
 		 * @param req request being handled
 		 * @param res response to send back to the requester
 		 */
-		public delegate void Handler (Request req, Response res, Router.Next next) throws Redirection, ClientError, ServerError;
+		public delegate void HandlerCallback (Request req, Response res, Router.NextCallback next) throws Redirection, ClientError, ServerError;
 
 		/**
 		 * Create a Route using a custom matcher.
@@ -59,7 +59,7 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public Route (Router router, Matcher matcher, Handler callback) {
+		public Route (Router router, MatcherCallback matcher, HandlerCallback callback) {
 			this.router = router;
 			this.match  = matcher;
 			this.fire   = callback;
@@ -78,7 +78,7 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public Route.from_regex (Router router, Regex regex, Handler callback) throws RegexError {
+		public Route.from_regex (Router router, Regex regex, HandlerCallback callback) throws RegexError {
 			this.router = router;
 			this.fire   = callback;
 
@@ -138,7 +138,7 @@ namespace Valum {
 		 *
 		 * @since 0.0.1
 		 */
-		public Route.from_rule (Router router, string rule, Handler callback) throws RegexError {
+		public Route.from_rule (Router router, string rule, HandlerCallback callback) throws RegexError {
 			this.router   = router;
 			this.fire     = callback;
 
@@ -201,13 +201,13 @@ namespace Valum {
          *
 		 * @since 0.0.1
 		 */
-		public Matcher match;
+		public MatcherCallback match;
 
 		/**
 		 * Apply the handler on the request and response.
          *
 		 * @since 0.0.1
 		 */
-		public Handler fire;
+		public HandlerCallback fire;
 	}
 }
