@@ -344,9 +344,6 @@ namespace Valum {
 			} catch (ServerError e) {
 				res.status = e.code;
 			}
-
-			// in case of exception, always end the response properly
-			res.end ();
 		}
 	}
 }

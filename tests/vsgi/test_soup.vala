@@ -5,9 +5,9 @@ using VSGI.Soup;
  */
 public static void test_vsgi_soup_request () {
 	var message      = new Soup.Message ("GET", "http://0.0.0.0:3003/");
-	var input_stream = new MemoryInputStream ();
 
-	var request = new Request (message, input_stream, null);
+	var connection = new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream (null, realloc, free));
+	var request    = new Request (message, connection, null);
 
 	assert (message == request.message);
 	assert (Soup.HTTPVersion.@1_1 == request.http_version);
@@ -18,7 +18,7 @@ public static void test_vsgi_soup_request () {
 	assert (null == request.params);
 	assert (message.request_headers == request.headers);
 	assert (0 == request.cookies.length ());
-	assert (input_stream == request.body);
+	assert (connection.input_stream == request.body);
 }
 
 /**
@@ -26,13 +26,12 @@ public static void test_vsgi_soup_request () {
  */
 public static void test_vsgi_soup_response () {
 	var message       = new Soup.Message ("GET", "http://0.0.0.0:3003/");
-	var input_stream  = new MemoryInputStream ();
-	var output_stream = new MemoryOutputStream (null, realloc, free);
 
-	var request  = new Request (message, input_stream, null);
-	var response = new Response (request, message, output_stream);
+	var connection = new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream (null, realloc, free));
+	var request    = new Request (message, connection, null);
+	var response   = new Response (request, message, connection);
 
 	assert (message == request.message);
 	assert (request == response.request);
-	assert (output_stream == response.body);
+	assert (connection.output_stream == response.body);
 }
