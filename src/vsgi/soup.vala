@@ -122,7 +122,7 @@ namespace VSGI.Soup {
 		/**
 		 * {@inheritDoc}
 		 */
-		public Server (VSGI.Application application) {
+		public Server (ApplicationCallback application) {
 			base (application);
 
 #if GIO_2_40
@@ -189,7 +189,7 @@ namespace VSGI.Soup {
 #endif
 				});
 
-				this.application.handle (req, res);
+				this.application (req, res);
 			});
 
 #if SOUP_2_48

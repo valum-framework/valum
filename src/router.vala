@@ -9,7 +9,7 @@ namespace Valum {
 	 *
 	 * @since 0.0.1
 	 */
-	public class Router : Object, VSGI.Application {
+	public class Router : Object {
 
 		/**
 		 * Registered types used to extract {@link VSGI.Request} parameters.

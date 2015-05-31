@@ -260,7 +260,7 @@ namespace VSGI.FastCGI {
 		 */
 		public GLib.Socket? socket { get; set; default = null; }
 
-		public Server (VSGI.Application application) {
+		public Server (ApplicationCallback application) {
 			base (application);
 
 #if GIO_2_40
@@ -365,7 +365,7 @@ namespace VSGI.FastCGI {
 					this.release ();
 				});
 
-				this.application.handle (req, res);
+				this.application (req, res);
 
 				return true;
 			});
