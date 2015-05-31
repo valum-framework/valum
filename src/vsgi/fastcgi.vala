@@ -265,6 +265,9 @@ namespace VSGI.FastCGI {
 		 */
 		public GLib.Socket? socket { get; set; default = null; }
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public Server (ApplicationCallback application) {
 			base (application);
 
