@@ -122,7 +122,7 @@ namespace VSGI.Soup {
 		/**
 		 * {@inheritDoc}
 		 */
-		public Server (VSGI.Application application) {
+		public Server (ApplicationCallback application) {
 			base (application);
 
 #if GIO_2_40
@@ -176,7 +176,7 @@ namespace VSGI.Soup {
 				var req = new Request (msg, input_stream, query);
 				var res = new Response (req, msg, output_stream);
 
-				this.application.handle (req, res, () => {
+				this.application (req, res, () => {
 #if SOUP_2_50
 					connection.close_async.begin (Priority.DEFAULT, null, () => {
 						message ("%s: %u %s %s", get_application_id (), res.status, res.request.method, res.request.uri.get_path ());

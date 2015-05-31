@@ -326,4 +326,4 @@ app.status (Soup.Status.NOT_FOUND, (req, res, end) => {
 	end ();
 });
 
-new Server (app).run ({"app", "--port", "3003"});
+new Server (app.handle).run ({"app", "--port", "3003"});

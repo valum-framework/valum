@@ -9,7 +9,7 @@ namespace Valum {
 	 *
 	 * @since 0.0.1
 	 */
-	public class Router : Object, VSGI.Application {
+	public class Router : Object {
 
 		/**
 		 * Registered types used to extract {@link VSGI.Request} parameters.
@@ -254,7 +254,7 @@ namespace Valum {
 		 * @param res
 		 * @return tells if something matched during the routing process
 		 */
-		private bool perform_routing (List<Route> routes, Request req, Response res, VSGI.Application.EndCallback end) throws Redirection, ClientError, ServerError {
+		private bool perform_routing (List<Route> routes, Request req, Response res, VSGI.EndCallback end) throws Redirection, ClientError, ServerError {
 			foreach (var route in routes) {
 				if (route.match (req)) {
 					route.fire (req, res, end, () => {
@@ -278,7 +278,7 @@ namespace Valum {
 		 * code, 'text/html' content type, 'chunked' transfer encoding and
 		 * request cookies.
 		 */
-		public void handle (Request req, Response res, VSGI.Application.EndCallback end) {
+		public void handle (Request req, Response res, VSGI.EndCallback end) {
 			// sane initialization
 			res.status = Soup.Status.OK;
 			res.headers.set_content_type ("text/html", null);

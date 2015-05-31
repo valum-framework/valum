@@ -49,7 +49,7 @@ namespace Valum {
 		 * @param end  end
 		 * @param next keep routing
 		 */
-		public delegate void HandlerCallback (Request req, Response res, VSGI.Application.EndCallback end, Router.NextCallback next) throws Redirection, ClientError, ServerError;
+		public delegate void HandlerCallback (Request req, Response res, VSGI.EndCallback end, Router.NextCallback next) throws Redirection, ClientError, ServerError;
 
 		/**
 		 * Create a Route using a custom matcher.
