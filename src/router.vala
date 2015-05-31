@@ -295,11 +295,6 @@ namespace Valum {
 				res.headers.set_encoding (Soup.Encoding.CHUNKED);
 			res.cookies = req.cookies;
 
-			// teardown the response before the stream is closed
-			res.end.connect (() => {
-				teardown (req, res);
-			});
-
 			try {
 				try {
 					// ensure at least one route has been declared with that method
@@ -360,9 +355,6 @@ namespace Valum {
 			} finally {
 				teardown (req, res);
 			}
-
-			// in case of exception, always end the response properly
-			res.end ();
 		}
 	}
 }

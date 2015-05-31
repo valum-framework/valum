@@ -30,7 +30,6 @@ A typical utilisation would be to negociate a ``Content-Encoding: zlib`` header.
         res.body = new ConverterOutputStream (res.body, new ZLibCompressor ());
 
         res.body.write ("Hello world!".data);
-        res.end ();
     });
 
 ChunkedConverter

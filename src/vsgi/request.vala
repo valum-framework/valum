@@ -53,11 +53,11 @@ namespace VSGI {
 		public HashTable<string, string?>? @params { get; set; default = null; }
 
 		/**
-		 * Raw stream used by the implementation.
+		 * Connection containing raw streams.
 		 *
 		 * @since 0.2
 		 */
-		public InputStream base_stream { construct; protected get; }
+		public IOStream connection { construct; protected get; }
 
 		/**
 		 * Request HTTP version.
@@ -145,7 +145,7 @@ namespace VSGI {
 				if (this._body != null)
 					return this._body;
 
-				return this.base_stream;
+				return this.connection.input_stream;
 			}
 			set {
 				this._body = value;

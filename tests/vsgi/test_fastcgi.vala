@@ -11,9 +11,8 @@ public static void test_vsgi_fastcgi_request () {
 	environment["SERVER_PORT"]    = "3003";
 	environment["HTTP_HOST"]      = "example.com";
 
-	var input_stream = new MemoryInputStream ();
-
-	var request = new Request (environment, input_stream);
+	var connection = new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream (null, realloc, free));
+	var request    = new Request (environment, connection);
 
 	assert (Soup.HTTPVersion.@1_0 == request.http_version);
 	assert ("GET" == request.method);
@@ -23,7 +22,7 @@ public static void test_vsgi_fastcgi_request () {
 	assert (null == request.params);
 	assert ("example.com" == request.headers.get_one ("Host"));
 	assert (0 == request.cookies.length ());
-	assert (input_stream == request.body);
+	assert (connection.input_stream == request.body);
 }
 
 /**
@@ -34,9 +33,8 @@ public static void test_vsgi_fastcgi_request_https_on () {
 
 	environment["HTTPS"] = "on";
 
-	var input_stream = new MemoryInputStream ();
-
-	var request = new Request (environment, input_stream);
+	var connection = new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream (null, realloc, free));
+	var request    = new Request (environment, connection);
 
 	assert ("https" == request.uri.scheme);
 }
@@ -49,9 +47,8 @@ public static void test_vsgi_fastcgi_request_uri_with_query () {
 
 	environment["REQUEST_URI"] = "/home?a=b";
 
-	var input_stream = new MemoryInputStream ();
-
-	var request = new Request (environment, input_stream);
+	var connection = new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream (null, realloc, free));
+	var request    = new Request (environment, connection);
 
 	assert ("/home" == request.uri.path);
 }
@@ -61,12 +58,11 @@ public static void test_vsgi_fastcgi_request_uri_with_query () {
  */
 public static void test_vsgi_fastcgi_response () {
 	var environment   = new HashTable<string, string?> (str_hash, str_equal);
-	var input_stream  = new MemoryInputStream ();
-	var output_stream = new MemoryOutputStream (null, realloc, free);
 
-	var request = new Request (environment, input_stream);
-	var response = new Response (request, output_stream);
+	var connection = new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream (null, realloc, free));
+	var request    = new Request (environment, connection);
+	var response   = new Response (request, connection);
 
 	assert (request == response.request);
-	assert (output_stream == response.body);
+	assert (connection.output_stream == response.body);
 }

@@ -17,11 +17,11 @@ namespace VSGI {
 		public Request request { construct; get; }
 
 		/**
-		 * Raw stream used by the implementation.
+		 * Connection containing raw streams.
 		 *
 		 * @since 0.2
 		 */
-		public OutputStream base_stream { construct; protected get; }
+		public IOStream connection { construct; protected get; }
 
 		/**
 		 * Response status.
@@ -79,7 +79,7 @@ namespace VSGI {
 
 				this.write_headers ();
 
-				this._body = this.base_stream;
+				this._body = this.connection.output_stream;
 
 				return this._body;
 			}
@@ -106,7 +106,7 @@ namespace VSGI {
 			var status_line = "%s %u %s\r\n".printf (this.request.http_version == HTTPVersion.@1_0 ? "HTTP/1.0" : "HTTP/1.1",
 			                                         status,
 			                                         Status.get_phrase (status));
-			return this.base_stream.write (status_line.data);
+			return this.connection.output_stream.write (status_line.data);
 		}
 
 		/**
@@ -129,27 +129,7 @@ namespace VSGI {
 			// newline preceeding the body
 			headers.append ("\r\n");
 
-			return this.base_stream.write (headers.str.data);
-		}
-
-		/**
-		 * End the {@link Response} processing and notify that event to the
-		 * listeners.
-		 *
-		 * The default handler will write the status line, write the response
-		 * headers and close the request and response bodies if any of these is
-		 * not done already.
-		 *
-		 * @since 0.2
-		 */
-		public virtual signal void end () {
-			// close the request body
-			this.request.body.close ();
-
-			// close this response body
-			// accessing the body for the first time will write the status line
-			// and headers
-			this.body.close ();
+			return this.connection.output_stream.write (headers.str.data);
 		}
 	}
 }

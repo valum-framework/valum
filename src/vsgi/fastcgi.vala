@@ -137,7 +137,43 @@ namespace VSGI.FastCGI {
 	}
 
 	/**
-	 * FastCGI Request.
+	 * {@inheritDoc}
+	 */
+	class FastCGIConnection : IOStream {
+
+		public GLib.Socket socket { construct; get; }
+
+		private unowned global::FastCGI.request request;
+		private StreamInputStream _input_stream;
+		private StreamOutputStream _output_stream;
+
+		public override InputStream input_stream {
+			get {
+				return _input_stream;
+			}
+		}
+
+		public override OutputStream output_stream {
+			get {
+				return this._output_stream;
+			}
+		}
+
+		public FastCGIConnection (GLib.Socket socket, global::FastCGI.request request) {
+			Object (socket: socket);
+			this.request        = request;
+			this._input_stream  = new StreamInputStream (socket, request.in);
+			this._output_stream = new StreamOutputStream (socket, request.out, request.err);
+		}
+
+		~FastCGIConnection () {
+			request.finish ();
+			request.close (false); // keep the socket open
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
 	 */
 	public class Request : VSGI.Request {
 
@@ -173,8 +209,8 @@ namespace VSGI.FastCGI {
 			get { return this._headers; }
 		}
 
-		public Request (HashTable<string, string> environment , InputStream base_stream) {
-			Object (environment: environment, base_stream: base_stream);
+		public Request (HashTable<string, string> environment , IOStream connection) {
+			Object (environment: environment, connection: connection);
 
 			if (environment.contains ("HTTPS") && environment["HTTPS"] == "on")
 				this._uri.set_scheme ("https");
@@ -236,8 +272,8 @@ namespace VSGI.FastCGI {
 		/**
 		 * {@inheritDoc}
 		 */
-		public Response (Request req, OutputStream base_stream) {
-			Object (request: req, base_stream: base_stream);
+		public Response (Request req, IOStream connection) {
+			Object (request: req, connection: connection);
 		}
 
 		/**
@@ -260,6 +296,9 @@ namespace VSGI.FastCGI {
 		 */
 		public GLib.Socket? socket { get; set; default = null; }
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public Server (ApplicationCallback application) {
 			base (application);
 
@@ -355,17 +394,14 @@ namespace VSGI.FastCGI {
 					environment[parts[0]] = parts.length == 2 ? parts[1] : "";
 				}
 
-				var req = new Request (environment, new StreamInputStream (this.socket, request.in));
-				var res = new Response (req, new StreamOutputStream (this.socket, request.out, request.err));
+				var connection = new FastCGIConnection (this.socket, request);
 
-				res.end.connect_after (() => {
-					request.finish ();
-					request.close (false); // keep the socket open
-					message ("%s: %u %s %s", get_application_id (), res.status, res.request.method, res.request.uri.get_path ());
-					this.release ();
-				});
+				var req = new Request (environment, connection);
+				var res = new Response (req, connection);
 
 				this.application (req, res);
+
+				message ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
 
 				return true;
 			});

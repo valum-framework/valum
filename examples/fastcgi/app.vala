@@ -7,7 +7,6 @@ public static int main (string[] args) {
 	// default route
 	app.get ("", (req, res) => {
 		res.body.write ("Hello world!".data);
-		res.end ();
 	});
 
 	app.get ("random/<int:size>", (req, res) => {
@@ -18,8 +17,6 @@ public static int main (string[] args) {
 			// write byte to byte
 			writer.put_uint32 (Random.next_int ());
 		}
-
-		res.end ();
 	});
 
 	app.get ("<any:path>", (req, res) => {
@@ -27,8 +24,6 @@ public static int main (string[] args) {
 
 		var writer = new DataOutputStream (res.body);
 		writer.put_string ("404 - Not found");
-
-		res.end ();
 	});
 
 	return new Server (app.handle).run (args);
