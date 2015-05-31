@@ -31,5 +31,5 @@ public static int main (string[] args) {
 		res.end ();
 	});
 
-	return new Server (app).run (args);
+	return new Server (app.handle).run (args);
 }
