@@ -16,7 +16,6 @@ var app = new Router ();
 
 app.get ("", (req, res) => {
     res.write ("Hello world!".data);
-    res.end ();
 });
 
 new Server (app).run ();

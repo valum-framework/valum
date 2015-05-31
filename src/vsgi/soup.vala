@@ -14,14 +14,14 @@ namespace VSGI.Soup {
 
 		private HashTable<string, string>? _query;
 
-		public override HTTPVersion http_version { get { return this.message.http_version; } }
-
 		/**
 		 * Message underlying this request.
 		 *
 		 * @since 0.2
 		 */
 		public Message message { construct; get; }
+
+		public override HTTPVersion http_version { get { return this.message.http_version; } }
 
 		public override string method { owned get { return this.message.method ; } }
 
@@ -40,11 +40,14 @@ namespace VSGI.Soup {
 		 *
 		 * @since 0.2
 		 *
-		 * @param msg   message underlying this request
-		 * @param query parsed HTTP query provided by {@link Soup.ServerCallback}
+		 * @param msg        message underlying this request
+		 * @param connection contains the connection obtain from
+		 *                   {@link Soup.ClientContext.steal_connection} or a
+		 *                   stud if it is not available
+		 * @param query      parsed HTTP query provided by {@link Soup.ServerCallback}
 		 */
-		public Request (Message msg, InputStream base_stream, HashTable<string, string>? query) {
-			Object (message: msg, base_stream: base_stream);
+		public Request (Message msg, IOStream connection, HashTable<string, string>? query) {
+			Object (message: msg, connection: connection);
 			this._query = query;
 		}
 	}
@@ -82,7 +85,7 @@ namespace VSGI.Soup {
 
 				this.write_headers ();
 
-				this._body = this.base_stream;
+				this._body = this.connection.output_stream;
 
 #if SOUP_2_50
 				// filter the stream properly
@@ -105,8 +108,8 @@ namespace VSGI.Soup {
 		 *
 		 * @param msg message underlying this response
 		 */
-		public Response (Request req, Message msg, OutputStream base_stream) {
-			Object (request: req, message: msg, base_stream: base_stream);
+		public Response (Request req, Message msg, IOStream connection) {
+			Object (request: req, message: msg, connection: connection);
 		}
 	}
 
@@ -157,39 +160,27 @@ namespace VSGI.Soup {
 			this.server = new global::Soup.Server (global::Soup.SERVER_SERVER_HEADER, "Valum",
 			                                       global::Soup.SERVER_PORT, port);
 #endif
-
 			this.hold ();
 
 			// register a catch-all handler
 			this.server.add_handler (null, (server, msg, path, query, client) => {
-				this.hold ();
-
-				var input_stream  = new MemoryInputStream.from_data (msg.request_body.data, null);
-
 #if SOUP_2_50
-				var connection = client.steal_connection ();
-				var output_stream = connection.output_stream;
+				var stolen_connection = client.steal_connection ();
+				// the request stream have already been consumed by the server,
+				// so we simply wrap it.
+				var simple_connection = new SimpleIOStream (new MemoryInputStream.from_data (msg.request_body.data, null),
+				                                            stolen_connection.output_stream);
+				var req               = new Request (msg, simple_connection, query);
+				var res               = new Response (req, msg, stolen_connection);
 #else
-				var output_stream = new MemoryOutputStream (msg.response_body.data, realloc, free);
+				var connection = new Connection (server, msg);
+				var req        = new Request (msg, connection, query);
+				var res        = new Response (req, msg, connection);
 #endif
-
-				var req = new Request (msg, input_stream, query);
-				var res = new Response (req, msg, output_stream);
-
-				res.end.connect_after (() => {
-#if SOUP_2_50
-					connection.close_async.begin (Priority.DEFAULT, null, () => {
-						message ("%s: %u %s %s", get_application_id (), res.status, res.request.method, res.request.uri.get_path ());
-						this.release ();
-					});
-#else
-					msg.response_body.complete ();
-					message ("%s: %u %s %s", get_application_id (), res.status, res.request.method, res.request.uri.get_path ());
-					this.release ();
-#endif
-				});
 
 				this.application (req, res);
+
+				message ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
 			});
 
 #if SOUP_2_48
@@ -209,5 +200,49 @@ namespace VSGI.Soup {
 
 			return 0; // continue processing
 		}
+
+#if !SOUP_2_50
+		/**
+		 * Represents a connection between the server and the client for older
+		 * version of libsoup-2.4 (<2.50). It essentially complement the lack of
+		 * {@link Soup.ClientContext.steal_connection}.
+		 */
+		private class Connection : IOStream {
+
+			private InputStream _input_stream;
+			private OutputStream _output_stream;
+
+			public global::Soup.Server server { construct; get; }
+
+			public global::Soup.Message message { construct; get; }
+
+			public InputStream input_stream {
+				get {
+					return this._input_stream;
+				}
+			}
+
+			public OutputStream output_stream {
+				get {
+					return this._output_stream;
+				}
+			}
+
+			public Connection (global::Soup.Server server, global::Soup.Message message) {
+				Object (server: server, message: message);
+
+				this._input_stream  = new MemoryInputStream.from_data (message.request_body.data, null);
+				this._output_stream = new MemoryOutputStream (message.response_body.data, realloc, free));
+
+				// prevent the server from completing the message
+				this.server.pause_message (msg);
+			}
+
+			~Connection () {
+				// resume I/O operations
+				this.server.unpause_message (msg);
+			}
+		}
+#endif
 	}
 }
