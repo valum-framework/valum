@@ -154,8 +154,7 @@ namespace Valum {
 		}
 
 		/**
-		 * Bind a callback to all HTTP methods defined in
-		 * {@link VSGI.Router.METHODS}.
+		 * Bind a callback to all HTTP methods defined in {@link VSGI.Request.METHODS}.
 		 *
 		 * @since 0.1
 		 */
@@ -229,8 +228,8 @@ namespace Valum {
 		 * This only applies to status thrown by one of {@link Redirection}
 		 * {@link ClientError} or {@link ServerError} domains.
 		 *
-		 * @param status
-		 * @param cb
+		 * @param status status handled
+		 * @param cb     callback used to handle the status
 		 */
 		public void status (uint status, Route.HandlerCallback cb) {
 			if (!this.status_handlers.contains (status))

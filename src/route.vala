@@ -138,7 +138,6 @@ namespace Valum {
 		 *
 		 * @since 0.0.1
 		 *
-		 * @param router
 		 * @param rule   defaults to "<any:path>" if set to null
 		 */
 		public Route.from_rule (Router router, string? rule, HandlerCallback callback) throws RegexError {
