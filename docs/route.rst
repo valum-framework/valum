@@ -72,6 +72,22 @@ These will respectively compile down to the following regular expressions
 -  ``^/user/(?<id>\w+)$``
 -  ``^/user/(?<id>\d+)$``
 
+Null rule
+~~~~~~~~~
+
+The ``null`` rule will be replaced by the catch-all rule: ``<any:path``. It can
+be used to implement setup operations.
+
+.. code:: vala
+
+    app.get (null, (req, res, next) => {
+        // always invoked!
+    });
+
+    app.get ("", (req, res) => {
+        //
+    });
+
 Types
 ~~~~~
 

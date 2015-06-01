@@ -15,6 +15,10 @@ Callback can be connected to HTTP methods via a list of helpers having the
 
     app.get ("rule", (req, res) => {});
 
+The rule has to respect the rule syntax described in :doc:`route`. It will be
+compiled down to a regex which named groups are made accessible through
+:doc:`vsgi/request` parameters.
+
 Helpers for the HTTP/1.1 protocol and the extra ``TRACE`` methods are included.
 
 -  ``get``
