@@ -95,5 +95,9 @@ public int main (string[] args) {
 	Test.add_func ("/vsgi/soup/request", test_vsgi_soup_request);
 	Test.add_func ("/vsgi/soup/response", test_vsgi_soup_response);
 
+	Test.add_func ("/vsgi/fastcgi/request", test_vsgi_fastcgi_request);
+	Test.add_func ("/vsgi/fastcgi/request/https_on", test_vsgi_fastcgi_request_https_on);
+	Test.add_func ("/vsgi/fastcgi/response", test_vsgi_fastcgi_response);
+
 	return Test.run ();
 }
