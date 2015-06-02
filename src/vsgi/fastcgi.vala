@@ -137,29 +137,28 @@ namespace VSGI.FastCGI {
 	}
 
 	/**
-	 * FastCGI Request implementation.
-	 *
-	 * The request keeps a strong reference to its inner {@link FastCGI.request} so
-	 * that it is being freed only when any processing involving this._request is
-	 * done.
-	 *
-	 * The constructor will block until a request is accepted so that the object can
-	 * exclusively own the {@link FastCGI.request} instance.
+	 * FastCGI Request.
 	 */
-	class Request : VSGI.Request {
+	public class Request : VSGI.Request {
 
-		private HTTPVersion _http_version = HTTPVersion.@1_0;
-		private string _method = VSGI.Request.GET;
+		public HashTable<string, string> environment { construct; get; }
+
 		private URI _uri = new URI (null);
 		private HashTable<string, string>? _query = null;
 		private MessageHeaders _headers = new MessageHeaders (MessageHeadersType.REQUEST);
 
 		public override HTTPVersion http_version {
-			get { return this._http_version; }
+			get {
+				return environment["SERVER_PROTOCOL"] == "HTTP/1.1" ?
+					HTTPVersion.@1_1 :
+					HTTPVersion.@1_0;
+			}
 		}
 
 		public override string method {
-			owned get { return this._method; }
+			owned get {
+				return this.environment["REQUEST_METHOD"];
+			}
 		}
 
 		public override URI uri { get { return this._uri; } }
@@ -174,59 +173,50 @@ namespace VSGI.FastCGI {
 			get { return this._headers; }
 		}
 
-		public Request (GLib.Socket socket, global::FastCGI.request request) {
-			Object (base_stream: new StreamInputStream (socket, request.in));
+		public Request (HashTable<string, string> environment , InputStream base_stream) {
+			Object (environment: environment, base_stream: base_stream);
 
-			var environment = request.environment;
-
-			if (environment["SERVER_PROTOCOL"] != null)
-				this._http_version = environment["SERVER_PROTOCOL"] == "HTTP/1.1" ?
-					HTTPVersion.@1_1 :
-					HTTPVersion.@1_0; // fallback if it's not reckognized
-
-			if (environment["REQUEST_METHOD"] != null)
-				this._method = (string) environment["REQUEST_METHOD"];
-
-			if (environment["HTTPS"] != null && environment["HTTPS"] == "on")
+			if (environment.contains ("HTTPS") && environment["HTTPS"] == "on")
 				this._uri.set_scheme ("https");
 
 			this._uri.set_user (environment["REMOTE_USER"]);
-			this._uri.set_host (environment["SERVER_NAME"]);
 
-			if (environment["SERVER_PORT"] != null)
+			if (environment.contains ("SERVER_NAME"))
+				this._uri.set_host (environment["SERVER_NAME"]);
+
+			// fallback on the server address
+			else if (environment.contains ("SERVER_ADDR"))
+				this._uri.set_host (environment["SERVER_ADDR"]);
+
+			if (environment.contains ("SERVER_PORT"))
 				this._uri.set_port (int.parse (environment["SERVER_PORT"]));
 
-			if (environment["PATH_INFO"] != null)
-				this._uri.set_path ((string) environment["PATH_INFO"]);
+			if (environment.contains ("PATH_INFO"))
+				this._uri.set_path (environment["PATH_INFO"]);
 
-			// some server provide this one for the path
-			if (environment["REQUEST_URI"] != null)
-				this._uri.set_path ((string) environment["REQUEST_URI"]);
+			// use the full CGI path if 'PATH_INFO' is not set
+			else if (environment.contains ("REQUEST_URI"))
+				this._uri.set_path (environment["REQUEST_URI"]);
 
 			this._uri.set_query (environment["QUERY_STRING"]);
 
 			// parse the HTTP query
-			if (environment["QUERY_STRING"] != null)
-				this._query = Form.decode ((string) environment["QUERY_STRING"]);
-
-			var headers = new StringBuilder ();
+			if (environment.contains ("QUERY_STRING"))
+				this._query = Form.decode (environment["QUERY_STRING"]);
 
 			// extract HTTP headers, they are prefixed by 'HTTP_' in environment variables
-			foreach (var variable in environment.get_all ()) {
-				if (variable.has_prefix ("HTTP_")) {
-					var parts = variable.split("=", 2);
-					headers.append ("%s: %s\r\n".printf(parts[0].substring(5).replace("_", "-").casefold(), parts[1]));
+			environment.foreach ((name, @value) => {
+				if (name.has_prefix ("HTTP_")) {
+					this.headers.append (name.substring (5).replace ("_", "-").casefold (), @value);
 				}
-			}
-
-			global::Soup.headers_parse (headers.str, (int) headers.len, this._headers);
+			});
 		}
 	}
 
 	/**
 	 * FastCGI Response
 	 */
-	class Response : VSGI.Response {
+	public class Response : VSGI.Response {
 
 		private uint _status;
 
@@ -243,8 +233,11 @@ namespace VSGI.FastCGI {
 
 		public override MessageHeaders headers { get { return this._headers; } }
 
-		public Response (Request req, GLib.Socket socket, Stream @out, Stream err) {
-			Object (request: req, base_stream: new StreamOutputStream (socket, @out, err));
+		/**
+		 * {@inheritDoc}
+		 */
+		public Response (Request req, OutputStream base_stream) {
+			Object (request: req, base_stream: base_stream);
 		}
 
 		/**
@@ -355,8 +348,15 @@ namespace VSGI.FastCGI {
 					error ("request %u: cannot not accept anymore request (status %u)", request.request_id, status);
 				}
 
-				var req = new Request (this.socket, request);
-				var res = new Response (req, this.socket, request.out, request.err);
+				var environment = new HashTable<string, string> (str_hash, str_equal);
+
+				foreach (var e in request.environment.get_all ()) {
+					var parts = e.split ("=", 1);
+					environment[parts[0]] = parts.length == 2 ? parts[1] : "";
+				}
+
+				var req = new Request (environment, new StreamInputStream (this.socket, request.in));
+				var res = new Response (req, new StreamOutputStream (this.socket, request.out, request.err));
 
 				res.end.connect_after (() => {
 					request.finish ();
