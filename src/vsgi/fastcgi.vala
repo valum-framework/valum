@@ -7,41 +7,75 @@ using Soup;
  * @since 0.1
  */
 namespace VSGI.FastCGI {
-	class StreamInputStream : InputStream {
+	class StreamInputStream : InputStream, PollableInputStream {
 
-		public unowned global::FastCGI.Stream stream { construct; get; }
+		public GLib.Socket socket { construct; get; }
 
-		public StreamInputStream (global::FastCGI.Stream stream) {
-			Object (stream: stream);
+		public unowned global::FastCGI.Stream @in { construct; get; }
+
+		public StreamInputStream (GLib.Socket socket, global::FastCGI.Stream @in) {
+			Object (socket: socket, @in: @in);
 		}
 
 		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
-			var read = this.stream.read (buffer);
+			var read = this.in.read (buffer);
 
 			if (read == GLib.FileStream.EOF)
-				throw new Error (IOError.quark (), FileUtils.error_from_errno (this.stream.get_error ()), strerror (FileUtils.error_from_errno (this.stream.get_error ())));
+				throw new Error (IOError.quark (),
+				                 FileUtils.error_from_errno (this.in.get_error ()),
+				                 strerror (FileUtils.error_from_errno (this.in.get_error ())));
 
 			return read;
 		}
 
 		public override bool close (Cancellable? cancellable = null) throws IOError {
-			if (this.stream.close () == -1)
+			if (this.in.close () == -1)
 				throw new Error (IOError.quark (),
-						         FileUtils.error_from_errno (this.stream.get_error ()),
-								 strerror (FileUtils.error_from_errno (this.stream.get_error ())));
+				                 FileUtils.error_from_errno (this.in.get_error ()),
+				                 strerror (FileUtils.error_from_errno (this.in.get_error ())));
 
-			return this.stream.is_closed;
+			return this.in.is_closed;
+		}
+
+		public bool can_poll () {
+			return true; // hope so!
+		}
+
+		public PollableSource create_source (Cancellable? cancellable = null) {
+			var source = new PollableSource (this);
+			source.add_child_source (this.socket.create_source (IOCondition.IN, cancellable));
+			return source;
+		}
+
+		public bool is_readable () {
+			return true;
+		}
+
+		public ssize_t read_nonblocking_fn (uint8[] buffer) throws Error {
+			var read = this.in.read (buffer);
+
+			if (read == GLib.FileStream.EOF)
+				throw new Error (IOError.quark (),
+				                 FileUtils.error_from_errno (this.in.get_error ()),
+				                 strerror (FileUtils.error_from_errno (this.in.get_error ())));
+
+			return read;
 		}
 	}
 
-	class StreamOutputStream : OutputStream {
+	class StreamOutputStream : OutputStream, PollableOutputStream {
+
+		public GLib.Socket socket { construct; get; }
 
 		public unowned global::FastCGI.Stream @out { construct; get; }
 
 		public unowned global::FastCGI.Stream err { construct; get; }
 
-		public StreamOutputStream (global::FastCGI.Stream @out, global::FastCGI.Stream err) {
-			Object (@out: @out, err: err);
+		/**
+		 * @param socket socket used to obtain {@link GLib.SocketSource}
+		 */
+		public StreamOutputStream (GLib.Socket socket, global::FastCGI.Stream @out, global::FastCGI.Stream err) {
+			Object (socket: socket, @out: @out, err: err);
 		}
 
 		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
@@ -49,8 +83,8 @@ namespace VSGI.FastCGI {
 
 			if (written == GLib.FileStream.EOF)
 				throw new Error (IOError.quark (),
-						         FileUtils.error_from_errno (this.out.get_error ()),
-								 strerror (FileUtils.error_from_errno (this.out.get_error ())));
+				                 FileUtils.error_from_errno (this.out.get_error ()),
+				                 strerror (FileUtils.error_from_errno (this.out.get_error ())));
 
 			return written;
 		}
@@ -65,15 +99,40 @@ namespace VSGI.FastCGI {
 		public override bool close (Cancellable? cancellable = null) throws IOError {
 			if (this.out.close () == -1)
 				throw new Error (IOError.quark (),
-						         FileUtils.error_from_errno (this.out.get_error ()),
-								 strerror (FileUtils.error_from_errno (this.out.get_error ())));
+				                 FileUtils.error_from_errno (this.out.get_error ()),
+				                 strerror (FileUtils.error_from_errno (this.out.get_error ())));
 
 			if (this.err.close () == -1)
 				throw new Error (IOError.quark (),
-						         FileUtils.error_from_errno (this.err.get_error ()),
-								 strerror (FileUtils.error_from_errno (this.err.get_error ())));
+				                 FileUtils.error_from_errno (this.err.get_error ()),
+				                 strerror (FileUtils.error_from_errno (this.err.get_error ())));
 
 			return this.out.is_closed && this.err.is_closed;
+		}
+
+		public bool can_poll () {
+			return true; // hope so!
+		}
+
+		public PollableSource create_source (Cancellable? cancellable = null) {
+			var source = new PollableSource (this);
+			source.add_child_source (this.socket.create_source (IOCondition.OUT, cancellable));
+			return source;
+		}
+
+		public bool is_writable () {
+			return true;
+		}
+
+		public ssize_t write_nonblocking (uint8[] buffer) throws Error {
+			var written = this.out.put_str (buffer);
+
+			if (written == GLib.FileStream.EOF)
+				throw new Error (IOError.quark (),
+				                 FileUtils.error_from_errno (this.out.get_error ()),
+				                 strerror (FileUtils.error_from_errno (this.out.get_error ())));
+
+			return written;
 		}
 	}
 
@@ -115,8 +174,8 @@ namespace VSGI.FastCGI {
 			get { return this._headers; }
 		}
 
-		public Request (global::FastCGI.request request) {
-			Object (base_stream: new StreamInputStream (request.in));
+		public Request (GLib.Socket socket, global::FastCGI.request request) {
+			Object (base_stream: new StreamInputStream (socket, request.in));
 
 			var environment = request.environment;
 
@@ -184,8 +243,8 @@ namespace VSGI.FastCGI {
 
 		public override MessageHeaders headers { get { return this._headers; } }
 
-		public Response (Request req, Stream @out, Stream err) {
-			Object (request: req, base_stream: new StreamOutputStream (@out, err));
+		public Response (Request req, GLib.Socket socket, Stream @out, Stream err) {
+			Object (request: req, base_stream: new StreamOutputStream (socket, @out, err));
 		}
 
 		/**
@@ -296,8 +355,8 @@ namespace VSGI.FastCGI {
 					error ("request %u: cannot not accept anymore request (status %u)", request.request_id, status);
 				}
 
-				var req = new Request (request);
-				var res = new Response (req, request.out, request.err);
+				var req = new Request (this.socket, request);
+				var res = new Response (req, this.socket, request.out, request.err);
 
 				res.end.connect_after (() => {
 					request.finish ();
