@@ -53,15 +53,6 @@ namespace Valum {
 		public delegate void NextCallback () throws Redirection, ClientError, ServerError;
 
 		/**
-		 * Teardown a request after it has been processed even if a
-		 * {@link Redirection}, {@link ClientError} or {@link ServerError} is
-		 * thrown during the handling.
-		 *
-		 * @since 0.1
-		 */
-		public signal void teardown (Request req, Response res);
-
-		/**
 		 * @since 0.0.1
 		 */
 		public Router () {
@@ -284,12 +275,15 @@ namespace Valum {
 		 * {@inheritDoc}
 		 *
 		 * The response is initialized with sane default such as 200 status
-		 * code, 'text/html' content type and request cookies.
+		 * code, 'text/html' content type, 'chunked' transfer encoding and
+		 * request cookies.
 		 */
 		public void handle (Request req, Response res) {
 			// sane initialization
 			res.status = Soup.Status.OK;
 			res.headers.set_content_type ("text/html", null);
+			if (req.http_version == Soup.HTTPVersion.@1_1)
+				res.headers.set_encoding (Soup.Encoding.CHUNKED);
 			res.cookies = req.cookies;
 
 			try {
@@ -349,9 +343,10 @@ namespace Valum {
 				res.status = e.code;
 			} catch (ServerError e) {
 				res.status = e.code;
-			} finally {
-				teardown (req, res);
 			}
+
+			// in case of exception, always end the response properly
+			res.end ();
 		}
 	}
 }

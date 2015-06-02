@@ -2,19 +2,26 @@ using Soup;
 
 /**
  * Soup implementation of VSGI.
+ *
+ * @since 0.1
  */
 namespace VSGI.Soup {
 
 	/**
 	 * Soup Request
 	 */
-	class Request : VSGI.Request {
-
-		public Message message { construct; get; }
+	public class Request : VSGI.Request {
 
 		private HashTable<string, string>? _query;
 
 		public override HTTPVersion http_version { get { return this.message.http_version; } }
+
+		/**
+		 * Message underlying this request.
+		 *
+		 * @since 0.2
+		 */
+		public Message message { construct; get; }
 
 		public override string method { owned get { return this.message.method ; } }
 
@@ -28,45 +35,30 @@ namespace VSGI.Soup {
 			}
 		}
 
-		public Request (Message msg, HashTable<string, string>? query) {
-			Object (message: msg);
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @since 0.2
+		 *
+		 * @param msg   message underlying this request
+		 * @param query parsed HTTP query provided by {@link Soup.ServerCallback}
+		 */
+		public Request (Message msg, InputStream base_stream, HashTable<string, string>? query) {
+			Object (message: msg, base_stream: base_stream);
 			this._query = query;
-		}
-
-		/**
-		 * Offset from which the response body is being read.
-		 */
-		private int64 offset = 0;
-
-		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) {
-			var chunk = this.message.request_body.get_chunk (offset);
-
-			/* potentially more data... */
-			if (chunk == null)
-				return -1;
-
-			// copy the data into the buffer
-			Memory.copy (buffer, chunk.data, chunk.length);
-
-			offset += chunk.length;
-
-			return (ssize_t) chunk.length;
-		}
-
-		/**
-		 * This will complete the request MessageBody.
-		 */
-		public override bool close (Cancellable? cancellable = null) {
-			this.message.request_body.complete ();
-			return true;
 		}
 	}
 
 	/**
 	 * Soup Response
 	 */
-	class Response : VSGI.Response {
+	public class Response : VSGI.Response {
 
+		/**
+		 * Message underlying this response.
+		 *
+		 * @since 0.2
+		 */
 		public Message message { construct; get; }
 
 		public override uint status {
@@ -78,23 +70,43 @@ namespace VSGI.Soup {
 			get { return this.message.response_headers; }
 		}
 
-		public Response (Request req, Message msg) {
-			Object (request: req, message: msg);
-		}
+		private OutputStream? _body = null;
 
-		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) {
-			this.message.response_body.append_take (buffer);
-			return buffer.length;
+		public override OutputStream body {
+			get {
+				// body have been filtered or redirected
+				if (this._body != null)
+					return this._body;
+
+				this.write_status_line ();
+
+				this.write_headers ();
+
+				this._body = this.base_stream;
+
+#if SOUP_2_50
+				// filter the stream properly
+				if (this.request.http_version == HTTPVersion.@1_1 && this.headers.get_encoding () == Encoding.CHUNKED) {
+					this._body = new ConverterOutputStream (this._body, new ChunkedConverter ());
+				}
+#endif
+
+				return this._body;
+			}
+			set {
+				this._body = value;
+			}
 		}
 
 		/**
-		 * This will complete the response MessageBody.
+		 * {@inheritDoc}
 		 *
-		 * Once called, you will not be able to alter the stream.
+		 * @since 0.2
+		 *
+		 * @param msg message underlying this response
 		 */
-		public override bool close (Cancellable? cancellable = null) {
-			this.message.response_body.complete ();
-			return true;
+		public Response (Request req, Message msg, OutputStream base_stream) {
+			Object (request: req, message: msg, base_stream: base_stream);
 		}
 	}
 
@@ -151,14 +163,32 @@ namespace VSGI.Soup {
 			this.server.add_handler (null, (server, msg, path, query, client) => {
 				this.hold ();
 
-				var req = new Request (msg, query);
-				var res = new Response (req, msg);
+				var input_stream  = new MemoryInputStream.from_data (msg.request_body.data, null);
+
+#if SOUP_2_50
+				var connection = client.steal_connection ();
+				var output_stream = connection.output_stream;
+#else
+				var output_stream = new MemoryOutputStream (msg.response_body.data, realloc, free);
+#endif
+
+				var req = new Request (msg, input_stream, query);
+				var res = new Response (req, msg, output_stream);
+
+				res.end.connect_after (() => {
+#if SOUP_2_50
+					connection.close_async.begin (Priority.DEFAULT, null, () => {
+						message ("%s: %u %s %s", get_application_id (), res.status, res.request.method, res.request.uri.get_path ());
+						this.release ();
+					});
+#else
+					msg.response_body.complete ();
+					message ("%s: %u %s %s", get_application_id (), res.status, res.request.method, res.request.uri.get_path ());
+					this.release ();
+#endif
+				});
 
 				this.application.handle (req, res);
-
-				message ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
-
-				this.release ();
 			});
 
 #if SOUP_2_48
