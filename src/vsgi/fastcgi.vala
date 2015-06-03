@@ -7,6 +7,10 @@ using Soup;
  * @since 0.1
  */
 namespace VSGI.FastCGI {
+
+	/**
+	 * InputStream wrapper around {@link FastCGI.Stream}.
+	 */
 	class StreamInputStream : InputStream, PollableInputStream {
 
 		public GLib.Socket socket { construct; get; }
@@ -63,6 +67,9 @@ namespace VSGI.FastCGI {
 		}
 	}
 
+	/**
+	 * OutputStream wrapper around {@link FastCGI.Stream}.
+	 */
 	class StreamOutputStream : OutputStream, PollableOutputStream {
 
 		public GLib.Socket socket { construct; get; }
@@ -137,7 +144,7 @@ namespace VSGI.FastCGI {
 	}
 
 	/**
-	 * FastCGI Request.
+	 * {@inheritDoc}
 	 */
 	public class Request : VSGI.Request {
 
@@ -214,7 +221,7 @@ namespace VSGI.FastCGI {
 	}
 
 	/**
-	 * FastCGI Response
+	 * {@inheritDoc}
 	 */
 	public class Response : VSGI.Response {
 
@@ -249,9 +256,7 @@ namespace VSGI.FastCGI {
 	}
 
 	/**
-	 * FastCGI Server using GLib.MainLoop.
-	 *
-	 * @since 0.1
+	 * {@inheritDoc}
 	 */
 	public class Server : VSGI.Server {
 
@@ -328,7 +333,7 @@ namespace VSGI.FastCGI {
 
 			this.hold ();
 
-			var source = new IOSource (new IOChannel.unix_new (socket.fd), IOCondition.IN);
+			var source = socket.create_source (IOCondition.IN);
 
 			source.set_callback (() => {
 				this.hold ();
