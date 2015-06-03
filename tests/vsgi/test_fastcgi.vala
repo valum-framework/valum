@@ -44,6 +44,21 @@ public static void test_vsgi_fastcgi_request_https_on () {
 /**
  * @since 0.2
  */
+public static void test_vsgi_fastcgi_request_uri_with_query () {
+	var environment   = new HashTable<string, string?> (str_hash, str_equal);
+
+	environment["REQUEST_URI"] = "/home?a=b";
+
+	var input_stream = new MemoryInputStream ();
+
+	var request = new Request (environment, input_stream);
+
+	assert ("/home" == request.uri.path);
+}
+
+/**
+ * @since 0.2
+ */
 public static void test_vsgi_fastcgi_response () {
 	var environment   = new HashTable<string, string?> (str_hash, str_equal);
 	var input_stream  = new MemoryInputStream ();

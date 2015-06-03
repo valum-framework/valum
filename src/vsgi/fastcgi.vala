@@ -191,12 +191,12 @@ namespace VSGI.FastCGI {
 			if (environment.contains ("SERVER_PORT"))
 				this._uri.set_port (int.parse (environment["SERVER_PORT"]));
 
-			if (environment.contains ("PATH_INFO"))
-				this._uri.set_path (environment["PATH_INFO"]);
+			if (environment.contains ("REQUEST_URI"))
+				this._uri.set_path (environment["REQUEST_URI"].split ("?", 2)[0]); // avoid the query
 
-			// use the full CGI path if 'PATH_INFO' is not set
-			else if (environment.contains ("REQUEST_URI"))
-				this._uri.set_path (environment["REQUEST_URI"]);
+			// fallback on 'PATH_INFO'
+			else if (environment.contains ("PATH_INFO"))
+				this._uri.set_path (environment["PATH_INFO"]);
 
 			this._uri.set_query (environment["QUERY_STRING"]);
 
@@ -351,7 +351,7 @@ namespace VSGI.FastCGI {
 				var environment = new HashTable<string, string> (str_hash, str_equal);
 
 				foreach (var e in request.environment.get_all ()) {
-					var parts = e.split ("=", 1);
+					var parts = e.split ("=", 2);
 					environment[parts[0]] = parts.length == 2 ? parts[1] : "";
 				}
 

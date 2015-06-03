@@ -97,6 +97,7 @@ public int main (string[] args) {
 
 	Test.add_func ("/vsgi/fastcgi/request", test_vsgi_fastcgi_request);
 	Test.add_func ("/vsgi/fastcgi/request/https_on", test_vsgi_fastcgi_request_https_on);
+	Test.add_func ("/vsgi/fastcgi/request/uri_with_query", test_vsgi_fastcgi_request_uri_with_query);
 	Test.add_func ("/vsgi/fastcgi/response", test_vsgi_fastcgi_response);
 
 	return Test.run ();
