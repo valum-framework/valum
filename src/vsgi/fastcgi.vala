@@ -226,7 +226,7 @@ namespace VSGI.FastCGI {
 		public GLib.Socket? socket { get; set; default = null; }
 
 		public Server (VSGI.Application application) {
-			Object (application: application, flags: ApplicationFlags.HANDLES_COMMAND_LINE);
+			base (application);
 
 #if GIO_2_40
 			const OptionEntry[] options = {

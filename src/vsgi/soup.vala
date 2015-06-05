@@ -105,23 +105,13 @@ namespace VSGI.Soup {
 	 */
 	public class Server : VSGI.Server {
 
-		/**
-		 * @since 0.1
-		 */
-		public global::Soup.Server server { construct; get; }
+		private global::Soup.Server server;
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public Server (VSGI.Application application) {
-#if SOUP_2_48
-			var server = new global::Soup.Server (global::Soup.SERVER_SERVER_HEADER, "Valum");
-#else
-			var server = new global::Soup.Server (global::Soup.SERVER_SERVER_HEADER, "Valum",
-						                           global::Soup.SERVER_PORT, 3003);
-#endif
-
-			Object (application: application, flags: ApplicationFlags.HANDLES_COMMAND_LINE, server: server);
+			base (application);
 
 #if GIO_2_40
 			const OptionEntry[] entries = {
@@ -136,6 +126,10 @@ namespace VSGI.Soup {
 		public override int command_line (ApplicationCommandLine command_line) {
 #if GIO_2_40
 			var options = command_line.get_options_dict ();
+
+			if (options.contains ("port") && options.contains ("socket"))
+				error ("either port or socket can be specified, not both");
+
 			var port    = options.contains ("port") ? options.lookup_value ("port", VariantType.INT32).get_int32 () : 3003;
 			var timeout = options.contains ("timeout") ? options.lookup_value ("timeout", VariantType.INT32).get_int32 () : 0;
 #else
@@ -143,13 +137,16 @@ namespace VSGI.Soup {
 			var timeout = 0;
 #endif
 
-			this.hold ();
+			this.set_inactivity_timeout (timeout);
 
 #if SOUP_2_48
-			this.server.listen_all (port, 0);
+			this.server = new global::Soup.Server (global::Soup.SERVER_SERVER_HEADER, "Valum");
+#else
+			this.server = new global::Soup.Server (global::Soup.SERVER_SERVER_HEADER, "Valum",
+			                                       global::Soup.SERVER_PORT, port);
 #endif
 
-			this.set_inactivity_timeout (timeout);
+			this.hold ();
 
 			// register a catch-all handler
 			this.server.add_handler (null, (server, msg, path, query, client) => {
@@ -166,6 +163,8 @@ namespace VSGI.Soup {
 			});
 
 #if SOUP_2_48
+			this.server.listen_all (port, 0);
+
 			foreach (var uri in this.server.get_uris ()) {
 				message ("listening on %s://%s:%u", uri.scheme, uri.host, uri.port);
 			}
