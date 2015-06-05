@@ -113,6 +113,9 @@ public int main (string[] args) {
 	Test.add_func ("/vsgi/soup/request", test_vsgi_soup_request);
 	Test.add_func ("/vsgi/soup/response", test_vsgi_soup_response);
 
+	Test.add_func ("/vsgi/cgi/request", test_vsgi_cgi_request);
+	Test.add_func ("/vsgi/cgi/request/missing_path_info", test_vsgi_cgi_request_missing_path_info);
+
 	Test.add_func ("/vsgi/fastcgi/request", test_vsgi_fastcgi_request);
 	Test.add_func ("/vsgi/fastcgi/request/https_on", test_vsgi_fastcgi_request_https_on);
 	Test.add_func ("/vsgi/fastcgi/request/uri_with_query", test_vsgi_fastcgi_request_uri_with_query);
