@@ -1,11 +1,10 @@
 Module
 ======
 
-It is often useful to construct an application as a set of decoupled and
-reusable modules. This can easily be done with the ``Router.LoaderCallback``
-delegate which is used for the scope feature. A module is represented by
-a simple callback that takes a :doc:`router` as input and register some routes
-on it.
+It is often useful to craft an application as a set of decoupled and reusable
+modules. This can easily be done with the ``Router.LoaderCallback`` delegate
+which is used for the scope feature. A module is represented by a simple
+callback that takes a :doc:`router` as input and register some routes on it.
 
 Let's say you need an administration section:
 

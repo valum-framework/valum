@@ -18,10 +18,10 @@ Simple 'Hello world!' application
 ---------------------------------
 
 You can use this sample application and project structure as a basis. The full
-`example is available on GitHub`_ and is kept up-to-date with the latest
-changes in the framework.
+`valum-framework/example`_ is available on GitHub and is kept up-to-date with
+the latest changes in the framework.
 
-.. _example is available on GitHub: https://github.com/valum-framework/example
+.. _valum-framework/example: https://github.com/valum-framework/example
 
 .. code:: vala
 
@@ -120,6 +120,12 @@ You should now be able to build by issuing the following commands:
 
 Running the example
 -------------------
+
+VSGI produces process-based applications that are either self-hosted or able to
+communicate with a HTTP server according to a standardized protocol.
+
+The :doc:`server/soup` implementation is self-hosting, so you just have to run
+it and point your browser at http://0.0.0.0:3003 to see the result.
 
 .. code-block:: bash
 

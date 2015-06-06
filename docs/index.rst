@@ -33,7 +33,7 @@ Table Of Contents
     redirection-and-error
     route
     router
-    recipes/static-resource
+    recipes/index
     server/soup
     server/fastcgi
     module

@@ -110,8 +110,6 @@ parameters that contains two additional keys:
 -  ``code`` for the status code
 -  ``message`` for the status message
 
-.. _GLib.Error
-
 .. code:: vala
 
     app.status (Soup.Status.NOT_FOUND, (req, res) => {

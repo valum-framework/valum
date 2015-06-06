@@ -1,5 +1,5 @@
-Valum micro-framework
-=====================
+Valum web micro-framework
+=========================
 
 [![Build Status](https://travis-ci.org/valum-framework/valum.svg?branch=master)](https://travis-ci.org/valum-framework/valum)
 [![Documentation Status](https://readthedocs.org/projects/valum-framework/badge/?version=latest)](https://readthedocs.org/projects/valum-framework/?badge=latest)

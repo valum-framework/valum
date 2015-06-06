@@ -20,8 +20,8 @@ The following dependencies are minimal to build the framework under Ubuntu
 
 Recent dependencies will enable more advanced features.
 
--  gio-2.0 (>=2.40) CLI arguments parsing
--  gio-2.0 (>=2.42) uses ``add_menu_option`` to generate help with ``--help``
+-  gio-2.0 (>=2.40) CLI arguments parsing and `add_main_option_entries` to
+   generate help with ``--help``
 -  libsoup-2.4 (>=2.48) new server API
 
 You can also install additionnal dependencies to build the examples.

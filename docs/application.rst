@@ -9,18 +9,18 @@ Choosing the VSGI implementation
 
 VSGI (Vala Server Gateway Interface) offers abstractions for different web
 server technologies. You can choose which implementation you want with
-a ``using`` statement, as they all respect a common interface.
+a ``using`` statement as they all respect a common interface.
+
+.. code:: vala
+
+    using Valum;
+    using VSGI.Soup; // or VSGI.FastCGI
 
 Two implementations exist at the moment and a few more are planned in a future
 minor release.
 
 -  :doc:`server/soup`
 -  :doc:`server/fastcgi`
-
-.. code:: vala
-
-    using Valum;
-    using VSGI.Soup;
 
 Creating an application
 -----------------------
@@ -50,24 +50,25 @@ a :doc:`route` instance.
     });
 
 Every route declaration has a callback associated that does the request
-processing. The callback receives three arguments:
+processing. The callback, named handler, receives three arguments:
 
 -  a :doc:`vsgi/request` that describes a resource being requested
 -  a :doc:`vsgi/response` that correspond to that resource
 -  a ``next`` continuation to `keep routing`
 
-These two inherit respectively from ``InputStream`` and ``OutputStream``,
-allowing any synchronous and asynchronous stream operations. You can use
-`GLib.DataOutputStream`_ or any wrapper from the GIO stream API to perform
-advanced write operations.
+:doc:`vsgi/request` and :doc:`vsgi/response` inherit respectively from
+`GLib.InputStream`_ and `GLib.OutputStream`_, allowing any synchronous and
+asynchronous stream operations. You can use `GLib.DataOutputStream`_ or any
+filter from the GIO stream API to perform advanced write operations.
 
+.. _GLib.InputStream: http://valadoc.org/#!api=gio-2.0/GLib.InputStream
+.. _GLib.OutputStream: http://valadoc.org/#!api=gio-2.0/GLib.OutputStream
 .. _GLib.DataOutputStream: http://valadoc.org/#!api=gio-2.0/GLib.DataOutputStream
 
 Serving the application
 -----------------------
 
-This part is pretty straightforward: you create a server that will serve your
-application at port ``3003``. This will use the libsoup built-in HTTP server.
+The :doc:`server/soup` will be used to serve your application at port ``3003``.
 
 Usually, you would only pass the CLI arguments to ``run``, so that your runtime
 can be parametrized easily.
@@ -76,9 +77,9 @@ can be parametrized easily.
 
     new Server (app).run ({"app", "--port", "3003"});
 
-There is also a :doc:`server/fastcgi` implementation for a live deployment,
-although you can still deploy with libsoup if you decide to use a modern
-hosting service like `Heroku`_.
+There is also a :doc:`server/fastcgi` implementation for a deployment on pretty
+much any existing HTTP server. However, you can still deploy with libsoup if
+you decide to use a modern hosting service like `Heroku`_.
 
 .. _Heroku: https://heroku.com
 

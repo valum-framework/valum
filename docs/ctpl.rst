@@ -16,7 +16,9 @@ Creating views
 --------------
 
 The ``View`` class provides constructors to create views from ``string``, file
-path and ``InputStream``.
+path and `GLib.InputStream`_.
+
+.. _GLib.InputStream: http://valadoc.org/#!api=gio-2.0/GLib.InputStream
 
 .. code:: vala
 
@@ -26,8 +28,8 @@ path and ``InputStream``.
 
     var template = new View.from_path ("path/to/your/template.tpl");
 
-It is a good practice to bundle static data in the executable using
-`GLib.Resource`_. This practice is covered in the
+It is a good practice to bundle static data in the executable using the
+`GLib.Resource`_ API. This approach is covered in the
 :doc:`recipes/static-resource` document.
 
 .. _GLib.Resource: http://valadoc.org/#!api=gio-2.0/GLib.Resource
@@ -40,7 +42,7 @@ Environment
 -----------
 
 A ``View`` instance provides an `Ctpl.Environ`_ environment from which you can
-push and pop variables.
+push and pop variables of various types.
 
 .. _Ctpl.Environ: http://ctpl.tuxfamily.org/doc/unstable/ctpl-CtplEnviron.html
 
@@ -50,7 +52,7 @@ push and pop variables.
 
     template.environment.push_int ("a", 1);
 
-Valum provides helpers for dumping `GLib.HashTable`_, `Gee.Collection`_,
+Helpers are provided for pushing `GLib.HashTable`_, `Gee.Collection`_,
 `Gee.Map`_ and `Gee.MultiMap`_ as well as array of ``double``, ``long`` and
 ``string``.
 
@@ -69,7 +71,7 @@ concatenation of the provided key, a underscore (``_``) and the entry key.
 
     var map = new HashMap<string, string> ();
 
-    map["key"] = "value";
+    map["key"]  = "value";
     map["key2"] = "value2";
 
     template.push_map ("map", map); // map_key and map_key2 will be pushed
