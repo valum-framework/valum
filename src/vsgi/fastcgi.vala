@@ -146,112 +146,34 @@ namespace VSGI.FastCGI {
 	/**
 	 * {@inheritDoc}
 	 */
-	public class Request : VSGI.Request {
+	public class Request : CGI.Request {
 
-		public HashTable<string, string> environment { construct; get; }
-
-		private URI _uri = new URI (null);
-		private HashTable<string, string>? _query = null;
-		private MessageHeaders _headers = new MessageHeaders (MessageHeadersType.REQUEST);
-
-		public override HTTPVersion http_version {
-			get {
-				return environment["SERVER_PROTOCOL"] == "HTTP/1.1" ?
-					HTTPVersion.@1_1 :
-					HTTPVersion.@1_0;
-			}
-		}
-
-		public override string method {
-			owned get {
-				return this.environment["REQUEST_METHOD"];
-			}
-		}
-
-		public override URI uri { get { return this._uri; } }
-
-		public override HashTable<string, string>? query {
-			get {
-				return this._query;
-			}
-		}
-
-		public override MessageHeaders headers {
-			get { return this._headers; }
-		}
-
+		/**
+		 * {@inheritDoc}
+		 *
+		 * Initialize FastCGI-specific environment variables.
+		 */
 		public Request (HashTable<string, string> environment , InputStream base_stream) {
-			Object (environment: environment, base_stream: base_stream);
+			base (environment, base_stream);
 
 			if (environment.contains ("HTTPS") && environment["HTTPS"] == "on")
-				this._uri.set_scheme ("https");
-
-			this._uri.set_user (environment["REMOTE_USER"]);
-
-			if (environment.contains ("SERVER_NAME"))
-				this._uri.set_host (environment["SERVER_NAME"]);
-
-			// fallback on the server address
-			else if (environment.contains ("SERVER_ADDR"))
-				this._uri.set_host (environment["SERVER_ADDR"]);
-
-			if (environment.contains ("SERVER_PORT"))
-				this._uri.set_port (int.parse (environment["SERVER_PORT"]));
+				this.uri.set_scheme ("https");
 
 			if (environment.contains ("REQUEST_URI"))
-				this._uri.set_path (environment["REQUEST_URI"].split ("?", 2)[0]); // avoid the query
-
-			// fallback on 'PATH_INFO'
-			else if (environment.contains ("PATH_INFO"))
-				this._uri.set_path (environment["PATH_INFO"]);
-
-			this._uri.set_query (environment["QUERY_STRING"]);
-
-			// parse the HTTP query
-			if (environment.contains ("QUERY_STRING"))
-				this._query = Form.decode (environment["QUERY_STRING"]);
-
-			// extract HTTP headers, they are prefixed by 'HTTP_' in environment variables
-			environment.foreach ((name, @value) => {
-				if (name.has_prefix ("HTTP_")) {
-					this.headers.append (name.substring (5).replace ("_", "-").casefold (), @value);
-				}
-			});
+				this.uri.set_path (environment["REQUEST_URI"].split ("?", 2)[0]); // avoid the query
 		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public class Response : VSGI.Response {
-
-		private uint _status;
-
-		private MessageHeaders _headers = new MessageHeaders (MessageHeadersType.RESPONSE);
-
-		public override uint status {
-			get { return this._status; }
-			set {
-				this._status = value;
-				// update the 'Status' header
-				this._headers.replace ("Status", "%u %s".printf (value, Status.get_phrase (value)));
-			}
-		}
-
-		public override MessageHeaders headers { get { return this._headers; } }
+	public class Response : CGI.Response {
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public Response (Request req, OutputStream base_stream) {
 			Object (request: req, base_stream: base_stream);
-		}
-
-		/**
-		 * The status line is part of the headers, so nothing has to be done here.
-		 */
-		protected override ssize_t write_status_line () throws IOError {
-			return 0;
 		}
 	}
 
