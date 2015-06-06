@@ -287,15 +287,7 @@ namespace VSGI.FastCGI {
 			else
 #endif
 			{
-				// we just need to know the socket file descriptor...
-				request req;
-				request.init (out req);
-
-				this.socket = new GLib.Socket.from_fd (req.listen_socket);
-
-				// ...
-				req.close (false);
-
+				this.socket = new GLib.Socket.from_fd (0);
 				message ("listening the default socket");
 			}
 
