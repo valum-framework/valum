@@ -123,9 +123,13 @@ namespace VSGI.Soup {
 
 			Object (application: application, flags: ApplicationFlags.HANDLES_COMMAND_LINE, server: server);
 
-#if GIO_2_42
-			this.add_main_option ("port", 'p', 0, OptionArg.INT, "port used to serve the HTTP server", "3003");
-			this.add_main_option ("timeout", 't', 0, OptionArg.INT, "inactivity timeout in ms", "0");
+#if GIO_2_40
+			const OptionEntry[] entries = {
+				{"port", 'p', 0, OptionArg.INT, null, "port used to serve the HTTP server", "3003"},
+				{"timeout", 't', 0, OptionArg.INT, null, "inactivity timeout in ms", "0"},
+				{null}
+			};
+			this.add_main_option_entries (entries);
 #endif
 		}
 

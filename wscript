@@ -32,10 +32,6 @@ def configure(conf):
     if conf.check_cfg(package='gio-2.0', atleast_version='2.40', mandatory=False, uselib_store='GIO', args='--cflags --libs'):
         conf.env.append_unique('VALAFLAGS', ['--define=GIO_2_40'])
 
-    # gio (>=2.42) is necessary for add_main_option
-    if conf.check_cfg(package='gio-2.0', atleast_version='2.42', mandatory=False, uselib_store='GIO', args='--cflags --libs'):
-        conf.env.append_unique('VALAFLAGS', ['--define=GIO_2_42'])
-
     # libsoup (>=2.48) is necessary for the new server API
     if conf.check_cfg(package='libsoup-2.4', atleast_version='2.48', mandatory=False, uselib_store='SOUP', args='--cflags --libs'):
         conf.env.append_unique('VALAFLAGS', ['--define=SOUP_2_48'])

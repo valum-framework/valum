@@ -228,11 +228,15 @@ namespace VSGI.FastCGI {
 		public Server (VSGI.Application application) {
 			Object (application: application, flags: ApplicationFlags.HANDLES_COMMAND_LINE);
 
-#if GIO_2_42
-			this.add_main_option ("socket", 's', 0, OptionArg.STRING, "path to the UNIX socket", null);
-			this.add_main_option ("port", 'p', 0, OptionArg.INT, "TCP port on this host", null);
-			this.add_main_option ("backlog", 'b', 0, OptionArg.INT, "listen queue depth used in the listen() call", "0");
-			this.add_main_option ("timeout", 't', 0, OptionArg.INT, "inactivity timeout in ms", "0");
+#if GIO_2_40
+			const OptionEntry[] options = {
+				{"socket", 's', 0, OptionArg.STRING, null, "path to the UNIX socket", null},
+				{"port", 'p', 0, OptionArg.INT, null, "TCP port on this host", null},
+				{"backlog", 'b', 0, OptionArg.INT, null, "listen queue depth used in the listen() call", "0"},
+				{"timeout", 't', 0, OptionArg.INT, null, "inactivity timeout in ms", "0" },
+				{null}
+			};
+			this.add_main_option_entries (options);
 #endif
 
 			this.startup.connect (() => {
