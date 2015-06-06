@@ -6,7 +6,7 @@ namespace VSGI {
 	 *
 	 * @since 0.0.1
 	 */
-	public abstract class Request : InputStream {
+	public abstract class Request : Object {
 
 		/**
 		 * HTTP/1.1 standard methods.
@@ -51,6 +51,13 @@ namespace VSGI {
 		 * @since 0.0.1
 		 */
 		public HashTable<string, string?>? @params { get; set; default = null; }
+
+		/**
+		 * Raw stream used by the implementation.
+		 *
+		 * @since 0.2
+		 */
+		public InputStream base_stream { construct; protected get; }
 
 		/**
 		 * Request HTTP version.
@@ -122,6 +129,26 @@ namespace VSGI {
 				cookies.reverse ();
 
 				return cookies;
+			}
+		}
+
+		private InputStream? _body = null;
+
+		/**
+		 * Request body.
+		 *
+		 * @since 0.2
+		 */
+		public InputStream body {
+			get {
+				// body has been filtered or redirected
+				if (this._body != null)
+					return this._body;
+
+				return this.base_stream;
+			}
+			set {
+				this._body = value;
 			}
 		}
 	}

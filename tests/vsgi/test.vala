@@ -30,29 +30,25 @@ namespace VSGI.Test {
 		}
 
 		public Request (string method, URI uri, HashTable<string, string>? query = null) {
+			Object (base_stream: new MemoryInputStream ());
 			this._method = method;
 			this._uri    = uri;
 			this._query  = query;
 		}
 
 		public Request.with_method (string method) {
+			Object (base_stream: new MemoryInputStream ());
 			this._method = method;
 		}
 
 		public Request.with_uri (URI uri) {
+			Object (base_stream: new MemoryInputStream ());
 			this._uri = uri;
 		}
 
 		public Request.with_query (HashTable<string, string>? query) {
+			Object (base_stream: new MemoryInputStream ());
 			this._query = query;
-		}
-
-		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) {
-			return 0;
-		}
-
-		public override bool close (Cancellable? cancellable = null) {
-			return true;
 		}
 	}
 
@@ -73,16 +69,8 @@ namespace VSGI.Test {
 		}
 
 		public Response (Request req, uint status) {
-			Object (request: req);
+			Object (request: req, base_stream: new MemoryOutputStream (null, realloc, free));
 			this._status = status;
-		}
-
-		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) {
-			return 0;
-		}
-
-		public override bool close (Cancellable? cancellable = null) {
-			return true;
 		}
 	}
 }
