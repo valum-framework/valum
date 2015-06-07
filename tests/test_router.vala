@@ -488,3 +488,16 @@ public static void test_router_next_propagate_error () {
 
 	assert (401 == response.status);
 }
+
+public static void test_router_integration () {
+	var router = new Router ();
+	var client = new Client (router);
+
+	var response = client.get ("/")
+		.edit_headers ((headers) => {
+			headers.set_content_type ("text/html", null);
+		})
+		.execute ();
+
+	assert (200 = response.status);
+}
