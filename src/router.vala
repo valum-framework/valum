@@ -50,7 +50,7 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public delegate void NextCallback () throws Redirection, ClientError, ServerError;
+		public delegate void NextCallback () throws Informational, Success, Redirection, ClientError, ServerError;
 
 		/**
 		 * Teardown a request after it has been processed even if a
@@ -263,7 +263,7 @@ namespace Valum {
 		 * @param res
 		 * @return tells if something matched during the routing process
 		 */
-		private bool perform_routing (List<Route> routes, Request req, Response res) throws Redirection, ClientError, ServerError {
+		private bool perform_routing (List<Route> routes, Request req, Response res) throws Informational, Success, Redirection, ClientError, ServerError {
 			foreach (var route in routes) {
 				if (route.match (req)) {
 					route.fire (req, res, () => {
@@ -339,15 +339,25 @@ namespace Valum {
 					// propagate the error if it is not handled
 					throw e;
 				}
+			} catch (Informational.SWITCHING_PROTOCOLS i) {
+				res.status = i.code;
+				res.headers.append ("Upgrade", i.message);
+			} catch (Success.CREATED s) {
+				res.status = s.code;
+				res.headers.append ("Location", s.message);
+			} catch (Success.PARTIAL_CONTENT s) {
+				res.status = s.code;
+				res.headers.append ("Range", s.message);
 			} catch (Redirection r) {
 				res.status = r.code;
-				res.headers.append("Location", r.message);
-			} catch (ClientError.METHOD_NOT_ALLOWED e) {
-				res.status = e.code;
-				res.headers.append ("Allow", e.message);
-			} catch (ClientError e) {
-				res.status = e.code;
-			} catch (ServerError e) {
+				res.headers.append ("Location", r.message);
+			} catch (ClientError.METHOD_NOT_ALLOWED c) {
+				res.status = c.code;
+				res.headers.append ("Allow", c.message);
+			} catch (ClientError.UPGRADE_REQUIRED c) {
+				res.status = c.code;
+				res.headers.append ("Upgrade", c.message);
+			} catch (Error e) {
 				res.status = e.code;
 			} finally {
 				teardown (req, res);

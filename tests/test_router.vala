@@ -276,6 +276,63 @@ public static void test_router_scope () {
 /**
  * @since 0.1
  */
+public static void test_router_informational_switching_protocols () {
+	var router = new Router ();
+
+	router.all ("", (req, res) => {
+		throw new Informational.SWITCHING_PROTOCOLS ("HTTP/1.1");
+	});
+
+	var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (response.status == Soup.Status.SWITCHING_PROTOCOLS);
+	assert ("HTTP/1.1" == response.headers.get_one ("Upgrade"));
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_router_success_created () {
+	var router = new Router ();
+
+	router.put ("document", (req, res) => {
+		throw new Success.CREATED ("/document/5");
+	});
+
+	var request  = new Request (VSGI.Request.PUT, new Soup.URI ("http://localhost/document"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (Soup.Status.CREATED == response.status);
+	assert ("/document/5" == response.headers.get_one ("Location"));
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_router_success_partial_content () {
+	var router = new Router ();
+
+	router.put ("document", (req, res) => {
+		throw new Success.PARTIAL_CONTENT ("bytes 21010-47021/47022");
+	});
+
+	var request  = new Request (VSGI.Request.PUT, new Soup.URI ("http://localhost/document"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (Soup.Status.PARTIAL_CONTENT == response.status);
+	assert ("bytes 21010-47021/47022" == response.headers.get_one ("Range"));
+}
+
+/**
+ * @since 0.1
+ */
 public static void test_router_redirection () {
 	var router = new Router ();
 
@@ -292,6 +349,51 @@ public static void test_router_redirection () {
 	assert ("http://example.com" == response.headers.get_one ("Location"));
 }
 
+/**
+ * @since 0.1
+ */
+public static void test_router_client_error_method_not_allowed () {
+	var router = new Router ();
+
+	router.post ("", (req, res) => {
+
+	});
+
+	router.all ("", (req, res) => {
+		throw new ClientError.METHOD_NOT_ALLOWED ("POST");
+	});
+
+	var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (Soup.Status.METHOD_NOT_ALLOWED == response.status);
+	assert ("POST" == response.headers.get_one ("Allow"));
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_router_client_error_upgrade_required () {
+	var router = new Router ();
+
+	router.all ("", (req, res) => {
+		throw new ClientError.UPGRADE_REQUIRED ("HTTP/1.1");
+	});
+
+	var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (426 == response.status);
+	assert ("HTTP/1.1" == response.headers.get_one ("Upgrade"));
+}
+
+/**
+ * @since 0.1
+ */
 public static void test_router_server_error () {
 	var router = new Router ();
 
@@ -392,6 +494,7 @@ public static void test_router_not_found () {
 
 	assert (Soup.Status.NOT_FOUND == response.status);
 }
+
 
 /**
  * @since 0.1

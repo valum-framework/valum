@@ -6,13 +6,13 @@ mechanism.
 
 .. _exception: https://wiki.gnome.org/Projects/Vala/Manual/Errors
 
-In a :doc:`route` callback, you may throw any of ``Redirection``,
-``ClientError`` and ``ServerError`` predefined error domains rather than
-setting the status and returning from the function.
+In a :doc:`route` callback, you may throw any of ``Informational``, ``Success``,
+``Redirection``, ``ClientError`` and ``ServerError`` predefined error domains
+rather than setting the status and returning.
 
-It is possible to connect a callback on the :doc:`router` to handle a specific
+It is possible to register a handler on the :doc:`router` to handle a specific
 status code. Otherwise, the router will simply set the status code in the
-response and set headers for specific errors.
+response and set its headers for specific status.
 
 .. code:: vala
 
@@ -21,15 +21,56 @@ response and set headers for specific errors.
     });
 
 The error message may be used to fill specific :doc:`vsgi/response` headers.
-The following table describe how the router deal with specific error messages.
+The following table describe how the router deal with these cases.
 
-+--------------------------------+----------+
-| Error                          | Header   |
-+================================+==========+
-| Redirection.*                  | Location |
-+--------------------------------+----------+
-| ClientError.METHOD_NOT_ALLOWED | Accept   |
-+--------------------------------+----------+
++-----------------------------------+----------+------------------------------------------+
+| Status                            | Header   | Description                              |
++===================================+==========+==========================================+
+| Informational.SWITCHING_PROTOCOLS | Upgrade  |                                          |
++-----------------------------------+----------+------------------------------------------+
+| Success.CREATED                   | Location | URI to the newly created resource        |
++-----------------------------------+----------+------------------------------------------+
+| Success.PARTIAL_CONTENT           | Range    | Range of the delivered resource in bytes |
++-----------------------------------+----------+------------------------------------------+
+| Redirection.*                     | Location | URI to perform the redirection           |
++-----------------------------------+----------+------------------------------------------+
+| ClientError.METHOD_NOT_ALLOWED    | Accept   |                                          |
++-----------------------------------+----------+------------------------------------------+
+| ClientError.UPGRADE_REQUIRED      | Upgrade  |                                          |
++-----------------------------------+----------+------------------------------------------+
+
+The approach taken by Valum is to support at least all status defined by
+libsoup-2.4 and those defined in RFC documents. If anything is missing, you can
+add it and submit us a pull request.
+
+Informational (1xx)
+-------------------
+
+Informational status are used to provide a in-between response for the
+requested resource. The :doc:`vsgi/response` body must remain empty.
+
+Informational status are enumerated in ``Informational`` error domain.
+
+Success (2xx)
+-------------
+
+Success status tells the client that the request went well and provide
+additional information about the resource. An example would be to throw
+a ``Success.CREATED`` error to provide the location of the newly created
+resource.
+
+Successes are enumerated in ``Success`` error domain.
+
+.. code:: vala
+
+    app.get ("document/<int:id>", (req, res) => {
+        // serve the document by its identifier...
+    });
+
+    app.put ("document", (req, res) => {
+        // create the document described by the request
+        throw new Success.CREATED ("/document/%u".printf (id));
+    });
 
 Redirection (3xx)
 -----------------
@@ -38,7 +79,7 @@ To perform a redirection, you have to throw a ``Redirection`` error and use the
 message as a redirect URL. The :doc:`router` will automatically set the
 ``Location`` header accordingly.
 
-Redirections are enumerated in ``Redirection`` enumeration.
+Redirections are enumerated in ``Redirection`` error domain.
 
 .. code:: vala
 
@@ -53,7 +94,7 @@ Client (4xx) and server (5xx) error
 -----------------------------------
 
 Like for redirections, client and server errors are thrown. Errors are
-predefined in ``ClientError`` and ``ServerError`` enumerations.
+predefined in ``ClientError`` and ``ServerError`` error domains.
 
 .. code:: vala
 

@@ -47,7 +47,7 @@ namespace Valum {
 		 * @param req request being handled
 		 * @param res response to send back to the requester
 		 */
-		public delegate void HandlerCallback (Request req, Response res, Router.NextCallback next) throws Redirection, ClientError, ServerError;
+		public delegate void HandlerCallback (Request req, Response res, Router.NextCallback next) throws Informational, Success, Redirection, ClientError, ServerError;
 
 		/**
 		 * Create a Route using a custom matcher.

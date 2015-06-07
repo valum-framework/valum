@@ -9,7 +9,13 @@ public int main (string[] args) {
 	Test.add_func ("/router/custom_method", test_router_custom_method);
 	Test.add_func ("/router/scope", test_router_scope);
 
+	Test.add_func ("/router/informational/switching_protocols", test_router_informational_switching_protocols);
+	Test.add_func ("/router/success/created", test_router_success_created);
+	Test.add_func ("/router/success/partial_content", test_router_success_partial_content);
 	Test.add_func ("/router/redirection", test_router_redirection);
+	Test.add_func ("/router/client_error/method_not_allowed", test_router_client_error_method_not_allowed);
+	Test.add_func ("/router/client_error/upgrade_required", test_router_client_error_upgrade_required);
+
 	Test.add_func ("/router/method_not_allowed", test_router_method_not_allowed);
 	Test.add_func ("/router/method_not_allowed/excludes_request_method",
 			       test_router_method_not_allowed_excludes_request_method);

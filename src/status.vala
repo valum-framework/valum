@@ -3,6 +3,47 @@ using Soup;
 namespace Valum {
 
 	/**
+	 * Informational status corresponding to the 1xx HTTP status codes.
+	 *
+	 * @see   Soup.Status
+	 * @since 0.1
+	 */
+	public errordomain Informational {
+		CONTINUE            = Status.CONTINUE,
+		/**
+		 * The error message will be used for the 'Upgrade' header.
+		 */
+		SWITCHING_PROTOCOLS = Status.SWITCHING_PROTOCOLS,
+		PROCESSING          = Status.PROCESSING
+	}
+
+	/**
+	 * Success corresponding to the 2xx HTTP status codes.
+	 *
+	 * @see   Soup.Status
+	 * @since 0.1
+	 */
+	public errordomain Success {
+		OK                = Status.OK,
+		/**
+		 * The error message will be used for the 'Location' header which
+		 * should point to the newly created resource.
+		 */
+		CREATED           = Status.CREATED,
+		ACCEPTED          = Status.ACCEPTED,
+		NON_AUTHORITATIVE = Status.NON_AUTHORITATIVE,
+		NO_CONTENT        = Status.NO_CONTENT,
+		RESET_CONTENT     = Status.RESET_CONTENT,
+		/**
+		 * The error message will be used for the 'Range' header.
+		 */
+		PARTIAL_CONTENT   = Status.PARTIAL_CONTENT,
+		MULTI_STATUS      = Status.MULTI_STATUS,
+		ALREADY_REPORTED  = 208,
+		IM_USED           = 226
+	}
+
+	/**
 	 * Redirection corresponding to the 3xx HTTP status codes.
 	 *
 	 * The error message will be used in the 'Location' header.
@@ -19,7 +60,8 @@ namespace Valum {
 		NOT_MODIFIED                   = Status.NOT_MODIFIED,
 		USE_PROXY                      = Status.USE_PROXY,
 		NOT_APPEARING_IN_THIS_PROTOCOL = Status.NOT_APPEARING_IN_THIS_PROTOCOL,
-		TEMPORARY_REDIRECT             = Status.TEMPORARY_REDIRECT
+		TEMPORARY_REDIRECT             = Status.TEMPORARY_REDIRECT,
+		PERMANENT_REDIRECT             = 308
 	}
 
 	/**
@@ -52,9 +94,19 @@ namespace Valum {
 		REQUESTED_RANGE_NOT_SATISFIABLE = Status.REQUESTED_RANGE_NOT_SATISFIABLE,
 		INVALID_RANGE                   = Status.INVALID_RANGE,
 		EXPECTATION_FAILED              = Status.EXPECTATION_FAILED,
+		IM_A_TEAPOT                     = 418,
+		AUTHENTICATION_TIMEOUT          = 419,
+		MISDIRECTED_REQUEST             = 421,
 		UNPROCESSABLE_ENTITY            = Status.UNPROCESSABLE_ENTITY,
 		LOCKED                          = Status.LOCKED,
-		FAILED_DEPENDENCY               = Status.FAILED_DEPENDENCY
+		FAILED_DEPENDENCY               = Status.FAILED_DEPENDENCY,
+		/**
+		 * The error message is used for the 'Upgrade' header.
+		 */
+		UPGRADE_REQUIRED                = 426,
+		PRECONDITION_REQUIRED           = 428,
+		TOO_MANY_REQUESTS               = 429,
+		REQUEST_HEADER_FIELDS_TOO_LARGE = 431
 	}
 
 	/**
@@ -64,13 +116,16 @@ namespace Valum {
 	 * @since 0.1
 	 */
 	public errordomain ServerError {
-		INTERNAL_SERVER_ERROR      = Status.INTERNAL_SERVER_ERROR,
-		NOT_IMPLEMENTED            = Status.NOT_IMPLEMENTED,
-		BAD_GATEWAY                = Status.BAD_GATEWAY,
-		SERVICE_UNAVAILABLE        = Status.SERVICE_UNAVAILABLE,
-		GATEWAY_TIMEOUT            = Status.GATEWAY_TIMEOUT,
-		HTTP_VERSION_NOT_SUPPORTED = Status.HTTP_VERSION_NOT_SUPPORTED,
-		INSUFFICIENT_STORAGE       = Status.INSUFFICIENT_STORAGE,
-		NOT_EXTENDED               = Status.NOT_EXTENDED
+		INTERNAL_SERVER_ERROR           = Status.INTERNAL_SERVER_ERROR,
+		NOT_IMPLEMENTED                 = Status.NOT_IMPLEMENTED,
+		BAD_GATEWAY                     = Status.BAD_GATEWAY,
+		SERVICE_UNAVAILABLE             = Status.SERVICE_UNAVAILABLE,
+		GATEWAY_TIMEOUT                 = Status.GATEWAY_TIMEOUT,
+		HTTP_VERSION_NOT_SUPPORTED      = Status.HTTP_VERSION_NOT_SUPPORTED,
+		VARIANT_ALSO_NEGOTIATES         = 506,
+		INSUFFICIENT_STORAGE            = Status.INSUFFICIENT_STORAGE,
+		LOOP_DETECTED                   = 508,
+		NOT_EXTENDED                    = Status.NOT_EXTENDED,
+		NETWORK_AUTHENTICATION_REQUIRED = 511
 	}
 }
