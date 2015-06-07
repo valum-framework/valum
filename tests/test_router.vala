@@ -27,7 +27,7 @@ public static void test_router_get () {
 	var request  = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.OK);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (418 == response.status);
 }
@@ -45,7 +45,7 @@ public static void test_router_post () {
 	var request  = new Request (VSGI.Request.POST, new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.OK);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (418 == response.status);
 }
@@ -63,7 +63,7 @@ public static void test_router_put () {
 	var request  = new Request (VSGI.Request.PUT, new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.OK);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (418 == response.status);
 }
@@ -81,7 +81,7 @@ public static void test_router_delete () {
 	var request  = new Request (VSGI.Request.DELETE, new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.OK);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (418 == response.status);
 }
@@ -99,7 +99,7 @@ public static void test_router_head () {
 	var request  = new Request (VSGI.Request.HEAD, new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.OK);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (418 == response.status);
 }
@@ -117,7 +117,7 @@ public static void test_router_options () {
 	var request  = new Request (VSGI.Request.OPTIONS, new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.OK);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (418 == response.status);
 }
@@ -135,7 +135,7 @@ public static void test_router_trace () {
 	var request  = new Request (VSGI.Request.TRACE, new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.OK);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (418 == response.status);
 }
@@ -153,7 +153,7 @@ public static void test_router_connect () {
 	var request  = new Request (VSGI.Request.CONNECT, new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.OK);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (418 == response.status);
 }
@@ -170,7 +170,7 @@ public static void test_router_patch () {
 	var request  = new Request (VSGI.Request.PATCH, new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.OK);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (418 == response.status);
 }
@@ -191,7 +191,7 @@ public static void test_router_methods () {
 		var request  = new Request (method, new Soup.URI ("http://localhost/"));
 		var response = new Response (request, Soup.Status.OK);
 
-		router.handle (request, response);
+		router.handle (request, response, () => {});
 
 		assert (418 == response.status);
 	}
@@ -211,7 +211,7 @@ public static void test_router_all () {
 		var request  = new Request (method, new Soup.URI ("http://localhost/"));
 		var response = new Response (request, Soup.Status.OK);
 
-		router.handle (request, response);
+		router.handle (request, response, () => {});
 
 		assert (418 == response.status);
 	}
@@ -230,7 +230,7 @@ public static void test_router_regex () {
 	var request  = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/home"));
 	var response = new Response (request, Soup.Status.OK);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (418 == response.status);
 }
@@ -248,7 +248,7 @@ public static void test_router_matcher () {
 	var request  = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.OK);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (418 == response.status);
 }
@@ -268,7 +268,7 @@ public static void test_router_scope () {
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/test/test"));
 	var response = new Response (request, Soup.Status.OK);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (response.status == 418);
 }
@@ -286,7 +286,7 @@ public static void test_router_redirection () {
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.OK);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (response.status == Soup.Status.MOVED_TEMPORARILY);
 	assert ("http://example.com" == response.headers.get_one ("Location"));
@@ -302,7 +302,7 @@ public static void test_router_server_error () {
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.OK);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (response.status == Soup.Status.INTERNAL_SERVER_ERROR);
 }
@@ -320,7 +320,7 @@ public static void test_router_custom_method () {
 	var request = new Request ("TEST", new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.OK);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (response.status == 418);
 }
@@ -342,7 +342,7 @@ public static void test_router_method_not_allowed () {
 	var request = new Request ("POST", new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.METHOD_NOT_ALLOWED);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (response.status == 405);
 	assert ("PUT, GET" == response.headers.get_one ("Allow"));
@@ -370,7 +370,7 @@ public static void test_router_method_not_allowed_excludes_request_method () {
 	var request = new Request ("POST", new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.METHOD_NOT_ALLOWED);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (post_matched == 1); // matched only once during initial lookup
 	assert (get_matched == 1);
@@ -388,7 +388,7 @@ public static void test_router_not_found () {
 	var request = new Request ("GET", new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.OK);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (Soup.Status.NOT_FOUND == response.status);
 }
@@ -409,7 +409,7 @@ public static void test_router_subrouting () {
 	var request = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.NOT_FOUND);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (418 == response.status);
 }
@@ -420,23 +420,24 @@ public static void test_router_subrouting () {
 public static void test_router_next () {
 	var router = new Router ();
 
-	router.get ("", (req, res, next) => {
+	router.get ("", (req, res, end, next) => {
 		next ();
 	});
 
 	// should recurse a bit in process_routing
-	router.get ("", (req, res, next) => {
+	router.get ("", (req, res, end, next) => {
 		next ();
 	});
 
-	router.get ("", (req, res, next) => {
+	router.get ("", (req, res, end) => {
 		res.status = 418;
+		end ();
 	});
 
 	var request = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.NOT_FOUND);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (418 == response.status);
 }
@@ -444,12 +445,12 @@ public static void test_router_next () {
 public static void test_router_next_not_found () {
 	var router = new Router ();
 
-	router.get ("", (req, res, next) => {
+	router.get ("", (req, res, end, next) => {
 		next ();
 	});
 
 	// should recurse a bit in process_routing
-	router.get ("", (req, res, next) => {
+	router.get ("", (req, res, end, next) => {
 		next ();
 	});
 
@@ -458,7 +459,7 @@ public static void test_router_next_not_found () {
 	var request = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.OK);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (404 == response.status);
 }
@@ -469,22 +470,22 @@ public static void test_router_next_not_found () {
 public static void test_router_next_propagate_error () {
 	var router = new Router ();
 
-	router.get ("", (req, res, next) => {
+	router.get ("", (req, res, end, next) => {
 		next ();
 	});
 
-	router.get ("", (req, res, next) => {
+	router.get ("", (req, res, end, next) => {
 		next ();
 	});
 
-	router.get ("", (req, res, next) => {
+	router.get ("", (req, res, end) => {
 		throw new ClientError.UNAUTHORIZED ("");
 	});
 
-	var request = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var request  = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.OK);
 
-	router.handle (request, response);
+	router.handle (request, response, () => {});
 
 	assert (401 == response.status);
 }

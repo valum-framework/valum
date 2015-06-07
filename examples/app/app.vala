@@ -10,55 +10,42 @@ mcd.add_server ("127.0.0.1", 11211);
 // extra route types
 app.types["permutations"] = /abc|acb|bac|bca|cab|cba/;
 
-app.get ("<any:any>", (req, res, next) => {
-	var timer  = new Timer ();
-
-	res.end.connect (() => {
-		timer.stop ();
-		var elapsed = timer.elapsed ();
-		res.headers.append ("X-Runtime", "%8.3fms".printf (elapsed * 1000));
-		message ("%s computed in %8.3fms", req.uri.get_path (), elapsed * 1000);
-	});
-
-	timer.start ();
-
-	next ();
-});
-
 // default route
-app.get ("", (req, res) => {
+app.get ("", (req, res, end) => {
 	var template = new View.from_stream (resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
-
 	template.stream (res.body);
-	res.end ();
+
+	res.body.close ();
+
+	end ();
 });
 
 app.methods ({VSGI.Request.GET, VSGI.Request.POST}, "get-and-post", (req, res) => {
 	res.body.write ("Matches GET and POST".data);
 });
 
-app.all (null, (req, res, next) => {
+app.all (null, (req, res, end, next) => {
 	res.headers.append ("Server", "Valum/1.0");
 	next ();
 });
 
-app.all ("all", (req, res) => {
+app.all ("all", (req, res, end) => {
 	res.body.write ("Matches all HTTP methods".data);
-	res.end ();
+	end ();
 });
 
 // default route
-app.get ("gzip", (req, res) => {
+app.get ("gzip", (req, res, end) => {
 	var template = new View.from_stream (resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
 
 	res.headers.append ("Content-Encoding", "gzip");
 	res.body = new ConverterOutputStream (res.body, new ZlibCompressor (ZlibCompressorFormat.GZIP));
 
 	template.stream (res.body);
-	res.end ();
+	end ();
 });
 
-app.get ("query", (req, res) => {
+app.get ("query", (req, res, end) => {
 	var writer = new DataOutputStream (res.body);
 
 	res.headers.set_content_type ("text/plain", null);
@@ -69,10 +56,10 @@ app.get ("query", (req, res) => {
 		});
 	}
 
-	res.end ();
+	end ();
 });
 
-app.get ("headers", (req, res) => {
+app.get ("headers", (req, res, end) => {
 	var writer = new DataOutputStream (res.body);
 
 	res.headers.set_content_type ("text/plain", null);
@@ -81,10 +68,10 @@ app.get ("headers", (req, res) => {
 		writer.put_string ("%s: %s\n".printf (name, header));
 	});
 
-	res.end ();
+	end ();
 });
 
-app.get ("cookies", (req, res) => {
+app.get ("cookies", (req, res, end) => {
 	var writer = new DataOutputStream (res.body);
 
 	res.headers.set_content_type ("text/plain", null);
@@ -95,41 +82,41 @@ app.get ("cookies", (req, res) => {
 		writer.put_string ("%s: %s\n".printf (cookie.name, cookie.value));
 	}
 
-	res.end ();
+	end ();
 });
 
-app.get ("custom-route-type/<permutations:p>", (req, res) => {
+app.get ("custom-route-type/<permutations:p>", (req, res, end) => {
 	var writer = new DataOutputStream (res.body);
 	writer.put_string (req.params["p"]);
-	res.end ();
+	end ();
 });
 
 // hello world! (compare with Node.js!)
-app.get ("hello", (req, res) => {
+app.get ("hello", (req, res, end) => {
 	var writer = new DataOutputStream (res.body);
 	res.headers.set_content_type ("text/plain", null);
 	writer.put_string ("Hello world\n");
-	res.end ();
+	end ();
 });
 
 // hello with a trailing slash
-app.get ("hello/", (req, res) => {
+app.get ("hello/", (req, res, end) => {
 	var writer = new DataOutputStream (res.body);
 	res.headers.set_content_type ("text/plain", null);
 	writer.put_string ("Hello world\n");
-	res.end ();
+	end ();
 });
 
 // example using route parameter
-app.get ("hello/<id>", (req, res) => {
+app.get ("hello/<id>", (req, res, end) => {
 	var writer = new DataOutputStream (res.body);
 	res.headers.set_content_type ("text/plain", null);
 	writer.put_string ("hello %s!".printf (req.params["id"]));
-	res.end ();
+	end ();
 });
 
 app.scope ("urlencoded-data", (inner) => {
-	inner.get ("", (req, res) => {
+	inner.get ("", (req, res, end) => {
 		var writer = new DataOutputStream (res.body);
 		writer.put_string (
 		"""
@@ -143,10 +130,10 @@ app.scope ("urlencoded-data", (inner) => {
 		  </body>
 		</html>
 		""");
-		res.end ();
+		end ();
 	});
 
-	inner.post ("", (req, res) => {
+	inner.post ("", (req, res, end) => {
 		var writer = new DataOutputStream (res.body);
 		var data   = new MemoryOutputStream (null, realloc, free);
 
@@ -156,12 +143,12 @@ app.scope ("urlencoded-data", (inner) => {
 			writer.put_string ("%s: %s".printf (k, v));
 		});
 
-		res.end ();
+		end ();
 	});
 });
 
 // example using a typed route parameter
-app.get ("users/<int:id>/<action>", (req, res) => {
+app.get ("users/<int:id>/<action>", (req, res, end) => {
 	var id     = req.params["id"];
 	var test   = req.params["action"];
 	var writer = new DataOutputStream (res.body);
@@ -171,11 +158,11 @@ app.get ("users/<int:id>/<action>", (req, res) => {
 	writer.put_string (@"id\t=> $id\n");
 	writer.put_string (@"action\t=> $test");
 
-	res.end ();
+	end ();
 });
 
 // lua scripting
-app.get ("lua", (req, res) => {
+app.get ("lua", (req, res, end) => {
 	var writer = new DataOutputStream (res.body);
 	writer.put_string (lua.eval ("""
 		require "markdown"
@@ -184,18 +171,18 @@ app.get ("lua", (req, res) => {
 
 	writer.put_string (lua.run ("examples/app/hello.lua"));
 
-	res.end ();
+	end ();
 });
 
-app.get ("lua.haml", (req, res) => {
+app.get ("lua.haml", (req, res, end) => {
 	var writer = new DataOutputStream (res.body);
 	writer.put_string (lua.run ("examples/app/haml.lua"));
-	res.end ();
+	end ();
 });
 
 
 // Ctpl template rendering
-app.get ("ctpl/<foo>/<bar>", (req, res) => {
+app.get ("ctpl/<foo>/<bar>", (req, res, end) => {
 	var tpl = new View.from_string ("""
 	   <p>hello {foo}</p>
 	   <p>hello {bar}</p>
@@ -212,26 +199,26 @@ app.get ("ctpl/<foo>/<bar>", (req, res) => {
 	tpl.push_int ("int", 1);
 
 	tpl.stream (res.body);
-	res.end ();
+	end ();
 });
 
 // memcached
-app.get ("memcached/get/<key>", (req, res) => {
+app.get ("memcached/get/<key>", (req, res, end) => {
 	var value = mcd.get (req.params["key"]);
 	var writer = new DataOutputStream (res.body);
 	writer.put_string (value);
-	res.end ();
+	end ();
 });
 
 // TODO: rewrite using POST
-app.get ("memcached/set/<key>/<value>", (req, res) => {
+app.get ("memcached/set/<key>/<value>", (req, res, end) => {
 	var writer = new DataOutputStream (res.body);
 	if (mcd.set (req.params["key"], req.params["value"])) {
 		writer.put_string ("Ok! Pushed.");
 	} else {
 		writer.put_string ("Fail! Not Pushed...");
 	}
-	res.end ();
+	end ();
 });
 
 // scoped routing
@@ -239,34 +226,34 @@ app.scope ("admin", (adm) => {
 	// matches /admin/fun
 	adm.scope ("fun", (fun) => {
 		// matches /admin/fun/hack
-		fun.get ("hack", (req, res) => {
+		fun.get ("hack", (req, res, end) => {
 			var time = new DateTime.now_utc ();
 			var writer = new DataOutputStream (res.body);
 			res.headers.set_content_type ("text/plain", null);
 			writer.put_string ("It's %s around here!\n".printf (time.format ("%H:%M")));
-			res.end ();
+			end ();
 		});
 		// matches /admin/fun/heck
-		fun.get ("heck", (req, res) => {
+		fun.get ("heck", (req, res, end) => {
 			var writer = new DataOutputStream (res.body);
 			res.headers.set_content_type ("text/plain", null);
 			writer.put_string ("Wuzzup!");
-			res.end ();
+			end ();
 		});
 	});
 });
 
-app.get ("next", (req, res, next) => {
+app.get ("next", (req, res, end, next) => {
 	next ();
 });
 
-app.get ("next", (req, res) => {
+app.get ("next", (req, res, end) => {
 	res.body.write ("Matched by the next route in the queue.".data);
-	res.end ();
+	end ();
 });
 
 // serve static resource using a path route parameter
-app.get ("static/<path:resource>.<any:type>", (req, res) => {
+app.get ("static/<path:resource>.<any:type>", (req, res, end) => {
 	var resource = req.params["resource"];
 	var type     = req.params["type"];
 	var contents = new uint8[128];
@@ -287,55 +274,56 @@ app.get ("static/<path:resource>.<any:type>", (req, res) => {
 		// transfer the file
 		res.body.splice_async.begin (file, OutputStreamSpliceFlags.CLOSE_SOURCE, Priority.DEFAULT, null, (obj, result) => {
 			var size = res.body.splice_async.end (result);
-			res.end ();
+			end ();
 		});
 	} catch (Error e) {
 		throw new ClientError.NOT_FOUND (e.message);
 	}
 });
 
-app.get ("redirect", (req, res) => {
+app.get ("redirect", (req, res, end) => {
 	throw new Redirection.MOVED_TEMPORARILY ("http://example.com");
 });
 
-app.get ("not-found", (req, res) => {
+app.get ("not-found", (req, res, end) => {
 	throw new ClientError.NOT_FOUND ("the given URL was not found");
 });
 
-app.method (VSGI.Request.GET, "custom-method", (req, res) => {
+app.method (VSGI.Request.GET, "custom-method", (req, res, end) => {
 	var writer = new DataOutputStream (res.body);
 	writer.put_string (req.method);
-	res.end ();
+	end ();
 });
 
-app.regex (VSGI.Request.GET, /custom-regular-expression/, (req, res) => {
+app.regex (VSGI.Request.GET, /custom-regular-expression/, (req, res, end) => {
 	var writer = new DataOutputStream (res.body);
 	writer.put_string ("This route was matched using a custom regular expression.");
-	res.end ();
+	end ();
 });
 
-app.matcher (VSGI.Request.GET, (req) => { return req.uri.get_path () == "/custom-matcher"; }, (req, res) => {
+app.matcher (VSGI.Request.GET, (req) => { return req.uri.get_path () == "/custom-matcher"; }, (req, res, end) => {
 	var writer = new DataOutputStream (res.body);
 	writer.put_string ("This route was matched using a custom matcher.");
-	res.end ();
+	end ();
 });
 
 var api = new Router ();
 
-api.get ("repository/<name>", (req, res) => {
+api.get ("repository/<name>", (req, res, end) => {
 	var name = req.params["name"];
 	res.body.write (name.data);
-	res.end ();
+	end ();
 });
 
 // delegate all other GET requests to a subrouter
 app.get ("<any:path>", api.handle);
 
-app.status (Soup.Status.NOT_FOUND, (req, res) => {
+app.status (Soup.Status.NOT_FOUND, (req, res, end) => {
 	res.status = Soup.Status.NOT_FOUND;
 	var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));
 	template.environment.push_string ("path", req.uri.get_path ());
 	template.stream (res.body);
+	end ();
 });
 
-new Server (app).run ({"app", "--port", "3003"});
+new Server (app.handle).run ({"app", "--port", "3003"});

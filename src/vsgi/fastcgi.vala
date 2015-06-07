@@ -265,7 +265,10 @@ namespace VSGI.FastCGI {
 		 */
 		public GLib.Socket? socket { get; set; default = null; }
 
-		public Server (VSGI.Application application) {
+		/**
+		 * {@inheritDoc}
+		 */
+		public Server (ApplicationCallback application) {
 			base (application);
 
 #if GIO_2_40
@@ -363,14 +366,12 @@ namespace VSGI.FastCGI {
 				var req = new Request (environment, new StreamInputStream (this.socket, request.in));
 				var res = new Response (req, new StreamOutputStream (this.socket, request.out, request.err));
 
-				res.end.connect_after (() => {
+				this.application (req, res, () => {
 					request.finish ();
 					request.close (false); // keep the socket open
 					message ("%s: %u %s %s", get_application_id (), res.status, res.request.method, res.request.uri.get_path ());
 					this.release ();
 				});
-
-				this.application.handle (req, res);
 
 				return true;
 			});

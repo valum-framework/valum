@@ -44,10 +44,12 @@ namespace Valum {
 		 * @throws ClientError trigger a 4xx client error
 		 * @throws ServerError trigger a 5xx server error
 		 *
-		 * @param req request being handled
-		 * @param res response to send back to the requester
+		 * @param req  request being handled
+		 * @param res  response to send back to the requester
+		 * @param end  end
+		 * @param next keep routing
 		 */
-		public delegate void HandlerCallback (Request req, Response res, Router.NextCallback next) throws Redirection, ClientError, ServerError;
+		public delegate void HandlerCallback (Request req, Response res, VSGI.EndCallback end, Router.NextCallback next) throws Redirection, ClientError, ServerError;
 
 		/**
 		 * Create a Route using a custom matcher.

@@ -122,7 +122,7 @@ namespace VSGI.Soup {
 		/**
 		 * {@inheritDoc}
 		 */
-		public Server (VSGI.Application application) {
+		public Server (ApplicationCallback application) {
 			base (application);
 
 #if GIO_2_40
@@ -164,32 +164,35 @@ namespace VSGI.Soup {
 			this.server.add_handler (null, (server, msg, path, query, client) => {
 				this.hold ();
 
+				// at this point, the request is already consumed, so we provide
+				// a simple stream over the data.
 				var input_stream  = new MemoryInputStream.from_data (msg.request_body.data, null);
 
 #if SOUP_2_50
 				var connection = client.steal_connection ();
-				var output_stream = connection.output_stream;
 #else
-				var output_stream = new MemoryOutputStream (msg.response_body.data, realloc, free);
+				var connection = new SimpleIOStream (input_stream,
+				                                     new MemoryOutputStream (msg.response_body.data, realloc, free));
 #endif
 
 				var req = new Request (msg, input_stream, query);
-				var res = new Response (req, msg, output_stream);
+				var res = new Response (req, msg, connection.output_stream);
 
-				res.end.connect_after (() => {
-#if SOUP_2_50
+				this.application (req, res, () => {
+#if !SOUP_2_50
+					// resume I/O operations
+					this.server.unpause_message (msg);
+#endif
 					connection.close_async.begin (Priority.DEFAULT, null, () => {
 						message ("%s: %u %s %s", get_application_id (), res.status, res.request.method, res.request.uri.get_path ());
 						this.release ();
 					});
-#else
-					msg.response_body.complete ();
-					message ("%s: %u %s %s", get_application_id (), res.status, res.request.method, res.request.uri.get_path ());
-					this.release ();
-#endif
 				});
 
-				this.application.handle (req, res);
+#if !SOUP_2_50
+				// prevent the server from completing the message on return
+				this.server.pause_message (msg);
+#endif
 			});
 
 #if SOUP_2_48
