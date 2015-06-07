@@ -318,7 +318,7 @@ namespace VSGI.FastCGI {
 
 				this.application.handle (req, res);
 
-				message ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
+				debug ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
 
 				request.finish ();
 				request.close (false); // keep the socket open
