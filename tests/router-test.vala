@@ -845,3 +845,18 @@ public void test_router_error () {
 	assert (500 == res.status);
 }
 
+/**
+ * @since 0.3
+ */
+public void test_router_integration () {
+	var router = new Router ();
+	var client = new Client (router);
+
+	var response = client.get ("/")
+		.edit_headers ((headers) => {
+			headers.set_content_type ("text/html", null);
+		})
+		.execute ();
+
+	assert (200 = response.status);
+}
