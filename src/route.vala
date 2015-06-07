@@ -138,14 +138,15 @@ namespace Valum {
 		 *
 		 * @since 0.0.1
 		 *
-		 * @param rule   defaults to "<any:path>" if set to null
+		 * @param rule compiled down ot a regular expression and captures all
+		 *             paths if set to null
 		 */
 		public Route.from_rule (Router router, string? rule, HandlerCallback callback) throws RegexError {
 			this.router   = router;
 			this.fire     = callback;
 
 			var param_regex = new Regex ("(<(?:\\w+:)?\\w+>)");
-			var params      = param_regex.split_full (rule == null ? "<any:path>" : rule);
+			var params      = param_regex.split_full (rule == null ? "" : rule);
 			var captures    = new SList<string> ();
 			var route       = new StringBuilder ("^");
 
@@ -155,6 +156,12 @@ namespace Valum {
 			// scope the route
 			foreach (var scope in router.scopes.head) {
 				route.append (Regex.escape_string ("%s/".printf (scope)));
+			}
+
+			// catch-all null rule
+			if (rule == null) {
+				captures.append ("path");
+				route.append ("(?<path>.*)");
 			}
 
 			foreach (var p in params) {

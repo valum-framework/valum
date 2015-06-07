@@ -39,6 +39,16 @@ public void test_route_from_rule_null () {
 /**
  * @since 0.1
  */
+public static void test_route_from_rule_null_matches_empty_path () {
+	var route  = new Route.from_rule (new Router (), null, (req, res) => {});
+	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
+
+	assert (route.match (request));
+}
+
+/**
+ * @since 0.1
+ */
 public void test_route_from_rule_any () {
 	var route  = new Route.from_rule (new Router (), "<any:id>", (req, res) => {});
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/5"));

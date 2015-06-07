@@ -75,8 +75,8 @@ These will respectively compile down to the following regular expressions
 Null rule
 ~~~~~~~~~
 
-The ``null`` rule will be replaced by the catch-all rule: ``<any:path``. It can
-be used to implement setup operations.
+The ``null`` rule can be used to match all possible request paths. It can be
+used to perform setup operations.
 
 .. code:: vala
 

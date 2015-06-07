@@ -47,6 +47,7 @@ public int main (string[] args) {
 	Test.add_func ("/route", test_route);
 	Test.add_func ("/route/from_rule", test_route_from_rule);
 	Test.add_func ("/route/from_rule/null", test_route_from_rule_null);
+	Test.add_func ("/route/from_rule/null/matches_empty_path", test_route_from_rule_null_matches_empty_path);
 	Test.add_func ("/route/from_rule/any", test_route_from_rule_any);
 	Test.add_func ("/route/from_rule/without_captures", test_route_from_rule_without_captures);
 
