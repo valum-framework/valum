@@ -52,7 +52,7 @@ namespace Valum {
 		 *
 		 * @param state propagated state to the next handler
 		 */
-		public delegate void NextCallback (Object? state = null) throws Informational, Success, Redirection, ClientError, ServerError;
+		public delegate void NextCallback (Value? state = null) throws Informational, Success, Redirection, ClientError, ServerError;
 
 		/**
 		 * Teardown a request after it has been processed even if a
@@ -266,7 +266,7 @@ namespace Valum {
 		 * @param state  propagated state
 		 * @return tells if something matched during the routing process
 		 */
-		private bool perform_routing (List<Route> routes, Request req, Response res, Object? state = null) throws Informational, Success, Redirection, ClientError, ServerError {
+		private bool perform_routing (List<Route> routes, Request req, Response res, Value? state = null) throws Informational, Success, Redirection, ClientError, ServerError {
 			foreach (var route in routes) {
 				if (route.match (req)) {
 					route.fire (req, res, (new_state) => {

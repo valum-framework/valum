@@ -70,16 +70,11 @@ app.get ("custom-route-type/<permutations:p>", (req, res) => {
 });
 
 app.get ("state", (req, res, next) => {
-	var state = new Object ();
-
-	if (req.params != null)
-		state.set_data<string> ("key", "value");
-
-	next (state);
+	next ("I have been passed!");
 });
 
 app.get ("state", (req, res, next, state) => {
-	res.write (state.get_data<string> ("key").data);
+	res.write (state.get_string ().data);
 });
 
 // hello world! (compare with Node.js!)

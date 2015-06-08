@@ -51,7 +51,7 @@ namespace Valum {
 		 *              remains null if this is the top invocation or no state
 		 *              have been propagated
 		 */
-		public delegate void HandlerCallback (Request req, Response res, Router.NextCallback next, Object? state) throws Informational, Success, Redirection, ClientError, ServerError;
+		public delegate void HandlerCallback (Request req, Response res, Router.NextCallback next, Value? state) throws Informational, Success, Redirection, ClientError, ServerError;
 
 		/**
 		 * Create a Route using a custom matcher.
