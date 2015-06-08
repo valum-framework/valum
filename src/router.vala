@@ -49,8 +49,10 @@ namespace Valum {
 		 * Keeps routing the {@link VSGI.Request} and {@link VSGI.Response}.
 		 *
 		 * @since 0.1
+		 *
+		 * @param state propagated state to the next handler
 		 */
-		public delegate void NextCallback () throws Informational, Success, Redirection, ClientError, ServerError;
+		public delegate void NextCallback (Object? state = null) throws Informational, Success, Redirection, ClientError, ServerError;
 
 		/**
 		 * Teardown a request after it has been processed even if a
@@ -258,22 +260,24 @@ namespace Valum {
 		/**
 		 * Perform the routing given a specific list of routes.
 		 *
-		 * @param routes
-		 * @param req
-		 * @param res
+		 * @param routes sequence of routes to traverse
+		 * @param req    request
+		 * @param res    response
+		 * @param state  propagated state
 		 * @return tells if something matched during the routing process
 		 */
-		private bool perform_routing (List<Route> routes, Request req, Response res) throws Informational, Success, Redirection, ClientError, ServerError {
+		private bool perform_routing (List<Route> routes, Request req, Response res, Object? state = null) throws Informational, Success, Redirection, ClientError, ServerError {
 			foreach (var route in routes) {
 				if (route.match (req)) {
-					route.fire (req, res, () => {
+					route.fire (req, res, (new_state) => {
 						unowned List<Route> current = routes.find (route);
 						// keep routing if there are more routes to explore
 						if (current.next != null)
-							if (perform_routing (current.next, req, res))
+							// initial state is propagated if no new state is provided
+							if (perform_routing (current.next, req, res, new_state == null ? state : new_state))
 								return;
 						throw new ClientError.NOT_FOUND ("The request URI %s was not found.".printf (req.uri.to_string (false)));
-					});
+					}, state);
 					return true;
 				}
 			}

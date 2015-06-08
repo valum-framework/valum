@@ -214,3 +214,21 @@ matching route.
         // this is invoked!
     });
 
+Additionally, a state can be propagated in a ``next`` invocation to transmit
+data to the next handler in the queue.
+
+.. code:: vala
+
+    app.get ("", (req, res, next) => {
+        message ("pre");
+        var state = new Object ();
+        next (state); // propagate the state
+    });
+
+    app.get ("", (req, res, next, state) => {
+        // perform an operation with the provided state
+    });
+
+The ``Router`` will automatically propagate the state, so calling ``next``
+without argument is a safe operation.
+

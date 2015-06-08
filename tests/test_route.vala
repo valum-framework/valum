@@ -172,7 +172,7 @@ public void test_route_fire () {
 
 	assert (setted == false);
 
-	route.fire (req, res, () => {});
+	route.fire (req, res, () => {}, null);
 
 	assert (setted);
 }

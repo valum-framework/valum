@@ -44,10 +44,14 @@ namespace Valum {
 		 * @throws ClientError trigger a 4xx client error
 		 * @throws ServerError trigger a 5xx server error
 		 *
-		 * @param req request being handled
-		 * @param res response to send back to the requester
+		 * @param req   request being handled
+		 * @param res   response to send back to the requester
+		 * @param next  keep routing
+		 * @param state propagated state from a preceeding next invocation, it
+		 *              remains null if this is the top invocation or no state
+		 *              have been propagated
 		 */
-		public delegate void HandlerCallback (Request req, Response res, Router.NextCallback next) throws Informational, Success, Redirection, ClientError, ServerError;
+		public delegate void HandlerCallback (Request req, Response res, Router.NextCallback next, Object? state) throws Informational, Success, Redirection, ClientError, ServerError;
 
 		/**
 		 * Create a Route using a custom matcher.

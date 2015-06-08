@@ -43,6 +43,8 @@ public int main (string[] args) {
 	Test.add_func ("/router/next", test_router_next);
 	Test.add_func ("/router/next/not_found", test_router_next_not_found);
 	Test.add_func ("/router/next/propagate_error", test_router_next_propagate_error);
+	Test.add_func ("/router/next/propagate_state", test_router_next_propagate_state);
+	Test.add_func ("/router/next/replace_propagated_state", test_router_next_replace_propagated_state);
 
 	Test.add_func ("/route", test_route);
 	Test.add_func ("/route/from_rule", test_route_from_rule);

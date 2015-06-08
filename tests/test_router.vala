@@ -591,3 +591,61 @@ public static void test_router_next_propagate_error () {
 
 	assert (401 == response.status);
 }
+
+/**
+ * @since 0.1
+ */
+public static void test_router_next_propagate_state () {
+	var router = new Router ();
+	var state  = new Object ();
+
+	router.get ("", (req, res, next) => {
+		next (state);
+	});
+
+	router.get ("", (req, res, next) => {
+		next ();
+	});
+
+	router.get ("", (req, res, next, st) => {
+		res.status = 413;
+		assert (st == state);
+	});
+
+	var request = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (413 == response.status);
+}
+
+/**
+ * @since 0.1
+ */
+public static void test_router_next_replace_propagated_state () {
+	var router = new Router ();
+	var state  = new Object ();
+
+	router.get ("", (req, res, next) => {
+		next (state);
+	});
+
+	router.get ("", (req, res, next, st) => {
+		assert (st == state);
+		next (new Object ());
+	});
+
+	router.get ("", (req, res, next, st) => {
+		res.status = 413;
+		assert (null != st);
+		assert (st != state);
+	});
+
+	var request = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (413 == response.status);
+}
