@@ -69,6 +69,19 @@ app.get ("custom-route-type/<permutations:p>", (req, res) => {
 	writer.put_string (req.params["p"]);
 });
 
+app.get ("state", (req, res, next) => {
+	var state = new Object ();
+
+	if (req.params != null)
+		state.set_data<string> ("key", "value");
+
+	next (state);
+});
+
+app.get ("state", (req, res, next, state) => {
+	res.write (state.get_data<string> ("key").data);
+});
+
 // hello world! (compare with Node.js!)
 app.get ("hello", (req, res) => {
 	var writer = new DataOutputStream (res);
