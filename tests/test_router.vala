@@ -649,3 +649,19 @@ public static void test_router_next_replace_propagated_state () {
 
 	assert (413 == response.status);
 }
+
+public static void test_router_status_propagates_error_message () {
+	var router = new Router ();
+
+	router.status (404, (req, res, next, message) => {
+		res.status = 418;
+		assert ("The request URI http://localhost/ was not found." == message.get_string ());
+	});
+
+	var request = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (418 == response.status);
+}

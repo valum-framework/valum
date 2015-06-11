@@ -104,20 +104,19 @@ Status handling
 Thrown status code can be handled by a :doc:`route` handler callback.
 
 The received :doc:`vsgi/request` and :doc:`vsgi/response` object are in the
-same state they were when the status was thrown, except for the request
-parameters that contains two additional keys:
-
--  ``code`` for the status code
--  ``message`` for the status message
+same state they were when the status was thrown. The error message is passed in
+the ``HandlerCallback`` last parameter.
 
 .. code:: vala
 
-    app.status (Soup.Status.NOT_FOUND, (req, res) => {
+    app.status (Soup.Status.NOT_FOUND, (req, res, next, state) => {
         // produce a 404 page...
+        var message = state.get_string ();
     });
 
 Similarly to conventional request handling, the ``next`` continuation can be
-invoked to jump to the next status handler in the queue.
+invoked to jump to the next status handler in the queue. The error message is
+passed automatically, so you do not have to manually propagate the state.
 
 .. code:: vala
 

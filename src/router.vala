@@ -327,16 +327,9 @@ namespace Valum {
 					throw new ClientError.NOT_FOUND ("The request URI %s was not found.".printf (req.uri.to_string (false)));
 
 				} catch (Error e) {
-					if (req.params == null)
-						req.params = new HashTable<string, string> (str_hash, str_equal);
-
-					// provide additionnal information through request parameters
-					req.params["code"]    = e.code.to_string ();
-					req.params["message"] = e.message;
-
 					// handle using a registered status handler
 					if (this.status_handlers.contains (e.code)) {
-						if (this.perform_routing (this.status_handlers[e.code].head, req, res))
+						if (this.perform_routing (this.status_handlers[e.code].head, req, res, e.message))
 							return;
 					}
 
