@@ -17,11 +17,13 @@ namespace Valum {
 
 		/**
 		 * Router that declared this route.
-         *
+		 *
 		 * This is used to hold parameters types and have an access to the
 		 * scope stack.
+		 *
+		 * @since 0.1
 		 */
-		private weak Router router;
+		public weak Router router { construct; get; }
 
 		/**
 		 * Match the request and populate the {@link VSGI.Request.params}.
@@ -64,7 +66,7 @@ namespace Valum {
 		 * @since 0.1
 		 */
 		public Route (Router router, MatcherCallback matcher, HandlerCallback callback) {
-			this.router = router;
+			Object (router: router);
 			this.match  = matcher;
 			this.fire   = callback;
 		}
@@ -83,8 +85,8 @@ namespace Valum {
 		 * @since 0.1
 		 */
 		public Route.from_regex (Router router, Regex regex, HandlerCallback callback) throws RegexError {
-			this.router = router;
-			this.fire   = callback;
+			Object (router: router);
+			this.fire = callback;
 
 			var pattern = new StringBuilder ("^");
 
@@ -146,8 +148,8 @@ namespace Valum {
 		 *             paths if set to null
 		 */
 		public Route.from_rule (Router router, string? rule, HandlerCallback callback) throws RegexError {
-			this.router   = router;
-			this.fire     = callback;
+			Object (router: router);
+			this.fire = callback;
 
 			var param_regex = new Regex ("(<(?:\\w+:)?\\w+>)");
 			var params      = param_regex.split_full (rule == null ? "" : rule);

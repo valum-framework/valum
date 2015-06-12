@@ -5,10 +5,12 @@ using VSGI.Test;
  * @since 0.1
  */
 public void test_route () {
-	var route  = new Route (new Router (), (req) => { return true; }, (req, res) => {});
+	var router = new Router ();
+	var route  = new Route (router, (req) => { return true; }, (req, res) => {});
 	var req    = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 
 	assert (route.match (req));
+	assert (router == route.router);
 }
 
 /**
