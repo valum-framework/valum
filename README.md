@@ -36,7 +36,7 @@ Features
  - simple Request-Response mechanism
  - complete integration of [FastCGI](http://www.fastcgi.com/drupal/) protocol
  - [CTPL](http://ctpl.tuxfamily.org/), a simple templating engine
- - extensive documentation available at [valum.readthedocs.org](http://valum.readthedocs.org/en/latest)
+ - extensive documentation available at [valum-framework.readthedocs.org](http://valum-framework.readthedocs.org/en/latest)
 
 
 Contributing
