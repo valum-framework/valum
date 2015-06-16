@@ -98,31 +98,5 @@ namespace VSGI {
 		 * @since 0.0.1
 		 */
 		public abstract MessageHeaders headers { get; }
-
-		/**
-		 * Request cookies.
-         *
-		 * Cookies will be computed from the Cookie HTTP header everytime they are
-		 * accessed.
-		 *
-		 * @since 0.1
-		 */
-		public SList<Cookie> cookies {
-			owned get {
-				var cookies = new SList<Cookie> ();
-				var cookie_list = this.headers.get_list ("Cookie");
-
-				if (cookie_list == null)
-					return cookies;
-
-				foreach (var cookie in cookie_list.split ("; ")) {
-					cookies.prepend (Cookie.parse (cookie, this.uri));
-				}
-
-				cookies.reverse ();
-
-				return cookies;
-			}
-		}
 	}
 }

@@ -71,6 +71,8 @@ public int main (string[] args) {
 	Test.add_func ("/route/match/not_matching", test_route_match_not_matching);
 	Test.add_func ("/route/fire", test_route_match_not_matching);
 
+	Test.add_func ("/cookies/from_request_headers", test_cookies_from_request_headers);
+
 	Test.add_func ("/view/from_string", test_view_from_string);
 	Test.add_func ("/view/from_path", test_view_from_path);
 	Test.add_func ("/view/from_stream", test_view_from_stream);

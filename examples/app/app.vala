@@ -59,10 +59,29 @@ app.get ("cookies", (req, res) => {
 
 	// write cookies in response
 	writer.put_string ("Cookie\n");
-	foreach (var cookie in req.cookies) {
+	foreach (var cookie in Cookies.from_request_headers (req.headers, req.uri)) {
 		writer.put_string ("%s: %s\n".printf (cookie.name, cookie.value));
 	}
 });
+
+app.scope ("cookie", (inner) => {
+	inner.get ("<name>", (req, res) => {
+		foreach (var cookie in Cookies.from_request_headers (req.headers, req.uri))
+			if (cookie.name == req.params["name"])
+				res.write ("%s\n".printf (cookie.value).data);
+	});
+
+	inner.post ("<name>", (req, res) => {
+		var @value = new MemoryOutputStream (null, realloc, free);
+
+		@value.splice (req, OutputStreamSpliceFlags.CLOSE_SOURCE);
+
+		var cookie = new Soup.Cookie (req.params["name"], (string) @value.data, "0.0.0.0", "/", 60);
+
+		res.headers.append ("Set-Cookie", cookie.to_set_cookie_header ());
+	});
+});
+
 
 app.get ("custom-route-type/<permutations:p>", (req, res) => {
 	var writer = new DataOutputStream (res);

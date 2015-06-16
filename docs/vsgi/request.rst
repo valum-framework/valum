@@ -75,26 +75,6 @@ from the ``headers`` property.
         var accept = req.headers.get_one ("Accept");
     });
 
-Cookies
--------
-
-Cookies can be accessed as a `GLib.SList`_ of `Soup.Cookie`_ from the `cookies`
-property or directly from the request headers.
-
-.. _GLib.SList: http://valadoc.org/#!api=glib-2.0/GLib.SList
-.. _Soup.Cookie: http://valadoc.org/#!api=libsoup-2.4/Soup.Cookie
-
-.. code:: vala
-
-    app.get ("", (req, res) => {
-        for (var cookie : req.cookies) {
-            res.write (cookie.get_name ().data);
-        }
-
-        // from the headers
-        var cookies = req.headers.get_list ("Cookie");
-    });
-
 Body
 ----
 
