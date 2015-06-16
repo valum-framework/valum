@@ -29,20 +29,6 @@ The response headers can be accessed as a `Soup.MessageHeaders`_ from the
         res.headers.set_content_type ("text/plain");
     })
 
-Cookies
--------
-
-Cookies can be written to the client using the ``cookies`` property. If you
-need to replace only a specific cookie, you should append it to the response
-headers.
-
-.. code:: vala
-
-    app.get ("", (req, res) => {
-        var new_cookies = new GLib.SList<Soup.Cookie> ();
-        res.cookies = new_cookies;
-    });
-
 Body
 ----
 

@@ -294,7 +294,6 @@ namespace Valum {
 			// sane initialization
 			res.status = Soup.Status.OK;
 			res.headers.set_content_type ("text/html", null);
-			res.cookies = req.cookies;
 
 			try {
 				try {
