@@ -1,4 +1,4 @@
-[CCode (cprefix = "Ctpl", lower_case_cprefix = "ctpl_")]
+[CCode (gir_namespace = "Ctpl", gir_version = "0.1", cprefix = "Ctpl", lower_case_cprefix = "ctpl_")]
 namespace Ctpl {
 
 	[Compact]

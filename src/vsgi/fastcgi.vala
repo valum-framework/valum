@@ -4,6 +4,7 @@ using Soup;
 /**
  * FastCGI implementation of VSGI.
  */
+[CCode (gir_namespace = "VSGI.FastCGI", gir_version = "0.1")]
 namespace VSGI.FastCGI {
 	/**
 	 * FastCGI Request implementation.
@@ -275,7 +276,7 @@ namespace VSGI.FastCGI {
 			}
 
 			else if (options.contains ("port")) {
-				var port   = ":%d".printf(options.lookup_value ("port", VariantType.INT32).get_int32 ());
+				var port    = ":%d".printf(options.lookup_value ("port", VariantType.INT32).get_int32 ());
 				this.socket = new GLib.Socket.from_fd (open_socket (port, backlog));
 
 				if (!this.socket.is_connected ())

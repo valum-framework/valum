@@ -3,6 +3,7 @@ using Soup;
 /**
  * Soup implementation of VSGI.
  */
+[CCode (gir_namespace = "VSGI.Soup", gir_version = "0.1")]
 namespace VSGI.Soup {
 
 	/**

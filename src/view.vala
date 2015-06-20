@@ -1,4 +1,5 @@
 using Gee;
+using GLib;
 
 namespace Valum {
 	/**
@@ -32,7 +33,7 @@ namespace Valum {
 		 * @see   Ctpl.lexer_lex_path
 		 * @since 0.1
 		 */
-		public View.from_path (string path) throws IOError, Ctpl.LexerError {
+		public View.from_path (string path) throws Error {
 			this.tree = Ctpl.lexer_lex_path (path);
 		}
 
@@ -42,7 +43,7 @@ namespace Valum {
 		 * @see   Ctpl.lexer_lex_string
 		 * @since 0.0.1
 		 */
-		public View.from_string (string template) throws Ctpl.LexerError {
+		public View.from_string (string template) throws Error {
 			this.tree = Ctpl.lexer_lex_string (template);
 		}
 
@@ -52,7 +53,7 @@ namespace Valum {
 		 * @see   Ctpl.lexer_lex_string
 		 * @since 0.1
 		 */
-		public View.from_stream (InputStream input) throws IOError, Ctpl.LexerError {
+		public View.from_stream (InputStream input) throws Error {
 			this.tree = Ctpl.lexer_lex (new Ctpl.InputStream (input, null));
 		}
 
@@ -274,7 +275,7 @@ namespace Valum {
 		 *
 		 * @param output OutputStream into which the template will be streamed.
 		 */
-		public void stream (OutputStream output) throws IOError, Ctpl.IOError {
+		public void stream (OutputStream output) throws Error {
 			Ctpl.parser_parse (this.tree, this.environment, new Ctpl.OutputStream (output));
 		}
 
@@ -284,7 +285,7 @@ namespace Valum {
 		 *
 		 * @since 0.0.1
 		 */
-		public string render () throws IOError, Ctpl.IOError {
+		public string render () throws Error {
 			var mem_stream = new MemoryOutputStream (null, realloc, free);
 
 			this.stream (mem_stream);

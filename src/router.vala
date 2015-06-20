@@ -172,7 +172,7 @@ namespace Valum {
 		 * @param methods methods to which the callback will be bound
 		 * @param rule    rule
 		 */
-		public void methods (string[] methods, string? rule, Route.HandlerCallback cb) {
+		public void methods (string[] methods, string? rule, Route.HandlerCallback cb) throws RegexError {
 			var route = new Route.from_rule (this, rule, cb);
 			foreach (var method in methods) {
 				this.route (method, route);
