@@ -88,7 +88,7 @@ property or directly from the request headers.
 
     app.get ("", (req, res) => {
         for (var cookie : req.cookies) {
-            res.write (cookie.get_name ().data);
+            res.body.write (cookie.get_name ().data);
         }
 
         // from the headers
@@ -103,19 +103,63 @@ Request body is streamed directly from the instance as it inherit from
 
 .. _GLib.InputStream: http://valadoc.org/#!api=gio-2.0/GLib.InputStream
 
+`Soup.Form`_ can be used to parse ``application/x-www-form-urlencoded`` format.
+
+.. _Soup.Form: http://valadoc.org/#!api=libsoup-2.4/Soup.Form
+
 .. code:: vala
 
-    app.get ("", (req, res) => {
-        var buffer = new uint8[24];
-        req.read (buffer);
+    app.post ("", (req, res) => {
+        var buffer = new MemoryOutputStream.resizable ();
+
+        // consume the request body in the stream
+        buffer.splice (req.body, OutputStreamSpliceFlags.CLOSE_SOURCE);
+
+        // consume it asynchronously
+        buffer.splice_async.begin (req.body,
+                                   OutputStreamSpliceFlags.CLOSE_SOURCE,
+                                   Priority.DEFAULT,
+                                   null,
+                                   (obj, result) => {
+            var consumed = buffer.splice_async.end (result);
+
+            // decode the data
+            var data = Soup.Form.decode (buffer.data);
+        })
     });
 
 Implementation will typically consume the status line, headers and newline that
-separates the headers from the body. The body is left to your application to
-interpret as it can contain pretty much anything.
+separates the headers from the body in the base stream at construct time. It
+also guarantee that the body has been decoded if any transfer encoding were
+applied for the transport.
 
-Multipart body are not yet supported, but this is planned for the next minor
-release.
+If the content is encoded with the ``Content-Encoding`` header, it is the
+responsibility of your application to decode it properly. VSGI provides common
+:doc:`converters` to simplify the task.
+
+The ``body`` property can be setted to perform filtering or redirection. This
+example show charset conversion using `GLib.CharsetConverter`_.
+
+.. _GLib.CharsetConverter: http://valadoc.org/#!api=gio-2.0/GLib.CharsetConverter.CharsetConverter
+
+.. code:: vala
+
+    app.get ("", (req, res) => {
+        req.body = new ConverterInputStream (req.body, new CharsetConverter ("utf-8", "ascii"));
+
+        var reader = new DataInputStream (req.body);
+
+        // pipe the request body in the response body
+        res.splice (req, OutputStreamSpliceFlags.CLOSE_SOURCE);
+    });
+
+Multipart body
+~~~~~~~~~~~~~~
+
+Multipart body support is planned in a future minor release, more information
+on `issue #81`_.
+
+.. _issue #81: https://github.com/valum-framework/valum/issues/81
 
 Closing the request
 -------------------

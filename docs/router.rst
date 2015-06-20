@@ -36,10 +36,10 @@ the ``application/x-www-form-urlencoded`` body of the :doc:`vsgi/request`.
 .. code:: vala
 
     app.post ("login", (req, res) => {
-        var buffer = new MemoryOutputStream (null, realloc, free);
+        var buffer = new MemoryOutputStream.resizable ();
 
         // consume the request body
-        buffer.splice (req, OutputStreamSpliceFlags.CLOSE_SOURCE);
+        buffer.splice (req.body, OutputStreamSpliceFlags.CLOSE_SOURCE);
 
         var data = Soup.Form.decode ((string) buffer.get_data ());
 
@@ -171,7 +171,7 @@ a future release.
 Subrouting
 ----------
 
-Since ``VSGI.Application`` handler is type compatible with
+Since ``VSGI.ApplicationCallback`` is type compatible with
 ``Route.HandlerCallback``, it is possible to delegate request handling to
 another VSGI-compliant application.
 
