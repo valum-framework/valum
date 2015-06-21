@@ -294,7 +294,7 @@ namespace VSGI.FastCGI {
 
 			this.hold ();
 
-			var source = new IOSource (new IOChannel.unix_new (socket.fd), IOCondition.IN);
+			var source = socket.create_source (IOCondition.IN);
 
 			source.set_callback (() => {
 				this.hold ();
