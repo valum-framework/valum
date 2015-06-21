@@ -12,14 +12,15 @@ namespace Valum.Cookies {
 	 * Extract cookies from the 'Cookie' request headers.
 	 *
 	 * @since 0.1
-
+	 *
 	 * @param headers headers containing the cookies
 	 * @param uri     origin of the cookies
 	 */
-	public SList<Cookie> from_request_headers (MessageHeaders headers, URI? uri = null) {
+	public SList<Cookie> from_request_headers (MessageHeaders headers, URI? uri = null)
 #if SOUP_2_50
-		assert (headers.get_headers_type () == MessageHeadersType.REQUEST);
+		ensures (headers.get_headers_type () == MessageHeadersType.REQUEST)
 #endif
+	{
 		var cookies     = new SList<Cookie> ();
 		var cookie_list = headers.get_list ("Cookie");
 
