@@ -59,7 +59,7 @@ You may either clone or download one of our `releases`_ from GitHub:
 
 .. code-block:: bash
 
-    git clone git://github.com/antono/valum.git && cd valum
+    git clone git://github.com/valum-framework/valum.git && cd valum
 
 Build
 -----
