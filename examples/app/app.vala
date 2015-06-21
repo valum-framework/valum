@@ -243,7 +243,10 @@ app.get ("static/<path:resource>.<any:type>", (req, res) => {
 		var file = resources_open_stream (path, ResourceLookupFlags.NONE);
 
 		// transfer the file
-		res.body.splice_async.begin (file, OutputStreamSpliceFlags.CLOSE_SOURCE, Priority.DEFAULT, null, (obj, result) => {
+		res.body.splice_async.begin (file,
+			                         OutputStreamSpliceFlags.CLOSE_SOURCE | OutputStreamSpliceFlags.CLOSE_TARGET,
+			                         Priority.DEFAULT,
+			                         null, (obj, result) => {
 			var size = res.body.splice_async.end (result);
 		});
 	} catch (Error e) {

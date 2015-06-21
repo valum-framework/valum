@@ -63,8 +63,9 @@ from `GLib.OutputStream`_.
 Closing the response
 --------------------
 
-Response body is automatically closed as this behaviour is ensured by GIO, but
-you can still close it explicitly as it provides few advantages:
+Response body is automatically closed as this behaviour is ensured by GIO when
+a stream get out of scope. However you can still close it explicitly as it
+provides few advantages:
 
 -  avoid undesired read or write operation
 -  release the stream if it's not involved in a expensive processing
@@ -92,3 +93,33 @@ performances.
     app.get ("", (req, res) => {
         res.body.close_async (Priority.DEFAULT, null)
     });
+
+When operating asynchronously, the connection stream will be closed before the
+response body, which may result in a corrupted response. It is important to
+close the body manually to avoid such situation.
+
+.. code:: vala
+
+    app.get ("", (req, res) => {
+        res.body.write_async ("Hello world!".data,
+                              Priority.DEFAULT,
+                              null, (body, result) => {
+            body.close (); // explicitly close
+        })
+    })
+
+If you splice, you can specify the `OutputStreamSpliceFlags.CLOSE_TARGET`_ flag
+to perform that operation automatically.
+
+.. _OutputStreamSpliceFlags.CLOSE_TARGET: http://valadoc.org/#!api=gio-2.0/GLib.OutputStreamSpliceFlags.CLOSE_TARGET
+
+.. code:: vala
+
+    app.get ("", (req, res) => {
+        // pipe the request body into the response
+        res.body.splice_async (req.body,
+                               OutputStreamSpliceFlags.CLOSE_TARGET,
+                               Priority.DEFAULT,
+                               null);
+    });
+
