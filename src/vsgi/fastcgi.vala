@@ -231,10 +231,10 @@ namespace VSGI.FastCGI {
 
 #if GIO_2_40
 			const OptionEntry[] options = {
-				{"socket", 's', 0, OptionArg.STRING, null, "path to the UNIX socket", null},
-				{"port", 'p', 0, OptionArg.INT, null, "TCP port on this host", null},
-				{"backlog", 'b', 0, OptionArg.INT, null, "listen queue depth used in the listen() call", "0"},
-				{"timeout", 't', 0, OptionArg.INT, null, "inactivity timeout in ms", "0" },
+				{"socket",  's', 0, OptionArg.FILENAME, null, "path to the UNIX socket", null},
+				{"port",    'p', 0, OptionArg.INT,      null, "TCP port on this host", null},
+				{"backlog", 'b', 0, OptionArg.INT,      null, "listen queue depth used in the listen() call", "0"},
+				{"timeout", 't', 0, OptionArg.INT,      null, "inactivity timeout in ms"},
 				{null}
 			};
 			this.add_main_option_entries (options);
@@ -266,7 +266,7 @@ namespace VSGI.FastCGI {
 
 #if GIO_2_40
 			if (options.contains ("socket")) {
-				var socket_path = options.lookup_value ("socket", VariantType.STRING).get_string ();
+				var socket_path = options.lookup_value ("socket", VariantType.BYTESTRING).get_bytestring ();
 				this.socket     = new GLib.Socket.from_fd (open_socket (socket_path, backlog));
 
 				if (!this.socket.is_connected ())
