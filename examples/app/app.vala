@@ -1,6 +1,8 @@
 using Valum;
 using VSGI.Soup;
 
+public void main (string[] args) {
+
 var app = new Router ();
 var lua = new Script.Lua ();
 var mcd = new NoSQL.Mcached ();
@@ -308,4 +310,5 @@ app.status (Soup.Status.NOT_FOUND, (req, res) => {
 	template.stream (res);
 });
 
-new Server (app).run ({"app", "--port", "3003"});
+new Server (app).run (args);
+}
