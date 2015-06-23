@@ -259,9 +259,9 @@ namespace VSGI.FastCGI {
 			}
 
 			var backlog = options.contains ("backlog") ? options.lookup_value ("backlog", VariantType.INT32).get_int32 () : 0;
-			var timeout = options.contains ("timeout") ? options.lookup_value ("timeout", VariantType.INT32).get_int32 () : 0;
 
-			this.set_inactivity_timeout (timeout);
+			if (options.contains ("timeout"))
+				this.set_inactivity_timeout (options.lookup_value ("timeout", VariantType.INT32).get_int32 ());
 #endif
 
 #if GIO_2_40
@@ -331,9 +331,10 @@ namespace VSGI.FastCGI {
 
 			source.attach (MainContext.default ());
 
-			// keep alive if there is no timeout
-			if (this.get_inactivity_timeout () > 0)
+#if GIO_2_40
+			if (options.contains ("timeout"))
 				this.release ();
+#endif
 
 			return 0;
 		}
