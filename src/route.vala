@@ -4,6 +4,28 @@ using VSGI;
 namespace Valum {
 
 	/**
+	 * Flags providing meta-information to perform optimized matching.
+	 *
+	 * @since 0.1
+	 */
+	public enum RouteFlags {
+		NONE,
+		/**
+		 * The route matches a unique request path.
+		 */
+		UNIQUE_PATH,
+		/**
+		 * Tells if the route can be reversed and consequently that a get_path
+		 * call makes sense.
+		 */
+		REVERSABLE,
+		/**
+		 * Matching this route is an expensive process.
+		 */
+		EXPENSIVE
+	}
+
+	/**
 	 * Route provides a {@link Route.MatcherCallback} and {@link Route.HandlerCallback} to
 	 * respectively match and handle a {@link VSGI.Request} and
 	 * {@link VSGI.Response}.
@@ -24,6 +46,13 @@ namespace Valum {
 		 * @since 0.1
 		 */
 		public weak Router router { construct; get; }
+
+		/**
+		 * Flags providing additional information.
+		 *
+		 * @since 0.1
+		 */
+		public RouteFlags flags { get; set; default = RouteFlags.NONE; }
 
 		/**
 		 * Match the request and populate the {@link VSGI.Request.params}.
@@ -67,8 +96,8 @@ namespace Valum {
 		 */
 		public Route (Router router, MatcherCallback matcher, HandlerCallback callback) {
 			Object (router: router);
-			this.match  = matcher;
-			this.fire   = callback;
+			this.match = matcher;
+			this.fire  = callback;
 		}
 
 		/**
@@ -111,6 +140,9 @@ namespace Valum {
 				foreach (var capture in capture_match_info.fetch_all ()) {
 					captures.append (capture);
 				}
+			} else {
+				// no capture means the regex matches a unique path
+				flags |= RouteFlags.UNIQUE_PATH;
 			}
 
 			// regex are optimized automatically :)
@@ -188,6 +220,10 @@ namespace Valum {
 					route.append ("(?<%s>%s)".printf (key, this.router.types[type].get_pattern ()));
 				}
 			}
+
+			// no captures, the rule matches a unique request path
+			if (captures.length () == 0)
+				flags |= RouteFlags.UNIQUE_PATH;
 
 			route.append ("$");
 
