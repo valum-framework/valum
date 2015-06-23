@@ -1,7 +1,8 @@
 namespace VSGI {
 
 	/**
-	 * Server that feeds a {@link VSGI.Application} with incoming requests.
+	 * Server that feeds a {@link VSGI.ApplicationCallback} with incoming
+	 * requests.
 	 *
 	 * Once you have initialized a Server instance, start it by calling
 	 * {@link GLib.Application.run} with the command-line arguments or a set of
@@ -20,11 +21,11 @@ namespace VSGI {
 	public class Server : GLib.Application {
 
 		/**
-		 * Application being served.
+		 * Application being served with client requests.
 		 *
-		 * @since 0.1
+		 * @since 0.2
 		 */
-		public VSGI.Application application { construct; get; }
+		protected ApplicationCallback application;
 
 		/**
 		 * Enforces implementation to take the application as a sole argument
@@ -34,8 +35,9 @@ namespace VSGI {
 		 *
 		 * @since 0.2
 		 */
-		public Server (VSGI.Application application) {
-			Object (application: application, flags: ApplicationFlags.HANDLES_COMMAND_LINE);
+		public Server (ApplicationCallback application) {
+			Object (flags: ApplicationFlags.HANDLES_COMMAND_LINE);
+			this.application = application;
 		}
 	}
 }

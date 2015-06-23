@@ -1,6 +1,9 @@
 Response
 ========
 
+Responses are representing resources requested by a client. They are actively
+streamed across the network, preferably using non-blocking asynchronous I/O.
+
 Status
 ------
 
@@ -32,30 +35,43 @@ The response headers can be accessed as a `Soup.MessageHeaders`_ from the
 Body
 ----
 
-The body of a response is streamed directly in the instance since it inherits
-from `GLib.OutputStream`_.
+The body of a response is accessed through the ``body`` property. It inherits
+from `GLib.OutputStream` to provide streaming capabilities.
+
+Status line and headers are sent the first time the property is accessed. It is
+considered an error to modify them once the body has been accessed.
+
+The transfer encoding is already handled by the VSGI implementation, so all you
+have to do is set the ``Transfer-Encoding`` header properly.
 
 .. _GLib.OutputStream: http://valadoc.org/#!api=gio-2.0/GLib.OutputStream
 
 .. code:: vala
 
     app.get ("", (req, res) => {
-        res.write ("Hello world!".data);
+        res.body.write ("Hello world!".data);
     });
+
+It is possible to set the ``body`` property in order to filter or redirect it.
+This can be used to implement gzipped content encoding or just dump the body in
+a file stream for debugging.
+
+.. code:: vala
+
+    res.headers.replace ("Content-Encoding", "gzip");
+    res.body = new ConverterOutputStream (res.body, new ZLibCompressor ());
 
 Closing the response
 --------------------
 
-In GIO, streams are automatically closed when they get out of sight due
-to reference counting. This is a particulary useful behiaviour for
-asynchronous operations as references to requests or responses will
-persist in a callback.
-
-You do not have to close your streams (in general), but it can be a
-useful to:
+Response body is automatically closed as this behaviour is ensured by GIO when
+a stream get out of scope. However you can still close it explicitly as it
+provides few advantages:
 
 -  avoid undesired read or write operation
 -  release the stream if it's not involved in a expensive processing
+-  closing the stream asynchronously with ``close_async`` can provide better
+   performances
 
 This is a typical example where closing the response manually will have
 a great incidence on the application throughput.
@@ -63,9 +79,48 @@ a great incidence on the application throughput.
 .. code:: vala
 
     app.get("", (req, res) => {
-        res.write ("You should receive an email shortly...".data);
-        res.close (); // you can even use close_async
+        res.body.write ("You should receive an email shortly...".data);
+        res.body.close (); // you can even use close_async
 
         // send a success mail
         Mailer.send ("johndoe@example.com", "Had to close that stream mate!");
     });
+
+This is an example of asynchronously closing the response body to improve I/O
+performances.
+
+.. code:: vala
+
+    app.get ("", (req, res) => {
+        res.body.close_async (Priority.DEFAULT, null)
+    });
+
+When operating asynchronously, the connection stream will be closed before the
+response body, which may result in a corrupted response. It is important to
+close the body manually to avoid such situation.
+
+.. code:: vala
+
+    app.get ("", (req, res) => {
+        res.body.write_async ("Hello world!".data,
+                              Priority.DEFAULT,
+                              null, (body, result) => {
+            body.close (); // explicitly close
+        })
+    })
+
+If you splice, you can specify the `OutputStreamSpliceFlags.CLOSE_TARGET`_ flag
+to perform that operation automatically.
+
+.. _OutputStreamSpliceFlags.CLOSE_TARGET: http://valadoc.org/#!api=gio-2.0/GLib.OutputStreamSpliceFlags.CLOSE_TARGET
+
+.. code:: vala
+
+    app.get ("", (req, res) => {
+        // pipe the request body into the response
+        res.body.splice_async (req.body,
+                               OutputStreamSpliceFlags.CLOSE_TARGET,
+                               Priority.DEFAULT,
+                               null);
+    });
+

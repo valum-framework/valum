@@ -1,8 +1,6 @@
 using Valum;
 using VSGI.Soup;
 
-public void main (string[] args) {
-
 var app = new Router ();
 var lua = new Script.Lua ();
 var mcd = new NoSQL.Mcached ();
@@ -16,11 +14,11 @@ app.types["permutations"] = /abc|acb|bac|bca|cab|cba/;
 app.get ("", (req, res) => {
 	var template = new View.from_stream (resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
 
-	template.stream (res);
+	template.stream (res.body);
 });
 
 app.methods ({VSGI.Request.GET, VSGI.Request.POST}, "get-and-post", (req, res) => {
-	res.write ("Matches GET and POST".data);
+	res.body.write ("Matches GET and POST".data);
 });
 
 app.all (null, (req, res, next) => {
@@ -29,23 +27,33 @@ app.all (null, (req, res, next) => {
 });
 
 app.all ("all", (req, res) => {
-	res.write ("Matches all HTTP methods".data);
+	res.body.write ("Matches all HTTP methods".data);
+});
+
+// default route
+app.get ("gzip", (req, res) => {
+	var template = new View.from_stream (resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
+
+	res.headers.append ("Content-Encoding", "gzip");
+	var writer = new ConverterOutputStream (res.body, new ZlibCompressor (ZlibCompressorFormat.GZIP));
+
+	template.stream (writer);
 });
 
 app.get ("query", (req, res) => {
-	var writer = new DataOutputStream (res);
+	var writer = new DataOutputStream (res.body);
 
 	res.headers.set_content_type ("text/plain", null);
 
 	if (req.query != null) {
 		req.query.foreach ((k, v) => {
-		writer.put_string ("%s: %s\n".printf (k, v));
-	});
+			writer.put_string ("%s: %s\n".printf (k, v));
+		});
 	}
 });
 
 app.get ("headers", (req, res) => {
-	var writer = new DataOutputStream (res);
+	var writer = new DataOutputStream (res.body);
 
 	res.headers.set_content_type ("text/plain", null);
 
@@ -55,7 +63,7 @@ app.get ("headers", (req, res) => {
 });
 
 app.get ("cookies", (req, res) => {
-	var writer = new DataOutputStream (res);
+	var writer = new DataOutputStream (res.body);
 
 	res.headers.set_content_type ("text/plain", null);
 
@@ -70,13 +78,13 @@ app.scope ("cookie", (inner) => {
 	inner.get ("<name>", (req, res) => {
 		foreach (var cookie in Cookies.from_request_headers (req.headers, req.uri))
 			if (cookie.name == req.params["name"])
-				res.write ("%s\n".printf (cookie.value).data);
+				res.body.write ("%s\n".printf (cookie.value).data);
 	});
 
 	inner.post ("<name>", (req, res) => {
 		var @value = new MemoryOutputStream (null, realloc, free);
 
-		@value.splice (req, OutputStreamSpliceFlags.CLOSE_SOURCE);
+		@value.splice (req.body, OutputStreamSpliceFlags.CLOSE_SOURCE);
 
 		var cookie = new Soup.Cookie (req.params["name"], (string) @value.data, "0.0.0.0", "/", 60);
 
@@ -86,7 +94,7 @@ app.scope ("cookie", (inner) => {
 
 
 app.get ("custom-route-type/<permutations:p>", (req, res) => {
-	var writer = new DataOutputStream (res);
+	var writer = new DataOutputStream (res.body);
 	writer.put_string (req.params["p"]);
 });
 
@@ -95,33 +103,33 @@ app.get ("state", (req, res, next) => {
 });
 
 app.get ("state", (req, res, next, state) => {
-	res.write (state.get_string ().data);
+	res.body.write (state.get_string ().data);
 });
 
 // hello world! (compare with Node.js!)
 app.get ("hello", (req, res) => {
-	var writer = new DataOutputStream (res);
+	var writer = new DataOutputStream (res.body);
 	res.headers.set_content_type ("text/plain", null);
 	writer.put_string ("Hello world\n");
 });
 
 // hello with a trailing slash
 app.get ("hello/", (req, res) => {
-	var writer = new DataOutputStream (res);
+	var writer = new DataOutputStream (res.body);
 	res.headers.set_content_type ("text/plain", null);
 	writer.put_string ("Hello world\n");
 });
 
 // example using route parameter
 app.get ("hello/<id>", (req, res) => {
-	var writer = new DataOutputStream (res);
+	var writer = new DataOutputStream (res.body);
 	res.headers.set_content_type ("text/plain", null);
 	writer.put_string ("hello %s!".printf (req.params["id"]));
 });
 
 app.scope ("urlencoded-data", (inner) => {
 	inner.get ("", (req, res) => {
-		var writer = new DataOutputStream (res);
+		var writer = new DataOutputStream (res.body);
 		writer.put_string (
 		"""
 		<!DOCTYPE html>
@@ -137,10 +145,10 @@ app.scope ("urlencoded-data", (inner) => {
 	});
 
 	inner.post ("", (req, res) => {
-		var writer = new DataOutputStream (res);
+		var writer = new DataOutputStream (res.body);
 		var data   = new MemoryOutputStream (null, realloc, free);
 
-		data.splice (req, OutputStreamSpliceFlags.CLOSE_SOURCE);
+		data.splice (req.body, OutputStreamSpliceFlags.CLOSE_SOURCE);
 
 		Soup.Form.decode ((string) data.get_data ()).foreach ((k, v) => {
 			writer.put_string ("%s: %s".printf (k, v));
@@ -152,7 +160,7 @@ app.scope ("urlencoded-data", (inner) => {
 app.get ("users/<int:id>/<action>", (req, res) => {
 	var id     = req.params["id"];
 	var test   = req.params["action"];
-	var writer = new DataOutputStream (res);
+	var writer = new DataOutputStream (res.body);
 
 	res.headers.set_content_type ("text/plain", null);
 
@@ -162,7 +170,7 @@ app.get ("users/<int:id>/<action>", (req, res) => {
 
 // lua scripting
 app.get ("lua", (req, res) => {
-	var writer = new DataOutputStream (res);
+	var writer = new DataOutputStream (res.body);
 	writer.put_string (lua.eval ("""
 		require "markdown"
 		return markdown('## Hello from lua.eval!')
@@ -172,7 +180,7 @@ app.get ("lua", (req, res) => {
 });
 
 app.get ("lua.haml", (req, res) => {
-	var writer = new DataOutputStream (res);
+	var writer = new DataOutputStream (res.body);
 	writer.put_string (lua.run ("examples/app/haml.lua"));
 });
 
@@ -194,19 +202,19 @@ app.get ("ctpl/<foo>/<bar>", (req, res) => {
 	tpl.push_strings ("strings", {"a", "b", "c"});
 	tpl.push_int ("int", 1);
 
-	tpl.stream (res);
+	tpl.stream (res.body);
 });
 
 // memcached
 app.get ("memcached/get/<key>", (req, res) => {
 	var value = mcd.get (req.params["key"]);
-	var writer = new DataOutputStream (res);
+	var writer = new DataOutputStream (res.body);
 	writer.put_string (value);
 });
 
 // TODO: rewrite using POST
 app.get ("memcached/set/<key>/<value>", (req, res) => {
-	var writer = new DataOutputStream (res);
+	var writer = new DataOutputStream (res.body);
 	if (mcd.set (req.params["key"], req.params["value"])) {
 		writer.put_string ("Ok! Pushed.");
 	} else {
@@ -221,13 +229,13 @@ app.scope ("admin", (adm) => {
 		// matches /admin/fun/hack
 		fun.get ("hack", (req, res) => {
 			var time = new DateTime.now_utc ();
-			var writer = new DataOutputStream (res);
+			var writer = new DataOutputStream (res.body);
 			res.headers.set_content_type ("text/plain", null);
 			writer.put_string ("It's %s around here!\n".printf (time.format ("%H:%M")));
 		});
 		// matches /admin/fun/heck
 		fun.get ("heck", (req, res) => {
-			var writer = new DataOutputStream (res);
+			var writer = new DataOutputStream (res.body);
 			res.headers.set_content_type ("text/plain", null);
 			writer.put_string ("Wuzzup!");
 		});
@@ -239,12 +247,11 @@ app.get ("next", (req, res, next) => {
 });
 
 app.get ("next", (req, res) => {
-	res.write ("Matched by the next route in the queue.".data);
+	res.body.write ("Matched by the next route in the queue.".data);
 });
 
 // serve static resource using a path route parameter
 app.get ("static/<path:resource>.<any:type>", (req, res) => {
-	var writer = new DataOutputStream (res);
 	var resource = req.params["resource"];
 	var type     = req.params["type"];
 	var contents = new uint8[128];
@@ -263,10 +270,14 @@ app.get ("static/<path:resource>.<any:type>", (req, res) => {
 		var file = resources_open_stream (path, ResourceLookupFlags.NONE);
 
 		// transfer the file
-		res.splice (file, OutputStreamSpliceFlags.CLOSE_SOURCE);
+		res.body.splice_async.begin (file,
+			                         OutputStreamSpliceFlags.CLOSE_SOURCE | OutputStreamSpliceFlags.CLOSE_TARGET,
+			                         Priority.DEFAULT,
+			                         null, (obj, result) => {
+			var size = res.body.splice_async.end (result);
+		});
 	} catch (Error e) {
-		res.status = 404;
-		writer.put_string (e.message);
+		throw new ClientError.NOT_FOUND (e.message);
 	}
 });
 
@@ -279,17 +290,17 @@ app.get ("not-found", (req, res) => {
 });
 
 app.method (VSGI.Request.GET, "custom-method", (req, res) => {
-	var writer = new DataOutputStream (res);
+	var writer = new DataOutputStream (res.body);
 	writer.put_string (req.method);
 });
 
 app.regex (VSGI.Request.GET, /custom-regular-expression/, (req, res) => {
-	var writer = new DataOutputStream (res);
+	var writer = new DataOutputStream (res.body);
 	writer.put_string ("This route was matched using a custom regular expression.");
 });
 
 app.matcher (VSGI.Request.GET, (req) => { return req.uri.get_path () == "/custom-matcher"; }, (req, res) => {
-	var writer = new DataOutputStream (res);
+	var writer = new DataOutputStream (res.body);
 	writer.put_string ("This route was matched using a custom matcher.");
 });
 
@@ -297,7 +308,7 @@ var api = new Router ();
 
 api.get ("repository/<name>", (req, res) => {
 	var name = req.params["name"];
-	res.write (name.data);
+	res.body.write (name.data);
 });
 
 // delegate all other GET requests to a subrouter
@@ -307,8 +318,7 @@ app.status (Soup.Status.NOT_FOUND, (req, res) => {
 	res.status = Soup.Status.NOT_FOUND;
 	var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));
 	template.environment.push_string ("path", req.uri.get_path ());
-	template.stream (res);
+	template.stream (res.body);
 });
 
-new Server (app).run (args);
-}
+new Server (app.handle).run ({"app", "--port", "3003"});

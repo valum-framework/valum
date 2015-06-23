@@ -1,8 +1,8 @@
 Application
 ===========
 
-This document explains step-by-step the sample presented in
-:doc:`getting-started`.
+This document explains step-by-step the sample presented in the
+:doc:`getting-started` document.
 
 Choosing the VSGI implementation
 --------------------------------
@@ -19,18 +19,15 @@ a ``using`` statement as they all respect a common interface.
 Two implementations exist at the moment and a few more are planned in a future
 minor release.
 
--  :doc:`server/soup`
--  :doc:`server/fastcgi`
+-  :doc:`vsgi/server/soup`
+-  :doc:`vsgi/server/fastcgi`
 
 Creating an application
 -----------------------
 
-An application is defined by a class that implements the ``VSGI.Application``
-interface. It declares a simple ``handle`` function that takes
-a :doc:`vsgi/request` and :doc:`vsgi/response` as input and process them.
-
-Valum provides a :doc:`router` with powerful facilities for routing client
-requests. Your application is an instance of that class.
+An application is defined by a function that respects the ``VSGI.ApplicationCallback``
+delegate. The :doc:`router` provides ``handle`` for that purpose along with
+powerful routing facilities for client requests.
 
 .. code:: vala
 
@@ -46,7 +43,7 @@ a :doc:`route` instance.
 .. code:: vala
 
     app.get ("", (req, res, next) => {
-        res.write ("Hello world!".data);
+        res.body.write ("Hello world!".data);
     });
 
 Every route declaration has a callback associated that does the request
@@ -56,30 +53,35 @@ processing. The callback, named handler, receives three arguments:
 -  a :doc:`vsgi/response` that correspond to that resource
 -  a ``next`` continuation to `keep routing`
 
-:doc:`vsgi/request` and :doc:`vsgi/response` inherit respectively from
-`GLib.InputStream`_ and `GLib.OutputStream`_, allowing any synchronous and
-asynchronous stream operations. You can use `GLib.DataOutputStream`_ or any
-filter from the GIO stream API to perform advanced write operations.
-
-.. _GLib.InputStream: http://valadoc.org/#!api=gio-2.0/GLib.InputStream
-.. _GLib.OutputStream: http://valadoc.org/#!api=gio-2.0/GLib.OutputStream
-.. _GLib.DataOutputStream: http://valadoc.org/#!api=gio-2.0/GLib.DataOutputStream
-
 Serving the application
 -----------------------
 
-The :doc:`server/soup` will be used to serve your application at port ``3003``.
-
-Usually, you would only pass the CLI arguments to ``run``, so that your runtime
-can be parametrized easily.
+This part is pretty straightforward: you create a server that will serve your
+application at port ``3003`` and since ``using VSGI.Soup`` was specified,
+``Server`` refers to :doc:`vsgi/server/soup`.
 
 .. code:: vala
 
-    new Server (app).run ({"app", "--port", "3003"});
+    new Server (app.handle).run ({"app", "--port", "3003"});
 
-There is also a :doc:`server/fastcgi` implementation for a deployment on pretty
-much any existing HTTP server. However, you can still deploy with libsoup if
-you decide to use a modern hosting service like `Heroku`_.
+Usually, you would only pass the CLI arguments to ``run``, so that your runtime
+can be parametrized easily, but in this case we just want our application to
+run with fixed parameters. Common options are documented in the
+:doc:`vsgi/server/index` document.
+
+.. code:: vala
+
+    public static void main (string[] args) {
+        var app = new Router ();
+
+        // assume some route declarations...
+
+        new Server (app.handle).run (args);
+    }
+
+There is also a :doc:`vsgi/server/fastcgi` implementation for a live
+deployment, although you can still deploy with libsoup-2.4 if you decide to use
+a modern hosting service like `Heroku`_.
 
 .. _Heroku: https://heroku.com
 

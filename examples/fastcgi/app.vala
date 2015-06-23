@@ -6,12 +6,12 @@ public static int main (string[] args) {
 
 	// default route
 	app.get ("", (req, res) => {
-		res.write ("Hello world!".data);
+		res.body.write ("Hello world!".data);
 	});
 
 	app.get ("random/<int:size>", (req, res) => {
 		var size   = int.parse (req.params["size"]);
-		var writer = new DataOutputStream (res);
+		var writer = new DataOutputStream (res.body);
 
 		for (; size > 0; size--) {
 			// write byte to byte
@@ -22,9 +22,9 @@ public static int main (string[] args) {
 	app.get ("<any:path>", (req, res) => {
 		res.status = 404;
 
-		var writer = new DataOutputStream (res);
+		var writer = new DataOutputStream (res.body);
 		writer.put_string ("404 - Not found");
 	});
 
-	return new Server (app).run (args);
+	return new Server (app.handle).run (args);
 }

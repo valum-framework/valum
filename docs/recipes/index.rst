@@ -1,8 +1,8 @@
 Recipes
 =======
 
-Recipes provide approaches to deal with common web development requirements
-with the GLib software ecosystem.
+Recipes are documents providing approaches to common web development tasks and
+their potential integration with Valum.
 
 .. toctree::
 

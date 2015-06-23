@@ -6,7 +6,7 @@ namespace VSGI {
 	 *
 	 * @since 0.0.1
 	 */
-	public abstract class Request : InputStream {
+	public abstract class Request : Object {
 
 		/**
 		 * HTTP/1.1 standard methods.
@@ -51,6 +51,13 @@ namespace VSGI {
 		 * @since 0.0.1
 		 */
 		public HashTable<string, string?>? @params { get; set; default = null; }
+
+		/**
+		 * Connection containing raw streams.
+		 *
+		 * @since 0.2
+		 */
+		public IOStream connection { construct; protected get; }
 
 		/**
 		 * Request HTTP version.
@@ -98,5 +105,21 @@ namespace VSGI {
 		 * @since 0.0.1
 		 */
 		public abstract MessageHeaders headers { get; }
+
+		/**
+		 * Request body.
+		 *
+		 * The provided stream is filtered by the implementation according to
+		 * the 'Transfer-Encoding' header value.
+		 *
+		 * The default implementation returns the connection stream unmodified.
+		 *
+		 * @since 0.2
+		 */
+		public virtual InputStream body {
+			get {
+				return this.connection.input_stream;
+			}
+		}
 	}
 }

@@ -92,5 +92,31 @@ application can produce very big output efficiently.
 
     app.get ("", (req, res) => {
         var template = new View.from_string ("");
-        template.stream (res);
+        template.stream (res.body);
+    });
+
+It is unfortunately not possible to stream with non-blocking I/O due to the
+design of CTPL. The only possibility would be to dump the template in
+a temporary ``MemoryOutputStream`` and then splice it asynchronously in the
+response body.
+
+.. code:: vala
+
+    app.get ("", (req, res) => {
+        var template = new View.from_string ("");
+        var buffer = new MemoryOutputStream.resizable ();
+
+        // blocking on memory I/O
+        template.stream (buffer);
+
+        var buffer_reader = new MemoryInputStream (buffer.data);
+
+        // non-blocking on network I/O
+        res.body.splice_async.begin (buffer_reader,
+                                     OutputStreamSpliceFlags.CLOSE_SOURCE,
+                                     Priority.DEFAULT,
+                                     null,
+                                     (obj, result) => {
+            var spliced = res.body.splice_async.end (result);
+        });
     });

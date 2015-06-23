@@ -3,38 +3,199 @@ using Soup;
 
 /**
  * FastCGI implementation of VSGI.
+ *
+ * @since 0.1
  */
 [CCode (gir_namespace = "VSGI.FastCGI", gir_version = "0.1")]
 namespace VSGI.FastCGI {
-	/**
-	 * FastCGI Request implementation.
-	 *
-	 * The request keeps a strong reference to its inner {@link FastCGI.request} so
-	 * that it is being freed only when any processing involving this._request is
-	 * done.
-	 *
-	 * The constructor will block until a request is accepted so that the object can
-	 * exclusively own the {@link FastCGI.request} instance.
-	 */
-	class Request : VSGI.Request {
+	class StreamInputStream : InputStream, PollableInputStream {
 
-		private HTTPVersion _http_version = HTTPVersion.@1_0;
-		private string _method = VSGI.Request.GET;
+		public GLib.Socket socket { construct; get; }
+
+		public unowned global::FastCGI.Stream @in { construct; get; }
+
+		public StreamInputStream (GLib.Socket socket, global::FastCGI.Stream @in) {
+			Object (socket: socket, @in: @in);
+		}
+
+		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
+			var read = this.in.read (buffer);
+
+			if (read == GLib.FileStream.EOF)
+				throw new Error (IOError.quark (),
+				                 FileUtils.error_from_errno (this.in.get_error ()),
+				                 strerror (FileUtils.error_from_errno (this.in.get_error ())));
+
+			return read;
+		}
+
+		public override bool close (Cancellable? cancellable = null) throws IOError {
+			if (this.in.close () == -1)
+				throw new Error (IOError.quark (),
+				                 FileUtils.error_from_errno (this.in.get_error ()),
+				                 strerror (FileUtils.error_from_errno (this.in.get_error ())));
+
+			return this.in.is_closed;
+		}
+
+		public bool can_poll () {
+			return true; // hope so!
+		}
+
+		public PollableSource create_source (Cancellable? cancellable = null) {
+			var source = new PollableSource (this);
+			source.add_child_source (this.socket.create_source (IOCondition.IN, cancellable));
+			return source;
+		}
+
+		public bool is_readable () {
+			return true;
+		}
+
+		public ssize_t read_nonblocking_fn (uint8[] buffer) throws Error {
+			var read = this.in.read (buffer);
+
+			if (read == GLib.FileStream.EOF)
+				throw new Error (IOError.quark (),
+				                 FileUtils.error_from_errno (this.in.get_error ()),
+				                 strerror (FileUtils.error_from_errno (this.in.get_error ())));
+
+			return read;
+		}
+	}
+
+	class StreamOutputStream : OutputStream, PollableOutputStream {
+
+		public GLib.Socket socket { construct; get; }
+
+		public unowned global::FastCGI.Stream @out { construct; get; }
+
+		public unowned global::FastCGI.Stream err { construct; get; }
+
+		/**
+		 * @param socket socket used to obtain {@link GLib.SocketSource}
+		 */
+		public StreamOutputStream (GLib.Socket socket, global::FastCGI.Stream @out, global::FastCGI.Stream err) {
+			Object (socket: socket, @out: @out, err: err);
+		}
+
+		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
+			var written = this.out.put_str (buffer);
+
+			if (written == GLib.FileStream.EOF)
+				throw new Error (IOError.quark (),
+				                 FileUtils.error_from_errno (this.out.get_error ()),
+				                 strerror (FileUtils.error_from_errno (this.out.get_error ())));
+
+			return written;
+		}
+
+		/**
+		 * Headers are written on the first flush call.
+		 */
+		public override bool flush (Cancellable? cancellable = null) {
+			return this.out.flush ();
+		}
+
+		public override bool close (Cancellable? cancellable = null) throws IOError {
+			if (this.out.close () == -1)
+				throw new Error (IOError.quark (),
+				                 FileUtils.error_from_errno (this.out.get_error ()),
+				                 strerror (FileUtils.error_from_errno (this.out.get_error ())));
+
+			if (this.err.close () == -1)
+				throw new Error (IOError.quark (),
+				                 FileUtils.error_from_errno (this.err.get_error ()),
+				                 strerror (FileUtils.error_from_errno (this.err.get_error ())));
+
+			return this.out.is_closed && this.err.is_closed;
+		}
+
+		public bool can_poll () {
+			return true; // hope so!
+		}
+
+		public PollableSource create_source (Cancellable? cancellable = null) {
+			var source = new PollableSource (this);
+			source.add_child_source (this.socket.create_source (IOCondition.OUT, cancellable));
+			return source;
+		}
+
+		public bool is_writable () {
+			return true;
+		}
+
+		public ssize_t write_nonblocking (uint8[] buffer) throws Error {
+			var written = this.out.put_str (buffer);
+
+			if (written == GLib.FileStream.EOF)
+				throw new Error (IOError.quark (),
+				                 FileUtils.error_from_errno (this.out.get_error ()),
+				                 strerror (FileUtils.error_from_errno (this.out.get_error ())));
+
+			return written;
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	class FastCGIConnection : IOStream {
+
+		public GLib.Socket socket { construct; get; }
+
+		private unowned global::FastCGI.request request;
+		private StreamInputStream _input_stream;
+		private StreamOutputStream _output_stream;
+
+		public override InputStream input_stream {
+			get {
+				return _input_stream;
+			}
+		}
+
+		public override OutputStream output_stream {
+			get {
+				return this._output_stream;
+			}
+		}
+
+		public FastCGIConnection (GLib.Socket socket, global::FastCGI.request request) {
+			Object (socket: socket);
+			this.request        = request;
+			this._input_stream  = new StreamInputStream (socket, request.in);
+			this._output_stream = new StreamOutputStream (socket, request.out, request.err);
+		}
+
+		~FastCGIConnection () {
+			request.finish ();
+			request.close (false); // keep the socket open
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public class Request : VSGI.Request {
+
+		public HashTable<string, string> environment { construct; get; }
+
 		private URI _uri = new URI (null);
 		private HashTable<string, string>? _query = null;
 		private MessageHeaders _headers = new MessageHeaders (MessageHeadersType.REQUEST);
 
-		/**
-		 *
-		 */
-		private unowned Stream @in;
-
 		public override HTTPVersion http_version {
-			get { return this._http_version; }
+			get {
+				return environment["SERVER_PROTOCOL"] == "HTTP/1.1" ?
+					HTTPVersion.@1_1 :
+					HTTPVersion.@1_0;
+			}
 		}
 
 		public override string method {
-			owned get { return this._method; }
+			owned get {
+				return this.environment["REQUEST_METHOD"];
+			}
 		}
 
 		public override URI uri { get { return this._uri; } }
@@ -49,84 +210,50 @@ namespace VSGI.FastCGI {
 			get { return this._headers; }
 		}
 
-		public Request (global::FastCGI.request request) {
-			this.in = request.in;
+		public Request (HashTable<string, string> environment , IOStream connection) {
+			Object (environment: environment, connection: connection);
 
-			var environment = request.environment;
-
-			if (environment["SERVER_PROTOCOL"] != null)
-				this._http_version = environment["SERVER_PROTOCOL"] == "HTTP/1.1" ?
-					HTTPVersion.@1_1 :
-					HTTPVersion.@1_0; // fallback if it's not reckognized
-
-			if (environment["REQUEST_METHOD"] != null)
-				this._method = (string) environment["REQUEST_METHOD"];
-
-			if (environment["HTTPS"] != null && environment["HTTPS"] == "on")
+			if (environment.contains ("HTTPS") && environment["HTTPS"] == "on")
 				this._uri.set_scheme ("https");
 
 			this._uri.set_user (environment["REMOTE_USER"]);
-			this._uri.set_host (environment["SERVER_NAME"]);
 
-			if (environment["SERVER_PORT"] != null)
+			if (environment.contains ("SERVER_NAME"))
+				this._uri.set_host (environment["SERVER_NAME"]);
+
+			// fallback on the server address
+			else if (environment.contains ("SERVER_ADDR"))
+				this._uri.set_host (environment["SERVER_ADDR"]);
+
+			if (environment.contains ("SERVER_PORT"))
 				this._uri.set_port (int.parse (environment["SERVER_PORT"]));
 
-			if (environment["PATH_INFO"] != null)
-				this._uri.set_path ((string) environment["PATH_INFO"]);
+			if (environment.contains ("REQUEST_URI"))
+				this._uri.set_path (environment["REQUEST_URI"].split ("?", 2)[0]); // avoid the query
 
-			// some server provide this one for the path
-			if (environment["REQUEST_URI"] != null)
-				this._uri.set_path ((string) environment["REQUEST_URI"]);
+			// fallback on 'PATH_INFO'
+			else if (environment.contains ("PATH_INFO"))
+				this._uri.set_path (environment["PATH_INFO"]);
 
 			this._uri.set_query (environment["QUERY_STRING"]);
 
 			// parse the HTTP query
-			if (environment["QUERY_STRING"] != null)
-				this._query = Form.decode ((string) environment["QUERY_STRING"]);
-
-			var headers = new StringBuilder ();
+			if (environment.contains ("QUERY_STRING"))
+				this._query = Form.decode (environment["QUERY_STRING"]);
 
 			// extract HTTP headers, they are prefixed by 'HTTP_' in environment variables
-			foreach (var variable in environment.get_all ()) {
-				if (variable.has_prefix ("HTTP_")) {
-					var parts = variable.split("=", 2);
-					headers.append ("%s: %s\r\n".printf(parts[0].substring(5).replace("_", "-").casefold(), parts[1]));
+			environment.foreach ((name, @value) => {
+				if (name.has_prefix ("HTTP_")) {
+					this.headers.append (name.substring (5).replace ("_", "-").casefold (), @value);
 				}
-			}
-
-			global::Soup.headers_parse (headers.str, (int) headers.len, this._headers);
-		}
-
-		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
-			var read = this.in.read (buffer);
-
-			if (read == GLib.FileStream.EOF)
-				throw new Error (IOError.quark (), FileUtils.error_from_errno (this.in.get_error ()), strerror (FileUtils.error_from_errno (this.in.get_error ())));
-
-			return read;
-		}
-
-		public override bool close (Cancellable? cancellable = null) throws IOError {
-			if (this.in.close () == -1)
-				throw new Error (IOError.quark (), FileUtils.error_from_errno (this.in.get_error ()), strerror (FileUtils.error_from_errno (this.in.get_error ())));
-
-			return this.in.is_closed;
+			});
 		}
 	}
 
 	/**
 	 * FastCGI Response
 	 */
-	class Response : VSGI.Response {
-
-		private unowned Stream @out;
-		private unowned Stream err;
-
-		/**
-		 * Tells if the headers part of the HTTP message has been written to the
-		 * output stream.
-		 */
-		private bool headers_written = false;
+	public class Response : VSGI.Response {
 
 		private uint _status;
 
@@ -134,83 +261,40 @@ namespace VSGI.FastCGI {
 
 		public override uint status {
 			get { return this._status; }
-			set { this._status = value; }
+			set {
+				this._status = value;
+				// update the 'Status' header
+				this._headers.replace ("Status", "%u %s".printf (value, Status.get_phrase (value)));
+			}
 		}
 
 		public override MessageHeaders headers { get { return this._headers; } }
 
-		public Response (Request req, Stream @out, Stream err) {
-			Object (request: req);
-			this.out = @out;
-			this.err = err;
-		}
-
-		private ssize_t write_headers () throws IOError {
-			// headers cannot be rewritten
-			if (this.headers_written)
-				error ("headers have already been written");
-
-			var headers = new StringBuilder ();
-
-			// status
-			headers.append ("Status: %u %s\r\n".printf (this.status, Status.get_phrase (this.status)));
-
-			// headers
-			this.headers.foreach ((k, v) => {
-				headers.append ("%s: %s\r\n".printf(k, v));
-			});
-
-			// newline preceeding the body
-			headers.append ("\r\n");
-
-			// write headers in a single operation
-			var written = this.out.puts (headers.str);
-
-			if (written == GLib.FileStream.EOF)
-				return written;
-
-			// headers are written if the write operation is successful (rewritten otherwise)
-			this.headers_written = true;
-
-			return written;
-		}
-
-		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
-			// lock so that two threads would not write headers at the same time.
-			lock (this.headers_written) {
-				if (!this.headers_written)
-					this.write_headers ();
-			}
-
-			var written = this.out.put_str (buffer);
-
-			if (written == GLib.FileStream.EOF)
-				throw new Error (IOError.quark (), FileUtils.error_from_errno (this.out.get_error ()), strerror (FileUtils.error_from_errno (this.out.get_error ())));
-
-			return written;
+		/**
+		 * {@inheritDoc}
+		 */
+		public Response (Request req, IOStream connection) {
+			Object (request: req, connection: connection);
 		}
 
 		/**
-		 * Headers are written on the first flush call.
+		 * {@inheritDoc}
+		 *
+		 * CGI protocols does not have a status line. They use the 'Status'
+		 * header instead.
 		 */
-		public override bool flush (Cancellable? cancellable = null) {
-			return this.out.flush ();
-		}
+		public override uint8[] build_head () {
+			var head = new StringBuilder ();
 
-		public override bool close (Cancellable? cancellable = null) throws IOError {
-			// lock so that two threads would not write headers at the same time.
-			lock (this.headers_written) {
-				if (!this.headers_written)
-					this.write_headers ();
-			}
+			// headers containing the status line
+			this.headers.foreach ((k, v) => {
+				head.append ("%s: %s\r\n".printf (k, v));
+			});
 
-			if (this.err.close () == -1)
-				throw new Error (IOError.quark (), FileUtils.error_from_errno (this.err.get_error ()), strerror (FileUtils.error_from_errno (this.err.get_error ())));
+			// newline preceeding the body
+			head.append ("\r\n");
 
-			if (this.out.close () == -1)
-				throw new Error (IOError.quark (), FileUtils.error_from_errno (this.out.get_error ()), strerror (FileUtils.error_from_errno (this.out.get_error ())));
-
-			return this.err.is_closed && this.out.is_closed;
+			return head.str.data;
 		}
 	}
 
@@ -226,7 +310,10 @@ namespace VSGI.FastCGI {
 		 */
 		public GLib.Socket? socket { get; set; default = null; }
 
-		public Server (VSGI.Application application) {
+		/**
+		 * {@inheritDoc}
+		 */
+		public Server (ApplicationCallback application) {
 			base (application);
 
 #if GIO_2_40
@@ -314,17 +401,21 @@ namespace VSGI.FastCGI {
 					error ("request %u: cannot not accept anymore request (status %u)", request.request_id, status);
 				}
 
-				var req = new Request (request);
-				var res = new Response (req, request.out, request.err);
+				var environment = new HashTable<string, string> (str_hash, str_equal);
 
-				this.application.handle (req, res);
+				foreach (var e in request.environment.get_all ()) {
+					var parts = e.split ("=", 2);
+					environment[parts[0]] = parts.length == 2 ? parts[1] : "";
+				}
+
+				var connection = new FastCGIConnection (this.socket, request);
+
+				var req = new Request (environment, connection);
+				var res = new Response (req, connection);
+
+				this.application (req, res);
 
 				debug ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
-
-				request.finish ();
-				request.close (false); // keep the socket open
-
-				this.release ();
 
 				return true;
 			});

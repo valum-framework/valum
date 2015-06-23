@@ -4,34 +4,54 @@ Installation
 We use the `waf build system`_ and distribute it with the sources. All you need
 is a `Python interpreter`_ to configure and build Valum.
 
+.. _waf build system: https://code.google.com/p/waf/
+.. _Python interpreter: https://www.python.org/
+
 Dependencies
 ------------
 
 The following dependencies are minimal to build the framework under Ubuntu
-12.04 LTS.
+12.04 LTS:
 
--  vala
--  waf
--  glib-2.0 (>=2.32)
--  gio-2.0 (>=2.32)
--  libsoup-2.4 (>=2.38)
--  libgee-0.8 (>=0.6.4)
--  ctpl (>=3.3)
++-------------+----------+
+| Package     | Version  |
++=============+==========+
+| vala        | latest   |
++-------------+----------+
+| waf         | provided |
++-------------+----------+
+| glib-2.0    | >=2.32   |
++-------------+----------+
+| gio-2.0     | >=2.32   |
++-------------+----------+
+| libsoup-2.4 | >=2.38   |
++-------------+----------+
+| libgee-0.8  | >=0.6.4  |
++-------------+----------+
+| ctpl        | >=3.3    |
++-------------+----------+
 
-Recent dependencies will enable more advanced features.
+Recent dependencies will enable more advanced features:
 
--  gio-2.0 (>=2.40) CLI arguments parsing and `add_main_option_entries` to
-   generate help with ``--help``
--  libsoup-2.4 (>=2.48) new server API
++-------------+---------+------------------------------------------------------+
+| Package     | Version | Feature                                              |
++=============+=========+======================================================+
+| glib-2.0    | >=2.38  | subprocess in tests                                  |
++-------------+---------+------------------------------------------------------+
+| gio-2.0     | >=2.40  | CLI arguments parsing                                |
++-------------+---------+------------------------------------------------------+
+| libsoup-2.4 | >=2.48  | new server API                                       |
++-------------+---------+------------------------------------------------------+
+| libsoup-2.4 | >=2.50  | uses `Soup.ClientContext.steal_connection`_ directly |
++-------------+---------+------------------------------------------------------+
 
-You can also install additionnal dependencies to build the examples.
+You can also install additional dependencies to build the examples:
 
 -  libmemcached
 -  libluajit
 -  memcached
 
-.. _waf build system: https://code.google.com/p/waf/
-.. _Python interpreter: https://www.python.org/
+.. _Soup.ClientContext.steal_connection: http://valadoc.org/#!api=libsoup-2.4/Soup.ClientContext.steal_connection
 
 Debian and Ubuntu
 ~~~~~~~~~~~~~~~~~
