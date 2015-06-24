@@ -321,7 +321,6 @@ namespace VSGI.FastCGI {
 				{"socket",  's', 0, OptionArg.FILENAME, null, "path to the UNIX socket", null},
 				{"port",    'p', 0, OptionArg.INT,      null, "TCP port on this host", null},
 				{"backlog", 'b', 0, OptionArg.INT,      null, "listen queue depth used in the listen() call", "0"},
-				{"timeout", 't', 0, OptionArg.INT,      null, "inactivity timeout in ms"},
 				{null}
 			};
 			this.add_main_option_entries (options);
@@ -346,9 +345,6 @@ namespace VSGI.FastCGI {
 			}
 
 			var backlog = options.contains ("backlog") ? options.lookup_value ("backlog", VariantType.INT32).get_int32 () : 0;
-
-			if (options.contains ("timeout"))
-				this.set_inactivity_timeout (options.lookup_value ("timeout", VariantType.INT32).get_int32 ());
 #endif
 
 #if GIO_2_40
@@ -379,13 +375,9 @@ namespace VSGI.FastCGI {
 				message ("listening the default socket");
 			}
 
-			this.hold ();
-
 			var source = socket.create_source (IOCondition.IN);
 
 			source.set_callback (() => {
-				this.hold ();
-
 				global::FastCGI.request request;
 
 				// accept a request
@@ -422,10 +414,8 @@ namespace VSGI.FastCGI {
 
 			source.attach (MainContext.default ());
 
-#if GIO_2_40
-			if (options.contains ("timeout"))
-				this.release ();
-#endif
+			// keep the process alive
+			this.hold ();
 
 			return 0;
 		}

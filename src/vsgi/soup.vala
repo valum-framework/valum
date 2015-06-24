@@ -158,8 +158,6 @@ namespace VSGI.Soup {
 				{"server-header", 'h', 0, OptionArg.STRING, null, "value to use for the 'Server' header on Messages processed by this server", "Valum/0.1"},
 				{"raw-paths",     0,   0, OptionArg.NONE,   null, "percent-encoding in the Request-URI path will not be automatically decoded"},
 
-				// various options
-				{"timeout", 't', 0, OptionArg.INT, null, "inactivity timeout in ms"},
 				{null}
 			};
 			this.add_main_option_entries (entries);
@@ -195,15 +193,11 @@ namespace VSGI.Soup {
 
 			if (options.contains ("ipv6-only"))
 				listen_options |= ServerListenOptions.IPV6_ONLY;
-
-			if (options.contains ("timeout"))
-				this.set_inactivity_timeout (options.lookup_value ("timeout", VariantType.INT32).get_int32 ());
 #else
 			var port            = 3003;
 			var file_descriptor = 0;
 			var server_header   = "Valum/0.1";
 #endif
-			this.hold ();
 
 #if GIO_2_40
 			if (options.contains ("https")) {
@@ -237,8 +231,6 @@ namespace VSGI.Soup {
 
 			// register a catch-all handler
 			this.server.add_handler (null, (server, msg, path, query, client) => {
-				this.hold ();
-
 #if SOUP_2_50
 				var stolen_connection = client.steal_connection ();
 				// the request stream have already been consumed by the server,
@@ -256,8 +248,6 @@ namespace VSGI.Soup {
 				this.application (req, res);
 
 				debug ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
-
-				this.release ();
 			});
 
 #if SOUP_2_48
@@ -275,17 +265,15 @@ namespace VSGI.Soup {
 			foreach (var uri in this.server.get_uris ()) {
 				message ("listening on %s://%s:%u", uri.scheme, uri.host, uri.port);
 			}
-#else
-			this.server.run_async ();
 
+			// keep the process alive
+			this.hold ();
+#else
 			message ("listening on %s://%s:%u", this.server.@interface.protocol,
 			                                    this.server.@interface.name,
 			                                    this.server.@interface.port);
-#endif
 
-#if GIO_2_40
-			if (options.contains ("timeout"))
-				this.release ();
+			this.server.run ();
 #endif
 
 			return 0;

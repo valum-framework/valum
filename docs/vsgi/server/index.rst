@@ -63,7 +63,6 @@ runtime. Generally, you can set the following options:
 
 -  a socket path or a TCP port
 -  backlog
--  inactivity timeout
 
 If you build your application in a main block, it is not possible to obtain the
 CLI arguments, so you must write your code in a ``main`` function.
@@ -101,7 +100,6 @@ available options.
       -s, --socket               path to the UNIX socket
       -p, --port                 TCP port on this host
       -b, --backlog=0            listen queue depth used in the listen() call
-      -t, --timeout=0            inactivity timeout in ms
 
 Socket
 ~~~~~~
@@ -121,19 +119,4 @@ Backlog
 
 The backlog correspond to the depth on the ``listen`` call and is used if you
 have multiple listener on a socket.
-
-Inactivity timeout
-~~~~~~~~~~~~~~~~~~
-
-An inactivity timeout can be set to exit automatically after a certain amount
-of milliseconds if no request is being processed.
-
-The server keeps track of the number of processing requests with ``hold`` and
-``release`` from `GLib.Application`_. When the amount reaches 0, the server
-will exit automatically after the value of the inactivity timeout.
-
-This option is enabled if the default timeout value is greater than 0.
-
-.. _GLib.Application: http://valadoc.org/#!api=gio-2.0/GLib.Application
-
 

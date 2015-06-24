@@ -52,8 +52,6 @@ the ``--help`` flag.
 | ``--raw-paths``       | disabled  | percent-encoding in the Request-URI     |
 |                       |           | path will not be automatically decoded  |
 +-----------------------+-----------+-----------------------------------------+
-| ``--timeout``         | none      | inactivity timeout in ms                |
-+-----------------------+-----------+-----------------------------------------+
 
 Notes
 ~~~~~
@@ -64,4 +62,4 @@ Notes
    on all IPv4 or IPv6 interfaces
 -  if ``--https`` is specified, you must provide a SSL or TLS certificate along
    with a private key
--  not specifying ``--timeout`` keep the server alive forever
+
