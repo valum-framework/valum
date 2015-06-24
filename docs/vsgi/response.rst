@@ -16,7 +16,7 @@ an `enumeration of status`_.
 
     app.get ("", (req, res) => {
         res.status = Soup.Status.MALFORMED;
-    })
+    });
 
 Headers
 -------
@@ -30,7 +30,7 @@ The response headers can be accessed as a `Soup.MessageHeaders`_ from the
 
     app.get ("", (req, res) => {
         res.headers.set_content_type ("text/plain");
-    })
+    });
 
 Body
 ----
@@ -92,35 +92,21 @@ performances.
 .. code:: vala
 
     app.get ("", (req, res) => {
-        res.body.close_async (Priority.DEFAULT, null)
+        res.body.close_async (Priority.DEFAULT);
     });
 
 When operating asynchronously, the connection stream will be closed before the
-response body, which may result in a corrupted response. It is important to
-close the body manually to avoid such situation.
+response body if the connection is freed. To avoid that behaviour, a reference
+to either the :doc:`request` or response must persist until the operation ends.
 
 .. code:: vala
 
     app.get ("", (req, res) => {
-        res.body.write_async ("Hello world!".data,
-                              Priority.DEFAULT,
-                              null, (body, result) => {
-            body.close (); // explicitly close
-        })
-    })
-
-If you splice, you can specify the `OutputStreamSpliceFlags.CLOSE_TARGET`_ flag
-to perform that operation automatically.
-
-.. _OutputStreamSpliceFlags.CLOSE_TARGET: http://valadoc.org/#!api=gio-2.0/GLib.OutputStreamSpliceFlags.CLOSE_TARGET
-
-.. code:: vala
-
-    app.get ("", (req, res) => {
-        // pipe the request body into the response
-        res.body.splice_async (req.body,
-                               OutputStreamSpliceFlags.CLOSE_TARGET,
-                               Priority.DEFAULT,
-                               null);
+        res.body.write_async.begin ("Hello world!".data,
+                                    Priority.DEFAULT,
+                                    null, (body, result) => {
+            // the reference to the response has persisted
+            var written = res.body.write_async.end (result);
+        });
     });
 
