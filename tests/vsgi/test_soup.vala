@@ -32,5 +32,6 @@ public static void test_vsgi_soup_response () {
 
 	assert (message == request.message);
 	assert (request == response.request);
+	assert (!response.head_written);
 	assert (connection.output_stream == response.body);
 }

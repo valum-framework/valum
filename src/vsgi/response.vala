@@ -38,6 +38,14 @@ namespace VSGI {
 		public abstract MessageHeaders headers { get; }
 
 		/**
+		 * Tells if the head has been written in the connection
+		 * {@link GLib.OutputStream}.
+		 *
+		 * @since 0.2
+		 */
+		public bool head_written { get; protected set; default = false; }
+
+		/**
 		 * Response body.
 		 *
 		 * On the first attempt to access the response body stream, the status
@@ -57,6 +65,7 @@ namespace VSGI {
 		 * For CGI-ish protocols, the server will generally deal with transfer
 		 * encoding automatically, so the default implementation is to simply
 		 * return the base_stream.
+		 *
 		 * @since 0.2
 		 */
 		public virtual OutputStream body {
@@ -70,13 +79,6 @@ namespace VSGI {
 				return this.connection.output_stream;
 			}
 		}
-
-		/**
-		 * Tells if the head has been written in the connection {@link OutputStream}.
-		 *
-		 * @since 0.2
-		 */
-		protected bool head_written = false;
 
 		/**
 		 * Produce the head of this response including the status line, the
@@ -115,12 +117,10 @@ namespace VSGI {
 		 *
 		 * @since 0.2
 		 */
-		public ssize_t write_head (Cancellable? cancellable = null) throws IOError {
-			if (this.head_written) {
-				warning ("head has already been written");
-				return 0;
-			}
-
+		public ssize_t write_head (Cancellable? cancellable = null) throws IOError
+			requires (!this.head_written)
+			ensures  (this.head_written)
+		{
 			var written = this.connection.output_stream.write (this.build_head (), cancellable);
 
 			this.head_written = true;
@@ -134,12 +134,10 @@ namespace VSGI {
 		 * @since 0.2
 		 */
 		public async ssize_t write_head_async (int priority = GLib.Priority.DEFAULT,
-			                                   Cancellable? cancellable = null) throws IOError {
-			if (this.head_written) {
-				warning ("head has already been written");
-				return 0;
-			}
-
+			                                   Cancellable? cancellable = null) throws IOError
+			requires (!this.head_written)
+			ensures  (this.head_written)
+		{
 			var written = yield this.connection.output_stream.write_async (this.build_head (), priority, cancellable);
 
 			this.head_written = true;

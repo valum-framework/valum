@@ -63,5 +63,6 @@ public static void test_vsgi_fastcgi_response () {
 	var response   = new Response (request, connection);
 
 	assert (request == response.request);
+	assert (!response.head_written);
 	assert (connection.output_stream == response.body);
 }
