@@ -53,7 +53,6 @@ def configure(conf):
 
     if conf.options.enable_threading:
         conf.check_cfg(package='gthread-2.0', atleast_version='2.32')
-        conf.env.append_unique('VALAFLAGS', ['--thread'])
 
     # configure examples
     conf.recurse(glob.glob('examples/*'))
@@ -68,6 +67,7 @@ def build(bld):
         source       = bld.path.ant_glob('src/**/*.vala'),
         uselib       = ['GLIB', 'GIO', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
         vapi_dirs    = ['vapi'],
+        thread       = bld.options.enable_threading,
         install_path = '${LIBDIR}')
 
     # pkg-config file

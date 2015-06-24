@@ -40,10 +40,15 @@ Recent dependencies will enable more advanced features:
 +-------------+---------+------------------------------------------------------+
 | gio-2.0     | >=2.40  | CLI arguments parsing                                |
 +-------------+---------+------------------------------------------------------+
+| gthread-2.0 | any     | threading for VSGI implementations                   |
++-------------+---------+------------------------------------------------------+
 | libsoup-2.4 | >=2.48  | new server API                                       |
 +-------------+---------+------------------------------------------------------+
 | libsoup-2.4 | >=2.50  | uses `Soup.ClientContext.steal_connection`_ directly |
 +-------------+---------+------------------------------------------------------+
+
+Threading can be enabled by specifying the ``--enable-threading`` flag during
+the configuration.
 
 You can also install additional dependencies to build the examples:
 
