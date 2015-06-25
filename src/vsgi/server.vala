@@ -21,11 +21,11 @@ namespace VSGI {
 	public class Server : GLib.Application {
 
 		/**
-		 * Application being served with client requests.
+		 * Handle a pair of {@link VSGI.Request} and {@link VSGI.Response}.
 		 *
 		 * @since 0.2
 		 */
-		protected ApplicationCallback application;
+		protected ApplicationCallback handle;
 
 		/**
 		 * Enforces implementation to take the application as a sole argument
@@ -37,7 +37,7 @@ namespace VSGI {
 		 */
 		public Server (ApplicationCallback application) {
 			Object (flags: ApplicationFlags.HANDLES_COMMAND_LINE);
-			this.application = application;
+			this.handle = application;
 		}
 	}
 }

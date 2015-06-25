@@ -259,10 +259,10 @@ namespace VSGI.Soup {
 				var connection = new Connection (server, msg);
 #endif
 
-				var req        = new Request (connection, msg, query);
-				var res        = new Response (req, msg);
+				var req = new Request (connection, msg, query);
+				var res = new Response (req, msg);
 
-				this.application (req, res);
+				this.handle (req, res);
 
 				debug ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
 			});

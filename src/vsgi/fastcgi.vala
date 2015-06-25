@@ -405,7 +405,7 @@ namespace VSGI.FastCGI {
 				var req = new Request (connection, environment);
 				var res = new Response (req);
 
-				this.application (req, res);
+				this.handle (req, res);
 
 				debug ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
 
