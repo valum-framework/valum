@@ -210,8 +210,8 @@ namespace VSGI.FastCGI {
 			get { return this._headers; }
 		}
 
-		public Request (HashTable<string, string> environment , IOStream connection) {
-			Object (environment: environment, connection: connection);
+		public Request (IOStream connection, HashTable<string, string> environment) {
+			Object (connection: connection, environment: environment);
 
 			if (environment.contains ("HTTPS") && environment["HTTPS"] == "on")
 				this._uri.set_scheme ("https");
@@ -273,8 +273,8 @@ namespace VSGI.FastCGI {
 		/**
 		 * {@inheritDoc}
 		 */
-		public Response (Request req, IOStream connection) {
-			Object (request: req, connection: connection);
+		public Response (Request req) {
+			Object (request: req);
 		}
 
 		/**
@@ -402,8 +402,8 @@ namespace VSGI.FastCGI {
 
 				var connection = new FastCGIConnection (this.socket, request);
 
-				var req = new Request (environment, connection);
-				var res = new Response (req, connection);
+				var req = new Request (connection, environment);
+				var res = new Response (req);
 
 				this.application (req, res);
 

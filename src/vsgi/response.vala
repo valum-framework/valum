@@ -17,13 +17,6 @@ namespace VSGI {
 		public Request request { construct; get; }
 
 		/**
-		 * Connection containing raw streams.
-		 *
-		 * @since 0.2
-		 */
-		public IOStream connection { construct; protected get; }
-
-		/**
 		 * Response status.
 		 *
 		 * @since 0.0.1
@@ -76,7 +69,7 @@ namespace VSGI {
 
 				assert (this.head_written);
 
-				return this.connection.output_stream;
+				return this.request.connection.output_stream;
 			}
 		}
 
@@ -121,7 +114,7 @@ namespace VSGI {
 			requires (!this.head_written)
 			ensures  (this.head_written)
 		{
-			var written = this.connection.output_stream.write (this.build_head (), cancellable);
+			var written = this.request.connection.output_stream.write (this.build_head (), cancellable);
 
 			this.head_written = true;
 
@@ -138,7 +131,7 @@ namespace VSGI {
 			requires (!this.head_written)
 			ensures  (this.head_written)
 		{
-			var written = yield this.connection.output_stream.write_async (this.build_head (), priority, cancellable);
+			var written = yield this.request.connection.output_stream.write_async (this.build_head (), priority, cancellable);
 
 			this.head_written = true;
 

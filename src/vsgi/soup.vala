@@ -15,6 +15,10 @@ namespace VSGI.Soup {
 
 		private HashTable<string, string>? _query;
 
+#if SOUP_2_50
+		private MemoryInputStream _body;
+#endif
+
 		/**
 		 * Message underlying this request.
 		 *
@@ -41,16 +45,33 @@ namespace VSGI.Soup {
 		 *
 		 * @since 0.2
 		 *
-		 * @param msg        message underlying this request
 		 * @param connection contains the connection obtain from
 		 *                   {@link Soup.ClientContext.steal_connection} or a
 		 *                   stud if it is not available
+		 * @param msg        message underlying this request
 		 * @param query      parsed HTTP query provided by {@link Soup.ServerCallback}
 		 */
-		public Request (Message msg, IOStream connection, HashTable<string, string>? query) {
-			Object (message: msg, connection: connection);
+		public Request (IOStream connection, Message msg, HashTable<string, string>? query) {
+			Object (connection: connection, message: msg);
 			this._query = query;
+#if SOUP_2_50
+			this._body  = new MemoryInputStream.from_data (msg.request_body.data, null);
+#endif
 		}
+
+#if SOUP_2_50
+		/**
+		 * {@inheritDoc}
+		 *
+		 * The body from the connection is already consumed, so we provide a
+		 * memory-based stream over the message data.
+		 */
+		public override InputStream body {
+			get {
+				return this._body;
+			}
+		}
+#endif
 	}
 
 	/**
@@ -81,8 +102,8 @@ namespace VSGI.Soup {
 		 *
 		 * @param msg message underlying this response
 		 */
-		public Response (Request req, Message msg, IOStream connection) {
-			Object (request: req, message: msg, connection: connection);
+		public Response (Request req, Message msg) {
+			Object (request: req, message: msg);
 		}
 
 #if SOUP_2_50
@@ -110,14 +131,15 @@ namespace VSGI.Soup {
 
 				// filter the stream properly
 				if (this.request.http_version == HTTPVersion.@1_1 && this.headers.get_encoding () == Encoding.CHUNKED) {
-					this.filtered_body = new ConverterOutputStream (this.connection.output_stream, new ChunkedConverter ());
+					this.filtered_body = new ConverterOutputStream (this.request.connection.output_stream,
+					                                                new ChunkedConverter ());
 				} else {
-					this.filtered_body = this.connection.output_stream;
+					this.filtered_body = this.request.connection.output_stream;
 				}
 
 				return this.filtered_body;
 #else
-				return this.connection.output_stream;
+				return this.request.connection.output_stream;
 #endif
 			}
 		}
@@ -232,18 +254,13 @@ namespace VSGI.Soup {
 			// register a catch-all handler
 			this.server.add_handler (null, (server, msg, path, query, client) => {
 #if SOUP_2_50
-				var stolen_connection = client.steal_connection ();
-				// the request stream have already been consumed by the server,
-				// so we simply wrap it.
-				var simple_connection = new SimpleIOStream (new MemoryInputStream.from_data (msg.request_body.data, null),
-				                                            stolen_connection.output_stream);
-				var req               = new Request (msg, simple_connection, query);
-				var res               = new Response (req, msg, stolen_connection);
+				var connection = client.steal_connection ();
 #else
 				var connection = new Connection (server, msg);
-				var req        = new Request (msg, connection, query);
-				var res        = new Response (req, msg, connection);
 #endif
+
+				var req        = new Request (connection, msg, query);
+				var res        = new Response (req, msg);
 
 				this.application (req, res);
 

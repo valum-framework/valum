@@ -7,7 +7,7 @@ public static void test_vsgi_soup_request () {
 	var message      = new Soup.Message ("GET", "http://0.0.0.0:3003/");
 
 	var connection = new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream (null, realloc, free));
-	var request    = new Request (message, connection, null);
+	var request    = new Request (connection, message, null);
 
 	assert (message == request.message);
 	assert (Soup.HTTPVersion.@1_1 == request.http_version);
@@ -27,8 +27,8 @@ public static void test_vsgi_soup_response () {
 	var message       = new Soup.Message ("GET", "http://0.0.0.0:3003/");
 
 	var connection = new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream (null, realloc, free));
-	var request    = new Request (message, connection, null);
-	var response   = new Response (request, message, connection);
+	var request    = new Request (connection, message, null);
+	var response   = new Response (request, message);
 
 	assert (message == request.message);
 	assert (request == response.request);

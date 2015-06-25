@@ -57,7 +57,7 @@ namespace VSGI {
 		 *
 		 * @since 0.2
 		 */
-		public IOStream connection { construct; protected get; }
+		public IOStream connection { construct; get; }
 
 		/**
 		 * Request HTTP version.

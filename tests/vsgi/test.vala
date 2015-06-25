@@ -69,8 +69,7 @@ namespace VSGI.Test {
 		}
 
 		public Response (Request req, uint status) {
-			Object (request: req, connection: new SimpleIOStream (new MemoryInputStream (),
-																  new MemoryOutputStream (null, realloc, free)));
+			Object (request: req);
 			this._status = status;
 		}
 	}
