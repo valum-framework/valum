@@ -231,3 +231,78 @@ data to the next handler in the queue.
 The ``Router`` will automatically propagate the state, so calling ``next``
 without argument is a safe operation.
 
+Middleware
+----------
+
+Anything that does not handle the user request, typically by invoking ``next``,
+is considered to be a middleware. Two kind of middleware can coexist to provide
+reusable matching and handling capabilities.
+
+Matching middleware
+~~~~~~~~~~~~~~~~~~~
+
+These middlewares respect the ``Route.MatcherCallback`` delegate signature.
+
+The following piece of code is a reusable and generic content negociator:
+
+.. code:: vala
+
+    public MatcherCallback accept (string content_type) {
+        return (req) => {
+            return req.headers.get_one ("Accept") == content_type;
+        };
+    }
+
+It is not really powerful as it does not support fuzzy matching like
+``application/*``, but it demonstrates the potential capabilities.
+
+It can conveniently be used as a matcher callback to capture all requests that
+accept the ``application/json`` content type as a response.
+
+.. code:: vala
+
+    app.matcher (accept ("application/json"), (req, res) => {
+        // produce a JSON output...
+    });
+
+Handling middleware
+~~~~~~~~~~~~~~~~~~~
+
+These middlewares are reusable piece of processing that can perform various
+work from authentication to the delivery of a static resource.
+
+It is possible for a handling middleware to pass a state to the next handling
+route, allowing them to produce content that can be consumed instead of simply
+processing the :doc:`vsgi/request` or :doc:`vsgi/response`.
+
+The following example shows a middleware that provide a compressed stream over
+the :doc:`vsgi/response` body.
+
+.. code:: vala
+
+    app.get (null, (req, res, next) => {
+        res.headers ("Content-Encoding", "gzip");
+        next (new ConverterOutputStream (new ZLibCompressor ("gzip", res.body));
+    });
+
+    app.get ("home", (req, res, next, state) => {
+        OutputStream body = state;
+        body.write ("Hello world!".data); // transparently compress the output
+    });
+
+If this is wrapped in a function, it can even be used directly from the
+handler.
+
+.. code:: vala
+
+    HandlerCallback compress = (req, res, next) => {
+        res.headers ("Content-Encoding", "gzip");
+        next (new ConverterOutputStream (new ZLibCompressor ("gzip", res.body));
+    };
+
+    app.get ("home", (req, res) => {
+        compress (req, res, (state) => {
+            OutputStream body = state;
+            body.write ("Hello world!".data);
+        })
+    })

@@ -117,3 +117,12 @@ the :doc:`router` can handle them properly.
     app.get ("", (req, res) => {
         throw new ClientError.NOT_FOUND ("");
     });
+
+During status handling, the error message will be passed to the first handler
+as a ``string``.
+
+.. code:: vala
+
+    app.status (404, (req, res, next, state) => {
+        string message = state;
+    });

@@ -64,6 +64,17 @@ application at port ``3003`` and since ``using VSGI.Soup`` was specified,
 
     new Server (app.handle).run ({"app", "--port", "3003"});
 
+:doc:`vsgi/server/index` take an ``ApplicationCallback`` as input, which is
+respected by the ``handle`` function.  Simple application can be defined by
+a simple lambda function taking a :doc:`vsgi/request` and :doc:`vsgi/response`
+as input.
+
+.. code:: vala
+
+    new Server ((req, res) => {
+        res.body.write ("Hello world!".data);
+    }).run ({"app", "--port", "3003"});
+
 Usually, you would only pass the CLI arguments to ``run``, so that your runtime
 can be parametrized easily, but in this case we just want our application to
 run with fixed parameters. Common options are documented in the
@@ -78,10 +89,4 @@ run with fixed parameters. Common options are documented in the
 
         new Server (app.handle).run (args);
     }
-
-There is also a :doc:`vsgi/server/fastcgi` implementation for a live
-deployment, although you can still deploy with libsoup-2.4 if you decide to use
-a modern hosting service like `Heroku`_.
-
-.. _Heroku: https://heroku.com
 

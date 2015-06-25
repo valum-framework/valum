@@ -10,6 +10,15 @@ Route is a structure that pairs a matcher and a handler.
 Matcher
 -------
 
+There are three ways of matching user requests:
+
+-  using the rule system
+-  with a regular expression on the request path
+-  with a matching callback
+
+Once matched, the :doc:`vsgi/request` parameters might be populated to provide
+additional information about the request.
+
 Request parameters
 ~~~~~~~~~~~~~~~~~~
 
@@ -78,37 +87,49 @@ Null rule
 The ``null`` rule can be used to match all possible request paths. It can be
 used to perform setup operations.
 
+The matched path will be made available in the ``path`` parameter.
+
 .. code:: vala
 
     app.get (null, (req, res, next) => {
         // always invoked!
+
+        var path = req.params["path"]; // matched path
+
+        next ();
     });
 
     app.get ("", (req, res) => {
-        //
+        res.write ("Hello world!".data);
     });
+
+
+Scope
+~~~~~
+
+Rules and regular expressions are scoped by prefixing the scope stack from the
+:doc:`router` in the generated regular expression.
 
 Types
 ~~~~~
 
-Valum provides the following built-in types
+Valum provides built-in types initialized in the :doc:`router` constructor. The
+following table details these types and what they match.
 
--  int that matches ``\d+``
--  string that matches ``\w+`` (this one is implicit)
--  path that matches ``[\w/]+``
--  any that matches ``.+``
++------------+------------+-----------------------------------------------+
+| Type       | Regex      | Description                                   |
++============+============+===============================================+
+| ``int``    | ``\d+``    | matches non-negative integers like a database |
+|            |            | primary key                                   |
++------------+------------+-----------------------------------------------+
+| ``string`` | ``\w+``    | matches any word character                    |
++------------+------------+-----------------------------------------------+
+| ``path``   | ``[\w/]+`` | matches a piece of route including slashes    |
++------------+------------+-----------------------------------------------+
+| ``any``    | ``.+``     | matches anything                              |
++------------+------------+-----------------------------------------------+
 
-Undeclared type is assumed to be ``string``, this is what implicit
-meant.
-
-The ``int`` type is useful for matching non-negative identifier such as
-database primary key.
-
-the ``path`` type is useful for matching pieces of route including slashes. You
-can use this one to serve a folders hierachy.
-
-The ``any`` type is useful to create catch-all route. The sample application
-shows an example for creating a 404 error page.
+Undeclared types default to ``string``, which matches any word characters.
 
 .. code:: vala
 
@@ -116,22 +137,19 @@ shows an example for creating a 404 error page.
         res.status = 404;
     });
 
-It is possible to specify new types using the ``types`` map in ``Router``. This
-example will define the ``path`` type matching words and slashes using
-a regular expression literal.
+It is possible to specify or overwrite types using the ``types`` map in
+:doc:`router`. This example will define the ``path`` type matching words and
+slashes using a regular expression literal.
 
 .. code:: vala
 
     app.types["path"] = /[\\w\/]+/;
 
-Types are defined at construct time of the ``Router`` class. It is possible to
-overwrite the built-in type.
-
 If you would like ``ìnt`` to match negatives integer, you may just do:
 
 .. code:: vala
 
-    app = new Router ();
+    var app = new Router ();
 
     app.types["int"] = /-?\d+/;
 
@@ -209,12 +227,6 @@ Handler
 Handler process a a pair of :doc:`vsgi/request` and :doc:`vsgi/response` and
 can throw various status code during the processing to handle cases that breaks
 the code flow conveniently.
-
-The definition of a handler is the following:
-
-.. code:: vala
-
-    delegate void HandlerCallback (Request req, Response res, NextCallback) throws Redirection, ClientError, ServerError;
 
 See :doc:`redirection-and-error` for more details on what can be throws during
 the processing of a handler.

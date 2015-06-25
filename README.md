@@ -15,10 +15,10 @@ using VSGI.Soup;
 var app = new Router ();
 
 app.get ("", (req, res) => {
-    res.write ("Hello world!".data);
+    res.body.write ("Hello world!".data);
 });
 
-new Server (app).run ();
+new Server (app.handle).run ();
 ```
 
 
@@ -32,19 +32,20 @@ The installation process is fully documented in the
 Features
 --------
 
- - router with scope, typed parameters and low-level utilities
- - simple Request-Response mechanism
- - complete integration of [FastCGI](http://www.fastcgi.com/drupal/) protocol
- - [CTPL](http://ctpl.tuxfamily.org/), a simple templating engine
+ - asynchronous processing based on RAII and automated reference counting that
+   just doesn't get in your way
+ - powerful routing mechanism with scope, typed parameters and
+   low-level utilities to write expressive web services
+ - deploy anywhere with libsoup-2.4 built-in HTTP server or [FastCGI](http://www.fastcgi.com/drupal/)
+ - handy [CTPL](http://ctpl.tuxfamily.org/) integration for templating
  - extensive documentation available at [valum-framework.readthedocs.org](http://valum-framework.readthedocs.org/en/latest)
 
 
 Contributing
 ------------
 
-Valum is built by the community under the
-[LGPL](https://www.gnu.org/licenses/lgpl.html) license, so anyone can
-contribute.
+Valum is built by the community under the [LGPL](https://www.gnu.org/licenses/lgpl.html)
+license, so anyone can use or contribute to the framework.
 
  1. fork repository
  2. pick one task from TODO.md or [GitHub issues](https://github.com/antono/valum/issues)

@@ -61,11 +61,12 @@ Options
 Each server implementation can optionally take arguments that parametrize their
 runtime. Generally, you can set the following options:
 
--  a socket path or a TCP port
--  backlog
+-  a socket path and backlog
+-  TCP port
 
-If you build your application in a main block, it is not possible to obtain the
-CLI arguments, so you must write your code in a ``main`` function.
+If you build your application in a main block, it will not possible to obtain
+the CLI arguments to parametrize the runtime. You can write your code in
+a usual ``main`` function.
 
 .. code:: vala
 
@@ -80,7 +81,7 @@ CLI arguments, so you must write your code in a ``main`` function.
     }
 
 If you specify the ``--help`` flag, you can get more information on the
-available options.
+available options which vary from an implementation to another.
 
 .. code:: bash
 

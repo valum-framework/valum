@@ -124,9 +124,9 @@ Running the example
 VSGI produces process-based applications that are either self-hosted or able to
 communicate with a HTTP server according to a standardized protocol.
 
-The :doc:`server/soup` implementation is self-hosting, so you just have to run
-it and point your browser at http://127.0.0.1:3003 to see the result.
+The :doc:`vsgi/server/soup` implementation is self-hosting, so you just have to
+run it and point your browser at http://127.0.0.1:3003 to see the result.
 
 .. code-block:: bash
 
-    build/app
+    ./build/app

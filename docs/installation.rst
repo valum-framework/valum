@@ -47,16 +47,24 @@ Recent dependencies will enable more advanced features:
 | libsoup-2.4 | >=2.50  | uses `Soup.ClientContext.steal_connection`_ directly |
 +-------------+---------+------------------------------------------------------+
 
+.. _Soup.ClientContext.steal_connection: http://valadoc.org/#!api=libsoup-2.4/Soup.ClientContext.steal_connection
+
 Threading can be enabled by specifying the ``--enable-threading`` flag during
 the configuration.
 
+.. code-block:: bash
+
+    ./waf configure --enable-threading
+
 You can also install additional dependencies to build the examples:
 
--  libmemcached
--  libluajit
--  memcached
-
-.. _Soup.ClientContext.steal_connection: http://valadoc.org/#!api=libsoup-2.4/Soup.ClientContext.steal_connection
++--------------+------------------------------------+
+| Package      | Description                        |
++--------------+------------------------------------+
+| libmemcached | client for memcached cache storage |
++--------------+------------------------------------+
+| libluajit    | embed a Lua VM                     |
++--------------+------------------------------------+
 
 Debian and Ubuntu
 ~~~~~~~~~~~~~~~~~
@@ -85,6 +93,10 @@ You may either clone or download one of our `releases`_ from GitHub:
 .. code-block:: bash
 
     git clone git://github.com/valum-framework/valum.git && cd valum
+
+The ``master`` branch is a development trunk and is not guaranteed to be very
+stable. It is almost always a better idea to checkout a specific tagged
+release.
 
 Build
 -----
