@@ -283,7 +283,7 @@ namespace VSGI.FastCGI {
 		 * CGI protocols does not have a status line. They use the 'Status'
 		 * header instead.
 		 */
-		public override uint8[] build_head () {
+		public override uint8[]? build_head () {
 			var head = new StringBuilder ();
 
 			// headers containing the status line

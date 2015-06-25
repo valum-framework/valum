@@ -8,6 +8,27 @@ using Soup;
 [CCode (gir_namespace = "VSGI.Soup", gir_version = "0.1")]
 namespace VSGI.Soup {
 
+#if !SOUP_2_50
+	private class MessageBodyOutputStream : OutputStream {
+
+		public global::Soup.MessageBody message_body { construct; get; }
+
+		public MessageBodyOutputStream (MessageBody message_body) {
+			Object (message_body: message_body);
+		}
+
+		public override ssize_t write (uint8[] data, Cancellable? cancellable = null) {
+			this.message_body.append_take (data);
+			return data.length;
+		}
+
+		public override bool close (Cancellable? cancellable = null) {
+			this.message_body.complete ();
+			return true;
+		}
+	}
+#endif
+
 	/**
 	 * Soup Request
 	 */
@@ -111,6 +132,15 @@ namespace VSGI.Soup {
 		 * Placeholder for the filtered body.
 		 */
 		private OutputStream? filtered_body = null;
+#else
+		/**
+		 * {@inheritDoc}
+		 *
+		 * Implementation based on {@link Soup.Message} already handles the
+		 * writing of the status line and headers, so an empty buffer is
+		 * returned.
+		 */
+		protected override uint8[]? build_head () { return null; }
 #endif
 
 		/**
@@ -336,16 +366,13 @@ namespace VSGI.Soup {
 				Object (server: server, message: message);
 
 				this._input_stream  = new MemoryInputStream.from_data (message.request_body.data, null);
-				this._output_stream = new MemoryOutputStream (message.response_body.data, realloc, free);
+				this._output_stream = new MessageBodyOutputStream (message.response_body);
 
 				// prevent the server from completing the message
 				this.server.pause_message (message);
 			}
 
 			~Connection () {
-				// explicitly complete the body
-				this.message.response_body.complete ();
-
 				// resume I/O operations
 				this.server.unpause_message (message);
 			}

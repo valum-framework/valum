@@ -83,7 +83,7 @@ namespace VSGI {
 		 *
 		 * @since 0.2
 		 */
-		protected virtual uint8[] build_head () {
+		protected virtual uint8[]? build_head () {
 			var head = new StringBuilder ();
 
 			// status line
@@ -109,12 +109,22 @@ namespace VSGI {
 		 * the first time.
 		 *
 		 * @since 0.2
+		 *
+		 * @return the status line and headers data or null if nothing should be
+		 *         written in the output stream.
 		 */
 		public ssize_t write_head (Cancellable? cancellable = null) throws IOError
 			requires (!this.head_written)
 			ensures  (this.head_written)
 		{
-			var written = this.request.connection.output_stream.write (this.build_head (), cancellable);
+			var head = this.build_head ();
+
+			if (head == null) {
+				this.head_written = true;
+				return 0;
+			}
+
+			var written = this.request.connection.output_stream.write (head, cancellable);
 
 			this.head_written = true;
 
@@ -131,7 +141,14 @@ namespace VSGI {
 			requires (!this.head_written)
 			ensures  (this.head_written)
 		{
-			var written = yield this.request.connection.output_stream.write_async (this.build_head (), priority, cancellable);
+			var head = this.build_head ();
+
+			if (head == null) {
+				this.head_written = true;
+				return 0;
+			}
+
+			var written = yield this.request.connection.output_stream.write_async (head, priority, cancellable);
 
 			this.head_written = true;
 
