@@ -292,43 +292,41 @@ namespace Valum {
 			try {
 				try {
 					// ensure at least one route has been declared with that method
-					if (this.routes.contains (req.method)) {
-						// find a route that may handle the request
+					if (this.routes.contains (req.method))
 						if (this.perform_routing (this.routes[req.method].head, req, res))
 							return; // something matched
-					}
 
-				// find routes from other methods matching this Request
-				var allowed = new StringBuilder ();
-				foreach (var method in this.routes.get_keys ()) {
-					if (method != req.method)
-						foreach (var route in this.routes[method].head) {
-							if (route.match (req)) {
-								if (allowed.len > 0)
-									allowed.append (", ");
-								allowed.append (method);
-								break;
+					// find routes from other methods matching this Request
+					var allowed = new StringBuilder ();
+					foreach (var method in this.routes.get_keys ()) {
+						if (method != req.method) {
+							foreach (var route in this.routes[method].head) {
+								if (route.match (req)) {
+									if (allowed.len > 0)
+										allowed.append (", ");
+									allowed.append (method);
+									break;
+								}
 							}
 						}
 					}
 
 					// a Route from another method allows this Request
-					if (allowed.len > 0) {
+					if (allowed.len > 0)
 						throw new ClientError.METHOD_NOT_ALLOWED (allowed.str);
-					}
 
 					throw new ClientError.NOT_FOUND ("The request URI %s was not found.".printf (req.uri.to_string (false)));
-
 				} catch (Error e) {
 					// handle using a registered status handler
-					if (this.status_handlers.contains (e.code)) {
+					if (this.status_handlers.contains (e.code))
 						if (this.perform_routing (this.status_handlers[e.code].head, req, res, e.message))
 							return;
-					}
 
 					// propagate the error if it is not handled
 					throw e;
 				}
+
+			// default status code handling
 			} catch (Informational.SWITCHING_PROTOCOLS i) {
 				res.status = i.code;
 				res.headers.append ("Upgrade", i.message);
