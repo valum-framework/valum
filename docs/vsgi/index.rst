@@ -37,6 +37,16 @@ a :doc:`request` and a :doc:`response`.
         // process the request and produce the response...
     }).run ();
 
+The callback must at least call ``write_head`` (or ``write_head_async``) on the
+:doc:`response`, otherwise nothing will be sent to the client and the
+connection will be closed.
+
+Accessing the :doc:`response` ``body`` for the first time will write the status
+line and headers synchronously in the connection stream before returning an
+`GLib.OutputStream`_.
+
+.. _GLib.OutputStream: http://valadoc.org/#!api=gio-2.0/GLib.OutputStream
+
 Asynchronous processing
 -----------------------
 
