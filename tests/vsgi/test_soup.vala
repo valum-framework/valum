@@ -17,7 +17,6 @@ public static void test_vsgi_soup_request () {
 	assert (null == request.query);
 	assert (null == request.params);
 	assert (message.request_headers == request.headers);
-	assert (connection.input_stream == request.body);
 }
 
 /**

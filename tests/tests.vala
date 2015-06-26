@@ -105,6 +105,8 @@ public int main (string[] args) {
 	Test.add_func ("/view/push_value/string", test_view_push_value_string);
 	Test.add_func ("/view/push_value/unknown_type", test_view_push_value_unknown_type);
 
+	Test.add_func ("/vsgi/converter/chunked", test_vsgi_converter_chunked);
+
 	Test.add_func ("/vsgi/soup/request", test_vsgi_soup_request);
 	Test.add_func ("/vsgi/soup/response", test_vsgi_soup_response);
 
