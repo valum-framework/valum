@@ -309,17 +309,17 @@ namespace VSGI.Soup {
 				{
 					this.server.listen_local (port, listen_options);
 				}
-
-				foreach (var uri in this.server.get_uris ()) {
-					command_line.print ("listening on %s://%s:%u\n", uri.scheme, uri.host, uri.port);
-				}
-
-				// keep the process alive
-				this.hold ();
 			} catch (Error err) {
 				command_line.printerr ("%s\n", err.message);
 				return 1;
 			}
+
+			foreach (var uri in this.server.get_uris ()) {
+				command_line.print ("listening on %s://%s:%u\n", uri.scheme, uri.host, uri.port);
+			}
+
+			// keep the process alive
+			this.hold ();
 #else
 			command_line.print ("listening on %s://%s:%u\n", this.server.@interface.protocol,
 			                                                 this.server.@interface.name,

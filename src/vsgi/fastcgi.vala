@@ -8,7 +8,7 @@ using Soup;
  */
 [CCode (gir_namespace = "VSGI.FastCGI", gir_version = "0.1")]
 namespace VSGI.FastCGI {
-	class StreamInputStream : InputStream, PollableInputStream {
+	private class StreamInputStream : InputStream, PollableInputStream {
 
 		public GLib.Socket socket { construct; get; }
 
@@ -64,7 +64,7 @@ namespace VSGI.FastCGI {
 		}
 	}
 
-	class StreamOutputStream : OutputStream, PollableOutputStream {
+	private class StreamOutputStream : OutputStream, PollableOutputStream {
 
 		public GLib.Socket socket { construct; get; }
 
@@ -134,42 +134,6 @@ namespace VSGI.FastCGI {
 				                 strerror (FileUtils.error_from_errno (this.out.get_error ())));
 
 			return written;
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	class FastCGIConnection : IOStream {
-
-		public GLib.Socket socket { construct; get; }
-
-		private unowned global::FastCGI.request request;
-		private StreamInputStream _input_stream;
-		private StreamOutputStream _output_stream;
-
-		public override InputStream input_stream {
-			get {
-				return _input_stream;
-			}
-		}
-
-		public override OutputStream output_stream {
-			get {
-				return this._output_stream;
-			}
-		}
-
-		public FastCGIConnection (GLib.Socket socket, global::FastCGI.request request) {
-			Object (socket: socket);
-			this.request        = request;
-			this._input_stream  = new StreamInputStream (socket, request.in);
-			this._output_stream = new StreamOutputStream (socket, request.out, request.err);
-		}
-
-		~FastCGIConnection () {
-			request.finish ();
-			request.close (false); // keep the socket open
 		}
 	}
 
@@ -308,7 +272,7 @@ namespace VSGI.FastCGI {
 		/**
 		 * FastCGI socket file descriptor.
 		 */
-		public GLib.Socket? socket { get; set; default = null; }
+		public GLib.Socket? socket { get; protected set; default = null; }
 
 		/**
 		 * {@inheritDoc}
@@ -379,7 +343,6 @@ namespace VSGI.FastCGI {
 					this.socket = new GLib.Socket.from_fd (0);
 					command_line.print ("listening the default socket\n");
 				}
-
 			} catch (Error err) {
 				command_line.printerr ("%s\n", err.message);
 				return 1;
@@ -415,7 +378,7 @@ namespace VSGI.FastCGI {
 					environment[parts[0]] = parts.length == 2 ? parts[1] : "";
 				}
 
-				var connection = new FastCGIConnection (this.socket, request);
+				var connection = new Connection (this, request);
 
 				var req = new Request (connection, environment);
 				var res = new Response (req);
@@ -433,6 +396,42 @@ namespace VSGI.FastCGI {
 			this.hold ();
 
 			return 0;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		private class Connection : IOStream {
+
+			public Server server { construct; get; }
+
+			private unowned global::FastCGI.request request;
+			private StreamInputStream _input_stream;
+			private StreamOutputStream _output_stream;
+
+			public override InputStream input_stream {
+				get {
+					return _input_stream;
+				}
+			}
+
+			public override OutputStream output_stream {
+				get {
+					return this._output_stream;
+				}
+			}
+
+			public Connection (Server server, global::FastCGI.request request) {
+				Object (server: server);
+				this.request        = request;
+				this._input_stream  = new StreamInputStream (server.socket, request.in);
+				this._output_stream = new StreamOutputStream (server.socket, request.out, request.err);
+			}
+
+			~Connection () {
+				request.finish ();
+				request.close (false); // keep the socket open
+			}
 		}
 	}
 }

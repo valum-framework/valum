@@ -8,13 +8,8 @@ namespace VSGI {
 	 * {@link GLib.Application.run} with the command-line arguments or a set of
 	 * predefined arguments.
 	 *
-	 * The server can be implemented by overriding the {@link GLib.Application.command_line}
-	 * signal.
-	 *
-	 * If the implementaiton is actively listening for incoming requests,
-	 * {@link GLib.Application.hold} and {@link GLib.Application.release} to
-	 * maintain a hold count per request and automatically exit after a certain
-	 * idle timeout.
+	 * The server should be implemented by overriding the
+	 * {@link GLib.Application.command_line} signal.
 	 *
 	 * @since 0.1
 	 */
@@ -29,14 +24,16 @@ namespace VSGI {
 
 		/**
 		 * Enforces implementation to take the application as a sole argument
-		 * and set the {@link ApplicationFlags.HANDLES_COMMAND_LINE} flag.
+		 * and set the {@link GLib.ApplicationFlags.HANDLES_COMMAND_LINE},
+		 * {@link GLib.ApplicationFlags.SEND_ENVIRONMENT} and
+		 * {@link GLib.ApplicationFlags.NON_UNIQUE} flags.
 		 *
 		 * @param application served application
 		 *
 		 * @since 0.2
 		 */
 		public Server (ApplicationCallback application) {
-			Object (flags: ApplicationFlags.HANDLES_COMMAND_LINE);
+			Object (flags: ApplicationFlags.HANDLES_COMMAND_LINE | ApplicationFlags.SEND_ENVIRONMENT | ApplicationFlags.NON_UNIQUE);
 			this.handle = application;
 		}
 	}
