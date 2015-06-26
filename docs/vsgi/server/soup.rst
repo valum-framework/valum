@@ -46,7 +46,7 @@ the ``--help`` flag.
 | ``--ssl-key-file``    | none      | path to a file containing a PEM-encoded |
 |                       |           | private key                             |
 +-----------------------+-----------+-----------------------------------------+
-| ``--server-header``   | Valum/0.1 | value to use for the "Server" header on |
+| ``--server-header``   | Valum/0.2 | value to use for the "Server" header on |
 |                       |           | Messages processed by this server.      |
 +-----------------------+-----------+-----------------------------------------+
 | ``--raw-paths``       | disabled  | percent-encoding in the Request-URI     |

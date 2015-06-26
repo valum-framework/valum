@@ -200,7 +200,7 @@ namespace VSGI.Soup {
 				{"ssl-key-file",    0, 0, OptionArg.FILENAME, null, "path to a file containing a PEM-encoded private key"},
 
 				// headers options
-				{"server-header", 'h', 0, OptionArg.STRING, null, "value to use for the 'Server' header on Messages processed by this server", "Valum/0.1"},
+				{"server-header", 'h', 0, OptionArg.STRING, null, "value to use for the 'Server' header on Messages processed by this server", "Valum/0.2"},
 				{"raw-paths",     0,   0, OptionArg.NONE,   null, "percent-encoding in the Request-URI path will not be automatically decoded"},
 
 				{null}
@@ -228,7 +228,7 @@ namespace VSGI.Soup {
 
 			var server_header = options.contains ("server-header") ?
 				options.lookup_value ("server-header", VariantType.STRING).get_string () :
-				"Valum/0.1";
+				"Valum/0.2";
 
 			ServerListenOptions listen_options = 0;
 
@@ -243,7 +243,7 @@ namespace VSGI.Soup {
 #else
 			var port            = 3003;
 			var file_descriptor = 0;
-			var server_header   = "Valum/0.1";
+			var server_header   = "Valum/0.2";
 #endif
 
 #if GIO_2_40
