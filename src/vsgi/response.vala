@@ -63,11 +63,13 @@ namespace VSGI {
 		 */
 		public virtual OutputStream body {
 			get {
-				// write head synchronously
-				if (!this.head_written)
-					this.write_head ();
-
-				assert (this.head_written);
+				try {
+					// write head synchronously
+					if (!this.head_written)
+						this.write_head ();
+				} catch (IOError err) {
+					warning ("could not write the head in the connection stream");
+				}
 
 				return this.request.connection.output_stream;
 			}

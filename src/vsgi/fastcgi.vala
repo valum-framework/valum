@@ -327,7 +327,7 @@ namespace VSGI.FastCGI {
 #endif
 
 			this.startup.connect (() => {
-				var status = init ();
+				var status = global::FastCGI.init ();
 				if (status != 0)
 					error ("code %u: failed to initialize FCGX library".printf (status));
 			});
@@ -340,39 +340,49 @@ namespace VSGI.FastCGI {
 			var options = command_line.get_options_dict ();
 
 			if (options.contains ("socket") && options.contains ("port")) {
-				GLib.stderr.printf ("--socket and --port must not be specified simultaneously");
+				command_line.printerr ("--socket and --port must not be specified simultaneously\n");
 				return 1;
 			}
 
 			var backlog = options.contains ("backlog") ? options.lookup_value ("backlog", VariantType.INT32).get_int32 () : 0;
 #endif
 
+			try {
 #if GIO_2_40
-			if (options.contains ("socket")) {
-				var socket_path = options.lookup_value ("socket", VariantType.BYTESTRING).get_bytestring ();
-				this.socket     = new GLib.Socket.from_fd (open_socket (socket_path, backlog));
+				if (options.contains ("socket")) {
+					var socket_path = options.lookup_value ("socket", VariantType.BYTESTRING).get_bytestring ();
+					this.socket     = new GLib.Socket.from_fd (open_socket (socket_path, backlog));
 
-				if (!this.socket.is_connected ())
-					error ("could not open socket path %s".printf (socket_path));
+					if (!this.socket.is_connected ()) {
+						command_line.printerr ("could not open socket path %s\n".printf (socket_path));
+						return 1;
+					}
 
-				message ("listening on %s (backlog %d)", socket_path, backlog);
-			}
+					command_line.print ("listening on %s (backlog %d)\n", socket_path, backlog);
+				}
 
-			else if (options.contains ("port")) {
-				var port    = ":%d".printf(options.lookup_value ("port", VariantType.INT32).get_int32 ());
-				this.socket = new GLib.Socket.from_fd (open_socket (port, backlog));
+				else if (options.contains ("port")) {
+					var port    = ":%d".printf(options.lookup_value ("port", VariantType.INT32).get_int32 ());
+					this.socket = new GLib.Socket.from_fd (open_socket (port, backlog));
 
-				if (!this.socket.is_connected ())
-					error ("could not open TCP socket at port %s".printf (port));
+					if (!this.socket.is_connected ()) {
+						command_line.printerr ("could not open TCP socket at port %s\n".printf (port));
+						return 1;
+					}
 
-				message ("listening on tcp://0.0.0.0:%s (backlog %d)", port, backlog);
-			}
+					command_line.print ("listening on tcp://0.0.0.0:%s (backlog %d)\n", port, backlog);
+				}
 
-			else
+				else
 #endif
-			{
-				this.socket = new GLib.Socket.from_fd (0);
-				message ("listening the default socket");
+				{
+					this.socket = new GLib.Socket.from_fd (0);
+					command_line.print ("listening the default socket\n");
+				}
+
+			} catch (Error err) {
+				command_line.printerr ("%s\n", err.message);
+				return 1;
 			}
 
 			var source = socket.create_source (IOCondition.IN);
@@ -383,14 +393,19 @@ namespace VSGI.FastCGI {
 				// accept a request
 				var request_status = global::FastCGI.request.init (out request, socket.fd);
 
-				if (request_status != 0)
-					error ("code %u: could not initialize FCGX request".printf (request_status));
+				if (request_status != 0) {
+					command_line.printerr ("code %u: could not initialize FCGX request\n", request_status);
+					return false;
+				}
 
 				var status = request.accept ();
 
 				if (status < 0) {
 					request.close ();
-					error ("request %u: cannot not accept anymore request (status %u)", request.request_id, status);
+					command_line.printerr ("request %u: cannot not accept anymore request (status %u)\n",
+					                       request.request_id,
+					                       status);
+					return false;
 				}
 
 				var environment = new HashTable<string, string> (str_hash, str_equal);

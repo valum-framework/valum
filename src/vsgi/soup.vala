@@ -132,16 +132,6 @@ namespace VSGI.Soup {
 		 * Placeholder for the filtered body.
 		 */
 		private OutputStream? filtered_body = null;
-#else
-		/**
-		 * {@inheritDoc}
-		 *
-		 * Implementation based on {@link Soup.Message} already handles the
-		 * writing of the status line and headers, so an empty buffer is
-		 * returned.
-		 */
-		protected override uint8[]? build_head () { return null; }
-#endif
 
 		/**
 		 * {@inheritDoc}
@@ -152,27 +142,30 @@ namespace VSGI.Soup {
 		 */
 		protected override OutputStream body {
 			get {
-				if (!this.head_written)
-					this.write_head ();
-
-#if SOUP_2_50
 				if (this.filtered_body != null)
 					return this.filtered_body;
 
 				// filter the stream properly
 				if (this.request.http_version == HTTPVersion.@1_1 && this.headers.get_encoding () == Encoding.CHUNKED) {
-					this.filtered_body = new ConverterOutputStream (this.request.connection.output_stream,
+					this.filtered_body = new ConverterOutputStream (base.body,
 					                                                new ChunkedConverter ());
 				} else {
-					this.filtered_body = this.request.connection.output_stream;
+					this.filtered_body = base.body;
 				}
 
 				return this.filtered_body;
-#else
-				return this.request.connection.output_stream;
-#endif
 			}
 		}
+#else
+		/**
+		 * {@inheritDoc}
+		 *
+		 * Implementation based on {@link Soup.Message} already handles the
+		 * writing of the status line and headers, so an empty buffer is
+		 * returned.
+		 */
+		protected override uint8[]? build_head () { return null; }
+#endif
 	}
 
 	/**
@@ -220,8 +213,10 @@ namespace VSGI.Soup {
 #if GIO_2_40
 			var options = command_line.get_options_dict ();
 
-			if (options.contains ("port") && options.contains ("file-descriptor"))
-				error ("'--port' and '--file-descriptor' cannot be specified together");
+			if (options.contains ("port") && options.contains ("file-descriptor")) {
+				command_line.printerr ("'--port' and '--file-descriptor' cannot be specified together\n");
+				return 1;
+			}
 
 			var port = options.contains ("port") ?
 				options.lookup_value ("port", VariantType.INT32).get_int32 () :
@@ -276,8 +271,13 @@ namespace VSGI.Soup {
 
 #if GIO_2_40
 			if (options.contains ("https")) {
-				this.server.set_ssl_cert_file (options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING).get_bytestring (),
-				                               options.lookup_value ("ssl-key-file", VariantType.BYTESTRING).get_bytestring ());
+				try {
+					this.server.set_ssl_cert_file (options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING).get_bytestring (),
+					                               options.lookup_value ("ssl-key-file", VariantType.BYTESTRING).get_bytestring ());
+				} catch (Error err) {
+					command_line.printerr ("%s\n", err.message);
+					return 1;
+				}
 			}
 #endif
 
@@ -298,27 +298,32 @@ namespace VSGI.Soup {
 			});
 
 #if SOUP_2_48
+			try {
 #if GIO_2_40
-			if (options.contains ("file-descriptor")) {
-				this.server.listen_fd (file_descriptor, listen_options);
-			} else if (options.contains ("all")) {
-				this.server.listen_all (port, listen_options);
-			} else
+				if (options.contains ("file-descriptor")) {
+					this.server.listen_fd (file_descriptor, listen_options);
+				} else if (options.contains ("all")) {
+					this.server.listen_all (port, listen_options);
+				} else
 #endif
-			{
-				this.server.listen_local (port, listen_options);
-			}
+				{
+					this.server.listen_local (port, listen_options);
+				}
 
-			foreach (var uri in this.server.get_uris ()) {
-				message ("listening on %s://%s:%u", uri.scheme, uri.host, uri.port);
-			}
+				foreach (var uri in this.server.get_uris ()) {
+					command_line.print ("listening on %s://%s:%u\n", uri.scheme, uri.host, uri.port);
+				}
 
-			// keep the process alive
-			this.hold ();
+				// keep the process alive
+				this.hold ();
+			} catch (Error err) {
+				command_line.printerr ("%s\n", err.message);
+				return 1;
+			}
 #else
-			message ("listening on %s://%s:%u", this.server.@interface.protocol,
-			                                    this.server.@interface.name,
-			                                    this.server.@interface.port);
+			command_line.print ("listening on %s://%s:%u\n", this.server.@interface.protocol,
+			                                                 this.server.@interface.name,
+			                                                 this.server.@interface.port);
 
 			this.server.run ();
 #endif
