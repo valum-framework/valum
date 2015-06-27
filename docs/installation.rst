@@ -58,13 +58,15 @@ the configuration.
 
 You can also install additional dependencies to build the examples:
 
-+--------------+------------------------------------+
-| Package      | Description                        |
-+--------------+------------------------------------+
-| libmemcached | client for memcached cache storage |
-+--------------+------------------------------------+
-| libluajit    | embed a Lua VM                     |
-+--------------+------------------------------------+
++---------------+------------------------------------+
+| Package       | Description                        |
++---------------+------------------------------------+
+| json-glib-1.0 | JSON library                       |
++---------------+------------------------------------+
+| libmemcached  | client for memcached cache storage |
++---------------+------------------------------------+
+| libluajit     | embed a Lua VM                     |
++---------------+------------------------------------+
 
 Debian and Ubuntu
 ~~~~~~~~~~~~~~~~~

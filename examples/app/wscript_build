@@ -3,10 +3,10 @@
 bld.load('glib2')
 
 bld.program(
-   packages     = ['glib-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'lua', 'libmemcached'],
+   packages     = ['glib-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'json-glib-1.0', 'lua', 'libmemcached'],
    target       = 'app',
    use          = 'valum',
    source       = bld.path.ant_glob('**/*.vala') + ['app.gresource.xml'],
-   uselib       = ['GLIB', 'CTPL', 'GEE', 'SOUP', 'LUA', 'MEMCACHED', 'GCOV'],
+   uselib       = ['GLIB', 'CTPL', 'GEE', 'SOUP', 'JSON', 'LUA', 'MEMCACHED', 'GCOV'],
    vapi_dirs    = ['../../vapi', 'vapi'],
    install_path = None)
