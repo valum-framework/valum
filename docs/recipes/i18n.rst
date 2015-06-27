@@ -1,0 +1,20 @@
+Internationalization
+====================
+
+GLib provides utilities to internationalize a software and bindings are
+available in Vala in the `GLib.Intl`_ namespace.
+
+.. _GLib.Intl: http://valadoc.org/#!api=glib-2.0/GLib.Intl
+
+Valum provide a middleware to infer the textdomain from a request by inspecting
+its headers.
+
+.. code:: vala
+
+    obtain_textdomain (req, res, (domain) => {
+        //
+        dgettext (domain, "")
+    });
+
+    app.all (null, obtain_textdomain);
+

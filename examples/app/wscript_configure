@@ -3,5 +3,6 @@
 bld.load('glib2')
 
 # optionals packages
+conf.check_cfg(package='json-glib-1.0', uselib_store='JSON', args='--cflags --libs')
 conf.check_cfg(package='libmemcached', uselib_store='MEMCACHED', args='--cflags --libs')
 conf.check_cfg(package='luajit', uselib_store='LUA', args='--cflags --libs')
