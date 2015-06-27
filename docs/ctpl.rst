@@ -85,20 +85,22 @@ Streaming views
 ---------------
 
 The best way of rendering a view is by streaming it directly into
-a :doc:`vsgi/response` instance with the ``stream`` function. This way, your
+a :doc:`vsgi/response` instance with the ``to_stream`` function. This way, your
 application can produce very big output efficiently.
 
 .. code:: vala
 
     app.get ("", (req, res) => {
         var template = new View.from_string ("");
-        template.stream (res.body);
+        template.to_stream (res.body);
     });
 
 It is unfortunately not possible to stream with non-blocking I/O due to the
 design of CTPL. The only possibility would be to dump the template in
-a temporary ``MemoryOutputStream`` and then splice it asynchronously in the
+a temporary `GLib.MemoryOutputStream`_ and then splice it asynchronously in the
 response body.
+
+.. _GLib.MemoryOutputStream: http://valadoc.org/#!api=gio-2.0/GLib.MemoryOutputStream
 
 .. code:: vala
 
@@ -107,7 +109,7 @@ response body.
         var buffer = new MemoryOutputStream.resizable ();
 
         // blocking on memory I/O
-        template.stream (buffer);
+        template.to_stream (buffer);
 
         var buffer_reader = new MemoryInputStream (buffer.data);
 

@@ -14,7 +14,7 @@ app.types["permutations"] = /abc|acb|bac|bca|cab|cba/;
 app.get ("", (req, res) => {
 	var template = new View.from_stream (resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
 
-	template.stream (res.body);
+	template.to_stream (res.body);
 });
 
 app.methods ({VSGI.Request.GET, VSGI.Request.POST}, "get-and-post", (req, res) => {
@@ -37,7 +37,7 @@ app.get ("gzip", (req, res) => {
 	res.headers.append ("Content-Encoding", "gzip");
 	var writer = new ConverterOutputStream (res.body, new ZlibCompressor (ZlibCompressorFormat.GZIP));
 
-	template.stream (writer);
+	template.to_stream (writer);
 });
 
 app.get ("query", (req, res) => {
@@ -202,7 +202,7 @@ app.get ("ctpl/<foo>/<bar>", (req, res) => {
 	tpl.push_strings ("strings", {"a", "b", "c"});
 	tpl.push_int ("int", 1);
 
-	tpl.stream (res.body);
+	tpl.to_stream (res.body);
 });
 
 // memcached
@@ -318,7 +318,7 @@ app.status (Soup.Status.NOT_FOUND, (req, res) => {
 	res.status = Soup.Status.NOT_FOUND;
 	var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));
 	template.environment.push_string ("path", req.uri.get_path ());
-	template.stream (res.body);
+	template.to_stream (res.body);
 });
 
 new Server (app.handle).run ({"app", "--port", "3003"});

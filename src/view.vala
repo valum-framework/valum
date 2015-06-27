@@ -274,9 +274,10 @@ namespace Valum {
 		 * @since 0.1
 		 *
 		 * @param output OutputStream into which the template will be streamed.
+		 * @return       true on success, false otherwise
 		 */
-		public void stream (OutputStream output) throws Error {
-			Ctpl.parser_parse (this.tree, this.environment, new Ctpl.OutputStream (output));
+		public bool to_stream (OutputStream output) throws Error {
+			return Ctpl.parser_parse (this.tree, this.environment, new Ctpl.OutputStream (output));
 		}
 
 		/**
@@ -288,7 +289,7 @@ namespace Valum {
 		public string render () throws Error {
 			var mem_stream = new MemoryOutputStream (null, realloc, free);
 
-			this.stream (mem_stream);
+			this.to_stream (mem_stream);
 
 			return (string) mem_stream.get_data();
 		}
