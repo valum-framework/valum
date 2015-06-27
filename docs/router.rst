@@ -9,11 +9,11 @@ HTTP methods
 ------------
 
 Callback can be connected to HTTP methods via a list of helpers having the
-``Route.HandlerCallback`` delegate signature:
+``HandlerCallback`` delegate signature:
 
 .. code:: vala
 
-    app.get ("rule", (req, res) => {});
+    app.get ("rule", (req, res, next) => {});
 
 The rule has to respect the rule syntax described in :doc:`route`. It will be
 compiled down to a regex which named groups are made accessible through
@@ -88,9 +88,10 @@ Regular expression
 Matcher callback
 ----------------
 
-Request can be matched by a simple callback, but you have to be cautious if you
-want to fill request parameters. You must respect the `populate if match` rule,
-otherwise you will experience inconsistencies.
+Request can be matched by a simple callback typed by the ``MatcherCallback``
+delegate, but you have to be cautious if you want to fill request parameters.
+You must respect the `populate if match` rule, otherwise you will experience
+inconsistencies.
 
 .. code:: vala
 
@@ -101,11 +102,12 @@ otherwise you will experience inconsistencies.
 Status handling
 ---------------
 
-Thrown status code can be handled by a :doc:`route` handler callback.
+Thrown status code can be handled by a ``HandlerCallback`` pretty much like how
+typically matched requests are being handled.
 
 The received :doc:`vsgi/request` and :doc:`vsgi/response` object are in the
 same state they were when the status was thrown. The error message is passed in
-the ``HandlerCallback`` last parameter.
+the ``HandlerCallback`` last parameter named ``state``.
 
 .. code:: vala
 
@@ -168,9 +170,9 @@ a future release.
 Subrouting
 ----------
 
-Since ``VSGI.ApplicationCallback`` is type compatible with
-``Route.HandlerCallback``, it is possible to delegate request handling to
-another VSGI-compliant application.
+Since ``VSGI.ApplicationCallback`` is type compatible with ``HandlerCallback``,
+it is possible to delegate request handling to another VSGI-compliant
+application.
 
 .. code:: vala
 

@@ -26,36 +26,6 @@ namespace Valum {
 		public weak Router router { construct; get; }
 
 		/**
-		 * Match the request and populate the {@link VSGI.Request.params}.
-		 *
-		 * It is important for a matcher to populate the
-		 * {@link VSGI.Request.params} only if it matches the request.
-		 *
-		 * @since 0.1
-		 *
-		 * @param req request being matched
-		 */
-		public delegate bool MatcherCallback (Request req);
-
-		/**
-		 * Handle a pair of request and response.
-		 *
-		 * @since 0.0.1
-		 *
-		 * @throws Redirection perform a 3xx HTTP redirection
-		 * @throws ClientError trigger a 4xx client error
-		 * @throws ServerError trigger a 5xx server error
-		 *
-		 * @param req   request being handled
-		 * @param res   response to send back to the requester
-		 * @param next  keep routing
-		 * @param state propagated state from a preceeding next invocation, it
-		 *              remains null if this is the top invocation or no state
-		 *              have been propagated
-		 */
-		public delegate void HandlerCallback (Request req, Response res, Router.NextCallback next, Value? state) throws Informational, Success, Redirection, ClientError, ServerError;
-
-		/**
 		 * Create a Route using a custom matcher.
 		 *
 		 * This is the lowest-level mean to create a Route instance.

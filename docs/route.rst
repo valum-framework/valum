@@ -178,7 +178,7 @@ A matcher consist of a callback matching a given ``Request`` object.
 
 .. code:: vala
 
-    Route.MatcherCallback matcher = (req) => { req.path == "/custom-matcher"; };
+    MatcherCallback matcher = (req) => { req.path == "/custom-matcher"; };
 
     app.matcher ("GET", matcher, (req, res) => {
         var writer = new DataOutputStream (res.body);

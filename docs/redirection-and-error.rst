@@ -6,9 +6,9 @@ mechanism.
 
 .. _exception: https://wiki.gnome.org/Projects/Vala/Manual/Errors
 
-In a :doc:`route` callback, you may throw any of ``Informational``, ``Success``,
+In a ``HandlerCallback``, you may throw any of ``Informational``, ``Success``,
 ``Redirection``, ``ClientError`` and ``ServerError`` predefined error domains
-rather than setting the status and returning.
+rather than setting the status and returning from the function.
 
 It is possible to register a handler on the :doc:`router` to handle a specific
 status code. Otherwise, the router will simply set the status code in the
