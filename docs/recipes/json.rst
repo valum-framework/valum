@@ -134,7 +134,8 @@ code duplication. They are described in the :doc:`../router` document.
     });
 
 It is also possible to use `Json.Parser.load_from_stream_async`_ and invoke
-`next` in the callback if you are expecting a considerable user input.
+`next` in the callback with :doc:`../router` ``invoke`` function if you are
+expecting a considerable user input.
 
 .. _Json.Parser.load_from_stream_async: http://www.valadoc.org/#!api=json-glib-1.0/Json.Parser.load_from_stream_async
 
@@ -142,7 +143,10 @@ It is also possible to use `Json.Parser.load_from_stream_async`_ and invoke
 
     parser.load_from_stream_async.begin (req.body, null, (obj, result) => {
         var success = parser.load_from_stream_async.end (result);
+
         user.update ();
-        next (user);
+
+        // execute 'next' in app context
+        app.invoke (req, res, next, user);
     });
 
