@@ -256,46 +256,23 @@ namespace Valum {
 		}
 
 		/**
-		 * {@inheritDoc}
+		 * Invoke the {@link NextCallback} in the routing context.
 		 *
-		 * The response is initialized with sane default such as 200 status
-		 * code, 'text/html' content type, 'chunked' transfer encoding and
-		 * request cookies.
+		 * This is particularly useful to invoke next in an async callback when
+		 * the routing context is lost.
+		 *
+		 * @since 0.2
+		 *
+		 * @param req   request for the context
+		 * @param res   response for the context
+		 * @param next  callback to be invoked in the routing context
+		 * @param state state to pass to the callback
 		 */
-		public void handle (Request req, Response res) {
-			// sane initialization
-			res.status = Soup.Status.OK;
-			res.headers.set_content_type ("text/html", null);
-			if (req.http_version == Soup.HTTPVersion.@1_1)
-				res.headers.set_encoding (Soup.Encoding.CHUNKED);
-
+		public void invoke (Request req, Response res, NextCallback next, Value? state = null) {
 			try {
 				try {
-					// ensure at least one route has been declared with that method
-					if (this.routes.contains (req.method))
-						if (this.perform_routing (this.routes[req.method].head, req, res))
-							return; // something matched
-
-					// find routes from other methods matching this Request
-					var allowed = new StringBuilder ();
-					foreach (var method in this.routes.get_keys ()) {
-						if (method != req.method) {
-							foreach (var route in this.routes[method].head) {
-								if (route.match (req)) {
-									if (allowed.len > 0)
-										allowed.append (", ");
-									allowed.append (method);
-									break;
-								}
-							}
-						}
-					}
-
-					// a Route from another method allows this Request
-					if (allowed.len > 0)
-						throw new ClientError.METHOD_NOT_ALLOWED (allowed.str);
-
-					throw new ClientError.NOT_FOUND ("The request URI %s was not found.".printf (req.uri.to_string (false)));
+					next (state);
+					return;
 				} catch (Error e) {
 					// handle using a registered status handler
 					if (this.status_handlers.contains (e.code))
@@ -331,6 +308,50 @@ namespace Valum {
 
 			// write head if a status has been thrown
 			res.write_head ();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 *
+		 * The response is initialized with sane default such as 200 status
+		 * code, 'text/html' content type, 'chunked' transfer encoding and
+		 * request cookies.
+		 */
+		public void handle (Request req, Response res) {
+			// sane initialization
+			res.status = Soup.Status.OK;
+			res.headers.set_content_type ("text/html", null);
+			if (req.http_version == Soup.HTTPVersion.@1_1)
+				res.headers.set_encoding (Soup.Encoding.CHUNKED);
+
+			// initial invocation
+			this.invoke (req, res, (state) => {
+				// ensure at least one route has been declared with that method
+				if (this.routes.contains (req.method))
+					if (this.perform_routing (this.routes[req.method].head, req, res, state))
+						return; // something matched
+
+				// find routes from other methods matching this Request
+				var allowed = new StringBuilder ();
+				foreach (var method in this.routes.get_keys ()) {
+					if (method != req.method) {
+						foreach (var route in this.routes[method].head) {
+							if (route.match (req)) {
+								if (allowed.len > 0)
+									allowed.append (", ");
+								allowed.append (method);
+								break;
+							}
+						}
+					}
+				}
+
+				// a Route from another method allows this Request
+				if (allowed.len > 0)
+					throw new ClientError.METHOD_NOT_ALLOWED (allowed.str);
+
+				throw new ClientError.NOT_FOUND ("The request URI %s was not found.".printf (req.uri.to_string (false)));
+			});
 		}
 	}
 }
