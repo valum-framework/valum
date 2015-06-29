@@ -233,6 +233,57 @@ data to the next handler in the queue.
 The ``Router`` will automatically propagate the state, so calling ``next``
 without argument is a safe operation.
 
+Invoke
+------
+
+It is possible to invoke a ``NextCallback`` in the routing context when the
+latter is lost. This happens whenever you have to execute ``next`` in an async
+callback.
+
+The function provides an invocation context that handles thrown status code
+with custom and default status code handlers. It constitute an entry point for
+``handle`` where the next callback performs the actual routing.
+
+.. code:: vala
+
+    app.get ("", (req, res, next) => {
+        res.body.write_async ("Hello world!".data, Priority.DEFAULT, null, () => {
+            app.invoke (req, res, next);
+        });
+    });
+
+    app.all (null, (req, res) => {
+        throw new ClientError.NOT_FOUND ("the requested resource was not found");
+    });
+
+    app.status (404, (req, res) => {
+        // produce a 404 page...
+    });
+
+Similarly to ``handle``, this function can be used to perform something similar
+to subrouting by executing a ``NextCallback`` in the context of another router.
+
+The following example handles a situation where a client with the
+``Accept: text/html`` header defined attempts to access an API that produces
+responses designed for non-human client.
+
+.. code:: vala
+
+    var app = new Router ();
+    var api = new Router ();
+
+    api.matcher (accept ("text/html"), (req, res) => {a
+        // let the app produce a human-readable response as the client accepts
+        // 'text/html' response
+        app.invoke (req, res, () => {
+            throw ClientError.NOT_ACCEPTABLE ("this is an API");
+        });
+    });
+
+    app.status (Status.NOT_ACCEPTABLE, (req, res) => {
+        res.body.write ("<p>%s</p>".printf (state.get_string ()).data);
+    });
+
 Middleware
 ----------
 
