@@ -48,6 +48,9 @@ public int main (string[] args) {
 	Test.add_func ("/router/next/propagate_state", test_router_next_propagate_state);
 	Test.add_func ("/router/next/replace_propagated_state", test_router_next_replace_propagated_state);
 
+	Test.add_func ("/router/invoke", test_router_invoke);
+	Test.add_func ("/router/invoke/propagate_state", test_router_invoke_propagate_state);
+
 	Test.add_func ("/route", test_route);
 	Test.add_func ("/route/from_rule", test_route_from_rule);
 	Test.add_func ("/route/from_rule/null", test_route_from_rule_null);

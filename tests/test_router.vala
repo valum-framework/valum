@@ -673,3 +673,49 @@ public static void test_router_status_propagates_error_message () {
 
 	assert (418 == response.status);
 }
+
+/**
+ * @since 0.2
+ */
+public static void test_router_invoke () {
+	var router = new Router ();
+
+	router.get ("", (req, res, next) => {
+		router.invoke (req, res, next);
+	});
+
+	router.get ("", (req, res) => {
+		throw new ClientError.IM_A_TEAPOT ("this is insane!");
+	});
+
+	var request  = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (418 == response.status);
+}
+
+/**
+ * @since 0.2
+ */
+public static void test_router_invoke_propagate_state () {
+	var router  = new Router ();
+	var message = "test";
+
+	router.get ("", (req, res, next) => {
+		router.invoke (req, res, next, message);
+	});
+
+	router.get ("", (req, res, next, state) => {
+		assert (message == state.get_string ());
+		throw new ClientError.IM_A_TEAPOT ("this is insane!");
+	});
+
+	var request  = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (418 == response.status);
+}
