@@ -26,7 +26,7 @@ meta-data.
 %setup -q -n %{name}-%{version}-alpha
 
 %build
-./waf configure --prefix=%{_prefix} --enable-threading
+./waf configure --prefix=%{_prefix}
 ./waf build
 
 %install

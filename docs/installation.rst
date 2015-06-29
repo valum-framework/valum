@@ -24,6 +24,8 @@ The following dependencies are minimal to build the framework under Ubuntu
 +-------------+----------+
 | gio-2.0     | >=2.32   |
 +-------------+----------+
+| gthread-2.0 | >=2.32   |
++-------------+----------+
 | libsoup-2.4 | >=2.38   |
 +-------------+----------+
 | libgee-0.8  | >=0.6.4  |
@@ -40,17 +42,12 @@ Recent dependencies will enable more advanced features:
 +-------------+---------+------------------------------------------------------+
 | gio-2.0     | >=2.40  | CLI arguments parsing                                |
 +-------------+---------+------------------------------------------------------+
-| gthread-2.0 | any     | threading for VSGI implementations                   |
-+-------------+---------+------------------------------------------------------+
 | libsoup-2.4 | >=2.48  | new server API                                       |
 +-------------+---------+------------------------------------------------------+
 | libsoup-2.4 | >=2.50  | uses `Soup.ClientContext.steal_connection`_ directly |
 +-------------+---------+------------------------------------------------------+
 
 .. _Soup.ClientContext.steal_connection: http://valadoc.org/#!api=libsoup-2.4/Soup.ClientContext.steal_connection
-
-Threading can be enabled by specifying the ``--enable-threading`` flag during
-the configuration.
 
 .. code-block:: bash
 
