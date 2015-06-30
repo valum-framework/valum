@@ -124,6 +124,23 @@ namespace VSGI.CGI {
 		}
 	}
 
+	private class FileStreamInputStream : InputStream {
+
+		public unowned FileStream file_stream { construct; get; }
+
+		public FileStreamInputStream (FileStream file_stream) {
+			Object (file_stream: file_stream);
+		}
+
+		public override ssize_t read (uint8[] data, Cancellable? cancellable = null) {
+			return file_stream.read (data) == 1 ? data.length : 0;
+		}
+
+		public override bool close (Cancellable? cancellable = null) {
+			return true;
+		}
+	}
+
 	private class FileStreamOutputStream : OutputStream {
 
 		public unowned FileStream file_stream { construct; get; }
@@ -160,7 +177,11 @@ namespace VSGI.CGI {
 			}
 
 			var connection = new Connection (this,
+#if GIO_2_34
 			                                 command_line.get_stdin (),
+#else
+			                                 new FileStreamInputStream (stdin),
+#endif
 			                                 new FileStreamOutputStream (stdout));
 
 			var req = new Request (connection, environment);
