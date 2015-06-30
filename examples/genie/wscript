@@ -1,0 +1,12 @@
+#!/usr/bin/env python
+
+def configure(cfg):
+    pass
+
+def build(bld):
+	bld.program(
+            target    = 'app',
+            use       = 'valum',
+            source    = 'app.gs',
+            uselib    = ['GEE', 'SOUP'],
+            vapi_dirs = ['../../vapi'])
