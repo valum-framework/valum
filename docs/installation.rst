@@ -1,22 +1,27 @@
 Installation
 ============
 
-We use the `waf build system`_ and distribute it with the sources. All you need
-is a `Python interpreter`_ to configure and build Valum.
+This document describes the compilation and installation process. Most of that
+work is automated with `waf`_, a build tool written in Python.
 
-.. _waf build system: https://code.google.com/p/waf/
-.. _Python interpreter: https://www.python.org/
+.. _waf: https://code.google.com/p/waf/
+
+Packages for RPM and Debian based Linux distributions will be provided for
+stable releases so that the framework can easily be installed in a container or
+production environment.
 
 Dependencies
 ------------
 
 The following dependencies are minimal to build the framework under Ubuntu
-12.04 LTS:
+12.04 LTS and should be satisfied by most recent Linux distributions.
 
 +-------------+----------+
 | Package     | Version  |
 +=============+==========+
 | vala        | latest   |
++-------------+----------+
+| python      | latest   |
 +-------------+----------+
 | waf         | provided |
 +-------------+----------+
@@ -49,10 +54,6 @@ Recent dependencies will enable more advanced features:
 
 .. _Soup.ClientContext.steal_connection: http://valadoc.org/#!api=libsoup-2.4/Soup.ClientContext.steal_connection
 
-.. code-block:: bash
-
-    ./waf configure --enable-threading
-
 You can also install additional dependencies to build the examples:
 
 +---------------+------------------------------------+
@@ -65,67 +66,65 @@ You can also install additional dependencies to build the examples:
 | libluajit     | embed a Lua VM                     |
 +---------------+------------------------------------+
 
-Debian and Ubuntu
-~~~~~~~~~~~~~~~~~
-
-.. code-block:: bash
-
-    apt-get install git-core build-essential python valac libglib2.0-bin \
-                    libglib2.0-dev libsoup2.4-dev libgee-0.8-dev libfcgi-dev \
-                    memcached libmemcached-dev libluajit-5.1-dev libctpl-dev
-
-Fedora
-~~~~~~
-
-.. code-block:: bash
-
-    yum install git python vala glib2-devel libsoup-devel libgee-devel fcgi-devel \
-                memcached libmemcached-devel luajit-devel ctpl-devel
-
 Download the sources
 --------------------
 
-You may either clone or download one of our `releases`_ from GitHub:
+You may either clone the whole git repository or download one of our
+`releases from GitHub`_:
 
-.. _releases: https://github.com/antono/valum/releases
+.. _releases from GitHub: https://github.com/antono/valum/releases
 
 .. code-block:: bash
 
     git clone git://github.com/valum-framework/valum.git && cd valum
 
 The ``master`` branch is a development trunk and is not guaranteed to be very
-stable. It is almost always a better idea to checkout a specific tagged
-release.
+stable. It is always a better idea to checkout the latest tagged release.
 
 Build
 -----
 
-Build Valum and run the tests to make sure everything is fine.
-
 .. code-block:: bash
 
     ./waf configure
-    ./waf build && ./build/tests/tests
+    ./waf build
+
+Install
+-------
+
+Installing the build files is optional and if you omit that step, make sure
+that ``LD_LIBRARY_PATH`` points to the ``build`` folder where the shared
+library has been generated.
+
+.. code-block:: bash
+
     sudo ./waf install
 
-Export LD_LIBRARY_PATH
-----------------------
-
-By default, installation is prefixed by ``/usr/local``, which is generally not
-in the dynamic library path. You have to export ``LD_LIBRARY_PATH`` for it to
-work.
+The installation is usually prefixed by ``/usr/local``, which is generally not
+in the dynamic library path. You have to export the ``LD_LIBRARY_PATH``
+environment variable for it to work.
 
 .. code-block:: bash
 
     export LD_LIBRARY_PATH=/usr/local/lib64 # just lib on 32-bit systems
 
+Run the tests
+--------------
+
+.. code-block:: bash
+
+    ./build/tests/tests
+
+If any of them fail, please `open an issue on GitHub`_ so that we can tackle
+the bug.
+
+.. _open an issue on GitHub: https://github.com/valum-framework/valum/issues
+
 Run the sample application
 --------------------------
 
 You can run the sample application from the ``build`` folder, it uses
-the `libsoup built-in HTTP server`_ and should run out of the box.
-
-.. _libsoup built-in HTTP server: https://developer.gnome.org/libsoup/stable/libsoup-server-howto.html
+the :doc:`vsgi/server/soup`.
 
 .. code-block:: bash
 
