@@ -58,8 +58,7 @@ def build(bld):
     # build a static library
     bld.shlib(
         packages     = ['glib-2.0', 'gio-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'fcgi'],
-        name         = 'valum',
-        target       = 'valum-{}'.format(API_VERSION),
+        target       = 'valum',
         gir          = 'Valum-{}'.format(API_VERSION),
         source       = bld.path.ant_glob('src/**/*.vala'),
         uselib       = ['GLIB', 'GIO', 'GTHREAD', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
@@ -75,6 +74,14 @@ def build(bld):
         install_path = '${LIBDIR}/pkgconfig',
         VERSION      = VERSION,
         API_VERSION  = API_VERSION)
+
+    # RPM specfile
+    bld(
+        features     = 'subst',
+        target       = 'valum.spec',
+        source       = ['valum.spec.in'],
+        install_path = None,
+        VERSION      = VERSION)
 
     # build examples
     bld.recurse(glob.glob('examples/*'))

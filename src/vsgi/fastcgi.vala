@@ -6,7 +6,7 @@ using Soup;
  *
  * @since 0.1
  */
-[CCode (gir_namespace = "VSGI.FastCGI", gir_version = "0.1")]
+[CCode (gir_namespace = "VSGI.FastCGI", gir_version = "0.2")]
 namespace VSGI.FastCGI {
 	private class StreamInputStream : InputStream, PollableInputStream {
 

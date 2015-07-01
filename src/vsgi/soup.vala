@@ -5,7 +5,7 @@ using Soup;
  *
  * @since 0.1
  */
-[CCode (gir_namespace = "VSGI.Soup", gir_version = "0.1")]
+[CCode (gir_namespace = "VSGI.Soup", gir_version = "0.2")]
 namespace VSGI.Soup {
 
 #if !SOUP_2_50
@@ -200,7 +200,7 @@ namespace VSGI.Soup {
 				{"ssl-key-file",    0, 0, OptionArg.FILENAME, null, "path to a file containing a PEM-encoded private key"},
 
 				// headers options
-				{"server-header", 'h', 0, OptionArg.STRING, null, "value to use for the 'Server' header on Messages processed by this server", "Valum/0.2"},
+				{"server-header", 'h', 0, OptionArg.STRING, null, "value to use for the 'Server' header on Messages processed by this server"},
 				{"raw-paths",     0,   0, OptionArg.NONE,   null, "percent-encoding in the Request-URI path will not be automatically decoded"},
 
 				{null}
@@ -226,10 +226,6 @@ namespace VSGI.Soup {
 				options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 () :
 				0;
 
-			var server_header = options.contains ("server-header") ?
-				options.lookup_value ("server-header", VariantType.STRING).get_string () :
-				"Valum/0.2";
-
 			ServerListenOptions listen_options = 0;
 
 			if (options.contains ("https"))
@@ -243,7 +239,6 @@ namespace VSGI.Soup {
 #else
 			var port            = 3003;
 			var file_descriptor = 0;
-			var server_header   = "Valum/0.2";
 #endif
 
 #if GIO_2_40
@@ -253,7 +248,6 @@ namespace VSGI.Soup {
 					global::Soup.SERVER_PORT, port,
 #endif
 					global::Soup.SERVER_RAW_PATHS,     options.contains ("raw-paths"),
-					global::Soup.SERVER_SERVER_HEADER, server_header,
 					global::Soup.SERVER_SSL_CERT_FILE, options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING).get_bytestring (),
 					global::Soup.SERVER_SSL_KEY_FILE,  options.lookup_value ("ssl-key-file", VariantType.BYTESTRING).get_bytestring ());
 			} else
@@ -266,10 +260,13 @@ namespace VSGI.Soup {
 #if GIO_2_40
 					global::Soup.SERVER_RAW_PATHS, options.contains ("raw-paths"),
 #endif
-					global::Soup.SERVER_SERVER_HEADER, server_header);
+					global::Soup.SERVER_SERVER_HEADER, null);
 			}
 
 #if GIO_2_40
+			if (options.contains ("server-header"))
+				this.server.server_header = options.lookup_value ("server-header", VariantType.STRING).get_string ();
+
 			if (options.contains ("https")) {
 				try {
 					this.server.set_ssl_cert_file (options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING).get_bytestring (),

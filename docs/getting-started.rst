@@ -100,12 +100,12 @@ at the root of your project.
 
     def configure(cfg):
         cfg.load('compiler_c vala')
-        cfg.check_cfg(package='valum-0.1', uselib_store='VALUM', args='--libs --cflags')
+        cfg.check_cfg(package='valum-0.2', uselib_store='VALUM', args='--libs --cflags')
 
     def build(bld):
         bld.load('vala')
         bld.program(
-            packages = ['valum-0.1'],
+            packages = ['valum'],
             target    = 'app',
             source    = 'src/app.vala',
             uselib    = ['VALUM'],

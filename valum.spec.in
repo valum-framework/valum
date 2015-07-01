@@ -1,12 +1,12 @@
 Name:       valum
-Version:    0.2.0
+Version:    @VERSION@
 Release:    1%{?dist}
 Summary:    Valum is a web micro-framework written in Vala
 
 Group:      Development/Libraries
 License:    LGPL
 URL:        https://github.com/valum-framework/valum
-Source0:    %{name}-%{version}-alpha.tar.bz2
+Source0:    %{name}-%{version}.tar.bz2
 
 BuildRequires: python, vala
 
@@ -23,7 +23,7 @@ Provides build files including C header, Vala bindings and GIR introspection
 meta-data.
 
 %prep
-%setup -q -n %{name}-%{version}-alpha
+%setup -q
 
 %build
 ./waf configure --prefix=%{_prefix}

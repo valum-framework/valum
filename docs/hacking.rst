@@ -85,3 +85,14 @@ Once you have identified an uncovered region, you can supply a test that covers
 that particular case and submit us a `pull request on GitHub`_.
 
 .. _pull request on GitHub: https://github.com/valum-framework/valum/pulls
+
+Version bump
+------------
+
+Most of the version substitutions is handled during the build, but some places
+in the code have to be updated manually:
+
+-   ``VERSION`` and ``API_VERSION`` in ``wscript``
+-   GIR version annotations for all declared namespaces
+-   ``version`` and ``release`` in ``docs/conf.py``
+
