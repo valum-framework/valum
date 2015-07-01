@@ -14,6 +14,9 @@ test('legacy', executable('legacy-test', legacy_test_sources,
 # VSGI tests
 test('auth', executable('auth-test', 'auth-test.vala',
                         dependencies: [glib, gobject, gio, soup, vsgi]))
+test('multipart', executable('multipart-test', 'multipart-test.vala',
+                             dependencies: [glib, gobject, gio, soup, vsgi]),
+     env: ['G_TEST_SRCDIR=' + meson.current_source_dir()])
 test('request', executable('request-test', 'request-test.vala',
                            dependencies: [glib, gobject, gio, soup, vsgi]))
 test('response', executable('response-test', 'response-test.vala',
