@@ -162,6 +162,42 @@ app.get ("/tee", (req, res) => {
 	}
 });
 
+app.scope ("/multipart", () => {
+	app.use (accept ("text/html"));
+
+	app.get ("", (req, res) => {
+		return res.expand_utf8 ("""<!DOCTYPE html>
+		<html>
+		  <head>
+		    <title></title>
+		  </head>
+		  <body>
+		    <p>This demo shows how to handle <code>multipart/form-data</code> payloads.</p>
+		    <form method="post" enctype="multipart/form-data">
+		      <input name="filename" placeholder="Document Name">
+		      <input type="file" name="document">
+		      <input type="submit">
+		    </form>
+		  </body>
+		</html>""");
+	});
+
+	app.post ("", (req, res) => {
+		var mis = new MultipartInputStream.from_request (req);
+
+		var i = 1;
+		Soup.MessageHeaders? part_headers;
+		while (mis.next_part (out part_headers)) {
+			res.append_utf8 ("<h3>Part #%d</h3>".printf (i++));
+			res.append_utf8 ("<pre>");
+			res.body.splice (mis, OutputStreamSpliceFlags.NONE);
+			res.append_utf8 ("</pre>");
+		}
+
+		return res.end ();
+	});
+});
+
 // hello world! (compare with Node.js!)
 app.get ("/hello", respond_with_text (() => {
 	return "Hello world!";
