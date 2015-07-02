@@ -86,6 +86,22 @@ that particular case and submit us a `pull request on GitHub`_.
 
 .. _pull request on GitHub: https://github.com/valum-framework/valum/pulls
 
+Tests
+-----
+
+Valum is thoroughly tested for regression with the `GLib.Test`_ framework. Test
+cases are annotated with ``@since`` to track when a behaviour was introduced
+and guarantee its backward compatibility.
+
+.. _GLib.Test: http://valadoc.org/#!api=glib-2.0/GLib.Test
+
+You can refer an issue from GitHub by calling ``Test.bug`` with the issue
+number.
+
+.. code:: vala
+
+    Test.bug ("123");
+
 Version bump
 ------------
 
