@@ -30,6 +30,11 @@ namespace VSGI {
 			// chunk and newline
 			required_size += inbuf.length + "\r\n".length;
 
+			// last non-zero chunk needs a zero-sized chunk
+			if ((ConverterFlags.INPUT_AT_END in flags) && inbuf.length > 0) {
+				required_size += 5;
+			}
+
 			if (required_size > outbuf.length)
 				throw new IOError.NO_SPACE ("need %u more bytes to write the chunk", (uint) (required_size - outbuf.length));
 
@@ -56,7 +61,16 @@ namespace VSGI {
 			assert (bytes_read == inbuf.length);
 			assert (bytes_written == size_buffer.length + inbuf.length + 4);
 
-			// end of chunked data, but the zero-chunk has already been written
+			// write a zero-sized chunk
+			if (ConverterFlags.INPUT_AT_END in flags && inbuf.length > 0) {
+				outbuf[bytes_written++] = '0';
+				outbuf[bytes_written++] = '\r';
+				outbuf[bytes_written++] = '\n';
+				outbuf[bytes_written++] = '\r';
+				outbuf[bytes_written++] = '\n';
+				return ConverterResult.FINISHED;
+			}
+
 			return inbuf.length == 0 ? ConverterResult.FINISHED : ConverterResult.CONVERTED;
 		}
 
