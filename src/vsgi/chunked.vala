@@ -2,7 +2,7 @@ using GLib;
 
 namespace VSGI {
 	/**
-	 * Chunks data according to RFC2616 section 3.6.1.
+	 * Encodes data in chunks data according to RFC2616 section 3.6.1.
 	 *
 	 * [http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.6.1]
 	 *
@@ -14,7 +14,7 @@ namespace VSGI {
 	 *
 	 * @since 0.2
 	 */
-	public class ChunkedConverter : Object, Converter {
+	public class ChunkedEncoder : Object, Converter {
 
 		public ConverterResult convert (uint8[] inbuf,
 				                        uint8[] outbuf,
@@ -58,6 +58,22 @@ namespace VSGI {
 
 			// end of chunked data, but the zero-chunk has already been written
 			return inbuf.length == 0 ? ConverterResult.FINISHED : ConverterResult.CONVERTED;
+		}
+
+		public void reset () {
+			// no internal state
+		}
+	}
+
+	public class ChunkedDecoder : Object, Converter {
+
+		public ConverterResult convert (uint8[] inbuf,
+				                        uint8[] outbuf,
+										ConverterFlags flags,
+										out size_t bytes_read,
+										out size_t bytes_written) throws IOError {
+			// todo!
+			return ConverterResult.FINISHED;
 		}
 
 		public void reset () {
