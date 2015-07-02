@@ -43,6 +43,11 @@ app.get ("gzip", (req, res) => {
 	template.to_stream (writer);
 });
 
+app.get ("lulz", (req, res) => {
+		res.headers.replace ("Transfer-Encoding", "gzip, chunked");
+		res.body.write ("Hello world!".data);
+});
+
 app.get ("query", (req, res) => {
 	var writer = new DataOutputStream (res.body);
 

@@ -136,21 +136,58 @@ namespace VSGI.Soup {
 		/**
 		 * {@inheritDoc}
 		 *
-		 * If libsoup-2.4 (>=2.50) is available and the http_version in the
-		 * {@link Request} is set to 'HTTP/1.1', chunked encoding will be
-		 * applied.
+		 * Applies transfer encodings on the connection {@link GLib.OutputStream}
+		 * according to the 'Transfer-Encoding' HTTP header. Covered encodings
+		 * are: 'chunked', 'gzip', 'compress', 'deflate' and 'identity'.
+		 *
+		 * @since 0.2
 		 */
 		protected override OutputStream body {
 			get {
 				if (this.filtered_body != null)
 					return this.filtered_body;
 
+				this.filtered_body = base.body;
+
 				// filter the stream properly
-				if (this.request.http_version == HTTPVersion.@1_1 && this.headers.get_encoding () == Encoding.CHUNKED) {
-					this.filtered_body = new ConverterOutputStream (base.body,
-					                                                new ChunkedEncoder ());
-				} else {
-					this.filtered_body = base.body;
+				if (this.request.http_version == HTTPVersion.@1_1) {
+					// extract encodings
+					var encodings = global::Soup.header_parse_list (this.headers.get_one ("Transfer-Encoding"));
+
+					// this is composition, so the order of application is the opposite
+					encodings.reverse ();
+
+					// apply encodings iteratively
+					foreach (var encoding in encodings) {
+						switch (encoding.down ()) {
+							case "gzip":
+								this.filtered_body = new ConverterOutputStream (this.filtered_body,
+								                                                new ZlibCompressor (ZlibCompressorFormat.GZIP));
+								break;
+
+							case "compress":
+								this.filtered_body = new ConverterOutputStream (this.filtered_body,
+								                                                new ZlibCompressor (ZlibCompressorFormat.ZLIB));
+								break;
+
+							case "deflate":
+								this.filtered_body = new ConverterOutputStream (this.filtered_body,
+								                                                new ZlibCompressor (ZlibCompressorFormat.RAW));
+								break;
+
+							case "identity":
+								break;
+
+							case "chunked":
+								this.filtered_body = new ConverterOutputStream (this.filtered_body,
+								                                                new ChunkedEncoder ());
+								break;
+
+							default:
+								warning ("skipped unsupported transfer encoding '%s'", encoding);
+								break;
+						}
+					}
 				}
 
 				return this.filtered_body;
