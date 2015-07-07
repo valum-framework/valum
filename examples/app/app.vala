@@ -21,11 +21,6 @@ app.methods ({VSGI.Request.GET, VSGI.Request.POST}, "get-and-post", (req, res) =
 	res.body.write ("Matches GET and POST".data);
 });
 
-app.all (null, (req, res, next) => {
-	res.headers.append ("Server", "Valum/1.0");
-	next ();
-});
-
 app.all ("all", (req, res) => {
 	res.body.write ("Matches all HTTP methods".data);
 });
