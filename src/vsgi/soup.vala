@@ -219,23 +219,10 @@ namespace VSGI.Soup {
 			}
 
 			var port = options.contains ("port") ?
-				options.lookup_value ("port", VariantType.INT32).get_int32 () :
-				3003;
+				options.lookup_value ("port", VariantType.INT32).get_int32 () : 3003;
 
 			var file_descriptor = options.contains ("file-descriptor") ?
-				options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 () :
-				0;
-
-			ServerListenOptions listen_options = 0;
-
-			if (options.contains ("https"))
-				listen_options |= ServerListenOptions.HTTPS;
-
-			if (options.contains ("ipv4-only"))
-				listen_options |= ServerListenOptions.IPV4_ONLY;
-
-			if (options.contains ("ipv6-only"))
-				listen_options |= ServerListenOptions.IPV6_ONLY;
+				options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 () : 0;
 #else
 			var port            = 3003;
 			var file_descriptor = 0;
@@ -267,6 +254,7 @@ namespace VSGI.Soup {
 			if (options.contains ("server-header"))
 				this.server.server_header = options.lookup_value ("server-header", VariantType.STRING).get_string ();
 
+#if SOUP_2_48
 			if (options.contains ("https")) {
 				try {
 					this.server.set_ssl_cert_file (options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING).get_bytestring (),
@@ -276,6 +264,7 @@ namespace VSGI.Soup {
 					return 1;
 				}
 			}
+#endif
 #endif
 
 			// register a catch-all handler
@@ -295,8 +284,19 @@ namespace VSGI.Soup {
 			});
 
 #if SOUP_2_48
+			ServerListenOptions listen_options = 0;
+
 			try {
 #if GIO_2_40
+				if (options.contains ("https"))
+					listen_options |= ServerListenOptions.HTTPS;
+
+				if (options.contains ("ipv4-only"))
+					listen_options |= ServerListenOptions.IPV4_ONLY;
+
+				if (options.contains ("ipv6-only"))
+					listen_options |= ServerListenOptions.IPV6_ONLY;
+
 				if (options.contains ("file-descriptor")) {
 					this.server.listen_fd (file_descriptor, listen_options);
 				} else if (options.contains ("all")) {

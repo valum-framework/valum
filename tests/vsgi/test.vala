@@ -4,6 +4,25 @@ using Soup;
  * Test implementation of VSGI.
  */
 namespace VSGI.Test {
+
+	/**
+	 *
+	 */
+	public class Connection : IOStream {
+
+		private MemoryInputStream _input_stream;
+		private MemoryOutputStream _output_stream;
+
+		public override InputStream input_stream { get { return this._input_stream; } }
+
+		public override OutputStream output_stream { get { return this._output_stream; } }
+
+		public Connection () {
+			this._input_stream  = new MemoryInputStream ();
+			this._output_stream = new MemoryOutputStream (null, realloc, free);
+		}
+	}
+
 	/**
 	 * Test implementation of Request used to stub a request.
 	 */
@@ -30,24 +49,24 @@ namespace VSGI.Test {
 		}
 
 		public Request (string method, URI uri, HashTable<string, string>? query = null) {
-			Object (connection: new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream (null, realloc, free)));
+			Object (connection: new Connection ());
 			this._method = method;
 			this._uri    = uri;
 			this._query  = query;
 		}
 
 		public Request.with_method (string method) {
-			Object (connection: new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream (null, realloc, free)));
+			Object (connection: new Connection ());
 			this._method = method;
 		}
 
 		public Request.with_uri (URI uri) {
-			Object (connection: new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream (null, realloc, free)));
+			Object (connection: new Connection ());
 			this._uri = uri;
 		}
 
 		public Request.with_query (HashTable<string, string>? query) {
-			Object (connection: new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream (null, realloc, free)));
+			Object (connection: new Connection ());
 			this._query = query;
 		}
 	}

@@ -11,7 +11,7 @@ public static void test_vsgi_fastcgi_request () {
 	environment["SERVER_PORT"]    = "3003";
 	environment["HTTP_HOST"]      = "example.com";
 
-	var connection = new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream (null, realloc, free));
+	var connection = new VSGI.Test.Connection ();
 	var request    = new Request (connection, environment);
 
 	assert (Soup.HTTPVersion.@1_0 == request.http_version);
@@ -32,7 +32,7 @@ public static void test_vsgi_fastcgi_request_https_on () {
 
 	environment["HTTPS"] = "on";
 
-	var connection = new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream (null, realloc, free));
+	var connection = new VSGI.Test.Connection ();
 	var request    = new Request (connection, environment);
 
 	assert ("https" == request.uri.scheme);
@@ -46,7 +46,7 @@ public static void test_vsgi_fastcgi_request_uri_with_query () {
 
 	environment["REQUEST_URI"] = "/home?a=b";
 
-	var connection = new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream (null, realloc, free));
+	var connection = new VSGI.Test.Connection ();
 	var request    = new Request (connection, environment);
 
 	assert ("/home" == request.uri.path);
@@ -58,7 +58,7 @@ public static void test_vsgi_fastcgi_request_uri_with_query () {
 public static void test_vsgi_fastcgi_response () {
 	var environment   = new HashTable<string, string?> (str_hash, str_equal);
 
-	var connection = new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream (null, realloc, free));
+	var connection = new VSGI.Test.Connection ();
 	var request    = new Request (connection, environment);
 	var response   = new Response (request);
 

@@ -6,7 +6,7 @@ using VSGI.Soup;
 public static void test_vsgi_soup_request () {
 	var message      = new Soup.Message ("GET", "http://0.0.0.0:3003/");
 
-	var connection = new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream (null, realloc, free));
+	var connection = new VSGI.Test.Connection ();
 	var request    = new Request (connection, message, null);
 
 	assert (message == request.message);
@@ -25,7 +25,7 @@ public static void test_vsgi_soup_request () {
 public static void test_vsgi_soup_response () {
 	var message       = new Soup.Message ("GET", "http://0.0.0.0:3003/");
 
-	var connection = new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream (null, realloc, free));
+	var connection = new VSGI.Test.Connection ();
 	var request    = new Request (connection, message, null);
 	var response   = new Response (request, message);
 

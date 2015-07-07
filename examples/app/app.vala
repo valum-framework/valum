@@ -346,4 +346,4 @@ app.status (Soup.Status.NOT_FOUND, (req, res) => {
 	template.to_stream (res.body);
 });
 
-new Server (app.handle).run ({"app", "--port", "3003"});
+new Server (app.handle).run ({"app", "--all"});
