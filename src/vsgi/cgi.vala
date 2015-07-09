@@ -18,9 +18,9 @@ namespace VSGI.CGI {
 		 */
 		public HashTable<string, string> environment { construct; get; }
 
-		private URI _uri = new URI (null);
+		private URI _uri                          = new URI (null);
 		private HashTable<string, string>? _query = null;
-		private MessageHeaders _headers = new MessageHeaders (MessageHeadersType.REQUEST);
+		private MessageHeaders _headers           = new MessageHeaders (MessageHeadersType.REQUEST);
 
 		public override HTTPVersion http_version {
 			get {
@@ -162,6 +162,15 @@ namespace VSGI.CGI {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * Unlike other VSGI implementations, which are actively awaiting upon
+	 * requests, CGI handles a single request and then wait until the underlying
+	 * {@link GLib.Application} quits. Longstanding operations can invoke
+	 * {@link GLib.Application.hold} and {@link GLib.Application.release} to
+	 * keep the server alive as long as necessary.
+	 */
 	public class Server : VSGI.Server {
 
 		public Server (VSGI.ApplicationCallback application) {
@@ -172,7 +181,7 @@ namespace VSGI.CGI {
 			var environment = new HashTable<string, string> (str_hash, str_equal);
 
 			foreach (var variable in command_line.get_environ ()) {
-				var parts = variable.split ("=", 2);
+				var parts             = variable.split ("=", 2);
 				environment[parts[0]] = parts.length == 2 ? parts[1] : "";
 			}
 
