@@ -54,7 +54,8 @@ Recent dependencies will enable more advanced features:
 
 .. _Soup.ClientContext.steal_connection: http://valadoc.org/#!api=libsoup-2.4/Soup.ClientContext.steal_connection
 
-You can also install additional dependencies to build the examples:
+You can also install additional dependencies to build the examples, you will
+have to specify the ``--enable-examples`` flag during the configure step.
 
 +---------------+------------------------------------+
 | Package       | Description                        |
@@ -123,8 +124,9 @@ the bug.
 Run the sample application
 --------------------------
 
-You can run the sample application from the ``build`` folder, it uses
-the :doc:`vsgi/server/soup`.
+You can run the sample application from the ``build`` folder if you called
+``./waf configure`` with the ``--enable-examples`` flag, it uses the
+:doc:`vsgi/server/soup`.
 
 .. code-block:: bash
 

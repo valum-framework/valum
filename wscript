@@ -13,6 +13,7 @@ def options(opt):
     opt.load('compiler_c')
 
     opt.add_option('--enable-gcov', action='store_true', default=False, help='enable coverage with gcov')
+    opt.add_option('--enable-examples', action='store_true', default=False, help='build examples')
 
 def configure(conf):
     conf.load('compiler_c vala')
@@ -48,7 +49,9 @@ def configure(conf):
         conf.env.append_unique('CFLAGS', ['-fprofile-arcs', '-ftest-coverage'])
 
     # configure examples
-    conf.recurse(glob.glob('examples/*'))
+    if conf.options.enable_examples:
+        conf.env.ENABLE_EXAMPLES = True
+        conf.recurse(glob.glob('examples/*'))
 
 def build(bld):
     # build a static library
@@ -80,7 +83,8 @@ def build(bld):
         VERSION      = VERSION)
 
     # build examples
-    bld.recurse(glob.glob('examples/*'))
+    if bld.env.ENABLE_EXAMPLES:
+        bld.recurse(glob.glob('examples/*'))
 
     # build tests
     bld.recurse('tests')
