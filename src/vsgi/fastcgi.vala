@@ -282,9 +282,10 @@ namespace VSGI.FastCGI {
 
 #if GIO_2_40
 			const OptionEntry[] options = {
-				{"socket",  's', 0, OptionArg.FILENAME, null, "path to the UNIX socket", null},
-				{"port",    'p', 0, OptionArg.INT,      null, "TCP port on this host", null},
-				{"backlog", 'b', 0, OptionArg.INT,      null, "listen queue depth used in the listen() call", "0"},
+				{"socket",          's', 0, OptionArg.FILENAME, null, "path to the UNIX socket"},
+				{"port",            'p', 0, OptionArg.INT,      null, "TCP port on this host"},
+				{"file-descriptor", 'f', 0, OptionArg.INT,      null, "file descriptor", "0"},
+				{"backlog",         'b', 0, OptionArg.INT,      null, "listen queue depth used in the listen() call", "0"},
 				{null}
 			};
 			this.add_main_option_entries (options);
@@ -293,7 +294,7 @@ namespace VSGI.FastCGI {
 			this.startup.connect (() => {
 				var status = global::FastCGI.init ();
 				if (status != 0)
-					error ("code %u: failed to initialize FCGX library".printf (status));
+					error ("code %u: failed to initialize FCGX library", status);
 			});
 
 			this.shutdown.connect (global::FastCGI.shutdown_pending);
@@ -303,8 +304,10 @@ namespace VSGI.FastCGI {
 #if GIO_2_40
 			var options = command_line.get_options_dict ();
 
-			if (options.contains ("socket") && options.contains ("port")) {
-				command_line.printerr ("--socket and --port must not be specified simultaneously\n");
+			if ((options.contains ("socket") && options.contains ("port")) ||
+			    (options.contains ("socket") && options.contains ("file-descriptor")) ||
+			    (options.contains ("port") && options.contains ("file-descriptor"))) {
+				command_line.printerr ("--socket, --port and --file-descriptor must not be specified simultaneously\n");
 				return 1;
 			}
 
@@ -318,7 +321,7 @@ namespace VSGI.FastCGI {
 					this.socket     = new GLib.Socket.from_fd (open_socket (socket_path, backlog));
 
 					if (!this.socket.is_connected ()) {
-						command_line.printerr ("could not open socket path %s\n".printf (socket_path));
+						command_line.printerr ("could not open socket path %s\n", socket_path);
 						return 1;
 					}
 
@@ -330,11 +333,23 @@ namespace VSGI.FastCGI {
 					this.socket = new GLib.Socket.from_fd (open_socket (port, backlog));
 
 					if (!this.socket.is_connected ()) {
-						command_line.printerr ("could not open TCP socket at port %s\n".printf (port));
+						command_line.printerr ("could not open TCP socket at port %s\n", port);
 						return 1;
 					}
 
 					command_line.print ("listening on tcp://0.0.0.0:%s (backlog %d)\n", port, backlog);
+				}
+
+				else if (options.contains ("file-descriptor")) {
+					var file_descriptor = options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 ();
+					this.socket         = new GLib.Socket.from_fd (file_descriptor);
+
+					if (!this.socket.is_connected ()) {
+						command_line.printerr ("could not open file descriptor %d\n", file_descriptor);
+						return 1;
+					}
+
+					command_line.print ("listening on the file descriptor %d\n", file_descriptor);
 				}
 
 				else

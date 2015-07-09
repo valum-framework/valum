@@ -1,14 +1,41 @@
 FastCGI
 =======
 
-A FastCGI application is a simple process that communicate with a HTTP server
-through unix or TCP a socket according to a specification.
+A FastCGI application is a simple process that communicate using a specified
+binary protocol over a socket or file descriptor.
 
-VSGI use `Vala fcgi bindings`_ to provide a compliant FastCGI implementation.
+VSGI uses `Vala fcgi bindings`_ to provide a compliant FastCGI implementation.
 See :doc:`../../installation` for more information about the framework
 dependencies.
 
 .. _Vala fcgi bindings: http://www.masella.name/~andre/vapis/fcgi/index.htm
+
+Options
+-------
+
++-----------------------+---------+-----------------------------------------------+
+| Option                | Default | Description                                   |
++=======================+=========+===============================================+
+| ``--port``            | none    | listen on a TCP port from local interface     |
++-----------------------+---------+-----------------------------------------------+
+| ``--socket``          | none    | listen on a UNIX socket path                  |
++-----------------------+---------+-----------------------------------------------+
+| ``--file-descriptor`` | 0       | listen to the provided file descriptor        |
++-----------------------+---------+-----------------------------------------------+
+| ``--backlog``         | 0       | connection queue depth in the ``listen`` call |
++-----------------------+---------+-----------------------------------------------+
+
+Only one option from ``--port``, ``--socket`` and ``--file-descriptor`` can be
+specified.
+
+By default, the FastCGI implementation listens on the file descriptor ``0``,
+which is conventionally the case when the process is spawned by an HTTP server.
+
+Deployment
+----------
+
+lighttpd
+--------
 
 `lighttpd`_ can be used to develop and potentially deploy your application. An
 `example of configuration`_ file is available in the fastcgi example folder.
@@ -29,7 +56,7 @@ You can run the FastCGI example with lighttpd:
     lighttpd -D -f examples/fastcgi/lighttpd.conf
 
 Apache
-------
+~~~~~~
 
 Under Apache, there are two mods available: ``mod_fcgid`` is more likely to be
 available as it is part of Apache and ``mod_fastcgi`` is developed by those who
@@ -39,7 +66,7 @@ did the FastCGI specifications.
 -  `mod\_fastcgi <http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html>`__
 
 Nginx
------
+~~~~~
 
 Nginx expect a process to be already spawned and will communicate with it using
 a TCP port or a socket path. Read more about `ngx_http_fastcgi_module`_.

@@ -59,10 +59,7 @@ Options
 -------
 
 Each server implementation can optionally take arguments that parametrize their
-runtime. Generally, you can set the following options:
-
--  a socket path and backlog
--  TCP port
+runtime.
 
 If you build your application in a main block, it will not possible to obtain
 the CLI arguments to parametrize the runtime. You can write your code in
@@ -93,31 +90,13 @@ available options which vary from an implementation to another.
       fastcgi [OPTION...]
 
     Help Options:
-      -h, --help                 Show help options
-      --help-all                 Show all help options
-      --help-gapplication        Show GApplication options
+      -h, --help                  Show help options
+      --help-all                  Show all help options
+      --help-gapplication         Show GApplication options
 
     Application Options:
-      -s, --socket               path to the UNIX socket
-      -p, --port                 TCP port on this host
-      -b, --backlog=0            listen queue depth used in the listen() call
-
-Socket
-~~~~~~
-
-In some context, you do not want to serve your application over a TCP socket,
-but just a local socket. Either this or ``--port`` can be specified, but not
-both.
-
-Port
-~~~~
-
-This is the TCP port on which the application will be exposed on the local
-host.
-
-Backlog
-~~~~~~~
-
-The backlog correspond to the depth on the ``listen`` call and is used if you
-have multiple listener on a socket.
+      -s, --socket                path to the UNIX socket
+      -p, --port                  TCP port on this host
+      -f, --file-descriptor=0     file descriptor
+      -b, --backlog=0             listen queue depth used in the listen() call
 
