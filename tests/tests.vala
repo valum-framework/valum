@@ -51,6 +51,9 @@ public int main (string[] args) {
 	Test.add_func ("/router/invoke", test_router_invoke);
 	Test.add_func ("/router/invoke/propagate_state", test_router_invoke_propagate_state);
 
+	Test.add_func ("/router/default_head", test_router_default_head);
+	Test.add_func ("/router/method_not_allowed/head_if_get", test_router_method_not_allowed_head_if_get);
+
 	Test.add_func ("/route", test_route);
 	Test.add_func ("/route/from_rule", test_route_from_rule);
 	Test.add_func ("/route/from_rule/null", test_route_from_rule_null);
