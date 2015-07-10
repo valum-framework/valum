@@ -318,9 +318,7 @@ namespace VSGI.Soup {
 			// keep the process alive
 			this.hold ();
 #else
-			command_line.print ("listening on %s://%s:%u\n", this.server.@interface.protocol,
-			                                                 this.server.@interface.name,
-			                                                 this.server.@interface.port);
+			command_line.print ("listening on http://0.0.0.0:%u\n", this.server.port);
 
 			this.server.run ();
 #endif
