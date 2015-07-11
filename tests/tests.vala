@@ -115,6 +115,9 @@ public int main (string[] args) {
 
 	Test.add_func ("/vsgi/cgi/request", test_vsgi_cgi_request);
 	Test.add_func ("/vsgi/cgi/request/missing_path_info", test_vsgi_cgi_request_missing_path_info);
+	Test.add_func ("/vsgi/cgi/request/http_1_1", test_vsgi_cgi_request_http_1_1);
+	Test.add_func ("/vsgi/cgi/response", test_vsgi_cgi_response);
+
 
 	Test.add_func ("/vsgi/fastcgi/request", test_vsgi_fastcgi_request);
 	Test.add_func ("/vsgi/fastcgi/request/https_on", test_vsgi_fastcgi_request_https_on);
