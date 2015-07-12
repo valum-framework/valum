@@ -452,7 +452,7 @@ public static void test_router_method_not_allowed () {
 	router.handle (request, response);
 
 	assert (response.status == 405);
-	assert ("PUT, GET" == response.headers.get_one ("Allow"));
+	assert ("PUT, GET, HEAD" == response.headers.get_one ("Allow"));
 	assert (response.head_written);
 }
 
@@ -484,8 +484,27 @@ public static void test_router_method_not_allowed_excludes_request_method () {
 	assert (get_matched == 1);
 
 	assert (response.status == 405);
-	assert ("GET" == response.headers.get_one ("Allow"));
+	assert ("GET, HEAD" == response.headers.get_one ("Allow"));
 	assert (response.head_written);
+}
+
+/**
+ * @since 0.2
+ */
+public void test_router_method_not_allowed_head_if_get () {
+	var router = new Router ();
+
+	router.get ("", (req, res) => {
+		res.body.write ("Hello world!".data);
+	});
+
+	var request  = new Request (VSGI.Request.PUT, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (405 == response.status);
+	assert ("GET, HEAD" == response.headers.get_one ("Allow"));
 }
 
 /**
@@ -718,4 +737,22 @@ public static void test_router_invoke_propagate_state () {
 	router.handle (request, response);
 
 	assert (418 == response.status);
+}
+
+/**
+ * @since 0.2
+ */
+public void test_router_default_head () {
+	var router = new Router ();
+
+	router.get ("", (req, res) => {
+		res.body.write ("Hello world!".data);
+	});
+
+	var request  = new Request (VSGI.Request.HEAD, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	assert (200 == response.status);
 }

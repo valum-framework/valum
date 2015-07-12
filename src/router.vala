@@ -331,15 +331,22 @@ namespace Valum {
 					if (this.perform_routing (this.routes[req.method].head, req, res, state))
 						return; // something matched
 
+				// perform a GET and redirect the body to /dev/null
+				if (req.method == Request.HEAD)
+					if (this.perform_routing (this.routes[Request.GET].head, req, res, state))
+						return; // something matched
+
 				// find routes from other methods matching this Request
-				var allowed = new StringBuilder ();
+				string[] allowed = {};
 				foreach (var method in this.routes.get_keys ()) {
 					if (method != req.method) {
 						foreach (var route in this.routes[method].head) {
 							if (route.match (req)) {
-								if (allowed.len > 0)
-									allowed.append (", ");
-								allowed.append (method);
+								allowed += method;
+
+								if (method == Request.GET && !(Request.HEAD in allowed))
+									allowed += Request.HEAD;
+
 								break;
 							}
 						}
@@ -347,8 +354,8 @@ namespace Valum {
 				}
 
 				// a Route from another method allows this Request
-				if (allowed.len > 0)
-					throw new ClientError.METHOD_NOT_ALLOWED (allowed.str);
+				if (allowed.length > 0)
+					throw new ClientError.METHOD_NOT_ALLOWED (string.joinv (", ", allowed));
 
 				throw new ClientError.NOT_FOUND ("The request URI %s was not found.".printf (req.uri.to_string (false)));
 			});
