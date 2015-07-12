@@ -4,7 +4,7 @@ using VSGI;
 namespace Valum {
 
 	/**
-	 * Route provides a {@link Route.MatcherCallback} and {@link Route.HandlerCallback} to
+	 * Route provides a {@link Valum.MatcherCallback} and {@link Valum.HandlerCallback} to
 	 * respectively match and handle a {@link VSGI.Request} and
 	 * {@link VSGI.Response}.
 	 *

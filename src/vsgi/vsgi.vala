@@ -23,7 +23,6 @@ namespace VSGI {
 	 *
 	 * @param req a resource being requested
 	 * @param res the response to that request
-	 * @param end end the processing of the client request and free resources
 	 */
 	public delegate void ApplicationCallback (Request req, Response res);
 }

@@ -10,7 +10,7 @@ namespace Valum {
 	 * primitive and much more.
 	 *
 	 * This implementation include two rendering functions: {@link View.render}
-	 * and {@link View.stream}. The latter integrates very well with the
+	 * and {@link View.to_stream}. The latter integrates very well with the
 	 * framework since {@link VSGI.Response} inherit from
 	 * {@link GLib.OutputStream}.
 	 *

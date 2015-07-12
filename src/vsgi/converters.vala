@@ -4,7 +4,7 @@ namespace VSGI {
 	/**
 	 * Chunks data according to RFC2616 section 3.6.1.
 	 *
-	 * [http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.6.1]
+	 * [[http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.6.1]]
 	 *
 	 * This process has an expansion factor of ceil (log_16 (size)) + 4 due to
 	 * the presence of predicted size and newlines.
