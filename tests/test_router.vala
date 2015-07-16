@@ -719,3 +719,29 @@ public static void test_router_invoke_propagate_state () {
 
 	assert (418 == response.status);
 }
+
+/**
+ * @since 0.2
+ */
+public void test_router_then () {
+	var router = new Router ();
+
+	var setted      = false;
+	var then_setted = false;
+
+	router.get ("<int:id>", (req, res, next) => {
+		setted = true;
+		next ();
+	}).then ((req, res) => {
+		assert (setted);
+		then_setted = true;
+	});
+
+	var req = new Request.with_uri (new Soup.URI ("http://localhost/5"));
+	var res = new Response (req, 200);
+
+	router.handle (req, res);
+
+	assert (setted);
+	assert (then_setted);
+}

@@ -48,57 +48,57 @@ namespace Valum {
 		/**
 		 * @since 0.0.1
 		 */
-		public new void get (string? rule, HandlerCallback cb) throws RegexError {
-			this.method (Request.GET, rule, cb);
+		public new Route get (string? rule, HandlerCallback cb) throws RegexError {
+			return this.method (Request.GET, rule, cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void post (string? rule, HandlerCallback cb) throws RegexError {
-			this.method (Request.POST, rule, cb);
+		public Route post (string? rule, HandlerCallback cb) throws RegexError {
+			return this.method (Request.POST, rule, cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void put (string? rule, HandlerCallback cb) throws RegexError {
-			this.method (Request.PUT, rule, cb);
+		public Route put (string? rule, HandlerCallback cb) throws RegexError {
+			return this.method (Request.PUT, rule, cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void delete (string? rule, HandlerCallback cb) throws RegexError {
-			this.method (Request.DELETE, rule, cb);
+		public Route delete (string? rule, HandlerCallback cb) throws RegexError {
+			return this.method (Request.DELETE, rule, cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void head (string? rule, HandlerCallback cb) throws RegexError {
-			this.method (Request.HEAD, rule, cb);
+		public Route head (string? rule, HandlerCallback cb) throws RegexError {
+			return this.method (Request.HEAD, rule, cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void options(string? rule, HandlerCallback cb) throws RegexError {
-			this.method (Request.OPTIONS, rule, cb);
+		public Route options (string? rule, HandlerCallback cb) throws RegexError {
+			return this.method (Request.OPTIONS, rule, cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void trace (string? rule, HandlerCallback cb) throws RegexError {
-			this.method (Request.TRACE, rule, cb);
+		public Route trace (string? rule, HandlerCallback cb) throws RegexError {
+			return this.method (Request.TRACE, rule, cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public new void connect (string? rule, HandlerCallback cb) throws RegexError {
-			this.method (Request.CONNECT, rule, cb);
+		public new Route connect (string? rule, HandlerCallback cb) throws RegexError {
+			return this.method (Request.CONNECT, rule, cb);
 		}
 
 		/**
@@ -106,8 +106,8 @@ namespace Valum {
 		 *
 		 * @since 0.0.1
 		 */
-		public void patch (string? rule, HandlerCallback cb) throws RegexError {
-			this.method (Request.PATCH, rule, cb);
+		public Route patch (string? rule, HandlerCallback cb) throws RegexError {
+			return this.method (Request.PATCH, rule, cb);
 		}
 
 		/**
@@ -122,8 +122,8 @@ namespace Valum {
 		 * @param rule   rule
 		 * @param cb     callback used to process the pair of request and response.
 		 */
-		public void method (string method, string? rule, HandlerCallback cb) throws RegexError {
-			this.route (method, new Route.from_rule (this, rule, cb));
+		public Route method (string method, string? rule, HandlerCallback cb) throws RegexError {
+			return this.route (method, new Route.from_rule (this, method, rule, cb));
 		}
 
 		/**
@@ -144,7 +144,7 @@ namespace Valum {
 		 * @param rule    rule
 		 */
 		public void methods (string[] methods, string? rule, HandlerCallback cb) throws RegexError {
-			var route = new Route.from_rule (this, rule, cb);
+			var route = new Route.from_rule (this, null, rule, cb);
 			foreach (var method in methods) {
 				this.route (method, route);
 			}
@@ -162,8 +162,8 @@ namespace Valum {
 		 * @param regex  regular expression matching the request path.
 		 * @param cb     callback used to process the pair of request and response.
 		 */
-		public void regex (string method, Regex regex, HandlerCallback cb) throws RegexError {
-			this.route (method, new Route.from_regex (this, regex, cb));
+		public Route regex (string method, Regex regex, HandlerCallback cb) throws RegexError {
+			return this.route (method, new Route.from_regex (this, method, regex, cb));
 		}
 
 		/**
@@ -175,8 +175,8 @@ namespace Valum {
 		 * @param matcher callback used to match the request
 		 * @param cb      callback used to process the pair of request and response.
 		 */
-		public void matcher (string method, MatcherCallback matcher, HandlerCallback cb) {
-			this.route (method, new Route (this, matcher, cb));
+		public Route matcher (string method, MatcherCallback matcher, HandlerCallback cb) {
+			return this.route (method, new Route (this, method, matcher, cb));
 		}
 
 		/**
@@ -188,11 +188,13 @@ namespace Valum {
 		 * @param route  an instance of Route defining the matching process and the
 		 *               callback.
 		 */
-		private void route (string method, Route route) {
+		private Route route (string method, Route route) {
 			if (!this.routes.contains (method))
 				this.routes[method] = new Queue<Route> ();
 
 			this.routes[method].push_tail (route);
+
+			return route;
 		}
 
 		/**
@@ -208,7 +210,7 @@ namespace Valum {
 			if (!this.status_handlers.contains (status))
 				this.status_handlers[status] = new Queue<Route> ();
 
-			this.status_handlers[status].push_tail (new Route (this, () => { return true; }, cb));
+			this.status_handlers[status].push_tail (new Route (this, null, () => { return true; }, cb));
 		}
 
 		/**
