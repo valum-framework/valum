@@ -4,9 +4,11 @@ using VSGI.FastCGI;
  * @since 0.2
  */
 public static void test_vsgi_fastcgi_request () {
-	var environment   = new HashTable<string, string?> (str_hash, str_equal);
+	var environment   = new HashTable<string, string> (str_hash, str_equal);
 
+	environment["PATH_INFO"]      = "/";
 	environment["REQUEST_METHOD"] = "GET";
+	environment["REQUEST_URI"]    = "/";
 	environment["SERVER_NAME"]    = "0.0.0.0";
 	environment["SERVER_PORT"]    = "3003";
 	environment["HTTP_HOST"]      = "example.com";
@@ -28,7 +30,13 @@ public static void test_vsgi_fastcgi_request () {
  * @since 0.2
  */
 public static void test_vsgi_fastcgi_request_https_on () {
-	var environment   = new HashTable<string, string?> (str_hash, str_equal);
+	var environment   = new HashTable<string, string> (str_hash, str_equal);
+
+	environment["PATH_INFO"]      = "/";
+	environment["REQUEST_METHOD"] = "GET";
+	environment["REQUEST_URI"]    = "/";
+	environment["SERVER_NAME"]    = "0.0.0.0";
+	environment["SERVER_PORT"]    = "3003";
 
 	environment["HTTPS"] = "on";
 
@@ -42,7 +50,13 @@ public static void test_vsgi_fastcgi_request_https_on () {
  * @since 0.2
  */
 public static void test_vsgi_fastcgi_request_uri_with_query () {
-	var environment   = new HashTable<string, string?> (str_hash, str_equal);
+	var environment   = new HashTable<string, string> (str_hash, str_equal);
+
+	environment["PATH_INFO"]      = "/";
+	environment["REQUEST_METHOD"] = "GET";
+	environment["REQUEST_URI"]    = "/";
+	environment["SERVER_NAME"]    = "0.0.0.0";
+	environment["SERVER_PORT"]    = "3003";
 
 	environment["REQUEST_URI"] = "/home?a=b";
 
@@ -57,6 +71,12 @@ public static void test_vsgi_fastcgi_request_uri_with_query () {
  */
 public static void test_vsgi_fastcgi_response () {
 	var environment   = new HashTable<string, string?> (str_hash, str_equal);
+
+	environment["PATH_INFO"]      = "/";
+	environment["REQUEST_METHOD"] = "GET";
+	environment["REQUEST_URI"]    = "/";
+	environment["SERVER_NAME"]    = "0.0.0.0";
+	environment["SERVER_PORT"]    = "3003";
 
 	var connection = new VSGI.Test.Connection ();
 	var request    = new Request (connection, environment);

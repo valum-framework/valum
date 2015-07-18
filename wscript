@@ -29,6 +29,10 @@ def configure(conf):
     if conf.check_cfg(package='glib-2.0', atleast_version='2.38', mandatory=False, uselib_store='GLIB', args='--cflags --libs'):
         conf.env.append_unique('VALAFLAGS', ['--define=GIO_2_38'])
 
+    # gio (>=2.34) is necessary for ApplicationCommandLine.get_stdin
+    if conf.check_cfg(package='gio-2.0', atleast_version='2.34', mandatory=False, uselib_store='GIO', args='--cflags --libs'):
+        conf.env.append_unique('VALAFLAGS', ['--define=GIO_2_34'])
+
     # gio (>=2.40) is necessary for CLI arguments parsing
     if conf.check_cfg(package='gio-2.0', atleast_version='2.40', mandatory=False, uselib_store='GIO', args='--cflags --libs'):
         conf.env.append_unique('VALAFLAGS', ['--define=GIO_2_40'])

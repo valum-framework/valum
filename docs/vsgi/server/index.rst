@@ -9,6 +9,7 @@ host environment.
     :caption: Table of Contents
 
     soup
+    cgi
     fastcgi
 
 General
