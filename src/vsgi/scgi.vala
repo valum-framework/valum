@@ -16,7 +16,8 @@ namespace VSGI.SCGI {
 		public Request (IOStream connection, HashTable<string, string> environment) {
 			base (connection, environment);
 
-			this.uri.set_path (environment["REQUEST_URI"]);
+			if (environment.contains ("REQUEST_URI"))
+				this.uri.set_path (environment["REQUEST_URI"].split ("?", 2)[0]); // avoid the query
 		}
 	}
 

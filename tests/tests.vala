@@ -124,5 +124,7 @@ public int main (string[] args) {
 	Test.add_func ("/vsgi/fastcgi/request/uri_with_query", test_vsgi_fastcgi_request_uri_with_query);
 	Test.add_func ("/vsgi/fastcgi/response", test_vsgi_fastcgi_response);
 
+	Test.add_func ("/vsgi/scgi/request/with_request_uri", test_vsgi_scgi_request_with_request_uri);
+
 	return Test.run ();
 }
