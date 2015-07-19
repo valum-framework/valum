@@ -128,6 +128,8 @@ namespace VSGI {
 
 			var written = this.request.connection.output_stream.write (head, cancellable);
 
+			this.headers.clear ();
+
 			this.head_written = true;
 
 			return written;
@@ -151,6 +153,8 @@ namespace VSGI {
 			}
 
 			var written = yield this.request.connection.output_stream.write_async (head, priority, cancellable);
+
+			this.headers.clear ();
 
 			this.head_written = true;
 
