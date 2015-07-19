@@ -3,9 +3,9 @@ using VSGI;
 /**
  * @since 0.2
  */
-public void test_vsgi_converter_chunked () {
+public void test_vsgi_chunked_encoder () {
 	var produced = new MemoryOutputStream (null, realloc, free);
-	var convert = new ConverterOutputStream (produced, new ChunkedConverter ());
+	var convert = new ConverterOutputStream (produced, new ChunkedEncoder ());
 
 	convert.write ("test".data);
 

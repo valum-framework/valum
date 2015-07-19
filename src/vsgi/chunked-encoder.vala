@@ -14,7 +14,7 @@ namespace VSGI {
 	 *
 	 * @since 0.2
 	 */
-	public class ChunkedConverter : Object, Converter {
+	public class ChunkedEncoder : Object, Converter {
 
 		public ConverterResult convert (uint8[] inbuf,
 				                        uint8[] outbuf,
