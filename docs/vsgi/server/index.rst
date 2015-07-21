@@ -11,6 +11,7 @@ host environment.
     soup
     cgi
     fastcgi
+    scgi
 
 General
 -------
@@ -45,7 +46,7 @@ To identify your workers, you can use the ``set_application_id`` function.
 
     server.set_application_id ("worker");
 
-This can be used to request services and communicate between your workers and
+This can be used to request services, communicate between your workers and
 interact with the runtime.
 
 .. code:: vala
@@ -59,12 +60,12 @@ interact with the runtime.
 Options
 -------
 
-Each server implementation can optionally take arguments that parametrize their
+Each server implementation can optionally take arguments that parametrize its
 runtime.
 
-If you build your application in a main block, it will not possible to obtain
-the CLI arguments to parametrize the runtime. You can write your code in
-a usual ``main`` function.
+If you build your application in a main block, it will not be possible to
+obtain the CLI arguments to parametrize the runtime. Instead, the code can be
+written in a usual ``main`` function.
 
 .. code:: vala
 
