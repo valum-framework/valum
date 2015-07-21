@@ -86,7 +86,7 @@ namespace Valum {
 			// regex are optimized automatically :)
 			var prepared_regex = new Regex (pattern.str, RegexCompileFlags.OPTIMIZE);
 
-			this.match = (req) => {
+			this.match = (req, stack) => {
 				MatchInfo match_info;
 				if (prepared_regex.match (req.uri.get_path (), 0, out match_info)) {
 					if (captures.length () > 0) {
@@ -96,6 +96,11 @@ namespace Valum {
 							p[capture] = match_info.fetch_named (capture);
 						}
 						req.params = p;
+					}
+					// push parameters on the stack
+					foreach (var capture in captures) {
+						//Parameter param = {capture, match_info.fetch_named (capture)};
+						//stack.push_tail (param);
 					}
 					return true;
 				}
@@ -164,7 +169,7 @@ namespace Valum {
 			var regex = new Regex (route.str, RegexCompileFlags.OPTIMIZE);
 
 			// register a matcher based on the generated regular expression
-			this.match = (req) => {
+			this.match = (req, stack) => {
 				MatchInfo match_info;
 				if (regex.match (req.uri.get_path (), 0, out match_info)) {
 					if (captures.length () > 0) {
@@ -174,6 +179,11 @@ namespace Valum {
 							p[capture] = match_info.fetch_named (capture);
 						}
 						req.params = p;
+					}
+					// push parameters on the stack
+					foreach (var capture in captures) {
+						//Parameter param = {capture, match_info.fetch_named (capture)};
+						//stack.push_tail (param);
 					}
 					return true;
 				}

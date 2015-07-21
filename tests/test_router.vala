@@ -607,8 +607,9 @@ public static void test_router_next_propagate_state () {
 	var router = new Router ();
 	var state  = new Object ();
 
-	router.get ("", (req, res, next) => {
-		next (state);
+	router.get ("", (req, res, next, stack) => {
+		stack.push_tail (state);
+		next ();
 	});
 
 	router.get ("", (req, res, next) => {
@@ -617,7 +618,7 @@ public static void test_router_next_propagate_state () {
 
 	router.get ("", (req, res, next, st) => {
 		res.status = 413;
-		assert (st == state);
+		assert (st.pop_tail () == state);
 	});
 
 	var request = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
@@ -635,19 +636,19 @@ public static void test_router_next_replace_propagated_state () {
 	var router = new Router ();
 	var state  = new Object ();
 
-	router.get ("", (req, res, next) => {
-		next (state);
+	router.get ("", (req, res, next, stack) => {
+		stack.push_tail (state);
+		next ();
 	});
 
-	router.get ("", (req, res, next, st) => {
-		assert (st == state);
-		next (new Object ());
+	router.get ("", (req, res, next, stack) => {
+		assert (state == stack.pop_tail ());
+		next ();
 	});
 
-	router.get ("", (req, res, next, st) => {
+	router.get ("", (req, res, next, stack) => {
 		res.status = 413;
-		assert (null != st);
-		assert (st != state);
+		assert (stack.is_empty ());
 	});
 
 	var request = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
@@ -661,7 +662,8 @@ public static void test_router_next_replace_propagated_state () {
 public static void test_router_status_propagates_error_message () {
 	var router = new Router ();
 
-	router.status (404, (req, res, next, message) => {
+	router.status (404, (req, res, next, stack) => {
+			var message = stack.pop_tail ();
 		res.status = 418;
 		assert ("The request URI http://localhost/ was not found." == message.get_string ());
 	});
@@ -703,12 +705,13 @@ public static void test_router_invoke_propagate_state () {
 	var router  = new Router ();
 	var message = "test";
 
-	router.get ("", (req, res, next) => {
-		router.invoke (req, res, next, message);
+	router.get ("", (req, res, next, stack) => {
+		stack.push_tail (message);
+		router.invoke (req, res, next);
 	});
 
-	router.get ("", (req, res, next, state) => {
-		assert (message == state.get_string ());
+	router.get ("", (req, res, next, stack) => {
+		assert (message == stack.pop_tail ().get_string ());
 		throw new ClientError.IM_A_TEAPOT ("this is insane!");
 	});
 

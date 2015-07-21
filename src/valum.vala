@@ -1,3 +1,4 @@
+using GLib;
 using VSGI;
 
 /**
@@ -24,9 +25,10 @@ namespace Valum {
 	 *
 	 * @since 0.1
 	 *
-	 * @param req request being matched
+	 * @param req           request being matched
+	 * @param initial_stack stacked request parameters
 	 */
-	public delegate bool MatcherCallback (Request req);
+	public delegate bool MatcherCallback (Request req, Queue<Value?> initial_stack);
 
 	/**
 	 * Handle a pair of request and response.
@@ -44,7 +46,7 @@ namespace Valum {
 	 *              remains null if this is the top invocation or no state
 	 *              have been propagated
 	 */
-	public delegate void HandlerCallback (Request req, Response res, NextCallback next, Value? state) throws Informational, Success, Redirection, ClientError, ServerError;
+	public delegate void HandlerCallback (Request req, Response res, NextCallback next, Queue<Value?> stack) throws Informational, Success, Redirection, ClientError, ServerError;
 
 	/**
 	 * Keeps routing the {@link VSGI.Request} and {@link VSGI.Response}.
@@ -53,5 +55,5 @@ namespace Valum {
 	 *
 	 * @param state propagated state to the next handler
 	 */
-	public delegate void NextCallback (Value? state = null) throws Informational, Success, Redirection, ClientError, ServerError;
+	public delegate void NextCallback () throws Informational, Success, Redirection, ClientError, ServerError;
 }
