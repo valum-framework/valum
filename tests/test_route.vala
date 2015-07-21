@@ -25,6 +25,7 @@ public void test_route_from_rule () {
 	assert (route.match (request, stack));
 	assert (request.params != null);
 	assert (request.params["id"] == "5");
+	assert ("5" == stack.pop_tail ().get_string ());
 }
 
 /**
@@ -39,6 +40,7 @@ public void test_route_from_rule_null () {
 	assert (request.params != null);
 	assert (request.params.contains ("path"));
 	assert ("5" == request.params["path"]);
+	assert ("5" == stack.pop_tail ().get_string ());
 }
 
 /**
@@ -50,6 +52,8 @@ public static void test_route_from_rule_null_matches_empty_path () {
 	var stack  = new Queue<Value?> ();
 
 	assert (route.match (request, stack));
+	assert ("" == request.params["path"]);
+	assert ("" == stack.pop_tail ().get_string ());
 }
 
 /**
@@ -61,8 +65,10 @@ public void test_route_from_rule_any () {
 	var stack  = new Queue<Value?> ();
 
 	assert (route.match (request, stack));
+
 	assert (request.params != null);
 	assert (request.params["id"] == "5");
+	assert ("5" == stack.pop_tail ().get_string ());
 }
 
 /**
@@ -80,6 +86,7 @@ public void test_route_from_rule_without_captures () {
 	// ensure params are still null if there is no captures
 	assert (matches);
 	assert (req.params == null);
+	assert (stack.is_empty ());
 }
 
 /**
@@ -104,6 +111,7 @@ public void test_route_from_regex () {
 	assert (matches);
 	assert (req.params != null);
 	assert (req.params["id"] == "5");
+	assert ("5" == stack.pop_tail ().get_string ());
 }
 
 /**
@@ -125,6 +133,7 @@ public void test_route_from_regex_scoped () {
 	assert (matches);
 	assert (req.params != null);
 	assert (req.params["id"] == "5");
+	assert ("5" == stack.pop_tail ().get_string ());
 }
 
 /**
@@ -140,6 +149,7 @@ public void test_route_from_regex_without_captures () {
 	// ensure params are still null if there is no captures
 	assert (route.match (req, stack));
 	assert (req.params == null);
+	assert (stack.is_empty ());
 }
 
 /**
@@ -157,6 +167,7 @@ public void test_route_match () {
 	assert (matches);
 	assert (req.params != null);
 	assert (req.params.contains ("id"));
+	assert ("5" == stack.pop_tail ().get_string ());
 }
 
 /**
@@ -170,6 +181,7 @@ public void test_route_match_not_matching () {
 	// no match and params remains null
 	assert (route.match (req, stack) == false);
 	assert (req.params == null);
+	assert (stack.is_empty ());
 }
 
 /**

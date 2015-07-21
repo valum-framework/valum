@@ -94,13 +94,9 @@ namespace Valum {
 						var p = new HashTable<string, string?> (str_hash, str_equal);
 						foreach (var capture in captures) {
 							p[capture] = match_info.fetch_named (capture);
+							stack.push_tail (match_info.fetch_named (capture));
 						}
 						req.params = p;
-					}
-					// push parameters on the stack
-					foreach (var capture in captures) {
-						//Parameter param = {capture, match_info.fetch_named (capture)};
-						//stack.push_tail (param);
 					}
 					return true;
 				}
@@ -177,13 +173,9 @@ namespace Valum {
 						var p = new HashTable<string, string?> (str_hash, str_equal);
 						foreach (var capture in captures) {
 							p[capture] = match_info.fetch_named (capture);
+							stack.push_tail (match_info.fetch_named (capture));
 						}
 						req.params = p;
-					}
-					// push parameters on the stack
-					foreach (var capture in captures) {
-						//Parameter param = {capture, match_info.fetch_named (capture)};
-						//stack.push_tail (param);
 					}
 					return true;
 				}
