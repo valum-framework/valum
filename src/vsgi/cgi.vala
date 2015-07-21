@@ -24,9 +24,7 @@ namespace VSGI.CGI {
 
 		public override HTTPVersion http_version {
 			get {
-				return environment["SERVER_PROTOCOL"] == "HTTP/1.1" ?
-					HTTPVersion.@1_1 :
-					HTTPVersion.@1_0;
+				return environment["SERVER_PROTOCOL"] == "HTTP/1.1" ?  HTTPVersion.@1_1 : HTTPVersion.@1_0;
 			}
 		}
 
@@ -60,7 +58,7 @@ namespace VSGI.CGI {
 			if (environment.contains ("SERVER_PORT"))
 				this._uri.set_port (int.parse (environment["SERVER_PORT"]));
 
-			if (environment.contains ("PATH_INFO"))
+			if (environment.contains ("PATH_INFO") && environment["PATH_INFO"].length > 0)
 				this._uri.set_path (environment["PATH_INFO"]);
 			else
 				this._uri.set_path ("/");
