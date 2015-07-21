@@ -79,7 +79,7 @@ namespace VSGI.SCGI {
 				command_line.print ("listening on the default file descriptor\n");
 			}
 
-			listener.incoming.connect ((connection) => {
+			listener.run.connect ((connection) => {
 				// consume the environment from the stream
 				var environment = new HashTable<string, string> (str_hash, str_equal);
 				var reader      = new DataInputStream (connection.input_stream);
@@ -91,7 +91,7 @@ namespace VSGI.SCGI {
 				// consume the semi-colon
 				if (reader.read_byte () != ':') {
 					command_line.printerr ("malformed netstring, missing ':'\n");
-					return false;
+					return true;
 				}
 
 				// consume and extract the environment
@@ -107,7 +107,7 @@ namespace VSGI.SCGI {
 					}
 					if (reader.read_byte () != '\0') {
 						command_line.printerr ("malformed netstring, missing EOF\n");
-						return false;
+						return true;
 					}
 					read += 1 + last_length;
 				}
@@ -117,7 +117,7 @@ namespace VSGI.SCGI {
 				// consume the comma following a chunk
 				if (reader.read_byte () != ',') {
 					command_line.printerr ("malformed netstring, missing ','\n");
-					return false;
+					return true;
 				}
 
 				var req = new Request (connection, environment);
