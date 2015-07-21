@@ -22,6 +22,9 @@ additional information about the request.
 Request parameters
 ~~~~~~~~~~~~~~~~~~
 
+.. deprecated:: 0.2
+    Request parameters are stored in the stack.
+
 It is important to keep in mind that the request parameters result from
 a side-effect. If a matcher accept the request, it may populate the parameters.
 The matching process in :doc:`router` guarantees that only one matcher can
@@ -42,6 +45,19 @@ parameters with their named captures.
     });
 
 Parameters default to ``null`` if it is not populated by any matchers.
+
+Request parameters (stacked)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Request parameters are accumulated in the routing stack in their conventional
+order and can be popped in a handler in the reverse order.
+
+.. code:: vala
+
+    app.get ("<controller><action>", (req, res, next, stack) => {
+        var action     = stack.pop_tail ();
+        var controller = stack.pop_tail ();
+    });
 
 Matching using a rule
 ~~~~~~~~~~~~~~~~~~~~~
