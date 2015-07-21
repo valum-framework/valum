@@ -98,12 +98,13 @@ app.get ("custom-route-type/<permutations:p>", (req, res) => {
 	writer.put_string (req.params["p"]);
 });
 
-app.get ("state", (req, res, next) => {
-	next ("I have been passed!");
+app.get ("state", (req, res, next, stack) => {
+	stack.push_tail ("I have been passed!");
+	next ();
 });
 
-app.get ("state", (req, res, next, state) => {
-	res.body.write (state.get_string ().data);
+app.get ("state", (req, res, next, stack) => {
+	res.body.write (stack.pop_tail ().get_string ().data);
 });
 
 // hello world! (compare with Node.js!)
