@@ -26,6 +26,11 @@ namespace Valum {
 		public weak Router router { construct; get; }
 
 		/**
+		 * @since 0.3
+		 */
+		public string? method { construct; get; }
+
+		/**
 		 * Create a Route using a custom matcher.
 		 *
 		 * This is the lowest-level mean to create a Route instance.
@@ -35,8 +40,8 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public Route (Router router, MatcherCallback matcher, HandlerCallback callback) {
-			Object (router: router);
+		public Route (Router router, string? method, MatcherCallback matcher, HandlerCallback callback) {
+			Object (router: router, method: method);
 			this.match  = matcher;
 			this.fire   = callback;
 		}
@@ -54,8 +59,8 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public Route.from_regex (Router router, Regex regex, HandlerCallback callback) throws RegexError {
-			Object (router: router);
+		public Route.from_regex (Router router, string? method, Regex regex, HandlerCallback callback) throws RegexError {
+			Object (router: router, method: method);
 			this.fire = callback;
 
 			var pattern = new StringBuilder ("^");
@@ -118,8 +123,8 @@ namespace Valum {
 		 * @param rule compiled down ot a regular expression and captures all
 		 *             paths if set to null
 		 */
-		public Route.from_rule (Router router, string? rule, HandlerCallback callback) throws RegexError {
-			Object (router: router);
+		public Route.from_rule (Router router, string? method, string? rule, HandlerCallback callback) throws RegexError {
+			Object (router: router, method: method);
 			this.fire = callback;
 
 			var param_regex = new Regex ("(<(?:\\w+:)?\\w+>)");
@@ -196,5 +201,13 @@ namespace Valum {
 		 * @since 0.0.1
 		 */
 		public HandlerCallback fire;
+
+		/**
+		 * Pushes the handler in the {@link Router} queue to produce a sequence
+		 * of callbacks that reuses the same matcher.
+		 */
+		public Route then (HandlerCallback handler) {
+			return this.router.matcher (this.method, match, handler);
+		}
 	}
 }

@@ -233,6 +233,25 @@ them in a stack.
         var obj = stack.pop_tail ();
     });
 
+Sequence
+--------
+
+:doc:`route` has a ``then`` function that can be used to produce to sequence
+handlers for a common matcher. It can be used to create a pipeline of
+processing for a resource using handling middlewares.
+
+.. code:: vala
+
+    app.get ("admin", (req, res, next) => {
+        // authenticate user...
+        next ();
+    }).then ((req, res, next) => {
+        // produce sensitive data...
+        next ();
+    }).then ((req, res) => {
+        // produce the response
+    });
+
 Invoke
 ------
 

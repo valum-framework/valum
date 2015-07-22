@@ -11,9 +11,12 @@ mcd.add_server ("127.0.0.1", 11211);
 app.types["permutations"] = /abc|acb|bac|bca|cab|cba/;
 
 // default route
-app.get ("", (req, res) => {
+app.get ("", (req, res, next) => {
+	// reuse the same matcher...
+	res.headers.set_content_type ("text/html", null);
+	next ();
+}).then ((req, res) => {
 	var template = new View.from_stream (resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
-
 	template.to_stream (res.body);
 });
 
