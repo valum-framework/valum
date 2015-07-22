@@ -106,19 +106,18 @@ Thrown status code can be handled by a ``HandlerCallback`` pretty much like how
 typically matched requests are being handled.
 
 The received :doc:`vsgi/request` and :doc:`vsgi/response` object are in the
-same state they were when the status was thrown. The error message is passed in
-the ``HandlerCallback`` last parameter named ``state``.
+same state they were when the status was thrown. The error message is stacked
+and available in the ``HandlerCallback`` last parameter.
 
 .. code:: vala
 
-    app.status (Soup.Status.NOT_FOUND, (req, res, next, state) => {
+    app.status (Soup.Status.NOT_FOUND, (req, res, next, stack) => {
         // produce a 404 page...
-        var message = state.get_string ();
+        var message = stack.pop_tail ().get_string ();
     });
 
 Similarly to conventional request handling, the ``next`` continuation can be
-invoked to jump to the next status handler in the queue. The error message is
-passed automatically, so you do not have to manually propagate the state.
+invoked to jump to the next status handler in the queue.
 
 .. code:: vala
 
@@ -215,23 +214,24 @@ matching route.
         // this is invoked!
     });
 
-Additionally, a state can be propagated in a ``next`` invocation to transmit
-data to the next handler in the queue.
+Stacked states
+~~~~~~~~~~~~~~
+
+Additionally, states can be passed to the next handler in the queue by pushing
+them in a stack.
 
 .. code:: vala
 
-    app.get ("", (req, res, next) => {
+    app.get ("", (req, res, next, stack) => {
         message ("pre");
-        var state = new Object ();
-        next (state); // propagate the state
+        stack.push_tail (new Object ()); // propagate the state
+        next ();
     });
 
-    app.get ("", (req, res, next, state) => {
+    app.get ("", (req, res, next, stack) => {
         // perform an operation with the provided state
+        var obj = stack.pop_tail ();
     });
-
-The ``Router`` will automatically propagate the state, so calling ``next``
-without argument is a safe operation.
 
 Invoke
 ------
@@ -280,8 +280,8 @@ responses designed for non-human client.
         });
     });
 
-    app.status (Status.NOT_ACCEPTABLE, (req, res) => {
-        res.body.write ("<p>%s</p>".printf (state.get_string ()).data);
+    app.status (Status.NOT_ACCEPTABLE, (req, res, next, stack) => {
+        res.body.write ("<p>%s</p>".printf (stack.pop_tail ().get_string ()).data);
     });
 
 Middleware
@@ -321,7 +321,7 @@ accept the ``application/json`` content type as a response.
 Handling middleware
 ~~~~~~~~~~~~~~~~~~~
 
-These middlewares are reusable piece of processing that can perform various
+These middlewares are reusable pieces of processing that can perform various
 work from authentication to the delivery of a static resource.
 
 It is possible for a handling middleware to pass a state to the next handling
@@ -333,29 +333,43 @@ the :doc:`vsgi/response` body.
 
 .. code:: vala
 
-    app.get (null, (req, res, next) => {
+    app.get (null, (req, res, next, stack) => {
         res.headers ("Content-Encoding", "gzip");
-        next (new ConverterOutputStream (new ZLibCompressor ("gzip", res.body));
+        stack.push_tail (new ConverterOutputStream (new ZLibCompressor ("gzip", res.body));
+        next ();
     });
 
-    app.get ("home", (req, res, next, state) => {
-        OutputStream body = state;
+    app.get ("home", (req, res, next, stack) => {
+        var body = (OutputStream) stack.pop_tail ();
         body.write ("Hello world!".data); // transparently compress the output
     });
 
-If this is wrapped in a function, it can even be used directly from the
-handler.
+If this is wrapped in a function, which is typically the case, it can even be
+used directly from the handler.
 
 .. code:: vala
 
-    HandlerCallback compress = (req, res, next) => {
+    HandlerCallback compress = (req, res, next, stack) => {
         res.headers ("Content-Encoding", "gzip");
-        next (new ConverterOutputStream (new ZLibCompressor ("gzip", res.body));
+        stack.push_tail (new ConverterOutputStream (new ZLibCompressor ("gzip", res.body));
+        next ();
     };
 
-    app.get ("home", (req, res) => {
-        compress (req, res, (state) => {
-            OutputStream body = state;
+    app.get ("home", compress);
+
+    app.get ("home", (req, res, next, stack) => {
+        var body = (OutputStream) stack.pop_tail ();
+        body.write ("Hello world!".data);
+    });
+
+Alternatively, a handling middleware can be used directly instead of being
+attached to a :doc:`route`.
+
+.. code:: vala
+
+    app.get ("home", (req, res, next, stack) => {
+        compress (req, res, () => {
+            var body = (OutputStream) stack.pop_tail ();
             body.write ("Hello world!".data);
-        })
-    })
+        }, stack);
+    });

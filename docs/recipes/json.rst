@@ -92,7 +92,7 @@ code duplication. They are described in the :doc:`../router` document.
         });
 
         // update model data
-        app.post ("<username>", (req, res) => {
+        app.post ("<username>", (req, res, next, stack) => {
             var user   = new User.from_username (req.params["username"]);
             var parser = new Json.Parser ();
 
@@ -117,14 +117,16 @@ code duplication. They are described in the :doc:`../router` document.
                 throw new Success.CREATED ("/user/%s".printf (user.username));
             }
 
-            next (user);
+            stack.push_tail (user);
+
+            next ();
         });
 
         // serialize to JSON any provided GObject
-        app.all (null, (req, res, next, state) => {
+        app.all (null, (req, res, next, stack) => {
             var generator = new Json.Generator ();
 
-            generator.root   = Json.gobject_serialize (state.get_object ());
+            generator.root   = Json.gobject_serialize (stack.pop_tail ().get_object ());
             generator.pretty = false;
 
             res.headers.set_content_type ("application/json", null);
@@ -146,7 +148,9 @@ expecting a considerable user input.
 
         user.update ();
 
+        stack.push_tail (user);
+
         // execute 'next' in app context
-        app.invoke (req, res, next, user);
+        app.invoke (req, res, next);
     });
 

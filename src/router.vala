@@ -237,18 +237,17 @@ namespace Valum {
 		 * @param state  propagated state
 		 * @return tells if something matched during the routing process
 		 */
-		private bool perform_routing (List<Route> routes, Request req, Response res, Value? state = null) throws Informational, Success, Redirection, ClientError, ServerError {
+		private bool perform_routing (List<Route> routes, Request req, Response res, Queue<Value?> stack) throws Informational, Success, Redirection, ClientError, ServerError {
 			foreach (var route in routes) {
-				if (route.match (req)) {
-					route.fire (req, res, (new_state) => {
+				if (route.match (req, stack)) {
+					route.fire (req, res, () => {
 						unowned List<Route> current = routes.find (route);
 						// keep routing if there are more routes to explore
 						if (current.next != null)
-							// initial state is propagated if no new state is provided
-							if (perform_routing (current.next, req, res, new_state == null ? state : new_state))
+							if (perform_routing (current.next, req, res, stack))
 								return;
 						throw new ClientError.NOT_FOUND ("The request URI %s was not found.".printf (req.uri.to_string (false)));
-					}, state);
+					}, stack);
 					return true;
 				}
 			}
@@ -268,16 +267,20 @@ namespace Valum {
 		 * @param next  callback to be invoked in the routing context
 		 * @param state state to pass to the callback
 		 */
-		public void invoke (Request req, Response res, NextCallback next, Value? state = null) {
+		public void invoke (Request req, Response res, NextCallback next) {
 			try {
 				try {
-					next (state);
+					next ();
 					return;
 				} catch (Error e) {
 					// handle using a registered status handler
-					if (this.status_handlers.contains (e.code))
-						if (this.perform_routing (this.status_handlers[e.code].head, req, res, e.message))
+					if (this.status_handlers.contains (e.code)) {
+						var stack = new Queue<Value?> ();
+						stack.push_tail (e.message);
+						if (this.perform_routing (this.status_handlers[e.code].head, req, res, stack)) {
 							return;
+						}
+					}
 
 					// propagate the error if it is not handled
 					throw e;
@@ -325,10 +328,12 @@ namespace Valum {
 				res.headers.set_encoding (Soup.Encoding.CHUNKED);
 
 			// initial invocation
-			this.invoke (req, res, (state) => {
+			this.invoke (req, res, () => {
+				var stack = new Queue<Value?> ();
+
 				// ensure at least one route has been declared with that method
 				if (this.routes.contains (req.method))
-					if (this.perform_routing (this.routes[req.method].head, req, res, state))
+					if (this.perform_routing (this.routes[req.method].head, req, res, stack))
 						return; // something matched
 
 				// find routes from other methods matching this Request
@@ -336,7 +341,7 @@ namespace Valum {
 				foreach (var method in this.routes.get_keys ()) {
 					if (method != req.method) {
 						foreach (var route in this.routes[method].head) {
-							if (route.match (req)) {
+							if (route.match (req, stack)) {
 								if (allowed.len > 0)
 									allowed.append (", ");
 								allowed.append (method);

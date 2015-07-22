@@ -50,6 +50,7 @@ namespace VSGI {
 		 *
 		 * @since 0.0.1
 		 */
+		[Deprecated (since = "0.2")]
 		public HashTable<string, string?>? @params { get; set; default = null; }
 
 		/**
