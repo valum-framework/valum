@@ -4,8 +4,10 @@ SCGI
 SCGI (Simple Common Gateway Interface) is a stream-based protocol that is
 particularly simple to implement.
 
-The implementation takes the best out of GIO asynchronous APIs as it is purely
-implemented with it.
+.. note::
+
+    SCGI is the recommended implementation and should be used when available as
+    it takes the best out of GIO asynchronous API.
 
 .. _GLib.SocketService:
 
@@ -13,14 +15,21 @@ implemented with it.
 
     using VSGI.SCGI;
 
+    var shared_state = 5;
+
     app.get ("", (req, res) => {
         // ...
+        lock (shared_state) {
+            shared_state++;
+        }
     });
 
     new Server (app.handle).run ();
 
-Connections being handling in worker threads, it is critical to avoid shared
-state or to use `GLib.Mutex`_ properly.
+.. warning::
+
+    Connections being handling in worker threads, it is critical to avoid
+    shared state or to use `GLib.Mutex`_ or ``lock`` properly.
 
 .. _GLib.Mutex: http://valadoc.org/#!api=glib-2.0/GLib.Mutex
 

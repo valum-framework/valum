@@ -26,7 +26,7 @@ namespace Valum {
 	 * @since 0.1
 	 *
 	 * @param req           request being matched
-	 * @param initial_stack stacked request parameters
+	 * @param initial_stack destination for the initial routing stack
 	 */
 	public delegate bool MatcherCallback (Request req, Queue<Value?> initial_stack);
 
@@ -42,18 +42,23 @@ namespace Valum {
 	 * @param req   request being handled
 	 * @param res   response to send back to the requester
 	 * @param next  keep routing
-	 * @param state propagated state from a preceeding next invocation, it
-	 *              remains null if this is the top invocation or no state
-	 *              have been propagated
+	 * @param stack routing stack as altered by the preceeding next invocation
+	 *              or initialized by the first {@link Valum.MatcherCallback}
 	 */
 	public delegate void HandlerCallback (Request req, Response res, NextCallback next, Queue<Value?> stack) throws Informational, Success, Redirection, ClientError, ServerError;
 
 	/**
-	 * Keeps routing the {@link VSGI.Request} and {@link VSGI.Response}.
+	 * Continuation passed in a {@link Valum.HandlerCallback} to *keep routing*
+	 * both {@link VSGI.Request} and {@link VSGI.Response}.
+	 *
+	 * It is also used as a generic continuation that propagates a thrown status
+	 * code.
 	 *
 	 * @since 0.1
 	 *
-	 * @param state propagated state to the next handler
+	 * @throws Redirection perform a 3xx HTTP redirection
+	 * @throws ClientError trigger a 4xx client error
+	 * @throws ServerError trigger a 5xx server error
 	 */
 	public delegate void NextCallback () throws Informational, Success, Redirection, ClientError, ServerError;
 }

@@ -37,15 +37,16 @@ a :doc:`request` and a :doc:`response`.
         // process the request and produce the response...
     }).run ();
 
-The callback must at least access the :doc:`response` body once so that the
-headers can be written and filters be applied, otherwise nothing will be sent
-to the client and the connection will be closed.
-
 Accessing the :doc:`response` ``body`` for the first time will write the status
 line and headers synchronously in the connection stream before returning an
 `GLib.OutputStream`_.
 
 .. _GLib.OutputStream: http://valadoc.org/#!api=gio-2.0/GLib.OutputStream
+
+.. warning::
+
+    The :doc:`response` body must be accessed at least once during the
+    processing to ensure that the headers will be written and filters applied.
 
 Asynchronous processing
 -----------------------
@@ -63,10 +64,14 @@ The :doc:`request` holds a reference to the said connection and the
 Generally speaking, holding a reference on any of these two instances is
 sufficient to keep the streams usable.
 
-Synchronously, that does not make a difference because the request and response
-bodies will be freed properly before the connection, avoiding any kind of
-message corruption. However, asynchronously, the connection must persist until
-all streams operations are done as demonstrated in the following example:
+.. warning::
+
+    As VSGI relies on reference counting to free the resources underlying
+    a request, you must keep a reference to either the :doc:`request` or
+    :doc:`response` during the processing, including in asynchronous callbacks.
+
+It is important that the connection persist until all streams operations are
+done as the following example demonstrates:
 
 .. code:: vala
 

@@ -236,7 +236,7 @@ namespace Valum {
 		 * @param routes sequence of routes to traverse
 		 * @param req    request
 		 * @param res    response
-		 * @param state  propagated state
+		 * @param stack  routing stack passed to match and fire
 		 * @return tells if something matched during the routing process
 		 */
 		private bool perform_routing (List<Route> routes, Request req, Response res, Queue<Value?> stack) throws Informational, Success, Redirection, ClientError, ServerError {
@@ -267,7 +267,6 @@ namespace Valum {
 		 * @param req   request for the context
 		 * @param res   response for the context
 		 * @param next  callback to be invoked in the routing context
-		 * @param state state to pass to the callback
 		 */
 		public void invoke (Request req, Response res, NextCallback next) {
 			try {
