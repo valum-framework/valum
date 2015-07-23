@@ -236,7 +236,7 @@ namespace Valum {
 		 * @param routes sequence of routes to traverse
 		 * @param req    request
 		 * @param res    response
-		 * @param state  propagated state
+		 * @param stack  routing stack passed to match and fire
 		 * @return tells if something matched during the routing process
 		 */
 		private bool perform_routing (List<Route> routes, Request req, Response res, Queue<Value?> stack) throws Informational, Success, Redirection, ClientError, ServerError {

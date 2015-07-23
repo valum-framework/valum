@@ -25,10 +25,12 @@ Request parameters
 .. deprecated:: 0.2
     Request parameters are stored in the stack.
 
-It is important to keep in mind that the request parameters result from
-a side-effect. If a matcher accept the request, it may populate the parameters.
-The matching process in :doc:`router` guarantees that only one matcher can
-accept the request and thus populate the parameters.
+.. warning::
+
+    It is important to keep in mind that the request parameters result from
+    a side-effect. If a matcher accept the request, it may populate the
+    parameters. The matching process in :doc:`router` guarantees that only one
+    matcher can accept the request and thus populate the parameters.
 
 Request can be parametrized in a general manner:
 
@@ -240,9 +242,9 @@ accept the request.
 Handler
 -------
 
-Handler process a a pair of :doc:`vsgi/request` and :doc:`vsgi/response` and
-can throw various status code during the processing to handle cases that breaks
-the code flow conveniently.
+Handler process a pair of :doc:`vsgi/request` and :doc:`vsgi/response` and can
+throw various status code during the processing to handle cases that breaks the
+code flow conveniently. They are fully covered in the :doc:`router` document.
 
 See :doc:`redirection-and-error` for more details on what can be throws during
 the processing of a handler.

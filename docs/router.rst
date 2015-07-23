@@ -5,6 +5,31 @@ Router is the core component of Valum. It dispatches request to the right
 handler and processes certain error conditions described in
 :doc:`redirection-and-error`.
 
+Routing stack
+-------------
+
+During the routing, states can obtained from a previous handler or passed to
+the next one using the routing stack. The stack is a simple `GLib.Queue`_ that
+can be accessed from its head or tail.
+
+.. warning::
+
+    The queue tail is used to perform stack operations with ``push_tail`` and
+    ``pop_tail``.
+
+.. _GLib.Queue: http://valadoc.org/#!api=glib-2.0/GLib.Queue
+
+.. code:: vala
+
+    app.get ("", (req, res, next, stack) => {
+        stack.push_tail ("some value");
+        next ();
+    });
+
+    app.get ("", (req, res, next, stack) => {
+        var some_value = stack.pop_tail ().get_string ();
+    });
+
 HTTP methods
 ------------
 
@@ -89,9 +114,13 @@ Matcher callback
 ----------------
 
 Request can be matched by a simple callback typed by the ``MatcherCallback``
-delegate, but you have to be cautious if you want to fill request parameters.
-You must respect the `populate if match` rule, otherwise you will experience
-inconsistencies.
+delegate.
+
+.. warning::
+
+    You have to be cautious if you want to fill request parameters and respect
+    the `populate if match` rule, otherwise you will experience
+    inconsistencies.
 
 .. code:: vala
 
@@ -173,28 +202,21 @@ Since ``VSGI.ApplicationCallback`` is type compatible with ``HandlerCallback``,
 it is possible to delegate request handling to another VSGI-compliant
 application.
 
+.. note::
+
+    This feature is a key design of the router and is intended to be used for
+    a maximum inter-operability with other frameworks based on VSGI.
+
+The following example delegates all ``GET`` requests to another router which
+will process in isolation with its own routing stack.
+
 .. code:: vala
 
     var app = new Router ();
     var api = new Router ();
 
     // delegate all GET requests to api router
-    app.get ("<any:any>", api.handle);
-
-This feature can be used to combine independently working applications in
-a single one, as opposed to :doc:`module`, which are designed to be
-specifically integrated in a working application.
-
-It is important to be cautious since the pair of request-response may be the
-target of side-effects such as:
-
--  parent router ``setup`` and ``teardown`` signals can operate before and
-   after the delegated handler
--  matcher that matched the request before being delegated may initialize the
-   :doc:`vsgi/request` parameters
-
-In the example, the ``<any:any>`` parameter will initialize the
-:doc:`vsgi/request` parameters.
+    app.get (null, api.handle);
 
 Next
 ----

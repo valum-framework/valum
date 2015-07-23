@@ -34,6 +34,10 @@ plain strings to describe standard HTTP methods.
 Request parameters
 ------------------
 
+.. deprecated:: 0.2
+
+    Use the routing stack described in the :doc:`../router` documentation.
+
 The request parameters are stored in a `GLib.HashTable`_ of ``string`` to
 ``string`` and can be accessed from the ``Request.params`` property. It's used
 as a general metadata storage for requests.

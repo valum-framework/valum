@@ -87,14 +87,16 @@ code duplication. They are described in the :doc:`../router` document.
 
     app.scope ("user", (user) => {
         // fetch the user
-        app.get ("<username>", (req, res, next) => {
-            next (new User.from_username (req.params["username"]));
+        app.get ("<username>", (req, res, next, stack) => {
+            stack.push_tail (new User.from_username (req.params["username"]));
+            next ();
         });
 
         // update model data
         app.post ("<username>", (req, res, next, stack) => {
-            var user   = new User.from_username (req.params["username"]);
-            var parser = new Json.Parser ();
+            var username = stack.pop_tail ().get_string ();
+            var user     = new User.from_username (username);
+            var parser   = new Json.Parser ();
 
             // whitelist for allowed properties
             string[] allowed = {"username"};
@@ -112,7 +114,7 @@ code duplication. They are described in the :doc:`../router` document.
             // persist the changes
             user.update ();
 
-            if (user.username != req.params["username"]) {
+            if (user.username != username) {
                 // model location has changed, so we throw a 201 CREATED status
                 throw new Success.CREATED ("/user/%s".printf (user.username));
             }
