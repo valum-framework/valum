@@ -32,6 +32,16 @@ The response headers can be accessed as a `Soup.MessageHeaders`_ from the
         res.headers.set_content_type ("text/plain");
     });
 
+Headers can be written in the response by invoking ``write_head`` or its
+asynchronous version ``write_head_async``. This is called automatically when
+you access the body for the first time.
+
+.. code:: vala
+
+    res.write_head_async.begin (Priority.DEFAULT, null, () => {
+        // produce the body...
+    });
+
 Body
 ----
 

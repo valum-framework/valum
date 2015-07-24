@@ -311,8 +311,7 @@ namespace Valum {
 				res.status = e.code;
 			}
 
-			// write head if a status has been thrown
-			res.write_head ();
+			res.body.close ();
 		}
 
 		/**

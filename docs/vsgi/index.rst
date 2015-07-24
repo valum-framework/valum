@@ -37,9 +37,9 @@ a :doc:`request` and a :doc:`response`.
         // process the request and produce the response...
     }).run ();
 
-The callback must at least call ``write_head`` (or ``write_head_async``) on the
-:doc:`response`, otherwise nothing will be sent to the client and the
-connection will be closed.
+The callback must at least access the :doc:`response` body once so that the
+headers can be written and filters be applied, otherwise nothing will be sent
+to the client and the connection will be closed.
 
 Accessing the :doc:`response` ``body`` for the first time will write the status
 line and headers synchronously in the connection stream before returning an
