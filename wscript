@@ -3,7 +3,7 @@
 import glob
 
 APPNAME='valum'
-VERSION='0.2.0-alpha'
+VERSION='0.2.0-beta'
 API_VERSION='0.2'
 
 top='.'
