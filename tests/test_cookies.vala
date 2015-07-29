@@ -23,4 +23,20 @@ public void test_cookies_from_request_headers () {
 	assert ("e" == cookies.next.next.data.name);
 	assert ("f" == cookies.next.next.data.value);
 }
+
+/**
+ * @since 0.3
+ */
+public void test_cookies_lookup () {
+	var headers = new MessageHeaders (MessageHeadersType.REQUEST);
+
+	headers.append ("Cookie", "a=b");
+	headers.append ("Cookie", "a=c"); // override
+
+	assert (null == Cookies.lookup ("b", headers));
+
+	var cookie = Cookies.lookup ("a", headers);
+
+	assert ("a" == cookie.name);
+	assert ("c" == cookie.value);
 }
