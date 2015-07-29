@@ -14,9 +14,9 @@ namespace Valum.Cookies {
 	 * @since 0.1
 	 *
 	 * @param headers headers containing the cookies
-	 * @param uri     origin of the cookies
+	 * @param origin  origin of the cookies
 	 */
-	public SList<Cookie> from_request_headers (MessageHeaders headers, URI? uri = null)
+	public SList<Cookie> from_request_headers (MessageHeaders headers, URI? origin= null)
 #if SOUP_2_50
 		ensures (headers.get_headers_type () == MessageHeadersType.REQUEST)
 #endif
@@ -27,10 +27,9 @@ namespace Valum.Cookies {
 		if (cookie_list == null)
 			return cookies;
 
-		foreach (var cookie in cookie_list.split ("; ")) {
+		foreach (var cookie in cookie_list.split (","))
 			if (cookie != null)
-				cookies.prepend (Cookie.parse (cookie, uri));
-		}
+				cookies.prepend (Cookie.parse (cookie, origin));
 
 		cookies.reverse ();
 
