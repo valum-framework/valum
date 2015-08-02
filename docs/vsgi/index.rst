@@ -8,19 +8,16 @@ For the moment, it is developed along with Valum to target the needs of a web
 framework, but it will eventually be extracted and distributed as a shared
 library.
 
-It actually supports two technologies (libsoup-2.4 and FastCGI) and more
-implementations are planned when the specification will be more stable.
-
 .. toctree::
 
     request
     response
+    cookies
     converters
     server/index
 
 VSGI produces process-based applications that are able to communicate with
-various HTTP servers with protocols and process their client requests
-asynchrously.
+various HTTP servers using standardized protocols.
 
 Entry point
 -----------
@@ -46,7 +43,20 @@ line and headers synchronously in the connection stream before returning an
 .. warning::
 
     The :doc:`response` body must be accessed at least once during the
-    processing to ensure that the headers will be written and filters applied.
+    processing to ensure that the headers are written and filters applied.
+
+Some VSGI implementations rely on stream filtering to produce proper responses
+(chunked or gzipped ones) and these are applied when the body is accessed for
+the first time.
+
+.. code:: vala
+
+    new Server ((req, res) => {
+        res.status = 200;
+        res.headers.append ("Transfer-Encoding", "chunked");
+        // chunked encoding will be applied
+        res.body.write ("Hello world!".data);
+    });
 
 Asynchronous processing
 -----------------------

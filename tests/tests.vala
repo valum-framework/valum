@@ -76,9 +76,6 @@ public int main (string[] args) {
 	Test.add_func ("/route/match/not_matching", test_route_match_not_matching);
 	Test.add_func ("/route/fire", test_route_match_not_matching);
 
-	Test.add_func ("/cookies/from_request_headers", test_cookies_from_request_headers);
-	Test.add_func ("/cookies/lookup", test_cookies_lookup);
-
 	Test.add_func ("/view/from_string", test_view_from_string);
 	Test.add_func ("/view/from_path", test_view_from_path);
 	Test.add_func ("/view/from_stream", test_view_from_stream);
@@ -110,6 +107,10 @@ public int main (string[] args) {
 	Test.add_func ("/view/push_value/null", test_view_push_value_null);
 	Test.add_func ("/view/push_value/string", test_view_push_value_string);
 	Test.add_func ("/view/push_value/unknown_type", test_view_push_value_unknown_type);
+
+	Test.add_func ("/vsgi/cookies/from_request", test_vsgi_cookies_from_request);
+	Test.add_func ("/vsgi/cookies/from_response", test_vsgi_cookies_from_response);
+	Test.add_func ("/vsgi/cookies/lookup", test_vsgi_cookies_lookup);
 
 	Test.add_func ("/vsgi/chunked_encoder", test_vsgi_chunked_encoder);
 

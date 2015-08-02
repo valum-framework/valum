@@ -24,7 +24,6 @@ development. If you think that this document could be improved,
     installation
     getting-started
     application
-    cookies
     vsgi/index
     redirection-and-error
     route
