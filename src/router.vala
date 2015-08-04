@@ -308,6 +308,12 @@ namespace Valum {
 				res.headers.append ("Upgrade", c.message);
 			} catch (Error e) {
 				res.status = e.code;
+				var @params = new HashTable<string, string> (str_hash, str_equal);
+				@params["charset"] = "utf-8";
+				res.headers.set_content_type ("text/plain", @params);
+				res.headers.set_content_length (e.message.data.length);
+				size_t bytes_written;
+				res.body.write_all (e.message.data, out bytes_written);
 			}
 
 			res.body.close ();

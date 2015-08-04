@@ -427,13 +427,21 @@ public static void test_router_server_error () {
 		throw new ServerError.INTERNAL_SERVER_ERROR ("Teapot's burning!");
 	});
 
-	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
+	var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.OK);
 
 	router.handle (request, response);
 
+	var body = (MemoryOutputStream) request.connection.output_stream;
+	HashTable<string, string> @params;
+
 	assert (response.status == Soup.Status.INTERNAL_SERVER_ERROR);
 	assert (response.head_written);
+	assert ("text/plain" == response.headers.get_content_type (out @params));
+	assert ("charset" in @params);
+	assert ("utf-8" == @params["charset"]);
+	assert (17 == response.headers.get_content_length ());
+	assert ("Teapot's burning!" in (string) body.get_data ());
 }
 
 /**

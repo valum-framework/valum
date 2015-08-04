@@ -20,8 +20,14 @@ response and set its headers for specific status.
         res.status = Soup.Status.PERMANENT;
     });
 
-The error message may be used to fill specific :doc:`vsgi/response` headers.
-The following table describe how the router deal with these cases.
+.. warning::
+
+    The :doc:`router` assumes that the :doc:`vsgi/response` head has never been
+    written in order to perform its default handling.
+
+The error message may be used to fill a specific :doc:`vsgi/response` headers
+or the response body. The following table describe how the router deal with
+these cases.
 
 +-----------------------------------+----------+------------------------------------------+
 | Status                            | Header   | Description                              |
@@ -38,6 +44,12 @@ The following table describe how the router deal with these cases.
 +-----------------------------------+----------+------------------------------------------+
 | ClientError.UPGRADE_REQUIRED      | Upgrade  |                                          |
 +-----------------------------------+----------+------------------------------------------+
+
+.. note::
+
+    If the error message is not intended for a specific response header, the
+    message is automatically written in the body with ``Content-Type`` and
+    ``Content-Length`` headers set appropriately.
 
 The approach taken by Valum is to support at least all status defined by
 libsoup-2.4 and those defined in RFC documents. If anything is missing, you can
