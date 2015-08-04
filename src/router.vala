@@ -323,7 +323,9 @@ namespace Valum {
 		public void handle (Request req, Response res) {
 			// sane initialization
 			res.status = Soup.Status.OK;
-			res.headers.set_content_type ("text/html", null);
+			var @params = new HashTable<string, string> (str_hash, str_equal);
+			@params["charset"] = "utf-8";
+			res.headers.set_content_type ("text/html", @params);
 			if (req.http_version == Soup.HTTPVersion.@1_1)
 				res.headers.set_encoding (Soup.Encoding.CHUNKED);
 

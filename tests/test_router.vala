@@ -15,6 +15,28 @@ public static void test_router () {
 }
 
 /**
+ * @since 0.2
+ */
+public static void test_router_handle () {
+	var router = new Router ();
+
+	router.get ("", (req, res) => {
+		res.status = 418;
+	});
+
+	var request  = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var response = new Response (request, Soup.Status.OK);
+
+	router.handle (request, response);
+
+	HashTable<string, string>? @params;
+	assert ("text/html" == response.headers.get_content_type (out @params));
+	assert (null != @params);
+	assert ("charset" in @params);
+	assert ("utf-8" == @params["charset"]);
+}
+
+/**
  * @since 0.1
  */
 public static void test_router_get () {
