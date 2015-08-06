@@ -131,8 +131,8 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public void all (string? rule, HandlerCallback cb) throws RegexError {
-			this.methods (Request.METHODS, rule, cb);
+		public Route[] all (string? rule, HandlerCallback cb) throws RegexError {
+			return this.methods (Request.METHODS, rule, cb);
 		}
 
 		/**
@@ -143,11 +143,13 @@ namespace Valum {
 		 * @param methods methods to which the callback will be bound
 		 * @param rule    rule
 		 */
-		public void methods (string[] methods, string? rule, HandlerCallback cb) throws RegexError {
-			var route = new Route.from_rule (this, null, rule, cb);
+		public Route[] methods (string[] methods, string? rule, HandlerCallback cb) throws RegexError {
+			var routes = new Route[methods.length];
+			var i      = 0;
 			foreach (var method in methods) {
-				this.route (method, route);
+				routes[i++] = this.route (method, new Route.from_rule (this, method, rule, cb));
 			}
+			return routes;
 		}
 
 		/**
@@ -210,7 +212,7 @@ namespace Valum {
 			if (!this.status_handlers.contains (status))
 				this.status_handlers[status] = new Queue<Route> ();
 
-			this.status_handlers[status].push_tail (new Route (this, null, () => { return true; }, cb));
+			this.status_handlers[status].push_tail (new Route (this, status.to_string ("%u"), () => { return true; }, cb));
 		}
 
 		/**

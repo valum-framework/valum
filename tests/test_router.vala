@@ -201,13 +201,16 @@ public static void test_router_patch () {
  * @since 0.1
  */
 public static void test_router_methods () {
-	var router = new Router ();
+	var router       = new Router ();
+	string[] methods = {VSGI.Request.GET, VSGI.Request.POST};
 
-	router.methods ({VSGI.Request.GET, VSGI.Request.POST}, "", (req, res) => {
+	var routes = router.methods (methods, "", (req, res) => {
 		res.status = 418;
 	});
 
-	string[] methods = {VSGI.Request.GET, VSGI.Request.POST};
+	assert (2 == routes.length);
+	assert (methods[0] == routes[0].method);
+	assert (methods[1] == routes[1].method);
 
 	foreach (var method in methods) {
 		var request  = new Request (method, new Soup.URI ("http://localhost/"));
@@ -225,9 +228,14 @@ public static void test_router_methods () {
 public static void test_router_all () {
 	var router = new Router ();
 
-	router.all ("", (req, res) => {
+	var routes = router.all ("", (req, res) => {
 		res.status = 418;
 	});
+
+	assert (VSGI.Request.METHODS.length == routes.length);
+
+	for (int i = 0; i < routes.length; i++)
+		assert (VSGI.Request.METHODS[i] == routes[i].method);
 
 	foreach (var method in VSGI.Request.METHODS) {
 		var request  = new Request (method, new Soup.URI ("http://localhost/"));
