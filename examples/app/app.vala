@@ -18,6 +18,8 @@ app.get ("", (req, res, next) => {
 }).then ((req, res) => {
 	var template = new View.from_stream (resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
 	template.to_stream (res.body);
+
+	res.headers.append ("Test", "test");
 });
 
 app.methods ({VSGI.Request.GET, VSGI.Request.POST}, "get-and-post", (req, res) => {

@@ -5,7 +5,8 @@ using VSGI;
  */
 public void test_vsgi_chunked_encoder () {
 	var produced = new MemoryOutputStream (null, realloc, free);
-	var convert = new ConverterOutputStream (produced, new ChunkedEncoder ());
+	var convert = new ConverterOutputStream (produced,
+											 new ChunkedEncoder (new global::Soup.MessageHeaders (global::Soup.MessageHeadersType.RESPONSE)));
 
 	convert.write ("test".data);
 

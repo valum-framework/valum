@@ -32,12 +32,15 @@ A typical utilisation would be to negociate a ``Content-Encoding: zlib`` header.
         res.body.write ("Hello world!".data);
     });
 
-ChunkedConverter
+ChunkedEncoder
 ----------------
 
-The ``ChunkedConverter`` will convert written data into chunks according to
+The ``ChunkedEncoder`` will convert written data into chunks according to
 `RFC2126 section 3.6.1`_. It is used automatically if the ``Transport-Encoding``
 header is set to ``chunked`` in the :doc:`response`.
+
+Additionally, if headers remain in the :doc:`response` headers, they will be
+written in the encoding trailer.
 
 .. _RFC2126 section 3.6.1: http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.6.1
 

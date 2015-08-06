@@ -16,6 +16,17 @@ namespace VSGI {
 	 */
 	public class ChunkedEncoder : Object, Converter {
 
+		/**
+		 * Headers to be written in the trailer.
+		 *
+		 * @since 0.3
+		 */
+		public global::Soup.MessageHeaders headers { construct; get; }
+
+		public ChunkedEncoder (global::Soup.MessageHeaders headers) {
+			Object (headers: headers);
+		}
+
 		public ConverterResult convert (uint8[] inbuf,
 				                        uint8[] outbuf,
 										ConverterFlags flags,
@@ -61,17 +72,30 @@ namespace VSGI {
 			assert (bytes_read == inbuf.length);
 			assert (bytes_written == size_buffer.length + inbuf.length + 4);
 
-			// write a zero-sized chunk
-			if (ConverterFlags.INPUT_AT_END in flags && inbuf.length > 0) {
+			if (ConverterFlags.INPUT_AT_END in flags) {
+				// write a zero-sized chunk
 				outbuf[bytes_written++] = '0';
 				outbuf[bytes_written++] = '\r';
 				outbuf[bytes_written++] = '\n';
+
+				var trailer = new StringBuilder ();
+
+				headers.foreach ((k, v) => {
+					trailer.append_printf ("%s: %s\r\n", k, v);
+				});
+
+				// write the trailer
+				foreach (var byte in trailer.str.data)
+					outbuf[bytes_written++] = byte;
+
+				// final newline
 				outbuf[bytes_written++] = '\r';
 				outbuf[bytes_written++] = '\n';
+
 				return ConverterResult.FINISHED;
 			}
 
-			return inbuf.length == 0 ? ConverterResult.FINISHED : ConverterResult.CONVERTED;
+			return ConverterResult.CONVERTED;
 		}
 
 		public void reset () {
