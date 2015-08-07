@@ -115,7 +115,7 @@ namespace VSGI {
 		 * @return the status line and headers data or null if nothing should be
 		 *         written in the output stream.
 		 */
-		public ssize_t write_head (Cancellable? cancellable = null) throws IOError
+		public bool write_head (Cancellable? cancellable = null) throws IOError
 			requires (!this.head_written)
 			ensures  (this.head_written)
 		{
@@ -123,14 +123,14 @@ namespace VSGI {
 
 			if (head == null) {
 				this.head_written = true;
-				return 0;
+			} else {
+				size_t bytes_written;
+				this.head_written = this.request.connection.output_stream.write_all (head,
+				                                                                     out bytes_written,
+				                                                                     cancellable);
 			}
 
-			var written = this.request.connection.output_stream.write (head, cancellable);
-
-			this.head_written = true;
-
-			return written;
+			return this.head_written;
 		}
 
 		/**
@@ -138,8 +138,7 @@ namespace VSGI {
 		 *
 		 * @since 0.2
 		 */
-		public async ssize_t write_head_async (int priority = GLib.Priority.DEFAULT,
-			                                   Cancellable? cancellable = null) throws IOError
+		public async bool write_head_async (int priority = GLib.Priority.DEFAULT, Cancellable? cancellable = null) throws IOError
 			requires (!this.head_written)
 			ensures  (this.head_written)
 		{
@@ -147,14 +146,15 @@ namespace VSGI {
 
 			if (head == null) {
 				this.head_written = true;
-				return 0;
+			} else {
+				size_t bytes_written;
+				this.head_written = yield this.request.connection.output_stream.write_all_async (head,
+																								 priority,
+																								 cancellable,
+																								 out bytes_written);
 			}
 
-			var written = yield this.request.connection.output_stream.write_async (head, priority, cancellable);
-
-			this.head_written = true;
-
-			return written;
+			return this.head_written;
 		}
 	}
 }
