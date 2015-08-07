@@ -72,14 +72,14 @@ app.get ("cookies", (req, res) => {
 
 	// write cookies in response
 	writer.put_string ("Cookie\n");
-	foreach (var cookie in Cookies.from_request_headers (req.headers, req.uri)) {
+	foreach (var cookie in VSGI.Cookies.from_request (req)) {
 		writer.put_string ("%s: %s\n".printf (cookie.name, cookie.value));
 	}
 });
 
 app.scope ("cookie", (inner) => {
 	inner.get ("<name>", (req, res) => {
-		foreach (var cookie in Cookies.from_request_headers (req.headers, req.uri))
+		foreach (var cookie in VSGI.Cookies.from_request (req))
 			if (cookie.name == req.params["name"])
 				res.body.write ("%s\n".printf (cookie.value).data);
 	});
