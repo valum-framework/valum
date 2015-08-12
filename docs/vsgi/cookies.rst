@@ -86,3 +86,45 @@ The newly created cookie can be sent by adding a ``Set-Cookie`` header in the
 
     var cookie = new Cookie ("name", "value", "0.0.0.0", "/", 60);
     res.headers.append ("Set-Cookie", cookie.to_set_cookie_header ());
+
+Sign and verify
+---------------
+
+Considering that cookies are persisted by the user agent, it might be necessary
+to sign to prevent forgery. ``Cookies.sign`` and ``Cookies.verify`` functions
+are provided for the purposes of signing and verifying cookies.
+
+.. warning::
+
+    Be careful when you choose and store the secret key. Also, changing it will
+    break any previously signed cookies, which may still be submitted by user
+    agents.
+
+It's up to you to choose what hashing algorithm and secret: ``SHA512`` is
+generally recommended.
+
+The signature process is the following:
+
+::
+
+    HMAC (checksum_type, key, HMAC (checksum_type, key, value) + name) + value
+
+It guarantees that:
+
+-   we have produced the value
+-   we have produced the name and associated it to the value
+
+The verification process does not handle special cases like values smaller than
+the hashing: cookies are either signed or not, even if their values are
+incorrectly formed.
+
+.. code:: vala
+
+    var @value = Cookies.sign (cookie, ChecksumType.SHA512, "secret".data);
+
+    cookie.@value = @value;
+
+    string @value;
+    if (Cookies.verify (cookie, ChecksumType.SHA512, "secret.data", out @value)) {
+        // cookie's okay and the original value is stored in @value
+    }

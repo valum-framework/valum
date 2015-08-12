@@ -65,3 +65,65 @@ public void test_vsgi_cookies_lookup () {
 	assert ("a" == cookie.name);
 	assert ("c" == cookie.value);
 }
+
+/**
+ * @since 0.2
+ */
+public void test_vsgi_cookies_sign () {
+	var cookie = new Soup.Cookie ("name", "value", "0.0.0.0", "/", 3600);
+
+	var signature = VSGI.Cookies.sign (cookie, ChecksumType.SHA256, "secret".data);
+
+	assert ("5d5305a844da2aa20b85bccd0067abf794ff439a9749c17527d8d9f7c2a6cf87value" == signature);
+}
+
+/**
+ * @since 0.2
+ */
+public void test_vsgi_cookies_sign_empty_cookie () {
+	var cookie    = new Soup.Cookie ("name", "", "0.0.0.0", "/", 3600);
+	var signature = VSGI.Cookies.sign (cookie, ChecksumType.SHA256, "secret".data);
+
+	assert ("d6c8fc143254f1f9135210d09f6058414bbec029cc267f1e9c5e70da347eb3e9" == signature);
+}
+
+/**
+ * @since 0.2
+ */
+public void test_vsgi_cookies_sign_and_verify () {
+	var cookie = new Soup.Cookie ("name", "value", "0.0.0.0", "/", 3600);
+
+	cookie.set_value (VSGI.Cookies.sign (cookie, ChecksumType.SHA256, "secret".data));
+
+	string @value;
+	assert (VSGI.Cookies.verify (cookie, ChecksumType.SHA256, "secret".data, out @value));
+	assert ("value" == @value);
+}
+
+/**
+ * @since 0.2
+ */
+public void test_vsgi_cookies_verify () {
+	var cookie = new Soup.Cookie ("name",
+								  "5d5305a844da2aa20b85bccd0067abf794ff439a9749c17527d8d9f7c2a6cf87value",
+	                              "0.0.0.0",
+	                              "/",
+	                              3600);
+
+	string @value;
+	assert (VSGI.Cookies.verify (cookie, ChecksumType.SHA256, "secret".data, out @value));
+	assert ("value" == @value);
+}
+
+/**
+ * @since 0.2
+ */
+public void test_vsgi_cookies_verify_too_small_value () {
+	var cookie = new Soup.Cookie ("name", "value", "0.0.0.0", "/", 3600);
+
+	assert ("value".length < Hmac.compute_for_string (ChecksumType.SHA256, "secret".data, "value").length);
+
+	string @value;
+	assert (!VSGI.Cookies.verify (cookie, ChecksumType.SHA256, "secret".data, out @value));
+	assert (null == @value);
+}
