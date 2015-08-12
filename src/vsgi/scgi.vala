@@ -9,6 +9,7 @@
  *
  * @since 0.2
  */
+[CCode (gir_namespace = "VSGI.SCGI", gir_version = "0.2")]
 namespace VSGI.SCGI {
 
 	public class Request : CGI.Request {
@@ -63,20 +64,25 @@ namespace VSGI.SCGI {
 				listener.set_backlog (options.lookup_value ("backlog", VariantType.INT32).get_int32 ());
 #endif
 
+			try {
 #if GIO_2_40
-			if (options.contains ("port")) {
-				var port = options.lookup_value ("port", VariantType.INT32).get_int16 ();
-				listener.add_inet_port (port, null);
-				command_line.print ("listening on tcp://0.0.0.0:%u\n", port);
-			} else if (options.contains ("file-descriptor")) {
-				var file_descriptor = options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 ();
-				listener.add_socket (new Socket.from_fd (file_descriptor), null);
-				command_line.print ("listening on file descriptor %u\n", file_descriptor);
-			} else
+				if (options.contains ("port")) {
+					var port = options.lookup_value ("port", VariantType.INT32).get_int16 ();
+					listener.add_inet_port (port, null);
+					command_line.print ("listening on tcp://0.0.0.0:%u\n", port);
+				} else if (options.contains ("file-descriptor")) {
+					var file_descriptor = options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 ();
+					listener.add_socket (new Socket.from_fd (file_descriptor), null);
+					command_line.print ("listening on file descriptor %u\n", file_descriptor);
+				} else
 #endif
-			{
-				listener.add_socket (new Socket.from_fd (0), null);
-				command_line.print ("listening on the default file descriptor\n");
+				{
+					listener.add_socket (new Socket.from_fd (0), null);
+					command_line.print ("listening on the default file descriptor\n");
+				}
+			} catch (Error err) {
+				command_line.print ("%s\n", err.message);
+				return 1;
 			}
 
 			listener.run.connect ((connection) => {
@@ -84,39 +90,43 @@ namespace VSGI.SCGI {
 				var environment = new HashTable<string, string> (str_hash, str_equal);
 				var reader      = new DataInputStream (connection.input_stream);
 
-				size_t length;
-				var size   = int.parse (reader.read_upto (":", 1, out length));
-				var buffer = new uint8[size];
+				try {
+					size_t length;
+					var size   = int.parse (reader.read_upto (":", 1, out length));
 
-				// consume the semi-colon
-				if (reader.read_byte () != ':') {
-					command_line.printerr ("malformed netstring, missing ':'\n");
-					return true;
-				}
-
-				// consume and extract the environment
-				string? last_key = null;
-				size_t last_length;
-				size_t read = 0;
-				while (read < size) {
-					if (last_key == null) {
-						last_key = reader.read_upto ("", 1, out last_length);
-					} else {
-						environment[last_key] = reader.read_upto ("", 1, out last_length);
-						last_key = null;
-					}
-					if (reader.read_byte () != '\0') {
-						command_line.printerr ("malformed netstring, missing EOF\n");
+					// consume the semi-colon
+					if (reader.read_byte () != ':') {
+						command_line.printerr ("malformed netstring, missing ':'\n");
 						return true;
 					}
-					read += 1 + last_length;
-				}
 
-				assert (read == size);
+					// consume and extract the environment
+					string? last_key = null;
+					size_t last_length;
+					size_t read = 0;
+					while (read < size) {
+						if (last_key == null) {
+							last_key = reader.read_upto ("", 1, out last_length);
+						} else {
+							environment[last_key] = reader.read_upto ("", 1, out last_length);
+							last_key = null;
+						}
+						if (reader.read_byte () != '\0') {
+							command_line.printerr ("malformed netstring, missing EOF\n");
+							return true;
+						}
+						read += 1 + last_length;
+					}
 
-				// consume the comma following a chunk
-				if (reader.read_byte () != ',') {
-					command_line.printerr ("malformed netstring, missing ','\n");
+					assert (read == size);
+
+					// consume the comma following a chunk
+					if (reader.read_byte () != ',') {
+						command_line.printerr ("malformed netstring, missing ','\n");
+						return true;
+					}
+				} catch (IOError err) {
+					command_line.printerr (err.message);
 					return true;
 				}
 
