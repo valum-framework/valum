@@ -3,7 +3,7 @@
 bld.program(
     packages     = ['glib-2.0'],
     target       = 'tests',
-    source       = ['tests.vala', 'vsgi/test.vala'] + bld.path.ant_glob('**/test_*.vala'),
+    source       = ['tests.vala'] + bld.path.ant_glob('*-test.vala'),
     use          = 'valum',
     uselib       = ['GLIB', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
     vapi_dirs    = ['../vapi'],

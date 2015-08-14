@@ -67,7 +67,7 @@ def build(bld):
         packages     = ['glib-2.0', 'gio-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'fcgi'],
         target       = 'valum',
         gir          = 'Valum-{}'.format(API_VERSION),
-        source       = bld.path.ant_glob('src/**/*.vala'),
+        source       = bld.path.ant_glob('src/*.vala'),
         uselib       = ['GLIB', 'GIO', 'GTHREAD', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
         vapi_dirs    = ['vapi'],
         thread       = True,
