@@ -62,16 +62,18 @@ application at port ``3003`` and since ``using VSGI.Soup`` was specified,
 
 .. code:: vala
 
-    new Server (app.handle).run ({"app", "--port", "3003"});
+    new Server ("org.valum.example.App", app.handle).run ({"app", "--port", "3003"});
 
-:doc:`vsgi/server/index` take an ``ApplicationCallback`` as input, which is
-respected by the ``handle`` function.  Simple application can be defined by
-a simple lambda function taking a :doc:`vsgi/request` and :doc:`vsgi/response`
-as input.
+:doc:`vsgi/server/index` takes an application identifier and an
+``ApplicationCallback``, which is respected by the ``handle`` function.
+
+Minimal application can be defined using a simple lambda function taking
+a :doc:`vsgi/request` and :doc:`vsgi/response`.
 
 .. code:: vala
 
-    new Server ((req, res) => {
+    new Server ("org.valum.example.App", (req, res) => {
+        res.status = 200;
         res.body.write ("Hello world!".data);
     }).run ({"app", "--port", "3003"});
 
@@ -87,6 +89,6 @@ run with fixed parameters. Common options are documented in the
 
         // assume some route declarations...
 
-        new Server (app.handle).run (args);
+        new Server ("org.valum.example.App", app.handle).run (args);
     }
 

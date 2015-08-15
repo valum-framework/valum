@@ -24,14 +24,14 @@ Entry point
 -----------
 
 The entry point of a VSGI application is type-compatible with the
-`ApplicationCallback` delegate. It is a function of two arguments:
+``ApplicationCallback`` delegate. It is a function of two arguments:
 a :doc:`request` and a :doc:`response`.
 
 .. code:: vala
 
     using VSGI.Soup;
 
-    new Server ((req, res) => {
+    new Server ("org.vsgi.App", (req, res) => {
         // process the request and produce the response...
     }).run ();
 
@@ -52,7 +52,7 @@ the first time.
 
 .. code:: vala
 
-    new Server ((req, res) => {
+    new Server ("org.vsgi.App", (req, res) => {
         res.status = 200;
         res.headers.append ("Transfer-Encoding", "chunked");
         // chunked encoding will be applied

@@ -171,8 +171,8 @@ namespace VSGI.CGI {
 	 */
 	public class Server : VSGI.Server {
 
-		public Server (owned VSGI.ApplicationCallback application) {
-			base ((owned) application);
+		public Server (string application_id, owned VSGI.ApplicationCallback application) {
+			base (application_id, (owned) application);
 		}
 
 		public override int command_line (ApplicationCommandLine command_line) {

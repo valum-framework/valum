@@ -76,7 +76,7 @@ written in a usual ``main`` function.
             res.body.write_all ("Hello world!".data, null);
         });
 
-        return new Server (app).run (args);
+        return new Server ("org.vsgi.App", app).run (args);
     }
 
 If you specify the ``--help`` flag, you can get more information on the

@@ -24,7 +24,7 @@ particularly simple to implement.
         }
     });
 
-    new Server (app.handle).run ();
+    new Server ("org.vsgi.SCGI", app.handle).run ();
 
 .. warning::
 

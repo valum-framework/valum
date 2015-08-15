@@ -348,4 +348,4 @@ app.status (Soup.Status.NOT_FOUND, (req, res) => {
 	template.to_stream (res.body);
 });
 
-new Server (app.handle).run ({"app", "--all"});
+new Server ("org.valum.example.App", app.handle).run ({"app", "--all"});

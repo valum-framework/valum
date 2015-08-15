@@ -13,7 +13,7 @@ application or spawn workers in production.
 
     var app = new Router ();
 
-    new Server (app).run ({"app", "--port", "3003"});
+    new Server ("org.vsgi.Soup", app).run ({"app", "--port", "3003"});
 
 Options
 -------

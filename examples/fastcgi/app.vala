@@ -26,5 +26,5 @@ public static int main (string[] args) {
 		writer.put_string ("404 - Not found");
 	});
 
-	return new Server (app.handle).run (args);
+	return new Server ("org.valum.example.FastCGI", app.handle).run (args);
 }

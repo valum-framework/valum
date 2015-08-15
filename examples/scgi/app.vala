@@ -7,4 +7,4 @@ app.get ("", (req, res) => {
 	res.body.write_all ("Hello world!".data, null);
 });
 
-new Server (app.handle).run ();
+new Server ("org.valum.example.SCGI", app.handle).run ();
