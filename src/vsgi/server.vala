@@ -32,9 +32,9 @@ namespace VSGI {
 		 *
 		 * @since 0.2
 		 */
-		public Server (ApplicationCallback application) {
+		public Server (owned ApplicationCallback application) {
 			Object (flags: ApplicationFlags.HANDLES_COMMAND_LINE | ApplicationFlags.SEND_ENVIRONMENT | ApplicationFlags.NON_UNIQUE);
-			this.handle = application;
+			this.handle = (owned) application;
 		}
 	}
 }

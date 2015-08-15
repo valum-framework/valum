@@ -42,10 +42,10 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public Route (Router router, string method, MatcherCallback matcher, HandlerCallback callback) {
+		public Route (Router router, string method, owned MatcherCallback matcher, owned HandlerCallback callback) {
 			Object (router: router, method: method);
-			this.match  = matcher;
-			this.fire   = callback;
+			this.match = (owned) matcher;
+			this.fire  = (owned) callback;
 		}
 
 		/**
@@ -61,9 +61,9 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public Route.from_regex (Router router, string method, Regex regex, HandlerCallback callback) throws RegexError {
+		public Route.from_regex (Router router, string method, Regex regex, owned HandlerCallback callback) throws RegexError {
 			Object (router: router, method: method);
-			this.fire = callback;
+			this.fire = (owned) callback;
 
 			var pattern = new StringBuilder ("^");
 
@@ -125,9 +125,9 @@ namespace Valum {
 		 * @param rule compiled down ot a regular expression and captures all
 		 *             paths if set to null
 		 */
-		public Route.from_rule (Router router, string method, string? rule, HandlerCallback callback) throws RegexError {
+		public Route.from_rule (Router router, string method, string? rule, owned HandlerCallback callback) throws RegexError {
 			Object (router: router, method: method);
-			this.fire = callback;
+			this.fire = (owned) callback;
 
 			var param_regex = new Regex ("(<(?:\\w+:)?\\w+>)");
 			var params      = param_regex.split_full (rule == null ? "" : rule);
@@ -208,8 +208,8 @@ namespace Valum {
 		 * Pushes the handler in the {@link Router} queue to produce a sequence
 		 * of callbacks that reuses the same matcher.
 		 */
-		public Route then (HandlerCallback handler) {
-			return this.router.matcher (this.method, match, handler);
+		public Route then (owned HandlerCallback handler) {
+			return this.router.matcher (this.method, (owned) match, (owned) handler);
 		}
 	}
 }

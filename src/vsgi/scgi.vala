@@ -31,8 +31,8 @@ namespace VSGI.SCGI {
 
 	public class Server : VSGI.Server {
 
-		public Server (VSGI.ApplicationCallback application) {
-			base (application);
+		public Server (owned VSGI.ApplicationCallback application) {
+			base ((owned) application);
 
 #if GIO_2_40
 			const OptionEntry[] options = {

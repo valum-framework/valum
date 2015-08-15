@@ -180,8 +180,8 @@ namespace VSGI.Soup {
 		/**
 		 * {@inheritDoc}
 		 */
-		public Server (ApplicationCallback application) {
-			base (application);
+		public Server (owned ApplicationCallback application) {
+			base ((owned) application);
 
 #if GIO_2_40
 			const OptionEntry[] entries = {
