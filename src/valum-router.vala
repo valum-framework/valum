@@ -243,7 +243,7 @@ namespace Valum {
 		private bool perform_routing (List<Route> routes, Request req, Response res, Queue<Value?> stack) throws Informational, Success, Redirection, ClientError, ServerError {
 			foreach (var route in routes) {
 				if ((route.method == null || route.method == req.method) && route.match (req, stack)) {
-					route.fire (req, res, () => {
+					route.fire (req, res, (req, res) => {
 						unowned List<Route> current = routes.find (route);
 						// keep routing if there are more routes to explore
 						if (current.next != null)
@@ -272,7 +272,7 @@ namespace Valum {
 		public void invoke (Request req, Response res, owned NextCallback next) {
 			try {
 				try {
-					next ();
+					next (req, res);
 					return;
 				} catch (Error e) {
 					// handle using a registered status handler

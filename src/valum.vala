@@ -52,13 +52,19 @@ namespace Valum {
 	 * both {@link VSGI.Request} and {@link VSGI.Response}.
 	 *
 	 * It is also used as a generic continuation that propagates a thrown status
-	 * code.
+	 * code or invoke processing in the {@link Valum.Router} context.
+	 *
+	 * The passed {@link VSGI.Request} and {@link VSGI.Response} objects can be
+	 * optionally filtered using {@link VSGI.RequestFilter} and {@link VSGI.ResponseFilter}.
 	 *
 	 * @since 0.1
 	 *
 	 * @throws Redirection perform a 3xx HTTP redirection
 	 * @throws ClientError trigger a 4xx client error
 	 * @throws ServerError trigger a 5xx server error
+	 *
+	 * @param req request for the next handler
+	 * @param res response for the next handler
 	 */
-	public delegate void NextCallback () throws Informational, Success, Redirection, ClientError, ServerError;
+	public delegate void NextCallback (Request req, Response res) throws Informational, Success, Redirection, ClientError, ServerError;
 }

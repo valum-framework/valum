@@ -14,7 +14,7 @@ app.types["permutations"] = /abc|acb|bac|bca|cab|cba/;
 app.get ("", (req, res, next) => {
 	// reuse the same matcher...
 	res.headers.set_content_type ("text/html", null);
-	next ();
+	next (req, res);
 }).then ((req, res) => {
 	var template = new View.from_stream (resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
 	template.to_stream (res.body);
@@ -26,21 +26,19 @@ app.methods ({VSGI.Request.GET, VSGI.Request.POST}, "get-and-post", (req, res) =
 
 app.all (null, (req, res, next) => {
 	res.headers.append ("Server", "Valum/1.0");
-	next ();
+	next (req, res);
 });
 
 app.all ("all", (req, res) => {
 	res.body.write_all ("Matches all HTTP methods".data, null);
 });
 
-// default route
-app.get ("gzip", (req, res) => {
+app.get ("gzip", (req, res, next) => {
+	res.headers.replace ("Content-Encoding", "gzip");
+	next (req, new VSGI.ResponseConverter (res, new ZlibCompressor (ZlibCompressorFormat.GZIP)));
+}).then ((req, res) => {
 	var template = new View.from_stream (resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
-
-	res.headers.append ("Content-Encoding", "gzip");
-	var writer = new ConverterOutputStream (res.body, new ZlibCompressor (ZlibCompressorFormat.GZIP));
-
-	template.to_stream (writer);
+	template.to_stream (res.body);
 });
 
 app.get ("query", (req, res) => {
@@ -103,7 +101,7 @@ app.get ("custom-route-type/<permutations:p>", (req, res) => {
 
 app.get ("state", (req, res, next, stack) => {
 	stack.push_tail ("I have been passed!");
-	next ();
+	next (req, res);
 });
 
 app.get ("state", (req, res, next, stack) => {
@@ -272,7 +270,7 @@ app.scope ("admin", (adm) => {
 });
 
 app.get ("next", (req, res, next) => {
-	next ();
+	next (req, res);
 });
 
 app.get ("next", (req, res) => {

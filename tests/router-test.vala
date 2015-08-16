@@ -570,12 +570,12 @@ public static void test_router_next () {
 	var router = new Router ();
 
 	router.get ("", (req, res, next) => {
-		next ();
+		next (req, res);
 	});
 
 	// should recurse a bit in process_routing
 	router.get ("", (req, res, next) => {
-		next ();
+		next (req, res);
 	});
 
 	router.get ("", (req, res, next) => {
@@ -594,12 +594,12 @@ public static void test_router_next_not_found () {
 	var router = new Router ();
 
 	router.get ("", (req, res, next) => {
-		next ();
+		next (req, res);
 	});
 
 	// should recurse a bit in process_routing
 	router.get ("", (req, res, next) => {
-		next ();
+		next (req, res);
 	});
 
 	// no more route matching
@@ -619,11 +619,11 @@ public static void test_router_next_propagate_error () {
 	var router = new Router ();
 
 	router.get ("", (req, res, next) => {
-		next ();
+		next (req, res);
 	});
 
 	router.get ("", (req, res, next) => {
-		next ();
+		next (req, res);
 	});
 
 	router.get ("", (req, res, next) => {
@@ -647,11 +647,11 @@ public static void test_router_next_propagate_state () {
 
 	router.get ("", (req, res, next, stack) => {
 		stack.push_tail (state);
-		next ();
+		next (req, res);
 	});
 
 	router.get ("", (req, res, next) => {
-		next ();
+		next (req, res);
 	});
 
 	router.get ("", (req, res, next, st) => {
@@ -676,12 +676,12 @@ public static void test_router_next_replace_propagated_state () {
 
 	router.get ("", (req, res, next, stack) => {
 		stack.push_tail (state);
-		next ();
+		next (req, res);
 	});
 
 	router.get ("", (req, res, next, stack) => {
 		assert (state == stack.pop_tail ());
-		next ();
+		next (req, res);
 	});
 
 	router.get ("", (req, res, next, stack) => {
@@ -772,7 +772,7 @@ public void test_router_then () {
 
 	router.get ("<int:id>", (req, res, next) => {
 		setted = true;
-		next ();
+		next (req, res);
 	}).then ((req, res) => {
 		assert (setted);
 		then_setted = true;

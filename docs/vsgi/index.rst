@@ -14,6 +14,7 @@ library.
     response
     cookies
     converters
+    filters
     server/index
 
 VSGI produces process-based applications that are able to communicate with
