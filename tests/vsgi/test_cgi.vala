@@ -69,7 +69,7 @@ public void test_vsgi_cgi_response () {
 	assert (200 == response.status);
 
 	response.status = 404;
-	assert ("404 Not Found" == response.headers["Status"]);
+	assert ("404 Not Found" == response.headers.get_one ("Status"));
 
 	response.write_head ();
 	assert (response.head_written);

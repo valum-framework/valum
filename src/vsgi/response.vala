@@ -138,7 +138,7 @@ namespace VSGI {
 		 *
 		 * @since 0.2
 		 */
-		public async bool write_head_async (int priority = GLib.Priority.DEFAULT, Cancellable? cancellable = null) throws IOError
+		public async bool write_head_async (int priority = GLib.Priority.DEFAULT, Cancellable? cancellable = null) throws Error
 			requires (!this.head_written)
 			ensures  (this.head_written)
 		{
