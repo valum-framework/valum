@@ -55,7 +55,7 @@ the first time.
         res.status = 200;
         res.headers.append ("Transfer-Encoding", "chunked");
         // chunked encoding will be applied
-        res.body.write ("Hello world!".data);
+        res.body.write_all ("Hello world!".data, null);
     });
 
 Asynchronous processing

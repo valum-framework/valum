@@ -182,7 +182,7 @@ invoked to jump to the next status handler in the queue.
 
     app.status (Soup.Status.NOT_FOUND, (req, res) => {
         res.status = 404;
-        res.body.write ("Not found!".data);
+        res.body.write_all ("Not found!".data, null);
     });
 
 :doc:`redirection-and-error` can be thrown during the status handling, they
@@ -314,7 +314,7 @@ with custom and default status code handlers. It constitute an entry point for
 .. code:: vala
 
     app.get ("", (req, res, next) => {
-        res.body.write_async ("Hello world!".data, Priority.DEFAULT, null, () => {
+        res.body.write_all_async ("Hello world!".data, Priority.DEFAULT, null, () => {
             app.invoke (req, res, next);
         });
     });
@@ -348,7 +348,7 @@ responses designed for non-human client.
     });
 
     app.status (Status.NOT_ACCEPTABLE, (req, res, next, stack) => {
-        res.body.write ("<p>%s</p>".printf (stack.pop_tail ().get_string ()).data);
+        res.body.write_all ("<p>%s</p>".printf (stack.pop_tail ().get_string ()).data, null);
     });
 
 Middleware
@@ -408,7 +408,7 @@ the :doc:`vsgi/response` body.
 
     app.get ("home", (req, res, next, stack) => {
         var body = (OutputStream) stack.pop_tail ();
-        body.write ("Hello world!".data); // transparently compress the output
+        body.write_all ("Hello world!".data, null); // transparently compress the output
     });
 
 If this is wrapped in a function, which is typically the case, it can even be
@@ -426,7 +426,7 @@ used directly from the handler.
 
     app.get ("home", (req, res, next, stack) => {
         var body = (OutputStream) stack.pop_tail ();
-        body.write ("Hello world!".data);
+        body.write_all ("Hello world!".data, null);
     });
 
 Alternatively, a handling middleware can be used directly instead of being
@@ -437,6 +437,6 @@ attached to a :doc:`route`.
     app.get ("home", (req, res, next, stack) => {
         compress (req, res, () => {
             var body = (OutputStream) stack.pop_tail ();
-            body.write ("Hello world!".data);
+            body.write_all ("Hello world!".data, null);
         }, stack);
     });

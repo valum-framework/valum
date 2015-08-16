@@ -21,7 +21,7 @@ app.get ("", (req, res, next) => {
 });
 
 app.methods ({VSGI.Request.GET, VSGI.Request.POST}, "get-and-post", (req, res) => {
-	res.body.write ("Matches GET and POST".data);
+	res.body.write_all ("Matches GET and POST".data, null);
 });
 
 app.all (null, (req, res, next) => {
@@ -30,7 +30,7 @@ app.all (null, (req, res, next) => {
 });
 
 app.all ("all", (req, res) => {
-	res.body.write ("Matches all HTTP methods".data);
+	res.body.write_all ("Matches all HTTP methods".data, null);
 });
 
 // default route
@@ -81,7 +81,7 @@ app.scope ("cookie", (inner) => {
 	inner.get ("<name>", (req, res) => {
 		foreach (var cookie in VSGI.Cookies.from_request (req))
 			if (cookie.name == req.params["name"])
-				res.body.write ("%s\n".printf (cookie.value).data);
+				res.body.write_all ("%s\n".printf (cookie.value).data, null);
 	});
 
 	inner.post ("<name>", (req, res) => {
@@ -107,7 +107,7 @@ app.get ("state", (req, res, next, stack) => {
 });
 
 app.get ("state", (req, res, next, stack) => {
-	res.body.write (stack.pop_tail ().get_string ().data);
+	res.body.write_all (stack.pop_tail ().get_string ().data, null);
 });
 
 // hello world! (compare with Node.js!)
@@ -276,7 +276,7 @@ app.get ("next", (req, res, next) => {
 });
 
 app.get ("next", (req, res) => {
-	res.body.write ("Matched by the next route in the queue.".data);
+	res.body.write_all ("Matched by the next route in the queue.".data, null);
 });
 
 // serve static resource using a path route parameter
@@ -337,7 +337,7 @@ var api = new Router ();
 
 api.get ("repository/<name>", (req, res) => {
 	var name = req.params["name"];
-	res.body.write (name.data);
+	res.body.write_all (name.data, null);
 });
 
 // delegate all other GET requests to a subrouter

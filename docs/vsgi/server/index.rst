@@ -73,7 +73,7 @@ written in a usual ``main`` function.
         var app = new Router;
 
         app.get ("", (req, res) => {
-            res.body.write ("Hello world!".data);
+            res.body.write_all ("Hello world!".data, null);
         });
 
         return new Server (app).run (args);

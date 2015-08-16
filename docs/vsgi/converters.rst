@@ -29,7 +29,7 @@ A typical utilisation would be to negociate a ``Content-Encoding: zlib`` header.
         // the body will be compressed transparently
         res.body = new ConverterOutputStream (res.body, new ZLibCompressor ());
 
-        res.body.write ("Hello world!".data);
+        res.body.write_all ("Hello world!".data, null);
     });
 
 ChunkedConverter

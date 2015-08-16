@@ -118,7 +118,7 @@ The matched path will be made available in the ``path`` parameter.
     });
 
     app.get ("", (req, res) => {
-        res.write ("Hello world!".data);
+        res.write_all ("Hello world!".data, null);
     });
 
 

@@ -59,7 +59,7 @@ have to do is set the ``Transfer-Encoding`` header properly.
 .. code:: vala
 
     app.get ("", (req, res) => {
-        res.body.write ("Hello world!".data);
+        res.body.write_all ("Hello world!".data, null);
     });
 
 It is possible to set the ``body`` property in order to filter or redirect it.
@@ -89,7 +89,7 @@ a great incidence on the application throughput.
 .. code:: vala
 
     app.get("", (req, res) => {
-        res.body.write ("You should receive an email shortly...".data);
+        res.body.write_all ("You should receive an email shortly...".data, null);
         res.body.close (); // you can even use close_async
 
         // send a success mail

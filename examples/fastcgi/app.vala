@@ -6,7 +6,7 @@ public static int main (string[] args) {
 
 	// default route
 	app.get ("", (req, res) => {
-		res.body.write ("Hello world!".data);
+		res.body.write_all ("Hello world!".data, null);
 	});
 
 	app.get ("random/<int:size>", (req, res) => {
