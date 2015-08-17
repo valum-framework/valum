@@ -20,7 +20,7 @@ namespace Valum {
 		/**
 		 * Registered routes by HTTP method.
 		 */
-		private HashTable<string, Queue<Route>> routes = new HashTable<string, Queue<Route>> (str_hash, str_equal);
+		private Queue<Route> routes = new Queue<Route> ();
 
 		/**
 		 * Registered status handlers.
@@ -123,7 +123,7 @@ namespace Valum {
 		 * @param cb     callback used to process the pair of request and response.
 		 */
 		public Route method (string method, string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.route (method, new Route.from_rule (this, method, rule, (owned) cb));
+			return this.route (new Route.from_rule (this, method, rule, (owned) cb));
 		}
 
 		/**
@@ -147,7 +147,7 @@ namespace Valum {
 			var routes = new Route[methods.length];
 			var i      = 0;
 			foreach (var method in methods) {
-				routes[i++] = this.route (method, new Route.from_rule (this, method, rule, (owned) cb));
+				routes[i++] = this.route (new Route.from_rule (this, method, rule, (owned) cb));
 			}
 			return routes;
 		}
@@ -165,7 +165,7 @@ namespace Valum {
 		 * @param cb     callback used to process the pair of request and response.
 		 */
 		public Route regex (string method, Regex regex, owned HandlerCallback cb) throws RegexError {
-			return this.route (method, new Route.from_regex (this, method, regex, (owned) cb));
+			return this.route (new Route.from_regex (this, method, regex, (owned) cb));
 		}
 
 		/**
@@ -178,7 +178,7 @@ namespace Valum {
 		 * @param cb      callback used to process the pair of request and response.
 		 */
 		public Route matcher (string method, owned MatcherCallback matcher, owned HandlerCallback cb) {
-			return this.route (method, new Route (this, method, (owned) matcher, (owned) cb));
+			return this.route (new Route (this, method, (owned) matcher, (owned) cb));
 		}
 
 		/**
@@ -190,12 +190,8 @@ namespace Valum {
 		 * @param route  an instance of Route defining the matching process and the
 		 *               callback.
 		 */
-		private Route route (string method, Route route) {
-			if (!this.routes.contains (method))
-				this.routes[method] = new Queue<Route> ();
-
-			this.routes[method].push_tail (route);
-
+		private Route route (Route route) {
+			this.routes.push_tail (route);
 			return route;
 		}
 
@@ -213,7 +209,7 @@ namespace Valum {
 				this.status_handlers[status] = new Queue<Route> ();
 
 			this.status_handlers[status].push_tail (new Route (this,
-			                                                   status.to_string ("%u"),
+			                                                   null,
 			                                                   () => { return true; },
 			                                                   (owned) cb));
 		}
@@ -246,7 +242,7 @@ namespace Valum {
 		 */
 		private bool perform_routing (List<Route> routes, Request req, Response res, Queue<Value?> stack) throws Informational, Success, Redirection, ClientError, ServerError {
 			foreach (var route in routes) {
-				if (route.match (req, stack)) {
+				if ((route.method == null || route.method == req.method) && route.match (req, stack)) {
 					route.fire (req, res, () => {
 						unowned List<Route> current = routes.find (route);
 						// keep routing if there are more routes to explore
@@ -345,28 +341,23 @@ namespace Valum {
 				var stack = new Queue<Value?> ();
 
 				// ensure at least one route has been declared with that method
-				if (this.routes.contains (req.method))
-					if (this.perform_routing (this.routes[req.method].head, req, res, stack))
-						return; // something matched
+				if (this.perform_routing (this.routes.head, req, res, stack))
+					return; // something matched
 
-				// find routes from other methods matching this Request
-				var allowed = new StringBuilder ();
-				foreach (var method in this.routes.get_keys ()) {
-					if (method != req.method) {
-						foreach (var route in this.routes[method].head) {
-							if (route.match (req, stack)) {
-								if (allowed.len > 0)
-									allowed.append (", ");
-								allowed.append (method);
-								break;
-							}
-						}
+				// find routes from other methods matching this request
+				string[] allowed = {};
+				foreach (var route in this.routes.head) {
+					if (route.method != null &&                  // null method allow anything
+					    route.method != req.method &&            // exclude the request method (it's not allowed already)
+					    !strv_contains (allowed, route.method) && // skip already allowed method
+					    route.match (req, stack)) {
+						allowed += route.method;
 					}
 				}
 
-				// a Route from another method allows this Request
-				if (allowed.len > 0)
-					throw new ClientError.METHOD_NOT_ALLOWED (allowed.str);
+				// other method(s) match this request
+				if (allowed.length > 0)
+					throw new ClientError.METHOD_NOT_ALLOWED (string.joinv (", ", allowed));
 
 				throw new ClientError.NOT_FOUND ("The request URI %s was not found.".printf (req.uri.to_string (false)));
 			});

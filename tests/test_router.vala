@@ -490,7 +490,7 @@ public static void test_router_method_not_allowed () {
 	router.handle (request, response);
 
 	assert (response.status == 405);
-	assert ("PUT, GET" == response.headers.get_one ("Allow"));
+	assert ("GET, PUT" == response.headers.get_one ("Allow"));
 	assert (response.head_written);
 }
 
@@ -701,7 +701,7 @@ public static void test_router_status_propagates_error_message () {
 	var router = new Router ();
 
 	router.status (404, (req, res, next, stack) => {
-			var message = stack.pop_tail ();
+		var message = stack.pop_tail ();
 		res.status = 418;
 		assert ("The request URI http://localhost/ was not found." == message.get_string ());
 	});
