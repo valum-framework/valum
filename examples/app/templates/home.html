@@ -76,39 +76,36 @@
               </p>
               <h4>Basics</h4>
               <ul class="list-inline">
-                <li><a href="/hello">Hello world!</a></li>
-                <li><a href="/hello/">Hello world! (with a trailing slash)</a></li>
-                <li><a href="/query?foo=bar">HTTP query</a></li>
-                <li><a href="/headers">HTTP headers</a></li>
-                <li><a href="/cookies">cookies</a></li>
-                <li><a href="/redirect">redirection</a></li>
-                <li><a href="/asdasd">not found</a></li>
-                <li><a href="/not-found">not found (thrown)</a></li>
-                <li><a href="/urlencoded-data/">parse url-encoded data</a></li>
                 <li><a href="/gzip">gzip compression</a></li>
+                <li><a href="/headers">HTTP headers</a></li>
+                <li><a href="/query?foo=bar">HTTP query</a></li>
+                <li><a href="/query">HTTP query (null)</a></li>
+                <li><a href="/cookies">cookies</a></li>
+                <li><a href="/urlencoded-data/">urlencoded data</a></li>
               </ul>
               <h4>Router features</h4>
               <ul class="list-inline">
+                <li><a href="/hello">Hello world!</a></li>
+                <li><a href="/hello/">Hello world! (with a trailing slash)</a></li>
                 <li><a href="/all">all methods</a></li>
                 <li><a href="/get-and-post">GET and POST</a></li>
+                <li><a href="/custom-method">route using a custom HTTP method</a></li>
                 <li><a href="/hello/world">route parameter</a></li>
                 <li><a href="/users/4/edit">typed route parameter</a></li>
                 <li><a href="/custom-route-type/abc">custom typed route parameter (permutations of abc)</a></li>
                 <li><a href="/custom-regular-expression">route using a regular expression</a></li>
                 <li><a href="/custom-matcher">route using a matcher callback</a></li>
-                <li><a href="/custom-method">route using a custom HTTP method</a></li>
                 <li><a href="/admin/fun/hack">scoped routing</a></li>
+                <li><a href="/redirect">redirection</a></li>
+                <li><a href="/asdasd">not found</a></li>
+                <li><a href="/not-found">not found (thrown)</a></li>
                 <li><a href="/repository/valum">subrouter</a></li>
                 <li><a href="/next">next</a></li>
                 <li><a href="/state">next (passing a state)</a></li>
               </ul>
               <h4>Extras</h4>
               <ul class="list-inline">
-                <li><a href="/lua">lua scripting</a></li>
                 <li><a href="/ctpl/foo/bar">CTPL templating</a></li>
-                <li><a href="/json">JSON</a></li>
-                <li><a href="/memcached/get/bar">memcached (get value)</a></li>
-                <li><a href="/memcached/set/bar">memcached (set value)</a></li>
               </ul>
               <footer>
                 <p class="text-center">

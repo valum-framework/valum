@@ -2,76 +2,57 @@ using Valum;
 using VSGI.Soup;
 
 var app = new Router ();
-var lua = new Script.Lua ();
-var mcd = new NoSQL.Mcached ();
-
-mcd.add_server ("127.0.0.1", 11211);
-
-// extra route types
-app.types["permutations"] = /abc|acb|bac|bca|cab|cba/;
-
-// default route
-app.get ("", (req, res, next) => {
-	// reuse the same matcher...
-	res.headers.set_content_type ("text/html", null);
-	next (req, res);
-}).then ((req, res) => {
-	var template = new View.from_resources ("/templates/home.html");
-	template.to_stream (res.body);
-});
-
-app.methods ({VSGI.Request.GET, VSGI.Request.POST}, "get-and-post", (req, res) => {
-	res.body.write_all ("Matches GET and POST".data, null);
-});
 
 app.all (null, (req, res, next) => {
 	res.headers.append ("Server", "Valum/1.0");
 	next (req, res);
 });
 
-app.all ("all", (req, res) => {
-	res.body.write_all ("Matches all HTTP methods".data, null);
+app.get ("", (req, res, next) => {
+	var template = new View.from_resources ("/templates/home.html");
+	template.to_stream (res.body);
 });
 
 app.get ("gzip", (req, res, next) => {
 	res.headers.replace ("Content-Encoding", "gzip");
 	next (req, new VSGI.ConvertedResponse (res, new ZlibCompressor (ZlibCompressorFormat.GZIP)));
 }).then ((req, res) => {
-	var template = new View.from_stream (resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
+	var template = new View.from_resources ("/templates/home.html");
 	template.to_stream (res.body);
 });
 
+// replace 'Content-Type' for 'text/plain'
+app.get (null, (req, res, next) => {
+	HashTable<string, string>? @params;
+	res.headers.get_content_type (out @params);
+	res.headers.set_content_type ("text/plain", @params);
+	next (req, res);
+});
+
+app.get ("headers", (req, res) => {
+	req.headers.foreach ((name, header) => {
+		res.body.write_all ("%s: %s\n".printf (name, header).data, null);
+	});
+});
+
 app.get ("query", (req, res) => {
-	var writer = new DataOutputStream (res.body);
-
-	res.headers.set_content_type ("text/plain", null);
-
-	if (req.query != null) {
+	if (req.query == null) {
+		res.body.write_all ("null".data, null);
+	} else {
 		req.query.foreach ((k, v) => {
-			writer.put_string ("%s: %s\n".printf (k, v));
+			res.body.write_all ("%s: %s\n".printf (k, v).data, null);
 		});
 	}
 });
 
-app.get ("headers", (req, res) => {
-	var writer = new DataOutputStream (res.body);
-
-	res.headers.set_content_type ("text/plain", null);
-
-	req.headers.foreach ((name, header) => {
-		writer.put_string ("%s: %s\n".printf (name, header));
-	});
-});
-
 app.get ("cookies", (req, res) => {
-	var writer = new DataOutputStream (res.body);
-
-	res.headers.set_content_type ("text/plain", null);
-
-	// write cookies in response
-	writer.put_string ("Cookie\n");
-	foreach (var cookie in VSGI.Cookies.from_request (req)) {
-		writer.put_string ("%s: %s\n".printf (cookie.name, cookie.value));
+	var cookies = VSGI.Cookies.from_request (req);
+	if (cookies == null) {
+		res.body.write_all ("null".data, null);
+	} else {
+		foreach (var cookie in cookies) {
+			res.body.write_all ("%s: %s\n".printf (cookie.name, cookie.value).data, null);
+		}
 	}
 });
 
@@ -93,46 +74,10 @@ app.scope ("cookie", (inner) => {
 	});
 });
 
-
-app.get ("custom-route-type/<permutations:p>", (req, res) => {
-	var writer = new DataOutputStream (res.body);
-	writer.put_string (req.params["p"]);
-});
-
-app.get ("state", (req, res, next, stack) => {
-	stack.push_tail ("I have been passed!");
-	next (req, res);
-});
-
-app.get ("state", (req, res, next, stack) => {
-	res.body.write_all (stack.pop_tail ().get_string ().data, null);
-});
-
-// hello world! (compare with Node.js!)
-app.get ("hello", (req, res) => {
-	var writer = new DataOutputStream (res.body);
-	res.headers.set_content_type ("text/plain", null);
-	writer.put_string ("Hello world\n");
-});
-
-// hello with a trailing slash
-app.get ("hello/", (req, res) => {
-	var writer = new DataOutputStream (res.body);
-	res.headers.set_content_type ("text/plain", null);
-	writer.put_string ("Hello world\n");
-});
-
-// example using route parameter
-app.get ("hello/<id>", (req, res) => {
-	var writer = new DataOutputStream (res.body);
-	res.headers.set_content_type ("text/plain", null);
-	writer.put_string ("hello %s!".printf (req.params["id"]));
-});
-
 app.scope ("urlencoded-data", (inner) => {
 	inner.get ("", (req, res) => {
-		var writer = new DataOutputStream (res.body);
-		writer.put_string (
+		res.headers.set_content_type ("text/html", null);
+		res.body.write_all (
 		"""
 		<!DOCTYPE html>
 		<html>
@@ -143,7 +88,7 @@ app.scope ("urlencoded-data", (inner) => {
 			</form>
 		  </body>
 		</html>
-		""");
+		""".data, null);
 	});
 
 	inner.post ("", (req, res) => {
@@ -158,34 +103,104 @@ app.scope ("urlencoded-data", (inner) => {
 	});
 });
 
-// example using a typed route parameter
+// hello world! (compare with Node.js!)
+app.get ("hello", (req, res) => {
+	res.body.write_all ("Hello world!".data, null);
+});
+
+app.get ("hello/", (req, res) => {
+	res.body.write_all ("Hello world!".data, null);
+});
+
+app.all ("all", (req, res) => {
+	res.body.write_all ("Matches all HTTP methods".data, null);
+});
+
+app.methods ({VSGI.Request.GET, VSGI.Request.POST}, "get-and-post", (req, res) => {
+	res.body.write_all ("Matches GET and POST".data, null);
+});
+
+app.method (VSGI.Request.GET, "custom-method", (req, res) => {
+	res.body.write_all (req.method.data, null);
+});
+
+app.get ("hello/<id>", (req, res) => {
+	res.body.write_all ("hello %s!".printf (req.params["id"]).data, null);
+});
+
 app.get ("users/<int:id>/<action>", (req, res) => {
 	var id     = req.params["id"];
 	var test   = req.params["action"];
 	var writer = new DataOutputStream (res.body);
 
-	res.headers.set_content_type ("text/plain", null);
-
 	writer.put_string (@"id\t=> $id\n");
 	writer.put_string (@"action\t=> $test");
 });
 
-// lua scripting
-app.get ("lua", (req, res) => {
-	var writer = new DataOutputStream (res.body);
-	writer.put_string (lua.eval ("""
-		require "markdown"
-		return markdown('## Hello from lua.eval!')
-	"""));
+app.types["permutations"] = /abc|acb|bac|bca|cab|cba/;
 
-	writer.put_string (lua.run ("examples/app/hello.lua"));
+app.get ("custom-route-type/<permutations:p>", (req, res) => {
+	res.body.write_all (req.params["p"].data, null);
 });
 
-app.get ("lua.haml", (req, res) => {
-	var writer = new DataOutputStream (res.body);
-	writer.put_string (lua.run ("examples/app/haml.lua"));
+app.regex (VSGI.Request.GET, /custom-regular-expression/, (req, res) => {
+	res.body.write_all ("This route was matched using a custom regular expression.".data, null);
 });
 
+app.matcher (VSGI.Request.GET, (req) => { return req.uri.get_path () == "/custom-matcher"; }, (req, res) => {
+	res.body.write_all ("This route was matched using a custom matcher.".data, null);
+});
+
+// scoped routing
+app.scope ("admin", (adm) => {
+	// matches /admin/fun
+	adm.scope ("fun", (fun) => {
+		// matches /admin/fun/hack
+		fun.get ("hack", (req, res) => {
+			var time = new DateTime.now_utc ();
+			res.body.write_all ("It's %s around here!\n".printf (time.format ("%H:%M")).data, null);
+		});
+		// matches /admin/fun/heck
+		fun.get ("heck", (req, res) => {
+			res.body.write_all ("Wuzzup!".data, null);
+		});
+	});
+});
+
+app.get ("redirect", (req, res) => {
+	throw new Redirection.MOVED_TEMPORARILY ("http://example.com");
+});
+
+app.get ("not-found", (req, res) => {
+	throw new ClientError.NOT_FOUND ("the given URL was not found");
+});
+
+var api = new Router ();
+
+api.get ("repository/<name>", (req, res) => {
+	var name = req.params["name"];
+	res.body.write_all (name.data, null);
+});
+
+// delegate all other GET requests to a subrouter
+app.get ("repository/<any:path>", api.handle);
+
+app.get ("next", (req, res, next) => {
+	next (req, res);
+});
+
+app.get ("next", (req, res) => {
+	res.body.write_all ("Matched by the next route in the queue.".data, null);
+});
+
+app.get ("state", (req, res, next, stack) => {
+	stack.push_tail ("I have been passed!");
+	next (req, res);
+});
+
+app.get ("state", (req, res, next, stack) => {
+	res.body.write_all (stack.pop_tail ().get_string ().data, null);
+});
 
 // Ctpl template rendering
 app.get ("ctpl/<foo>/<bar>", (req, res) => {
@@ -204,77 +219,8 @@ app.get ("ctpl/<foo>/<bar>", (req, res) => {
 	tpl.push_strings ("strings", {"a", "b", "c"});
 	tpl.push_int ("int", 1);
 
+	res.headers.set_content_type ("text/html", null);
 	tpl.to_stream (res.body);
-});
-
-// memcached
-app.get ("memcached/get/<key>", (req, res) => {
-	var value = mcd.get (req.params["key"]);
-	var writer = new DataOutputStream (res.body);
-	writer.put_string (value);
-});
-
-// TODO: rewrite using POST
-app.get ("memcached/set/<key>/<value>", (req, res) => {
-	var writer = new DataOutputStream (res.body);
-	if (mcd.set (req.params["key"], req.params["value"])) {
-		writer.put_string ("Ok! Pushed.");
-	} else {
-		writer.put_string ("Fail! Not Pushed...");
-	}
-});
-
-app.get ("json", (req, res) => {
-	var builder   = new Json.Builder ();
-	var generator = new Json.Generator ();
-
-	builder.begin_object ();
-
-	builder.set_member_name ("latitude");
-	builder.add_double_value (5.40000123);
-
-	builder.set_member_name ("longitude");
-	builder.add_double_value (56.34318);
-
-	builder.set_member_name ("elevation");
-	builder.add_double_value (2.18);
-
-	builder.end_object ();
-
-	generator.root   = builder.get_root ();
-	generator.pretty = true;
-
-	res.headers.set_content_type ("application/json", null);
-
-	generator.to_stream (res.body);
-});
-
-// scoped routing
-app.scope ("admin", (adm) => {
-	// matches /admin/fun
-	adm.scope ("fun", (fun) => {
-		// matches /admin/fun/hack
-		fun.get ("hack", (req, res) => {
-			var time = new DateTime.now_utc ();
-			var writer = new DataOutputStream (res.body);
-			res.headers.set_content_type ("text/plain", null);
-			writer.put_string ("It's %s around here!\n".printf (time.format ("%H:%M")));
-		});
-		// matches /admin/fun/heck
-		fun.get ("heck", (req, res) => {
-			var writer = new DataOutputStream (res.body);
-			res.headers.set_content_type ("text/plain", null);
-			writer.put_string ("Wuzzup!");
-		});
-	});
-});
-
-app.get ("next", (req, res, next) => {
-	next (req, res);
-});
-
-app.get ("next", (req, res) => {
-	res.body.write_all ("Matched by the next route in the queue.".data, null);
 });
 
 // serve static resource using a path route parameter
@@ -307,39 +253,6 @@ app.get ("static/<path:resource>.<any:type>", (req, res) => {
 		throw new ClientError.NOT_FOUND (e.message);
 	}
 });
-
-app.get ("redirect", (req, res) => {
-	throw new Redirection.MOVED_TEMPORARILY ("http://example.com");
-});
-
-app.get ("not-found", (req, res) => {
-	throw new ClientError.NOT_FOUND ("the given URL was not found");
-});
-
-app.method (VSGI.Request.GET, "custom-method", (req, res) => {
-	var writer = new DataOutputStream (res.body);
-	writer.put_string (req.method);
-});
-
-app.regex (VSGI.Request.GET, /custom-regular-expression/, (req, res) => {
-	var writer = new DataOutputStream (res.body);
-	writer.put_string ("This route was matched using a custom regular expression.");
-});
-
-app.matcher (VSGI.Request.GET, (req) => { return req.uri.get_path () == "/custom-matcher"; }, (req, res) => {
-	var writer = new DataOutputStream (res.body);
-	writer.put_string ("This route was matched using a custom matcher.");
-});
-
-var api = new Router ();
-
-api.get ("repository/<name>", (req, res) => {
-	var name = req.params["name"];
-	res.body.write_all (name.data, null);
-});
-
-// delegate all other GET requests to a subrouter
-app.get ("<any:path>", api.handle);
 
 app.status (Soup.Status.NOT_FOUND, (req, res) => {
 	res.status = Soup.Status.NOT_FOUND;

@@ -1,0 +1,3 @@
+#!/usr/bin/env python
+
+conf.check_cfg(package='libmemcached', uselib_store='MEMCACHED', args='--cflags --libs')

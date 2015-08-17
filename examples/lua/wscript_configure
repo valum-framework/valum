@@ -1,0 +1,3 @@
+#!/usr/bin/env python
+
+conf.check_cfg(package='luajit', uselib_store='LUA', args='--cflags --libs')
