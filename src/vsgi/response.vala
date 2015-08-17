@@ -133,6 +133,7 @@ namespace VSGI {
 			return this.head_written;
 		}
 
+#if GIO_2_44
 		/**
 		 * Write status line and headers asynchronously.
 		 *
@@ -156,5 +157,6 @@ namespace VSGI {
 
 			return this.head_written;
 		}
+#endif
 	}
 }
