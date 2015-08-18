@@ -21,9 +21,10 @@ encoding transparently.
 
 A typical utilisation would be to negociate a ``Content-Encoding: zlib`` header.
 
-.. code-block:: vala
+.. code:: vala
 
-    app.get ((req, res) => {
+    new Server ("org.vsgi.App", (req, res) => {
+        res.status = Soup.Status.OK;
         res.headers.replace ("Content-Encoding", "gzip");
 
         // the body will be compressed transparently

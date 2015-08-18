@@ -31,8 +31,6 @@ development. If you think that this document could be improved,
     recipes/index
     module
     ctpl
-    persistency
-    scripting
     hacking
     about/gnu-lgpl-v3.0
 

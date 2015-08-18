@@ -9,10 +9,11 @@ Unless you installed Valum with ``--prefix=/usr``, you might have to export
 
 .. code-block:: bash
 
-    export PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig
-    export LD_LIBRARY_PATH=/usr/local/lib64
+    export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+    export LD_LIBRARY_PATH=/usr/local/lib
 
-On 32-bit systems, just specify ``lib``.
+Some distributions store 64-bit libraries in a separate folder, typically
+``lib64``.
 
 Simple 'Hello world!' application
 ---------------------------------
@@ -31,7 +32,7 @@ the latest changes in the framework.
     var app = new Router ();
 
     app.get("", (req, res) => {
-        res.body.write ("Hello world!".data);
+        res.body.write_all ("Hello world!".data, null);
     });
 
     new Server (app.handle).run ({"app", "--port", "3003"});
@@ -55,10 +56,9 @@ VAPI bindings
 -------------
 
 `CTPL`_ and `FastCGI`_ are not providing Vala bindings, so you need to copy
-them in your project ``vapi`` folder. They are included in Valum's `vapi
-folder`_.
-
-You can also find more VAPIs in `nemequ/vala-extra-vapis`_ GitHub repository.
+them in your project ``vapi`` folder. They are included in Valum's
+`vapi folder`_ and you can also find more VAPIs in `nemequ/vala-extra-vapis`_
+GitHub repository.
 
 .. _CTPL: ctpl.tuxfamily.org
 .. _FastCGI: http://www.fastcgi.com/drupal/

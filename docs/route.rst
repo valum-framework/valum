@@ -54,6 +54,8 @@ Request parameters (stacked)
 Request parameters are accumulated in the routing stack in their conventional
 order and can be popped in a handler in the reverse order.
 
+All parameters are represented by ``string`` and must be parsed accordingly.
+
 .. code:: vala
 
     app.get ("<controller><action>", (req, res, next, stack) => {
@@ -64,8 +66,8 @@ order and can be popped in a handler in the reverse order.
 Matching using a rule
 ~~~~~~~~~~~~~~~~~~~~~
 
-Rules are used by the HTTP methods alias and ``method`` function in
-:doc:`router`.
+Rules are used by the HTTP methods alias (``get``, ``post``, ...) and
+``method`` function in :doc:`router`.
 
 .. code:: vala
 
@@ -84,16 +86,24 @@ Rule syntax
 
 This class implements the rule system designed to simplify regular expression.
 
-The following are rules examples:
+A rule is a simple path with parameters delimited with ``<`` and ``>``
+characters. Formally, a parameter is defined by the following EBNF:
+
+::
+
+    parameter := '<' (type ':')? name '>'
+    type      := \w+
+    name      := \w+
+
+The following items are valid rules:
 
 -  ``/user``
 -  ``/user/<id>``
 -  ``/user/<int:id>``
 
-In this example, we call ``id`` a parameter and ``int`` a type. These wo
-definitions will be important for the rest of the document.
-
-These will respectively compile down to the following regular expressions
+They will respectively compile down to the following regular expressions. Note
+that rules are matching the whole path as they are automatically anchored and
+the leading ``/`` must be omitted.
 
 -  ``^/user$``
 -  ``^/user/(?<id>\w+)$``
@@ -114,13 +124,12 @@ The matched path will be made available in the ``path`` parameter.
 
         var path = req.params["path"]; // matched path
 
-        next ();
+        next (req, res);
     });
 
     app.get ("", (req, res) => {
         res.write_all ("Hello world!".data, null);
     });
-
 
 Scope
 ~~~~~

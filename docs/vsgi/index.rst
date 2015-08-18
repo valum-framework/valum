@@ -10,6 +10,7 @@ library.
 
 .. toctree::
 
+    connection
     request
     response
     cookies

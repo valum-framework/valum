@@ -8,7 +8,14 @@ VSGI uses `Vala fcgi bindings`_ to provide a compliant FastCGI implementation.
 See :doc:`../../installation` for more information about the framework
 dependencies.
 
+.. warning::
+
+    Due to ``FastCGI.request.accept`` being a blocking operation, it is not
+    possible to perform asynchronous processing without resulting in a dead
+    lock. See `issue #119`_ for more details.
+
 .. _Vala fcgi bindings: http://www.masella.name/~andre/vapis/fcgi/index.htm
+.. _issue #119: https://github.com/valum-framework/valum/issues/119
 
 Options
 -------

@@ -8,3 +8,4 @@ their potential integration with Valum.
 
     json
     static-resource
+    scripting

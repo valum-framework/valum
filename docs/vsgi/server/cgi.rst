@@ -21,7 +21,9 @@ callback, the connection will be kept alive until both are freed.
 
 .. code:: vala
 
-    app.get ("", (req, res) => {
+    using VSGI.CGI;
+
+    new Server ("org.vsgi.CGI", (req, res) => {
         var source = new IdleSource ();
 
         source.set_callback (() => {

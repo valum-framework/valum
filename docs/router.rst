@@ -28,7 +28,7 @@ described later in this document.
         var @params = new HashTable<string, string> (str_hash, str_equal);
         @params["charset"] = "iso-8859-1";
         res.headers.set_content_type ("text/xhtml+xml", @params);
-        next ();
+        next (req, res);
     });
 
 Routing stack
@@ -49,7 +49,7 @@ can be accessed from its head or tail.
 
     app.get ("", (req, res, next, stack) => {
         stack.push_tail ("some value");
-        next ();
+        next (req, res);
     });
 
     app.get ("", (req, res, next, stack) => {
@@ -177,7 +177,7 @@ invoked to jump to the next status handler in the queue.
 .. code:: vala
 
     app.status (Soup.Status.NOT_FOUND, (req, res, next) => {
-        next ();
+        next (req, res);
     });
 
     app.status (Soup.Status.NOT_FOUND, (req, res) => {
@@ -255,7 +255,7 @@ matching route.
 
     app.get ("", (req, res, next) => {
         message ("pre");
-        next (); // keep routing
+        next (req, res); // keep routing
     });
 
     app.get ("", (req, res) => {
@@ -273,7 +273,7 @@ them in a stack.
     app.get ("", (req, res, next, stack) => {
         message ("pre");
         stack.push_tail (new Object ()); // propagate the state
-        next ();
+        next (req, res);
     });
 
     app.get ("", (req, res, next, stack) => {
@@ -292,10 +292,10 @@ processing for a resource using handling middlewares.
 
     app.get ("admin", (req, res, next) => {
         // authenticate user...
-        next ();
+        next (req, res);
     }).then ((req, res, next) => {
         // produce sensitive data...
-        next ();
+        next (req, res);
     }).then ((req, res) => {
         // produce the response
     });
@@ -395,20 +395,21 @@ It is possible for a handling middleware to pass a state to the next handling
 route, allowing them to produce content that can be consumed instead of simply
 processing the :doc:`vsgi/request` or :doc:`vsgi/response`.
 
+A handling middleware can also pass a filtered :doc:`vsgi/request` or
+:doc:`vsgi/response` objects using :doc:`vsgi/filters`,
+
 The following example shows a middleware that provide a compressed stream over
 the :doc:`vsgi/response` body.
 
 .. code:: vala
 
-    app.get (null, (req, res, next, stack) => {
-        res.headers ("Content-Encoding", "gzip");
-        stack.push_tail (new ConverterOutputStream (new ZLibCompressor ("gzip", res.body));
-        next ();
+    app.get (null, (req, res, next) => {
+        res.headers.replace ("Content-Encoding", "gzip");
+        next (req, new ResponseConverter (res, new ZLibCompressor (ZlibCompressorFormat.GZIP)));
     });
 
-    app.get ("home", (req, res, next, stack) => {
-        var body = (OutputStream) stack.pop_tail ();
-        body.write_all ("Hello world!".data, null); // transparently compress the output
+    app.get ("home", (req, res) => {
+        res.body.write_all ("Hello world!".data, null); // transparently compress the output
     });
 
 If this is wrapped in a function, which is typically the case, it can even be
@@ -416,27 +417,24 @@ used directly from the handler.
 
 .. code:: vala
 
-    HandlerCallback compress = (req, res, next, stack) => {
-        res.headers ("Content-Encoding", "gzip");
-        stack.push_tail (new ConverterOutputStream (new ZLibCompressor ("gzip", res.body));
-        next ();
+    HandlerCallback compress = (req, res, next) => {
+        res.headers.replace ("Content-Encoding", "gzip");
+        next (req, new ResponseConverter (res, new ZLibCompressor (ZlibCompressorFormat.GZIP));
     };
 
     app.get ("home", compress);
 
-    app.get ("home", (req, res, next, stack) => {
-        var body = (OutputStream) stack.pop_tail ();
-        body.write_all ("Hello world!".data, null);
+    app.get ("home", (req, res) => {
+        res.body.write_all ("Hello world!".data, null);
     });
 
 Alternatively, a handling middleware can be used directly instead of being
-attached to a :doc:`route`.
+attached to a :doc:`route`, the processing will happen in a ``NextCallback``.
 
 .. code:: vala
 
     app.get ("home", (req, res, next, stack) => {
-        compress (req, res, () => {
-            var body = (OutputStream) stack.pop_tail ();
-            body.write_all ("Hello world!".data, null);
+        compress (req, res, (req, res) => {
+            res.body.write_all ("Hello world!".data, null);
         }, stack);
     });

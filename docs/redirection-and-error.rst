@@ -123,7 +123,7 @@ the :doc:`router` can handle them properly.
 .. code:: vala
 
     app.get ("", (req, res, next) => {
-        next (); // will throw a 404
+        next (req, res); // will throw a 404
     });
 
     app.get ("", (req, res) => {

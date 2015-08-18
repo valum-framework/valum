@@ -89,7 +89,7 @@ code duplication. They are described in the :doc:`../router` document.
         // fetch the user
         app.get ("<username>", (req, res, next, stack) => {
             stack.push_tail (new User.from_username (req.params["username"]));
-            next ();
+            next (req, res);
         });
 
         // update model data
@@ -121,7 +121,7 @@ code duplication. They are described in the :doc:`../router` document.
 
             stack.push_tail (user);
 
-            next ();
+            next (req, res);
         });
 
         // serialize to JSON any provided GObject

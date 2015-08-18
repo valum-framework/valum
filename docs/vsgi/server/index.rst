@@ -40,12 +40,6 @@ for code examples.
 
 .. _example of DBus server: https://wiki.gnome.org/Projects/Vala/DBusServerSample
 
-To identify your workers, you can use the ``set_application_id`` function.
-
-.. code:: vala
-
-    server.set_application_id ("worker");
-
 This can be used to request services, communicate between your workers and
 interact with the runtime.
 
@@ -70,13 +64,10 @@ written in a usual ``main`` function.
 .. code:: vala
 
     public static int main (string[] args) {
-        var app = new Router;
-
-        app.get ("", (req, res) => {
+        return new Server ("org.vsgi.App", (req, res) => {
+            res.status = Soup.Status.OK;
             res.body.write_all ("Hello world!".data, null);
-        });
-
-        return new Server ("org.vsgi.App", app).run (args);
+        }).run (args);
     }
 
 If you specify the ``--help`` flag, you can get more information on the

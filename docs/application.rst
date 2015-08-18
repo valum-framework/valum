@@ -16,11 +16,7 @@ a ``using`` statement as they all respect a common interface.
     using Valum;
     using VSGI.Soup; // or VSGI.FastCGI
 
-Two implementations exist at the moment and a few more are planned in a future
-minor release.
-
--  :doc:`vsgi/server/soup`
--  :doc:`vsgi/server/fastcgi`
+Many implementations are provided and documented in :doc:`vsgi/server/index`.
 
 Creating an application
 -----------------------
@@ -42,16 +38,18 @@ a :doc:`route` instance.
 
 .. code:: vala
 
-    app.get ("", (req, res, next) => {
+    app.get ("", (req, res, next, stack) => {
         res.body.write_all ("Hello world!".data, null);
     });
 
 Every route declaration has a callback associated that does the request
-processing. The callback, named handler, receives three arguments:
+processing. The callback, named handler, receives four arguments:
 
 -  a :doc:`vsgi/request` that describes a resource being requested
 -  a :doc:`vsgi/response` that correspond to that resource
 -  a ``next`` continuation to `keep routing`
+-  a routing ``stack`` to retrieve and store states from previous and for
+   following handlers
 
 Serving the application
 -----------------------
@@ -79,8 +77,7 @@ a :doc:`vsgi/request` and :doc:`vsgi/response`.
 
 Usually, you would only pass the CLI arguments to ``run``, so that your runtime
 can be parametrized easily, but in this case we just want our application to
-run with fixed parameters. Common options are documented in the
-:doc:`vsgi/server/index` document.
+run with fixed parameters. Options are documented per implementation.
 
 .. code:: vala
 

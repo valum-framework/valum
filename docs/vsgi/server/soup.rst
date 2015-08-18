@@ -11,9 +11,10 @@ application or spawn workers in production.
     using Valum;
     using VSGI.Soup;
 
-    var app = new Router ();
-
-    new Server ("org.vsgi.Soup", app).run ({"app", "--port", "3003"});
+    new Server ("org.vsgi.Soup", () => {
+        res.status = Soup.Status.OK;
+        res.body.write_all ("Hello world!".data, null);
+    }).run ({"app", "--port", "3003"});
 
 Options
 -------
