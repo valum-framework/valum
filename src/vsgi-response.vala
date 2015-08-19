@@ -53,7 +53,7 @@ namespace VSGI {
 		 *
 		 * @since 0.2
 		 */
-		public bool head_written { get; protected set; default = false; }
+		public bool head_written { get; protected construct set; default = false; }
 
 		/**
 		 * Response body.

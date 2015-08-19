@@ -30,6 +30,14 @@ app.get ("", (req, res, next) => {
 	template.to_stream (res.body);
 });
 
+app.get ("buffered", (req, res, next) => {
+	res.headers.set_content_length (resources_lookup_data ("/templates/home.html", ResourceLookupFlags.NONE).length);
+	next (req, new VSGI.BufferedResponse (res));
+}).then((req, res) => {
+	var template = new View.from_resources ("/templates/home.html");
+	template.to_stream (res.body);
+});
+
 app.get ("gzip", (req, res, next) => {
 	res.headers.replace ("Content-Encoding", "gzip");
 	next (req, new VSGI.ConvertedResponse (res, new ZlibCompressor (ZlibCompressorFormat.GZIP)));
