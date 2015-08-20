@@ -295,6 +295,10 @@ namespace Valum {
 			} catch (Success.CREATED s) {
 				res.status = s.code;
 				res.headers.append ("Location", s.message);
+			} catch (Success.NO_CONTENT s) {
+				res.status = s.code;
+			} catch (Success.RESET_CONTENT s) {
+				res.status = s.code;
 			} catch (Success.PARTIAL_CONTENT s) {
 				res.status = s.code;
 				res.headers.append ("Range", s.message);
