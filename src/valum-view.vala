@@ -9,7 +9,7 @@ namespace Valum {
 	 * environment such as {@link Gee.Collection}, {@link Gee.Map}, array of
 	 * primitive and much more.
 	 *
-	 * This implementation include two rendering functions: {@link View.render}
+	 * This implementation include two rendering functions: {@link View.to_string}
 	 * and {@link View.to_stream}. The latter integrates very well with the
 	 * framework since {@link VSGI.Response} inherit from
 	 * {@link GLib.OutputStream}.
@@ -296,7 +296,7 @@ namespace Valum {
 		 *
 		 * @since 0.0.1
 		 */
-		public string render () throws Error {
+		public string to_string () throws Error {
 			var mem_stream = new MemoryOutputStream (null, realloc, free);
 
 			this.to_stream (mem_stream);

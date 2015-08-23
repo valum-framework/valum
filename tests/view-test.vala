@@ -8,10 +8,10 @@ public static void test_view_from_string () {
 
 	view.environment.push_string ("hello_world", "test");
 
-	assert ("test" == view.render ());
+	assert ("test" == view.to_string ());
 
-	// rerender a view
-	assert ("test" == view.render ());
+	// reto_string a view
+	assert ("test" == view.to_string ());
 }
 
 /**
@@ -23,7 +23,7 @@ public static void test_view_from_path () {
 
 		view.environment.push_string ("hello_world", "test");
 
-		assert ("test\n" == view.render ());
+		assert ("test\n" == view.to_string ());
 	} catch (IOError ioe) {
 		Test.fail ();
 	}
@@ -39,7 +39,7 @@ public static void test_view_from_stream () {
 
 		view.environment.push_string ("hello_world", "test");
 
-		assert ("test\n" == view.render ());
+		assert ("test\n" == view.to_string ());
 	} catch (IOError ioe) {
 		Test.fail ();
 	}

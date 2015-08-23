@@ -16,17 +16,26 @@ Creating views
 --------------
 
 The ``View`` class provides constructors to create views from ``string``, file
-path and `GLib.InputStream`_.
+path, resources and `GLib.InputStream`_.
 
 .. _GLib.InputStream: http://valadoc.org/#!api=gio-2.0/GLib.InputStream
+
+The simplest way to load a template is to use a ``string`` containing it.
 
 .. code:: vala
 
     var template = new View.from_string ("{a}");
 
+.. note::
+
+    Resources should be loaded relatively to the `resource base path`_
+    available in :doc:`vsgi/server/index`.
+
 .. code:: vala
 
     var template = new View.from_path ("path/to/your/template.tpl");
+
+.. _resource base path: http://valadoc.org/#!api=gio-2.0/GLib.Application.resource_base_path
 
 It is a good practice to bundle static data in the executable using the
 `GLib.Resource`_ API. This approach is covered in the
@@ -37,6 +46,14 @@ It is a good practice to bundle static data in the executable using the
 .. code:: vala
 
     var template = new View.from_stream (resources_open_stream ("/your/template.tpl"));
+
+Templates can be loaded directly from global resources using
+``View.from_resources``. If you need to load templates from external resources
+bundle, use one of the preceding constructors.
+
+.. code:: vala
+
+    var template = new View.from_resources ("/your/template.tpl");
 
 Environment
 -----------
@@ -120,5 +137,24 @@ response body.
                                      null,
                                      (obj, result) => {
             var spliced = res.body.splice_async.end (result);
+        });
+    });
+
+It would be roughly equivalent and shorter to write the result of
+``View.to_string`` with `GLib.OutputStream.write_all_async`_ as it already
+accumulate the produced stream in-memory:
+
+.. _GLib.OutputStream.write_all_async: http://valadoc.org/#!api=gio-2.0/GLib.OutputStream.write_all_async
+
+.. code:: vala
+
+    app.get ("", (req, res) => {
+        var template = new View.from_string ("");
+
+        res.body.write_all_async.begin (template.to_string ().data,
+                                        Priority.DEFAULT,
+                                        null,
+                                        (obj, result) => {
+            var written = res.body.write_all_async.end (result);
         });
     });
