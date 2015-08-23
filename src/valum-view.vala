@@ -38,6 +38,16 @@ namespace Valum {
 		}
 
 		/**
+		 * Load a {@link Ctpl.Tree} from global resources.
+		 *
+		 * @see   Ctpl.lexer_lex
+		 * @since 0.2
+		 */
+		public View.from_resources (string path, GLib.ResourceLookupFlags lookup_flags = GLib.ResourceLookupFlags.NONE) throws Error {
+			this.tree = Ctpl.lexer_lex (new Ctpl.InputStream (resources_open_stream (path, lookup_flags), null));
+		}
+
+		/**
 		 * Create a CTPL template from a string.
 		 *
 		 * @see   Ctpl.lexer_lex_string
@@ -50,7 +60,7 @@ namespace Valum {
 		/**
 		 * Create a CTPL template from an input stream.
 		 *
-		 * @see   Ctpl.lexer_lex_string
+		 * @see   Ctpl.lexer_lex
 		 * @since 0.1
 		 */
 		public View.from_stream (InputStream input) throws Error {

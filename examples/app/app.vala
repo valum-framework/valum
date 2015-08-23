@@ -16,7 +16,7 @@ app.get ("", (req, res, next) => {
 	res.headers.set_content_type ("text/html", null);
 	next (req, res);
 }).then ((req, res) => {
-	var template = new View.from_stream (resources_open_stream ("/templates/home.html", ResourceLookupFlags.NONE));
+	var template = new View.from_resources ("/templates/home.html");
 	template.to_stream (res.body);
 });
 
