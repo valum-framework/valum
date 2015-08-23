@@ -94,7 +94,7 @@ namespace VSGI.Soup {
 			Object (connection: connection, message: msg);
 			this._query = query;
 #if SOUP_2_50
-			this._body  = new MemoryInputStream.from_data (msg.request_body.data, null);
+			this._body  = new MemoryInputStream.from_data (msg.request_body.flatten ().data, null);
 #endif
 		}
 
@@ -383,7 +383,7 @@ namespace VSGI.Soup {
 			public Connection (global::Soup.Server server, global::Soup.Message message) {
 				Object (server: server, message: message);
 
-				this._input_stream  = new MemoryInputStream.from_data (message.request_body.data, null);
+				this._input_stream  = new MemoryInputStream.from_data (message.request_body.flatten ().data, null);
 				this._output_stream = new MessageBodyOutputStream (message.response_body);
 
 				// prevent the server from completing the message
