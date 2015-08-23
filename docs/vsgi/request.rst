@@ -151,6 +151,28 @@ a buffer:
 .. _GLib.MemoryOutputStream: http://valadoc.org/#!api=gio-2.0/GLib.MemoryOutputStream
 .. _Soup.Form: http://valadoc.org/#!api=libsoup-2.4/Soup.Form
 
+Accumulated body
+~~~~~~~~~~~~~~~~
+
+In some cases, it is practical to flatten the whole request body in a buffer
+in order to process it as a whole.
+
+.. warning::
+
+    Splicing an arbitrary-sized stream can pose a security threat named buffer
+    overflow. You must ensure that the server implementation has a hard limit
+    on submitted request size.
+
+The ``flatten`` and ``flatten`` functions flatten the request body into
+a buffer (a `GLib.MemoryOutputStream`_) and return the corresponding
+``uint8[]`` data buffer.
+
+.. code:: vala
+
+    app.post ("", (req, res) => {
+        var data = Soup.Form.decode ((string) req.flatten ());
+    });
+
 Multipart body
 ~~~~~~~~~~~~~~
 
