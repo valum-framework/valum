@@ -43,13 +43,11 @@ namespace VSGI {
 		 *
 		 * On the first attempt to access the response body stream, the status
 		 * line and headers will be written synchronously in the response
-		 * stream. {@link VSGI.Response.write_head_async} have to be used
-		 * explicitly to perform a non-blocking operation.
+		 * stream. 'write_head_async' have to be used explicitly to perform a
+		 * non-blocking operation.
 		 *
 		 * The provided stream is safe for transfer encoding and will filter
 		 * the stream properly if it's chunked.
-		 *
-		 * Apply filters on the base_stream to make it usable
 		 *
 		 * Typically, this would involve appling chunked encoding, buffering,
 		 * transparent compression and other kind of filters required by the

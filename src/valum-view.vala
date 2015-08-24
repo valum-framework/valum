@@ -38,7 +38,7 @@ namespace Valum {
 		}
 
 		/**
-		 * Load a {@link Ctpl.Tree} from global resources.
+		 * Load a {@link Ctpl.Token} from global resources.
 		 *
 		 * @see   Ctpl.lexer_lex
 		 * @since 0.2

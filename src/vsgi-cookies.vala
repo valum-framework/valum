@@ -7,7 +7,7 @@ namespace VSGI.Cookies {
 	 *
 	 * @since 0.2
 	 *
-	 * @param request
+	 * @param request request from which cookies will be extracted
 	 */
 	public SList<Cookie> from_request (Request request) {
 		var cookies     = new SList<Cookie> ();
@@ -30,7 +30,7 @@ namespace VSGI.Cookies {
 	 *
 	 * @since 0.2
 	 *
-	 * @param response
+	 * @param response response from which cookies will be extracted
 	 */
 	public SList<Cookie> from_response (Response response) {
 		var cookies     = new SList<Cookie> ();
@@ -75,9 +75,9 @@ namespace VSGI.Cookies {
 	 * The returned value will be 'HMAC(checksum_type, name + HMAC(checksum_type, value)) + value'
 	 * suitable for a cookie value which can the be verified with {@link VSGI.Cookies.verify}.
 	 *
-	 * {{
+	 * {{{
 	 * cookie.@value = Cookies.sign (cookie, ChecksumType.SHA512, "super-secret".data);
-	 * }}
+	 * }}}
 	 *
 	 * @param cookie        cookie to sign
 	 * @param checksum_type hash algorithm used to compute the HMAC
@@ -96,7 +96,7 @@ namespace VSGI.Cookies {
 	/**
 	 * Verify a signed cookie from {@link VSGI.Cookies.sign}.
 	 *
-	 * @param cookie
+	 * @param cookie        cookie which signature will be verified
 	 * @param checksum_type hash algorithm used to compute the HMAC
 	 * @param key           secret used to sign the cookie's value
 	 * @param value         cookie's value extracted from its signature if the

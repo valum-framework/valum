@@ -21,9 +21,8 @@ namespace VSGI {
 	 *
 	 * @since 0.2
 	 *
-	 * @param req  a resource being requested
-	 * @param res  the response to that request
-	 * @param next next application to invoke in the middleware stack
+	 * @param req a resource being requested
+	 * @param res the response to that request
 	 */
 	public delegate void ApplicationCallback (Request req, Response res);
 }
