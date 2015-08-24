@@ -37,7 +37,7 @@ def configure(conf):
     if conf.check_cfg(package='gio-2.0', atleast_version='2.40', mandatory=False, uselib_store='GIO', args='--cflags --libs'):
         conf.env.append_unique('VALAFLAGS', ['--define=GIO_2_40'])
 
-    # gio (>=2.44) is necessary for 'write_all_async'
+    # gio (>=2.44) is necessary for 'write_all_async' and 'strv_contains'
     if conf.check_cfg(package='gio-2.0', atleast_version='2.44', mandatory=False, uselib_store='GIO', args='--cflags --libs'):
         conf.env.append_unique('VALAFLAGS', ['--define=GIO_2_44'])
 

@@ -349,7 +349,11 @@ namespace Valum {
 				foreach (var route in this.routes.head) {
 					if (route.method != null &&                  // null method allow anything
 					    route.method != req.method &&            // exclude the request method (it's not allowed already)
+#if GLIB_2_44
 					    !strv_contains (allowed, route.method) && // skip already allowed method
+#else
+					    !string.joinv ("", allowed).contains (route.method) &&
+#endif
 					    route.match (req, stack)) {
 						allowed += route.method;
 					}

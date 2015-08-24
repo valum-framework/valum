@@ -50,13 +50,16 @@ Recent dependencies will enable more advanced features:
 +-------------+---------+------------------------------------------------------+
 | gio-2.0     | >=2.40  | CLI arguments parsing                                |
 +-------------+---------+------------------------------------------------------+
-| gio-2.0     | >=2.44  | ``write_head_async`` in :doc:`vsgi/response`         |
+| gio-2.0     | >=2.44  | ``write_head_async`` in :doc:`vsgi/response` and     |
+|             |         | `GLib.strv_contains`_ to lookup methods when         |
+|             |         | producing an ``Allow`` header                        |
 +-------------+---------+------------------------------------------------------+
 | libsoup-2.4 | >=2.48  | new server API                                       |
 +-------------+---------+------------------------------------------------------+
 | libsoup-2.4 | >=2.50  | uses `Soup.ClientContext.steal_connection`_ directly |
 +-------------+---------+------------------------------------------------------+
 
+.. _GLib.strv_contains: http://valadoc.org/#!api=glib-2.0/GLib.strv_contains
 .. _Soup.ClientContext.steal_connection: http://valadoc.org/#!api=libsoup-2.4/Soup.ClientContext.steal_connection
 
 You can also install additional dependencies to build the examples, you will
