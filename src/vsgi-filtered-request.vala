@@ -8,7 +8,7 @@ namespace VSGI {
 	 *
 	 * @since 0.2
 	 */
-	public abstract class RequestFilter : Request {
+	public abstract class FilteredRequest : Request {
 
 		/**
 		 * @since 0.2

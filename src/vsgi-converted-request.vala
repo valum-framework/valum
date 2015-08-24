@@ -5,7 +5,7 @@ namespace VSGI {
 	 *
 	 * @since 0.2
 	 */
-	public class RequestConverter : RequestFilter {
+	public class ConvertedRequest : FilteredRequest {
 
 		private ConverterInputStream? converted_body = null;
 
@@ -25,7 +25,7 @@ namespace VSGI {
 		/**
 		 * @since 0.2
 		 */
-		public RequestConverter (Request base_request, Converter converter) {
+		public ConvertedRequest (Request base_request, Converter converter) {
 			Object (base_request: base_request, converter: converter);
 		}
 	}

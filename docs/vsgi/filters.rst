@@ -2,14 +2,15 @@ Filters
 =======
 
 Filters are compositions of :doc:`request` or :doc:`response` that provide
-various features such as buffering, caching and compression.
+various features such as buffering, caching and compression. They are based on
+the ``FilteredRequest`` and ``FilteredResponse`` abstract classes.
 
 They are the natural extension to `GLib.FilterInputStream`_ and
 `GLib.FilterOutputStream`_, but adapted for VSGI.
 
 Two basic filters are provided to apply a `GLib.Converter`_ on the body stream
-that is either incoming or outgoing with ``RequestConverter`` and
-``ResponseConverter`` respectively.
+that is either incoming or outgoing with ``ConvertedResponse`` and
+``ConvertedRequest`` respectively.
 
 The following example uses a converter to seamlessly compress the response body
 You can use any :doc:`converters` provided by GLib or VSGI with ease.
@@ -23,7 +24,7 @@ You can use any :doc:`converters` provided by GLib or VSGI with ease.
     using VSGI;
 
     new Server ("org.vsgi.App", (req, res) => {
-        res = new ResponseConverter (res, new ZlibCompressor (ZlibCompressorFormat.GZIP));
+        res = new ConvertedResponse (res, new ZlibCompressor (ZlibCompressorFormat.GZIP));
         res.status = 200;
         res.headers.append ("Content-Encoding", "gzip");
         res.body.write_all ("Hello world!".data);

@@ -7,7 +7,7 @@ namespace VSGI {
 	 *
 	 * @since 0.2
 	 */
-	public class ResponseConverter : ResponseFilter {
+	public class ConvertedResponse : FilteredResponse {
 
 		private ConverterOutputStream? converted_body = null;
 
@@ -27,7 +27,7 @@ namespace VSGI {
 		/**
 		 * @since 0.2
 		 */
-		public ResponseConverter (Response base_response, Converter converter) {
+		public ConvertedResponse (Response base_response, Converter converter) {
 			Object (base_response: base_response, converter: converter);
 		}
 	}

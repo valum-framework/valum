@@ -7,7 +7,7 @@ namespace VSGI {
 	 *
 	 * @since 0.2
 	 */
-	public abstract class ResponseFilter : Response {
+	public abstract class FilteredResponse : Response {
 
 		/**
 		 * @since 0.2

@@ -405,7 +405,7 @@ the :doc:`vsgi/response` body.
 
     app.get (null, (req, res, next) => {
         res.headers.replace ("Content-Encoding", "gzip");
-        next (req, new ResponseConverter (res, new ZLibCompressor (ZlibCompressorFormat.GZIP)));
+        next (req, new ConvertedResponse (res, new ZLibCompressor (ZlibCompressorFormat.GZIP)));
     });
 
     app.get ("home", (req, res) => {
@@ -419,7 +419,7 @@ used directly from the handler.
 
     HandlerCallback compress = (req, res, next) => {
         res.headers.replace ("Content-Encoding", "gzip");
-        next (req, new ResponseConverter (res, new ZLibCompressor (ZlibCompressorFormat.GZIP));
+        next (req, new ConvertedResponse (res, new ZLibCompressor (ZlibCompressorFormat.GZIP));
     };
 
     app.get ("home", compress);
