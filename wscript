@@ -3,15 +3,11 @@
 import glob
 
 APPNAME='valum'
-VERSION='0.2.0-beta'
+VERSION='0.2.0'
 API_VERSION='0.2'
-
-top='.'
-out='build'
 
 def options(opt):
     opt.load('compiler_c')
-
     opt.add_option('--enable-gcov', action='store_true', default=False, help='enable coverage with gcov')
     opt.add_option('--enable-examples', action='store_true', default=False, help='build examples')
 
@@ -62,7 +58,6 @@ def configure(conf):
         conf.recurse(glob.glob('examples/*'))
 
 def build(bld):
-    # build a static library
     bld.shlib(
         packages     = ['glib-2.0', 'gio-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'fcgi'],
         target       = 'valum',
