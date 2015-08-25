@@ -66,12 +66,13 @@ def build(bld):
         uselib       = ['GLIB', 'GIO', 'GTHREAD', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
         vapi_dirs    = ['vapi'],
         thread       = True,
+        header_path  = '${INCLUDEDIR}/valum',
         install_path = '${LIBDIR}')
 
     # pkg-config file
     bld(
         features     = 'subst',
-        target       = 'valum-{}.pc'.format(API_VERSION),
+        target       = 'valum.pc',
         source       = ['src/valum.pc.in'],
         install_path = '${LIBDIR}/pkgconfig',
         VERSION      = VERSION,
