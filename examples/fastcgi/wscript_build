@@ -7,8 +7,7 @@ bld.program(
     source       = ['app.vala'],
     uselib       = ['GLIB', 'SOUP', 'GEE', 'FCGI', 'GCOV'],
     vapi_dirs    = ['../../vapi'],
-    install_path = None,
-    threding     = True)
+    install_path = None)
 
 bld(
     rule   = 'cp ${SRC} ${TGT}',
