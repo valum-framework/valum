@@ -39,7 +39,6 @@ namespace VSGI.SCGI {
 				{"port",            'p', 0, OptionArg.INT, null, "TCP port on this host"},
 				{"file-descriptor", 0,   0, OptionArg.INT, null, "listen on a file descriptor", "0"},
 				{"backlog",         'b', 0, OptionArg.INT, null, "listen queue depth used in the listen() call", "0"},
-				{"max-threads",     0,   0, OptionArg.INT, null, "the maximal number of threads to execute concurrently handling incoming clients, -1 means no limit", "-1"},
 				{null}
 			};
 
@@ -48,18 +47,11 @@ namespace VSGI.SCGI {
 		}
 
 		public override int command_line (ApplicationCommandLine command_line) {
+			var listener = new SocketService ();
+
 #if GIO_2_40
 			var options  = command_line.get_options_dict ();
 
-			var max_threads = options.contains ("max-threads") ?
-				options.lookup_value ("max-threads", VariantType.INT32).get_int32 () : -1;
-#else
-			var max_threads = -1;
-#endif
-
-			var listener = new ThreadedSocketService (max_threads);
-
-#if GIO_2_40
 			if (options.contains ("backlog"))
 				listener.set_backlog (options.lookup_value ("backlog", VariantType.INT32).get_int32 ());
 #endif
@@ -85,7 +77,7 @@ namespace VSGI.SCGI {
 				return 1;
 			}
 
-			listener.run.connect ((connection) => {
+			listener.incoming.connect ((connection) => {
 				// consume the environment from the stream
 				var environment = new HashTable<string, string> (str_hash, str_equal);
 				var reader      = new DataInputStream (connection.input_stream);

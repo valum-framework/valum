@@ -16,7 +16,6 @@ def configure(conf):
 
     conf.check_cfg(package='glib-2.0', atleast_version='2.32', uselib_store='GLIB', args='--cflags --libs')
     conf.check_cfg(package='gio-2.0', atleast_version='2.32', uselib_store='GIO', args='--cflags --libs')
-    conf.check_cfg(package='gthread-2.0', atleast_version='2.32', uselib_store='GTHREAD', args='--cflags --libs')
     conf.check_cfg(package='ctpl', atleast_version='0.3.3', uselib_store='CTPL', args='--cflags --libs')
     conf.check_cfg(package='gee-0.8', atleast_version='0.6.4', uselib_store='GEE', args='--cflags --libs')
     conf.check_cfg(package='libsoup-2.4', atleast_version='2.38',uselib_store='SOUP', args='--cflags --libs')
@@ -63,9 +62,8 @@ def build(bld):
         target       = 'valum',
         gir          = 'Valum-{}'.format(API_VERSION),
         source       = bld.path.ant_glob('src/*.vala'),
-        uselib       = ['GLIB', 'GIO', 'GTHREAD', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
+        uselib       = ['GLIB', 'GIO', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
         vapi_dirs    = ['vapi'],
-        thread       = True,
         header_path  = '${INCLUDEDIR}/valum',
         install_path = '${LIBDIR}')
 

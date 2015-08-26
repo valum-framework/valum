@@ -9,25 +9,10 @@ particularly simple to implement.
     SCGI is the recommended implementation and should be used when available as
     it takes the best out of GIO asynchronous API.
 
-The implementation uses a `GLib.ThreadedSocketService`_ to process multiple
-requests concurrently. It is critical to either avoid shared states or use
-`GLib.Mutex`_ or ``lock`` properly.
+The implementation uses a `GLib.SocketService`_ and processes multiple requests
+using non-blocking I/O.
 
-.. _GLib.ThreadedSocketService: http://valadoc.org/#!api=gio-2.0/GLib.ThreadedSocketService
-.. _GLib.Mutex: http://valadoc.org/#!api=glib-2.0/GLib.Mutex
-
-.. code:: vala
-
-    using VSGI.SCGI;
-
-    var shared_state = 5;
-
-    new Server ("org.vsgi.SCGI", (req, res) => {
-        // ...
-        lock (shared_state) {
-            shared_state++;
-        }
-    }).run ();
+.. _GLib.SocketService: http://valadoc.org/#!api=gio-2.0/GLib.SocketService
 
 Options
 -------
@@ -40,9 +25,6 @@ Options
 | ``--file-descriptor`` | 0       | listen to the provided file descriptor        |
 +-----------------------+---------+-----------------------------------------------+
 | ``--backlog``         | 0       | connection queue depth in the ``listen`` call |
-+-----------------------+---------+-----------------------------------------------+
-| ``--max-threads``     | -1      | the maximal number of threads to execute      |
-|                       |         | concurrently handling incoming clients        |
 +-----------------------+---------+-----------------------------------------------+
 
 In the case of ``--max-threads``, ``-1`` means no limit.
