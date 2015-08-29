@@ -30,6 +30,7 @@ public static void test_router_handle () {
 	router.handle (request, response);
 
 	HashTable<string, string>? @params;
+	assert (418 == response.status);
 	assert ("text/html" == response.headers.get_content_type (out @params));
 	assert (null != @params);
 	assert ("charset" in @params);
