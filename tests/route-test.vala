@@ -202,3 +202,14 @@ public void test_route_fire () {
 
 	assert (setted);
 }
+
+/**
+ * @since 0.3
+ */
+public void test_route_to_path () {
+	var route = new Route.from_rule (new Router (), "GET", "<int:id>", (req, res) => {});
+
+	GLib.Parameter param = {"id", 5};
+
+	assert ("/5" == route.to_path ({param}));
+}

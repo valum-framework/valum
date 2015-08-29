@@ -43,6 +43,12 @@ namespace Valum {
 		public string? method { construct; get; }
 
 		/**
+		 * The regular expression matching the {@link VSGI.Request} or 'null' if
+		 * it does not apply.
+		 */
+		private Regex? regex = null;
+
+		/**
 		 * Create a Route using a custom matcher.
 		 *
 		 * This is the lowest-level mean to create a Route instance.
@@ -97,11 +103,11 @@ namespace Valum {
 			}
 
 			// regex are optimized automatically :)
-			var prepared_regex = new Regex (pattern.str, RegexCompileFlags.OPTIMIZE);
+			this.regex = new Regex (pattern.str, RegexCompileFlags.OPTIMIZE);
 
 			this (router, method, (req, stack) => {
 				MatchInfo match_info;
-				if (prepared_regex.match (req.uri.get_path (), 0, out match_info)) {
+				if (this.regex.match (req.uri.get_path (), 0, out match_info)) {
 					if (captures.length () > 0) {
 						// populate the request parameters
 						var p = new HashTable<string, string?> (str_hash, str_equal);
@@ -180,6 +186,31 @@ namespace Valum {
 		 */
 		public Route then (owned HandlerCallback handler) {
 			return this.router.matcher (this.method, (owned) match, (owned) handler);
+		}
+
+		/**
+		 * Reverse the path of this route given a set of parameters.
+		 *
+		 * @since 0.3
+		 */
+		public string to_path (GLib.Parameter[] @params) requires (this.regex != null) {
+			var url = new StringBuilder ("/");
+			var i   = 0; // index in values
+
+			// extract named captures from the regular expression
+			var pieces = CAPTURE_REGEX.split_full (this.regex.get_pattern ());
+
+			foreach (var p in pieces) {
+				if (p[0] == '<') {
+					var val = Value (typeof (string));
+					if (@params[i++].@value.transform (ref val))
+						url.append (val.get_string ());
+				} else {
+					url.append (p); // regular piece of route
+				}
+			}
+
+			return url.str;
 		}
 	}
 }
