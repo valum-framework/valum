@@ -62,9 +62,6 @@ namespace Valum {
 		 * @since 0.1
 		 */
 		public Route.from_regex (Router router, string? method, Regex regex, owned HandlerCallback callback) throws RegexError {
-			Object (router: router, method: method);
-			this.fire = (owned) callback;
-
 			var pattern = new StringBuilder ("^");
 
 			// root the route
@@ -81,10 +78,9 @@ namespace Valum {
 
 			// extract the captures from the regular expression
 			var captures      = new SList<string> ();
-			var capture_regex = new Regex ("\\(\\?<(\\w+)>.+\\)");
 			MatchInfo capture_match_info;
 
-			if (capture_regex.match (pattern.str, 0, out capture_match_info)) {
+			if (/\(\?<(\w+)>.+\)/.match (pattern.str, 0, out capture_match_info)) {
 				foreach (var capture in capture_match_info.fetch_all ()) {
 					captures.append (capture);
 				}
@@ -93,7 +89,7 @@ namespace Valum {
 			// regex are optimized automatically :)
 			var prepared_regex = new Regex (pattern.str, RegexCompileFlags.OPTIMIZE);
 
-			this.match = (req, stack) => {
+			this (router, method, (req, stack) => {
 				MatchInfo match_info;
 				if (prepared_regex.match (req.uri.get_path (), 0, out match_info)) {
 					if (captures.length () > 0) {
@@ -108,7 +104,7 @@ namespace Valum {
 					return true;
 				}
 				return false;
-			};
+			}, callback);
 		}
 
 		/**
@@ -126,68 +122,32 @@ namespace Valum {
 		 *             paths if set to null
 		 */
 		public Route.from_rule (Router router, string? method, string? rule, owned HandlerCallback callback) throws RegexError {
-			Object (router: router, method: method);
-			this.fire = (owned) callback;
-
-			var param_regex = new Regex ("(<(?:\\w+:)?\\w+>)");
-			var params      = param_regex.split_full (rule == null ? "" : rule);
-			var captures    = new SList<string> ();
-			var route       = new StringBuilder ("^");
-
-			// root the route
-			route.append ("/");
-
-			// scope the route
-			foreach (var scope in router.scopes.head) {
-				route.append (Regex.escape_string ("%s/".printf (scope)));
-			}
+			var params = /(<(?:\w+:)?\w+>)/.split_full (rule == null ? "" : rule);
+			var pattern = new StringBuilder ();
 
 			// catch-all null rule
 			if (rule == null) {
-				captures.append ("path");
-				route.append ("(?<path>.*)");
+				pattern.append ("(?<path>.*)");
 			}
 
-			foreach (var p in params) {
+			foreach (var p in @params) {
 				if (p[0] != '<') {
 					// regular piece of route
-					route.append (Regex.escape_string (p));
+					pattern.append (Regex.escape_string (p));
 				} else {
 					// extract parameter
 					var cap  = p.slice (1, p.length - 1).split (":", 2);
 					var type = cap.length == 1 ? "string" : cap[0];
 					var key  = cap.length == 1 ? cap[0] : cap[1];
 
-					if (!this.router.types.contains (type))
-						error ("using an undefined type %s".printf (type));
+					if (!router.types.contains (type))
+						throw new RegexError.COMPILE ("using an undefined type %s", type);
 
-					captures.append (key);
-
-					route.append ("(?<%s>%s)".printf (key, this.router.types[type].get_pattern ()));
+					pattern.append ("(?<%s>%s)".printf (key, router.types[type].get_pattern ()));
 				}
 			}
 
-			route.append ("$");
-
-			var regex = new Regex (route.str, RegexCompileFlags.OPTIMIZE);
-
-			// register a matcher based on the generated regular expression
-			this.match = (req, stack) => {
-				MatchInfo match_info;
-				if (regex.match (req.uri.get_path (), 0, out match_info)) {
-					if (captures.length () > 0) {
-						// populate the request parameters
-						var p = new HashTable<string, string?> (str_hash, str_equal);
-						foreach (var capture in captures) {
-							p[capture] = match_info.fetch_named (capture);
-							stack.push_tail (match_info.fetch_named (capture));
-						}
-						req.params = p;
-					}
-					return true;
-				}
-				return false;
-			};
+			this.from_regex (router, method, new Regex (pattern.str), (owned) callback);
 		}
 
 		/**
