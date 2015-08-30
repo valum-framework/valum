@@ -172,7 +172,7 @@ app.get ("redirect", (req, res) => {
 });
 
 app.get ("not-found", (req, res) => {
-	throw new ClientError.NOT_FOUND ("the given URL was not found");
+	throw new ClientError.NOT_FOUND ("This status were thrown and handled by a status handler.");
 });
 
 var api = new Router ();
@@ -254,10 +254,13 @@ app.get ("static/<path:resource>.<any:type>", (req, res) => {
 	}
 });
 
-app.status (Soup.Status.NOT_FOUND, (req, res) => {
-	res.status = Soup.Status.NOT_FOUND;
+app.status (Soup.Status.NOT_FOUND, (req, res, next, stack) => {
 	var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));
-	template.environment.push_string ("path", req.uri.get_path ());
+	template.environment.push_string ("message", stack.pop_tail ().get_string ());
+	res.status = Soup.Status.NOT_FOUND;
+	HashTable<string, string> @params;
+	res.headers.get_content_type (out @params);
+	res.headers.set_content_type ("text/html", @params);
 	template.to_stream (res.body);
 });
 
