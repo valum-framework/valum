@@ -115,6 +115,31 @@ public void test_route_from_regex () {
 }
 
 /**
+ * @since 0.2
+ */
+public void test_route_from_regex_multiple_captures () {
+	var route  = new Route.from_regex (new Router (), "GET", /(?<action>\w+)\/(?<id>\d+)/, (req, res) => {});
+	var req    = new Request.with_uri (new Soup.URI ("http://localhost/user/5"));
+	var stack  = new Queue<Value?> ();
+
+	assert (req.params == null);
+
+	var matches = route.match (req, stack);
+
+	assert (matches);
+	assert (req.params != null);
+
+	assert ("action" in req.params);
+	assert ("id" in req.params);
+
+	assert ("user" == req.params["action"]);
+	assert ("5" == req.params["id"]);
+
+	assert ("5" == stack.pop_tail ().get_string ());
+	assert ("user" == stack.pop_tail ().get_string ());
+}
+
+/**
  * @since 0.1
  */
 public void test_route_from_regex_scoped () {

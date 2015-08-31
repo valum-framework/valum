@@ -77,13 +77,13 @@ namespace Valum {
 			pattern.append ("$");
 
 			// extract the captures from the regular expression
-			var captures      = new SList<string> ();
+			var captures = new SList<string> ();
 			MatchInfo capture_match_info;
 
-			if (/\(\?<(\w+)>.+\)/.match (pattern.str, 0, out capture_match_info)) {
-				foreach (var capture in capture_match_info.fetch_all ()) {
-					captures.append (capture);
-				}
+			if (/\(\?<(\w+)>.+?\)/.match (pattern.str, 0, out capture_match_info)) {
+				do {
+					captures.append (capture_match_info.fetch (1));
+				} while (capture_match_info.next ());
 			}
 
 			// regex are optimized automatically :)
