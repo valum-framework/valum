@@ -36,7 +36,7 @@ meta-data.
 LD_LIBRARY_PATH=%{buildroot}%{_libdir} ./build/tests/tests
 
 %files
-%doc README.md LGPL
+%doc README.md COPYING
 %{_libdir}/*
 
 %files devel
