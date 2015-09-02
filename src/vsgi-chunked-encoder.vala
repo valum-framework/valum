@@ -38,6 +38,10 @@ namespace VSGI {
 										ConverterFlags flags,
 										out size_t bytes_read,
 										out size_t bytes_written) throws IOError {
+			// no internal state to flush
+			if (ConverterFlags.FLUSH in flags)
+				return ConverterResult.FLUSHED;
+
 			size_t required_size = 0;
 			var size_buffer      = inbuf.length.to_string ("%X");
 
