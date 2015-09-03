@@ -17,7 +17,6 @@ before_script:
 
 script:
     - build/tests/tests
-    - sphinx-build docs build/docs
 
 after_success:
     - coveralls --repo-token $COVERALLS_TOKEN --build-root build

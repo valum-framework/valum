@@ -47,6 +47,9 @@ def configure(conf):
     # other dependencies
     conf.check(lib='fcgi', uselib_store='FCGI', args='--cflags --libs')
 
+    # programs
+    conf.find_program('sphinx-build', var='SPHINXBUILD', mandatory=False)
+
     if conf.options.enable_gcov:
         conf.check(lib='gcov', uselib_store='GCOV', args='--cflags --libs')
         conf.env.append_unique('CFLAGS', ['-fprofile-arcs', '-ftest-coverage'])
@@ -83,6 +86,12 @@ def build(bld):
         source       = ['valum.spec.in'],
         install_path = None,
         VERSION      = VERSION)
+
+    # user documentation
+    if bld.env.SPHINXBUILD:
+        bld(
+            rule   = '${SPHINXBUILD} -b html ../docs docs',
+            always = True)
 
     # build examples
     if bld.env.ENABLE_EXAMPLES:
