@@ -1,9 +1,15 @@
 ### Valum ###
 build/
+/*.tar.bz2
 
 
 ### Sphinx ###
 docs/_build/
+
+
+### Editors ###
+*~
+.*.sw*
 
 
 ### Waf ###
