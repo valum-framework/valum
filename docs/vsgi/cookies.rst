@@ -103,21 +103,6 @@ are provided for the purposes of signing and verifying cookies.
 It's up to you to choose what hashing algorithm and secret: ``SHA512`` is
 generally recommended.
 
-The signature process is the following:
-
-::
-
-    HMAC (checksum_type, key, HMAC (checksum_type, key, value) + name) + value
-
-It guarantees that:
-
--   we have produced the value
--   we have produced the name and associated it to the value
-
-The verification process does not handle special cases like values smaller than
-the hashing: cookies are either signed or not, even if their values are
-incorrectly formed.
-
 .. code:: vala
 
     var @value = Cookies.sign (cookie, ChecksumType.SHA512, "secret".data);
@@ -128,3 +113,22 @@ incorrectly formed.
     if (Cookies.verify (cookie, ChecksumType.SHA512, "secret.data", out @value)) {
         // cookie's okay and the original value is stored in @value
     }
+
+The signature is computed in a way it guarantees that:
+
+-   we have produced the value
+-   we have produced the name and associated it to the value
+
+The algorithm is the following:
+
+::
+
+    HMAC (checksum_type, key, HMAC (checksum_type, key, value) + name) + value
+
+The verification process does not handle special cases like values smaller than
+the hashing: cookies are either signed or not, even if their values are
+incorrectly formed.
+
+If well-formed, cookies are verified in constant-time to prevent time-based
+attacks.
+

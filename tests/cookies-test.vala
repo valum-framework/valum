@@ -135,6 +135,21 @@ public void test_vsgi_cookies_verify () {
 /**
  * @since 0.2
  */
+public void test_vsgi_cookies_verify_bad_signature () {
+	var cookie = new Soup.Cookie ("name",
+								  "5d5305a844da2aa20b85bccd0067abf794ff439a9749c17527d8d9f7c2a6cf88value",
+	                              "0.0.0.0",
+	                              "/",
+	                              3600);
+
+	string @value;
+	assert (!VSGI.Cookies.verify (cookie, ChecksumType.SHA256, "secret".data, out @value));
+	assert (null == @value);
+}
+
+/**
+ * @since 0.2
+ */
 public void test_vsgi_cookies_verify_too_small_value () {
 	var cookie = new Soup.Cookie ("name", "value", "0.0.0.0", "/", 3600);
 

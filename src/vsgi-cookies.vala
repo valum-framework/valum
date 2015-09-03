@@ -113,6 +113,9 @@ namespace VSGI.Cookies {
 	/**
 	 * Verify a signed cookie from {@link VSGI.Cookies.sign}.
 	 *
+	 * The signature is verified in constant time, more specifically a number
+	 * of comparisons equal to length of the checksum.
+	 *
 	 * @param cookie        cookie which signature will be verified
 	 * @param checksum_type hash algorithm used to compute the HMAC
 	 * @param key           secret used to sign the cookie's value
@@ -126,14 +129,21 @@ namespace VSGI.Cookies {
 		if (cookie.@value.length < checksum_length)
 			return false;
 
-		@value = cookie.@value.substring (checksum_length);
-
 		var checksum = Hmac.compute_for_string (checksum_type,
 		                                        key,
-												Hmac.compute_for_string (checksum_type, key, @value) + cookie.name);
+												Hmac.compute_for_string (checksum_type, key, cookie.@value.substring (checksum_length)) + cookie.name);
 
 		assert (checksum_length == checksum.length);
 
-		return cookie.@value.substring (0, checksum_length) == checksum;
+		var match = 0;
+
+		// constant-time equal to avoid time-based attacks
+		for (int i = 0; i < checksum.length; i++)
+			match |= checksum[i] ^ cookie.@value.substring (0, checksum_length)[i];
+
+		if (match == 0)
+			@value = cookie.@value.substring (checksum_length);
+
+		return match == 0;
 	}
 }

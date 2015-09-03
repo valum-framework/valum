@@ -136,6 +136,7 @@ public int main (string[] args) {
 	Test.add_func ("/vsgi/cookies/sign/empty_cookie", test_vsgi_cookies_sign_empty_cookie);
 	Test.add_func ("/vsgi/cookies/sign_and_verify", test_vsgi_cookies_sign_and_verify);
 	Test.add_func ("/vsgi/cookies/verify", test_vsgi_cookies_verify);
+	Test.add_func ("/vsgi/cookies/verify/bad_signature", test_vsgi_cookies_verify_bad_signature);
 	Test.add_func ("/vsgi/cookies/verify/too_small_value", test_vsgi_cookies_verify_too_small_value);
 
 	Test.add_func ("/vsgi/chunked_encoder", test_vsgi_chunked_encoder);
