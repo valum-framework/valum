@@ -8,11 +8,14 @@ License:    LGPL
 URL:        https://github.com/valum-framework/valum
 Source0:    %{url}/releases/download/v%{version}/valum-%{version}.tar.bz2
 
-BuildRequires: vala vala-tools
-BuildRequires: waf
+BuildRequires: ctpl-devel
+BuildRequires: fcgi-devel
 BuildRequires: gobject-introspection-devel
-BuildRequires: libgee-devel libsoup-devel
-BuildRequires: ctpl-devel fcgi-devel
+BuildRequires: libgee-devel
+BuildRequires: libsoup-devel
+BuildRequires: vala
+BuildRequires: vala-tools
+BuildRequires: waf
 
 %description
 Valum is a web micro-framework able to create highly scalable expressive web
