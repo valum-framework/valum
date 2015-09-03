@@ -6,9 +6,31 @@ work is automated with `waf`_, a build tool written in Python.
 
 .. _waf: https://code.google.com/p/waf/
 
+Packages
+--------
+
 Packages for RPM and Debian based Linux distributions will be provided for
 stable releases so that the framework can easily be installed in a container or
 production environment.
+
+Fedora
+~~~~~~
+
+RPM packages for Fedora (21, 22 and rawhide) are available from the
+`arteymix/valum-framework`_ Copr repository.
+
+.. _arteymix/valum-framework: https://copr.fedoraproject.org/coprs/arteymix/valum-framework/
+
+.. code-block:: bash
+
+    dnf copr enable arteymix/valum-framework
+
+The `valum` package contains the shared library and `valum-devel` contains all
+that is necessary to build an application.
+
+.. code-block:: bash
+
+    dnf install valum valum-devel
 
 Dependencies
 ------------
