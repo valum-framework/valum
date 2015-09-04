@@ -78,7 +78,7 @@ namespace VSGI.SCGI {
 			try {
 #if GIO_2_40
 				if (options.contains ("port")) {
-					var port = options.lookup_value ("port", VariantType.INT32).get_int16 ();
+					var port = (uint16) options.lookup_value ("port", VariantType.INT32).get_int32 ();
 					listener.add_inet_port (port, null);
 					command_line.print ("listening on tcp://0.0.0.0:%u\n", port);
 				} else if (options.contains ("file-descriptor")) {
