@@ -38,9 +38,6 @@ specified.
 By default, the FastCGI implementation listens on the file descriptor ``0``,
 which is conventionally the case when the process is spawned by an HTTP server.
 
-Deployment
-----------
-
 lighttpd
 --------
 
@@ -63,7 +60,7 @@ You can run the FastCGI example with lighttpd:
     lighttpd -D -f examples/fastcgi/lighttpd.conf
 
 Apache
-~~~~~~
+------
 
 Under Apache, there are two mods available: ``mod_fcgid`` is more likely to be
 available as it is part of Apache and ``mod_fastcgi`` is developed by those who
@@ -73,7 +70,7 @@ did the FastCGI specifications.
 -  `mod\_fastcgi <http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html>`__
 
 Nginx
-~~~~~
+-----
 
 Nginx expect a process to be already spawned and will communicate with it using
 a TCP port or a socket path. Read more about `ngx_http_fastcgi_module`_.
