@@ -29,7 +29,7 @@ Additionally, an array of supported HTTP methods is provided by
     }
 
     if (req.method == Request.POST) {
-        res.body.splice (req.body, OutputStreamSpliceFlags.CLOSE_SOURCE);
+        res.body.splice (req.body, OutputStreamSpliceFlags.NONE);
     }
 
     if (req.method in Request.METHODS) {
@@ -115,30 +115,41 @@ Form
 `Soup.Form`_ can be used to parse ``application/x-www-form-urlencoded`` format,
 which is submitted by web browsers.
 
-.. _Soup.Form: http://valadoc.org/#!api=libsoup-2.4/Soup.Form
-
 .. code:: vala
 
     new Server ("org.vsgi.App", (req, res) => {
         var buffer = new MemoryOutputStream.resizable ();
 
-        // consume the request body in the stream
-        buffer.splice (req.body, OutputStreamSpliceFlags.CLOSE_SOURCE);
+        // consume the request body in the stream and close the target buffer
+        buffer.splice (req.body, OutputStreamSpliceFlags.CLOSE_TARGET);
 
         // consume it asynchronously
         buffer.splice_async.begin (req.body,
-                                   OutputStreamSpliceFlags.CLOSE_SOURCE,
+                                   OutputStreamSpliceFlags.NONE,
                                    Priority.DEFAULT,
                                    null,
                                    (obj, result) => {
             var consumed = buffer.splice_async.end (result);
 
+            assert (req.headers.get_content_length () == consumed);
+
+            var data    = buffer.data;
+            data.length = (int) buffer.get_data_size ();
+
             // decode the data
-            var data = Soup.Form.decode (buffer.data);
+            var data = Soup.Form.decode (data);
         })
     });
 
+Some considerations should be taken when accumulating the request body into
+a buffer:
+
+-  the `GLib.MemoryOutputStream`_ must be closed before obtaining its data
+-  the returned data length must be setted
+
 .. _GLib.CharsetConverter: http://valadoc.org/#!api=gio-2.0/GLib.CharsetConverter.CharsetConverter
+.. _GLib.MemoryOutputStream: http://valadoc.org/#!api=gio-2.0/GLib.MemoryOutputStream
+.. _Soup.Form: http://valadoc.org/#!api=libsoup-2.4/Soup.Form
 
 Multipart body
 ~~~~~~~~~~~~~~
