@@ -29,6 +29,7 @@ development. If you think that this document could be improved,
     route
     router
     recipes/index
+    extras/index
     module
     ctpl
     hacking

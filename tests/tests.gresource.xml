@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource>
+    <file>data/server-sent-events/send-expected-message</file>
+    <file>data/server-sent-events/send-multiline-expected-message</file>
+  </gresource>
+</gresources>

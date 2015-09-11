@@ -271,6 +271,14 @@ app.get ("static/<path:resource>.<any:type>", (req, res) => {
 	}
 });
 
+app.get ("server-sent-events", ServerSentEvents.context ((req, send) => {
+	send (null, "now!");
+	GLib.Timeout.add_seconds (5, () => {
+		send (null, "later!");
+		return false;
+	});
+}));
+
 app.status (Soup.Status.NOT_FOUND, (req, res, next, stack) => {
 	var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));
 	template.environment.push_string ("message", stack.pop_tail ().get_string ());

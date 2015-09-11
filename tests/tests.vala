@@ -133,6 +133,9 @@ public int main (string[] args) {
 	Test.add_func ("/view/push_value/string", test_view_push_value_string);
 	Test.add_func ("/view/push_value/unknown_type", test_view_push_value_unknown_type);
 
+	Test.add_func ("/server_sent_events/send", test_server_sent_events_send);
+	Test.add_func ("/server_sent_events/send_multiline", test_server_sent_events_send_multiline);
+
 	Test.add_func ("/vsgi/cookies/from_request", test_vsgi_cookies_from_request);
 	Test.add_func ("/vsgi/cookies/from_response", test_vsgi_cookies_from_response);
 	Test.add_func ("/vsgi/cookies/lookup", test_vsgi_cookies_lookup);
