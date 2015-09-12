@@ -131,6 +131,55 @@ although the actual name is system-dependant.
         }
     }
 
-Eventually, this will be used to provide a utility to run arbitrary
-applications with support for live-reloading.
+Loader
+------
+
+.. versionadded:: 0.4
+
+VSGI provide the ``vsgi-loader`` utility designed to serve handlers written as
+:valadoc:`gmodule-2.0/GLib.Module` from any supported implementation, no
+recompilation needed.
+
+Furthermore, it also provide a live-reloader based on :valadoc:`gio-2.0/GLib.FileMonitor`
+to remove the necessity of restarting the server if the application code changes.
+
+Usage
+~~~~~
+
+The ``vsgi-loader`` program can be used as follow:
+
+.. code-block:: bash
+
+    vsgi-loader [--directory=<directory>] [--server=<server>] [--live-reload] <module_name> -- <server_arguments>
+
+-  the ``directory`` where the shared library is located or default system path
+-  the ``server`` implementation which is either ``http``, ``fastcgi`` or
+   ``scgi`` and defaults to ``http``
+-  if ``--live-reload`` is set, the server will automatically reload the shared
+   library on change
+-  the name of the library without the ``lib`` prefix and ``.so`` extension
+-  arguments for the server implementation specified by the ``--server`` flag
+   and delimited by ``--``
+
+.. warning::
+
+    Arguments for the server implementation must be separated by a ``--``
+    indicator, otherwise they will be interpreted by ``vsgi-loader``.
+
+.. code-block:: bash
+
+    vsgi-loader --directory=build/examples/loader loader -- --port=3005
+
+Additional arguments are described in ``vsgi-loader --help``.
+
+.. code-block:: bash
+
+    vsgi-loader --help
+
+For details about server-specific options, the ``--help`` flag can be passed
+beyond.
+
+.. code-block:: bash
+
+    vsgi-loader --server=fastcgi app -- --help
 

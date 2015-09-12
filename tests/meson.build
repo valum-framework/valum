@@ -29,6 +29,11 @@ if fcgi.found()
     test('fastcgi server', executable('fastcgi-server-test', 'fastcgi-server-test.vala',
                                       dependencies: [glib, gobject, gio, gio_unix, soup, vsgi]))
 endif
+loader_test_lib = shared_library('loader-test', 'loader-test.vala',
+                                 dependencies: [glib, gobject, gio, gio_unix, soup, vsgi])
+test('loader', vsgi_loader,
+     args: ['--directory', meson.current_build_dir(), '--server=cgi', 'loader-test'],
+     env: ['VSGI_SERVER_PATH=src/vsgi/servers'])
 
 # Valum tests
 test('authenticate', executable('authenticate-test', ['authenticate-test.vala'],
