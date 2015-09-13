@@ -60,7 +60,7 @@ them in your project ``vapi`` folder. They are included in Valum's
 `vapi folder`_ and you can also find more VAPIs in `nemequ/vala-extra-vapis`_
 GitHub repository.
 
-.. _CTPL: ctpl.tuxfamily.org
+.. _CTPL: http://ctpl.tuxfamily.org
 .. _FastCGI: http://www.fastcgi.com/drupal/
 .. _vapi folder: https://github.com/antono/valum/tree/master/vapi
 .. _nemequ/vala-extra-vapis: https://github.com/nemequ/vala-extra-vapis
@@ -74,13 +74,13 @@ locations, so this wont be necessary.
 
 .. code-block:: bash
 
-    valac --pkg valum-0.1 --vapidir=vapi
-          -X -I/usr/local/include/valum-0.1 -X -lvalum-0.1 # compiler options
+    valac --pkg valum --vapidir=vapi
+          -X -I/usr/local/include/valum -X -lvalum # compiler options
           src/app.vala
           -o build/app
 
     # if installed in default location /usr
-    valac --pkg valum-0.1 src/app.vala -o build/app
+    valac --pkg valum --vapidir=vapi src/app.vala -o build/app
 
 Building with waf
 -----------------
@@ -100,7 +100,7 @@ at the root of your project.
 
     def configure(cfg):
         cfg.load('compiler_c vala')
-        cfg.check_cfg(package='valum-0.2', uselib_store='VALUM', args='--libs --cflags')
+        cfg.check_cfg(package='valum', uselib_store='VALUM', args='--libs --cflags')
 
     def build(bld):
         bld.load('vala')
