@@ -182,6 +182,17 @@ namespace Valum {
 		public HandlerCallback fire;
 
 		/**
+		 * @since 0.3
+		 */
+		public Route and (owned MatcherCallback matcher) {
+			var initial_matcher = this.match;
+			this.match = (req, stack) => {
+				return initial_matcher (req, stack) && matcher (req, stack);
+			};
+			return this;
+		}
+
+		/**
 		 * Pushes the handler in the {@link Router} queue to produce a sequence
 		 * of callbacks that reuses the same matcher.
 		 */
