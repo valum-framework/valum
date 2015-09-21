@@ -29,6 +29,29 @@ namespace Valum {
 	}
 
 	/**
+	 * Produce a matching middleware that consist of the conjunction of
+	 * passed matchers.
+	 *
+	 * @since 0.3
+	 */
+	public MatcherCallback and (owned MatcherCallback left, owned MatcherCallback right) {
+		return (req, stack) => {
+			return left (req, stack) && right (req, stack);
+		};
+	}
+
+	/**
+	 * Produce a matching middleware that consist of the disjunction of
+	 * passed matchers.
+	 * @since 0.3
+	 */
+	public MatcherCallback or (owned MatcherCallback left, owned MatcherCallback right) {
+		return (req, stack) => {
+			return left (req, stack) || right (req, stack);
+		};
+	}
+
+	/**
 	 * Negociate an 'Accept' header against a provided content type.
 	 *
 	 * @since 0.3

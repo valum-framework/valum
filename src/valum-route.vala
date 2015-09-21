@@ -183,16 +183,12 @@ namespace Valum {
 
 		/**
 		 * Redefine this matcher callback to become a conjunction of itself and
-		 * the provided matcher.
+		 * the provided matcher using the {@link Valum.and} middleware.
 		 *
 		 * @since 0.3
 		 */
 		public Route and (owned MatcherCallback matcher) {
-			var initial_matcher = (owned) this.match;
-			this.match = (req, stack) => {
-				// TODO: reset the stack if the matcher fails
-				return initial_matcher (req, stack) && matcher (req, stack);
-			};
+			this.match = Valum.and ((owned) this.match, (owned) matcher);
 			return this;
 		}
 
