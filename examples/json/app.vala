@@ -18,26 +18,9 @@
 using Valum;
 using VSGI.Soup;
 
-/**
- * Matching middleware that checks if the given request accepts an
- * 'application/json' response.
- */
-public bool accept_json (Request req) {
-	return req.headers.get_list ("Accept").contains ("application/json");
-}
-
-/**
- * Handling middleware that jumps to the next middleware.
- */
-public void skip (Request req, Response res, NextCallback next) {
-	next (req, res);
-}
-
 var app = new Router ();
 
-app.get ("", skip)
-   .and (accept_json)
-   .then ((req, res) => {
+app.get ("").and (accept ("application/json")).then ((req, res) => {
 	var builder   = new Json.Builder ();
 	var generator = new Json.Generator ();
 
