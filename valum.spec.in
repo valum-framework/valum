@@ -40,7 +40,7 @@ meta-data.
 ./waf install --destdir=%{buildroot}
 
 %check
-LD_LIBRARY_PATH=%{buildroot}%{_libdir} ./build/tests/tests
+./build/tests/tests
 
 %files
 %doc README.md COPYING

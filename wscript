@@ -70,6 +70,16 @@ def build(bld):
         header_path  = '${INCLUDEDIR}/valum',
         install_path = '${LIBDIR}')
 
+    # static library for tests and examples
+    bld.stlib(
+        packages     = ['glib-2.0', 'gio-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'fcgi'],
+        target       = 'valum',
+        source       = bld.path.ant_glob('src/*.vala'),
+        uselib       = ['GLIB', 'GIO', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
+        vapi_dirs    = ['vapi'],
+        vala_dir     = 'static',
+        install_path = None)
+
     # pkg-config file
     bld(
         features     = 'subst',

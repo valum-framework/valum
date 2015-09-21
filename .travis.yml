@@ -11,12 +11,11 @@ before_install:
     - sudo pip install cpp-coveralls sphinx PyYAML
 
 before_script:
-    - ./waf configure --enable-gcov --prefix=/usr
+    - ./waf configure --enable-gcov
     - ./waf build
-    - sudo ./waf install
 
 script:
-    - build/tests/tests
+    - ./build/tests/tests
 
 after_success:
     - coveralls --repo-token $COVERALLS_TOKEN --build-root build
