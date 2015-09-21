@@ -65,56 +65,56 @@ namespace Valum {
 		/**
 		 * @since 0.0.1
 		 */
-		public new Route get (string? rule, owned HandlerCallback cb) throws RegexError {
+		public new Route get (string? rule, owned HandlerCallback cb = noop) throws RegexError {
 			return this.method (Request.GET, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public Route post (string? rule, owned HandlerCallback cb) throws RegexError {
+		public Route post (string? rule, owned HandlerCallback cb = noop) throws RegexError {
 			return this.method (Request.POST, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public Route put (string? rule, owned HandlerCallback cb) throws RegexError {
+		public Route put (string? rule, owned HandlerCallback cb = noop) throws RegexError {
 			return this.method (Request.PUT, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public Route delete (string? rule, owned HandlerCallback cb) throws RegexError {
+		public Route delete (string? rule, owned HandlerCallback cb = noop) throws RegexError {
 			return this.method (Request.DELETE, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public Route head (string? rule, owned HandlerCallback cb) throws RegexError {
+		public Route head (string? rule, owned HandlerCallback cb = noop) throws RegexError {
 			return this.method (Request.HEAD, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public Route options (string? rule, owned HandlerCallback cb) throws RegexError {
+		public Route options (string? rule, owned HandlerCallback cb = noop) throws RegexError {
 			return this.method (Request.OPTIONS, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public Route trace (string? rule, owned HandlerCallback cb) throws RegexError {
+		public Route trace (string? rule, owned HandlerCallback cb = noop) throws RegexError {
 			return this.method (Request.TRACE, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public new Route connect (string? rule, owned HandlerCallback cb) throws RegexError {
+		public new Route connect (string? rule, owned HandlerCallback cb = noop) throws RegexError {
 			return this.method (Request.CONNECT, rule, (owned) cb);
 		}
 
@@ -123,7 +123,7 @@ namespace Valum {
 		 *
 		 * @since 0.0.1
 		 */
-		public Route patch (string? rule, owned HandlerCallback cb) throws RegexError {
+		public Route patch (string? rule, owned HandlerCallback cb = noop) throws RegexError {
 			return this.method (Request.PATCH, rule, (owned) cb);
 		}
 
@@ -139,7 +139,7 @@ namespace Valum {
 		 * @param rule   rule
 		 * @param cb     callback used to process the pair of request and response.
 		 */
-		public Route method (string method, string? rule, owned HandlerCallback cb) throws RegexError {
+		public Route method (string method, string? rule, owned HandlerCallback cb = noop) throws RegexError {
 			return this.route (new Route.from_rule (this, method, rule, (owned) cb));
 		}
 
@@ -148,7 +148,7 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public Route[] all (string? rule, owned HandlerCallback cb) throws RegexError {
+		public Route[] all (string? rule, owned HandlerCallback cb = noop) throws RegexError {
 			return this.methods (Request.METHODS, rule, (owned) cb);
 		}
 
@@ -160,7 +160,7 @@ namespace Valum {
 		 * @param methods methods to which the callback will be bound
 		 * @param rule    rule
 		 */
-		public Route[] methods (string[] methods, string? rule, owned HandlerCallback cb) throws RegexError {
+		public Route[] methods (string[] methods, string? rule, owned HandlerCallback cb = noop) throws RegexError {
 			var routes = new Route[methods.length];
 			var i      = 0;
 			foreach (var method in methods) {
@@ -181,7 +181,7 @@ namespace Valum {
 		 * @param regex  regular expression matching the request path.
 		 * @param cb     callback used to process the pair of request and response.
 		 */
-		public Route regex (string method, Regex regex, owned HandlerCallback cb) throws RegexError {
+		public Route regex (string method, Regex regex, owned HandlerCallback cb = noop) throws RegexError {
 			return this.route (new Route.from_regex (this, method, regex, (owned) cb));
 		}
 
@@ -194,7 +194,7 @@ namespace Valum {
 		 * @param matcher callback used to match the request
 		 * @param cb      callback used to process the pair of request and response.
 		 */
-		public Route matcher (string method, owned MatcherCallback matcher, owned HandlerCallback cb) {
+		public Route matcher (string method, owned MatcherCallback matcher, owned HandlerCallback cb = noop) {
 			return this.route (new Route (this, method, (owned) matcher, (owned) cb));
 		}
 

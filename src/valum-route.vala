@@ -182,10 +182,30 @@ namespace Valum {
 		public HandlerCallback fire;
 
 		/**
+		 * Redefine this matcher callback to become a conjunction of itself and
+		 * the provided matcher using the {@link Valum.and} middleware.
+		 *
+		 * @since 0.3
+		 */
+		public Route and (owned MatcherCallback matcher) {
+			this.match = Valum.and ((owned) this.match, (owned) matcher);
+			return this;
+		}
+
+		/**
 		 * Pushes the handler in the {@link Router} queue to produce a sequence
 		 * of callbacks that reuses the same matcher.
+		 *
+		 * If {@link Valum.noop} is used as this handling callback, it is
+		 * simlpy replaced and the current instance is returned.
+		 *
+		 * @since 0.2
 		 */
 		public Route then (owned HandlerCallback handler) {
+			if (fire == noop) {
+				fire = (owned) handler;
+				return this;
+			}
 			return this.router.matcher (this.method, (req, stack) => {
 				// since the same matcher is shared, we preserve the stack intact
 				return match (req, new Queue<Value?> ());
