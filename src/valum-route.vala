@@ -30,40 +30,28 @@ namespace Valum {
 	 *
 	 * @since 0.0.1
 	 */
-	public class Route : Object {
-
-		/**
-		 * Router that declared this route.
-		 *
-		 * This is used to hold parameters types and have an access to the
-		 * scope stack.
-		 *
-		 * @since 0.1
-		 */
-		public weak Router router { construct; get; }
+	public struct Route {
 
 		/**
 		 * HTTP method this is matching or 'null' if it does apply.
 		 *
 		 * @since 0.2
 		 */
-		public string? method { construct; get; }
+		public string? method;
 
 		/**
-		 * Create a Route using a custom matcher.
-		 *
-		 * This is the lowest-level mean to create a Route instance.
-		 *
-		 * The matcher should take in consideration the {@link Router.scopes}
-		 * stack if it has to deal with the {@link VSGI.Request.uri}.
-		 *
-		 * @since 0.1
+		 * Matches the given request and populate its parameters on success.
+         *
+		 * @since 0.0.1
 		 */
-		public Route (Router router, string? method, owned MatcherCallback matcher, owned HandlerCallback callback) {
-			Object (router: router, method: method);
-			this.match = (owned) matcher;
-			this.fire  = (owned) callback;
-		}
+		public MatcherCallback match;
+
+		/**
+		 * Apply the handler on the request and response.
+         *
+		 * @since 0.0.1
+		 */
+		public HandlerCallback fire;
 
 		/**
 		 * Create a Route for a given callback using a {@link GLib.Regex}.
@@ -78,7 +66,7 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public Route.from_regex (Router router, string? method, Regex regex, owned HandlerCallback callback) throws RegexError {
+		public static Route from_regex (Router router, string? method, Regex regex, owned HandlerCallback callback) throws RegexError {
 			var pattern = new StringBuilder ("^");
 
 			// root the route
@@ -106,7 +94,7 @@ namespace Valum {
 			// regex are optimized automatically :)
 			var prepared_regex = new Regex (pattern.str, RegexCompileFlags.OPTIMIZE);
 
-			this (router, method, (req, stack) => {
+			return {method, (req, stack) => {
 				MatchInfo match_info;
 				if (prepared_regex.match (req.uri.get_path (), 0, out match_info)) {
 					if (captures.length () > 0) {
@@ -121,7 +109,7 @@ namespace Valum {
 					return true;
 				}
 				return false;
-			}, callback);
+			}, callback};
 		}
 
 		/**
@@ -138,7 +126,7 @@ namespace Valum {
 		 * @param rule compiled down ot a regular expression and captures all
 		 *             paths if set to null
 		 */
-		public Route.from_rule (Router router, string? method, string? rule, owned HandlerCallback callback) throws RegexError {
+		public static Route from_rule (Router router, string? method, string? rule, owned HandlerCallback callback) throws RegexError {
 			var params = /(<(?:\w+:)?\w+>)/.split_full (rule == null ? "" : rule);
 			var pattern = new StringBuilder ();
 
@@ -164,29 +152,7 @@ namespace Valum {
 				}
 			}
 
-			this.from_regex (router, method, new Regex (pattern.str), (owned) callback);
-		}
-
-		/**
-		 * Matches the given request and populate its parameters on success.
-         *
-		 * @since 0.0.1
-		 */
-		public MatcherCallback match;
-
-		/**
-		 * Apply the handler on the request and response.
-         *
-		 * @since 0.0.1
-		 */
-		public HandlerCallback fire;
-
-		/**
-		 * Pushes the handler in the {@link Router} queue to produce a sequence
-		 * of callbacks that reuses the same matcher.
-		 */
-		public Route then (owned HandlerCallback handler) {
-			return this.router.matcher (this.method, (owned) match, (owned) handler);
+			return from_regex (router, method, new Regex (pattern.str), (owned) callback);
 		}
 	}
 }
