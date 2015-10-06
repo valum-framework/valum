@@ -190,7 +190,7 @@ namespace Valum {
 		 *
 		 * @return a builder upon the created {@link Route} object
 		 */
-		public Builder rule (string method, string? rule, owned HandlerCallback cb) {
+		public Builder rule (string method, string? rule, owned HandlerCallback cb) throws RegexError {
 			var params = /(<(?:\w+:)?\w+>)/.split_full (rule == null ? "" : rule);
 			var pattern = new StringBuilder ();
 
@@ -304,13 +304,12 @@ namespace Valum {
 		 *
 		 * This is a low-level function and should be used with care.
 		 *
-		 * @param method HTTP method
 		 * @param route  an instance of Route defining the matching process and the
 		 *               handling callback.
 		 *
 		 * @return a builder upon the created {@link Route} object
 		 */
-		private Builder route (Route route) {
+		private Builder route (owned Route route) {
 			this.routes.push_tail (route);
 			return new Builder (this, routes.tail);
 		}
