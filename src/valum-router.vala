@@ -249,12 +249,15 @@ namespace Valum {
 		 *
 		 * @param status status handled
 		 * @param cb     callback used to handle the status
+		 *
+		 * @return a builder upon the created {@link Route} object
 		 */
-		public void status (uint status, owned HandlerCallback cb) {
+		public Builder status (uint status, owned HandlerCallback cb) {
 			if (!this.status_handlers.contains (status))
 				this.status_handlers[status] = new Queue<Route?> ();
 
 			this.status_handlers[status].push_tail ({null, () => { return true; }, (owned) cb});
+			return new Builder (this, status_handlers[status].tail);
 		}
 
 		/**
