@@ -101,7 +101,7 @@ def build(bld):
     if bld.env.SPHINXBUILD:
         bld(
             rule   = '${SPHINXBUILD} -b html ../docs docs',
-            always = True)
+            source = bld.path.ant_glob('docs/**/*.rst'))
 
     # build examples
     if bld.env.ENABLE_EXAMPLES:
