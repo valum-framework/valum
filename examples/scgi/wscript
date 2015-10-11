@@ -4,8 +4,8 @@ def configure(cfg):
     pass
 
 def build(bld):
-	bld.program(
+    bld.program(
         target       = 'app',
-        source       = 'app.gs',
         use          = 'valum',
+        source       = ['app.vala'],
         install_path = None)

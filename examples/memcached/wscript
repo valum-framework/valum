@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+
+def configure(cfg):
+    cfg.check_cfg(package='libmemcached', uselib_store='MEMCACHED', args='--cflags --libs')
+
+def build(bld):
+    bld.program(
+        packages     = ['libmemcached'],
+        target       = 'app',
+        source       = 'app.vala',
+        use          = 'valum MEMCACHED',
+        install_path = None,
+        vapi_dirs    = 'vapi')

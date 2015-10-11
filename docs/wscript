@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+
+def configure(cfg):
+    cfg.find_program('sphinx-build', var='SPHINXBUILD', mandatory=False)
+
+def build(bld):
+    if bld.env.SPHINXBUILD:
+        bld.load('gnu_dirs')
+        bld(
+            rule         = '${SPHINXBUILD} -b html ../docs ${TGT}',
+            target       = '.',
+            source       = bld.path.ant_glob('*.rst') + bld.path.ant_glob('**/*.rst'),
+            install_path = '${HTMLDIR}')

@@ -108,7 +108,7 @@ at the root of your project.
             packages = ['valum'],
             target    = 'app',
             source    = 'src/app.vala',
-            uselib    = ['VALUM'],
+            use       = 'VALUM'
             vapi_dirs = ['vapi'])
 
 You should now be able to build by issuing the following commands:

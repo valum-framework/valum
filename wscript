@@ -10,6 +10,7 @@ def options(opt):
     opt.load('compiler_c')
     opt.add_option('--enable-gcov', action='store_true', default=False, help='enable coverage with gcov')
     opt.add_option('--enable-examples', action='store_true', default=False, help='build examples')
+    opt.recurse('tests')
 
 def configure(conf):
     conf.load('compiler_c vala')
@@ -47,9 +48,6 @@ def configure(conf):
     # other dependencies
     conf.check(lib='fcgi', uselib_store='FCGI', args='--cflags --libs')
 
-    # programs
-    conf.find_program('sphinx-build', var='SPHINXBUILD', mandatory=False)
-
     if conf.options.enable_gcov:
         conf.check(lib='gcov', uselib_store='GCOV', args='--cflags --libs')
         conf.env.append_unique('CFLAGS', ['-fprofile-arcs', '-ftest-coverage'])
@@ -58,6 +56,8 @@ def configure(conf):
     if conf.options.enable_examples:
         conf.env.ENABLE_EXAMPLES = True
         conf.recurse(glob.glob('examples/*'))
+
+    conf.recurse(['docs', 'tests'])
 
 def build(bld):
     bld.shlib(
@@ -75,7 +75,7 @@ def build(bld):
         packages     = ['glib-2.0', 'gio-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'fcgi'],
         target       = 'valum',
         source       = bld.path.ant_glob('src/*.vala'),
-        uselib       = ['GLIB', 'GIO', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
+        use          = ['GLIB', 'GIO', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
         vapi_dirs    = ['vapi'],
         vala_dir     = 'static',
         install_path = None)
@@ -97,16 +97,9 @@ def build(bld):
         install_path = None,
         VERSION      = VERSION)
 
-    # user documentation
-    if bld.env.SPHINXBUILD:
-        bld(
-            rule   = '${SPHINXBUILD} -b html ../docs docs',
-            source = bld.path.ant_glob('docs/**/*.rst'))
-
     # build examples
     if bld.env.ENABLE_EXAMPLES:
         bld.recurse(glob.glob('examples/*'))
 
-    # build tests
-    bld.recurse('tests')
+    bld.recurse(['docs', 'tests'])
 

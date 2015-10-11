@@ -4,8 +4,8 @@ def configure(cfg):
     pass
 
 def build(bld):
-	bld.program(
-        target       = 'app',
-        source       = 'app.gs',
+    bld.program(
+        target       = 'cgi-bin/app.cgi',
         use          = 'valum',
+        source       = ['app.vala'],
         install_path = None)

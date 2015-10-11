@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
 def configure(cfg):
-    pass
+    cfg.load('glib2')
 
 def build(bld):
-	bld.program(
+    bld.load('glib2')
+    bld.program(
         target       = 'app',
-        source       = 'app.gs',
+        source       = ['app.vala', 'app.gresource.xml'],
         use          = 'valum',
         install_path = None)
