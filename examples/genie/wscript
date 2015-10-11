@@ -5,8 +5,8 @@ def configure(cfg):
 
 def build(bld):
 	bld.program(
-            target    = 'app',
-            use       = 'valum',
-            source    = 'app.gs',
-            uselib    = ['GEE', 'SOUP'],
-            vapi_dirs = ['../../vapi'])
+            target       = 'app',
+            use          = 'valum',
+            source       = 'app.gs',
+            uselib       = ['GEE', 'SOUP'],
+            install_path = None)
