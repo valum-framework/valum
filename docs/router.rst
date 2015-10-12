@@ -262,6 +262,22 @@ matching route.
         // this is invoked!
     });
 
+Filters
+~~~~~~~
+
+:doc:`vsgi/filters` from VSGI are integrated by passing a filtered
+:doc:`vsgi/request` or :doc:`vsgi/response` object to the next handler.
+
+.. code:: vala
+
+    app.get ("", (req, res, next) => {
+        next (req, new ConvertedResponse (res, new ZlibCompressor (ZlibCompressorFormat.GZIP)));
+    });
+
+    app.get ("", (req, res) => {
+        // res is transparently gzipped
+    })
+
 Stacked states
 ~~~~~~~~~~~~~~
 
