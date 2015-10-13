@@ -5,20 +5,13 @@ These are necessary to get the framework usable with modern web requirements.
 It's best to rely on libsoup features in order to minimize the work on
 implementation and testing.
 
- - cookies using Soup.Cookie (arteymix)
  - session with Gee.Map and cookie
- - streamed bodies (arteymix)
- - FastCGI support (arteymix)
- - HTTP query using Soup.URL (arteymix)
- - x-www-form-urlencoded parsing using Soup.Form (arteymix)
- - documentation using valadoc
 
 Router
 ------
 
- - register types at dynamic time using an Map
+ - register rule types using GType
  - optional/nullable route parameter
- - regex literal in route declaration
 
 View Engines
 ------------
@@ -34,7 +27,7 @@ View Engines
 Server Adapters
 ---------------
 
- - migrate to [vsgi](http://github.com/antono/vsgi)
+ - extract VSGI definitions in https://github.com/valum-framework/vsgi
 
 Dev tools
 ---------
@@ -42,8 +35,6 @@ Dev tools
  - Avahi support for mdns local
    addresses like http://cool-app.local
  - Logger with switchable backends (file, redis, dbus for ide integration).
- - Automagical configuration and build system for app
-   develpers (autotools is too complex)
  - Integration with [Nemiver](http://projects.gnome.org/nemiver/)
  - Integration with [Perfkit](https://github.com/chergert/perfkit)
  - Integrate somehow with [Valgrind](https://live.gnome.org/Valgrind)
