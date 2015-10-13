@@ -373,7 +373,7 @@ namespace Valum {
 #if GLIB_2_44
 					    !strv_contains (allowed, route.method) && // skip already allowed method
 #else
-					    !string.joinv ("", allowed).contains (route.method) &&
+					    !string.joinv (",", allowed).contains (route.method) &&
 #endif
 					    route.match (req, stack)) {
 						allowed += route.method;
