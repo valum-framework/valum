@@ -57,4 +57,4 @@ app.get ("", (req, res) => {
 	});
 });
 
-new Server ("org.valum.example.WeatherAPI", app.handle).run ();
+new Server ("org.valum.example.WeatherAPI", app.handle).run ({"app", "--all"});
