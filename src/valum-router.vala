@@ -37,12 +37,12 @@ namespace Valum {
 		/**
 		 * Registered routes by HTTP method.
 		 */
-		private Queue<Route> routes = new Queue<Route> ();
+		private Queue<Route?> routes = new Queue<Route?> ();
 
 		/**
 		 * Registered status handlers.
 		 */
-		private HashTable<uint , Queue<Route>> status_handlers = new HashTable<uint, Queue<Route>> (direct_hash, direct_equal);
+		private HashTable<uint , Queue<Route?>> status_handlers = new HashTable<uint, Queue<Route?>> (direct_hash, direct_equal);
 
 		/**
 		 * Stack of scopes.
@@ -65,57 +65,57 @@ namespace Valum {
 		/**
 		 * @since 0.0.1
 		 */
-		public new Route get (string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.method (Request.GET, rule, (owned) cb);
+		public new Builder get (string? rule, owned HandlerCallback cb) throws RegexError {
+			return this.rule (Request.GET, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public Route post (string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.method (Request.POST, rule, (owned) cb);
+		public Builder post (string? rule, owned HandlerCallback cb) throws RegexError {
+			return this.rule (Request.POST, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public Route put (string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.method (Request.PUT, rule, (owned) cb);
+		public Builder put (string? rule, owned HandlerCallback cb) throws RegexError {
+			return this.rule (Request.PUT, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public Route delete (string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.method (Request.DELETE, rule, (owned) cb);
+		public Builder delete (string? rule, owned HandlerCallback cb) throws RegexError {
+			return this.rule (Request.DELETE, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public Route head (string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.method (Request.HEAD, rule, (owned) cb);
+		public Builder head (string? rule, owned HandlerCallback cb) throws RegexError {
+			return this.rule (Request.HEAD, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public Route options (string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.method (Request.OPTIONS, rule, (owned) cb);
+		public Builder options (string? rule, owned HandlerCallback cb) throws RegexError {
+			return this.rule (Request.OPTIONS, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public Route trace (string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.method (Request.TRACE, rule, (owned) cb);
+		public Builder trace (string? rule, owned HandlerCallback cb) throws RegexError {
+			return this.rule (Request.TRACE, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public new Route connect (string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.method (Request.CONNECT, rule, (owned) cb);
+		public new Builder connect (string? rule, owned HandlerCallback cb) throws RegexError {
+			return this.rule (Request.CONNECT, rule, (owned) cb);
 		}
 
 		/**
@@ -123,8 +123,8 @@ namespace Valum {
 		 *
 		 * @since 0.0.1
 		 */
-		public Route patch (string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.method (Request.PATCH, rule, (owned) cb);
+		public Builder patch (string? rule, owned HandlerCallback cb) throws RegexError {
+			return this.rule (Request.PATCH, rule, (owned) cb);
 		}
 
 		/**
@@ -139,8 +139,9 @@ namespace Valum {
 		 * @param rule   rule
 		 * @param cb     callback used to process the pair of request and response.
 		 */
-		public Route method (string method, string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.route (new Route.from_rule (this, method, rule, (owned) cb));
+		[Deprecated (since = "0.3", replacement = "rule")]
+		public Builder method (string method, string? rule, owned HandlerCallback cb) throws RegexError {
+			return this.rule (method, rule, (owned) cb);
 		}
 
 		/**
@@ -148,7 +149,7 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public Route[] all (string? rule, owned HandlerCallback cb) throws RegexError {
+		public Builder[] all (string? rule, owned HandlerCallback cb) throws RegexError {
 			return this.methods (Request.METHODS, rule, (owned) cb);
 		}
 
@@ -160,29 +161,127 @@ namespace Valum {
 		 * @param methods methods to which the callback will be bound
 		 * @param rule    rule
 		 */
-		public Route[] methods (string[] methods, string? rule, owned HandlerCallback cb) throws RegexError {
-			var routes = new Route[methods.length];
+		public Builder[] methods (string[] methods, string? rule, owned HandlerCallback cb) throws RegexError {
+			var routes = new Builder[methods.length];
 			var i      = 0;
 			foreach (var method in methods) {
-				routes[i++] = this.route (new Route.from_rule (this, method, rule, (owned) cb));
+				routes[i++] = this.rule (method, rule, (owned) cb);
 			}
 			return routes;
 		}
 
 		/**
-		 * Bind a callback with a custom HTTP method and regular expression.
+		 * Create a Route for a given callback from a rule.
+         *
+		 * Rule are scoped from the {@link Router.scope} fragment stack and
+		 * compiled down to {@link GLib.Regex}.
 		 *
-		 * The regular expression will be scoped, anchored and optimized by the
-		 * {@link Route} automatically.
+		 * Rule start matching after the first '/' character of the request URI
+		 * path.
+		 *
+		 * @since 0.3
+		 *
+		 * @param method method matching this rule
+		 * @param rule   rule or 'null' to capture all possible paths
+		 * @param cb     handling callback
+		 *
+		 * @throws RegexError if the rule is incorrectly formed or a type is
+		 *                    undefined in the 'types' mapping
+		 *
+		 * @return a builder upon the created {@link Route} object
+		 */
+		public Builder rule (string method, string? rule, owned HandlerCallback cb) throws RegexError {
+			var params = /(<(?:\w+:)?\w+>)/.split_full (rule == null ? "" : rule);
+			var pattern = new StringBuilder ();
+
+			// catch-all null rule
+			if (rule == null) {
+				pattern.append ("(?<path>.*)");
+			}
+
+			foreach (var p in @params) {
+				if (p[0] != '<') {
+					// regular piece of route
+					pattern.append (Regex.escape_string (p));
+				} else {
+					// extract parameter
+					var cap  = p.slice (1, p.length - 1).split (":", 2);
+					var type = cap.length == 1 ? "string" : cap[0];
+					var key  = cap.length == 1 ? cap[0] : cap[1];
+
+					if (!this.types.contains (type))
+						throw new RegexError.COMPILE ("using an undefined type %s", type);
+
+					pattern.append ("(?<%s>%s)".printf (key, this.types[type].get_pattern ()));
+				}
+			}
+
+			return this.regex (method, new Regex (pattern.str), (owned) cb);
+		}
+
+		/**
+		 * Create a Route for a given callback using a {@link GLib.Regex}.
+		 *
+		 * The providen regular expression pattern will be extracted, scoped,
+		 * anchored and optimized. This means you must not anchor the regex
+		 * yourself with '^' and '$' characters and providing a pre-optimized
+		 * {@link GLib.Regex} is useless.
+		 *
+		 * Like for the rules, the regular expression starts matching after the
+		 * scopes and the leading '/' character.
 		 *
 		 * @since 0.1
 		 *
 		 * @param method HTTP method
 		 * @param regex  regular expression matching the request path.
 		 * @param cb     callback used to process the pair of request and response.
+		 *
+		 * @return a builder upon the created {@link Route} object
 		 */
-		public Route regex (string method, Regex regex, owned HandlerCallback cb) throws RegexError {
-			return this.route (new Route.from_regex (this, method, regex, (owned) cb));
+		public Builder regex (string method, Regex regex, owned HandlerCallback cb) throws RegexError {
+			var pattern = new StringBuilder ("^");
+
+			// root the route
+			pattern.append ("/");
+
+			// scope the route
+			foreach (var scope in this.scopes.head) {
+				pattern.append (Regex.escape_string ("%s/".printf (scope)));
+			}
+
+			pattern.append (regex.get_pattern ());
+
+			pattern.append ("$");
+
+			// extract the captures from the regular expression
+			var captures = new SList<string> ();
+			MatchInfo capture_match_info;
+
+			if (/\(\?<(\w+)>.+?\)/.match (pattern.str, 0, out capture_match_info)) {
+				do {
+					captures.append (capture_match_info.fetch (1));
+				} while (capture_match_info.next ());
+			}
+
+			// regex are optimized automatically :)
+			var prepared_regex = new Regex (pattern.str, RegexCompileFlags.OPTIMIZE);
+
+			return this.matcher (method, (req, stack) => {
+				MatchInfo match_info;
+				if (prepared_regex.match (req.uri.get_path (), 0, out match_info)) {
+					if (captures.length () > 0) {
+						// populate the request parameters
+						var p = new HashTable<string, string?> (str_hash, str_equal);
+						foreach (var capture in captures) {
+							p[capture] = match_info.fetch_named (capture);
+							stack.push_tail (match_info.fetch_named (capture));
+						}
+						req.params = p;
+					}
+					return true;
+				}
+				return false;
+			}, (owned) cb);
 		}
 
 		/**
@@ -193,9 +292,11 @@ namespace Valum {
 		 * @param method  HTTP method
 		 * @param matcher callback used to match the request
 		 * @param cb      callback used to process the pair of request and response.
+		 *
+		 * @return a builder upon the created {@link Route} object
 		 */
-		public Route matcher (string method, owned MatcherCallback matcher, owned HandlerCallback cb) {
-			return this.route (new Route (this, method, (owned) matcher, (owned) cb));
+		public Builder matcher (string method, owned MatcherCallback matcher, owned HandlerCallback cb) {
+			return this.route ({method, (owned) matcher, (owned) cb});
 		}
 
 		/**
@@ -203,13 +304,14 @@ namespace Valum {
 		 *
 		 * This is a low-level function and should be used with care.
 		 *
-		 * @param method HTTP method
 		 * @param route  an instance of Route defining the matching process and the
-		 *               callback.
+		 *               handling callback.
+		 *
+		 * @return a builder upon the created {@link Route} object
 		 */
-		private Route route (Route route) {
+		private Builder route (owned Route route) {
 			this.routes.push_tail (route);
-			return route;
+			return new Builder (this, routes.tail);
 		}
 
 		/**
@@ -220,15 +322,15 @@ namespace Valum {
 		 *
 		 * @param status status handled
 		 * @param cb     callback used to handle the status
+		 *
+		 * @return a builder upon the created {@link Route} object
 		 */
-		public void status (uint status, owned HandlerCallback cb) {
+		public Builder status (uint status, owned HandlerCallback cb) {
 			if (!this.status_handlers.contains (status))
-				this.status_handlers[status] = new Queue<Route> ();
+				this.status_handlers[status] = new Queue<Route?> ();
 
-			this.status_handlers[status].push_tail (new Route (this,
-			                                                   null,
-			                                                   () => { return true; },
-			                                                   (owned) cb));
+			this.status_handlers[status].push_tail ({null, () => { return true; }, (owned) cb});
+			return new Builder (this, status_handlers[status].tail);
 		}
 
 		/**
@@ -257,11 +359,11 @@ namespace Valum {
 		 * @param stack  routing stack passed to match and fire
 		 * @return tells if something matched during the routing process
 		 */
-		private bool perform_routing (List<Route> routes, Request req, Response res, Queue<Value?> stack) throws Informational, Success, Redirection, ClientError, ServerError {
+		private bool perform_routing (List<Route?> routes, Request req, Response res, Queue<Value?> stack) throws Informational, Success, Redirection, ClientError, ServerError {
 			foreach (var route in routes) {
 				if ((route.method == null || route.method == req.method) && route.match (req, stack)) {
 					route.fire (req, res, (req, res) => {
-						unowned List<Route> current = routes.find (route);
+						unowned List<Route?> current = routes.find (route);
 						// keep routing if there are more routes to explore
 						if (current.next != null)
 							if (perform_routing (current.next, req, res, stack))
@@ -386,6 +488,49 @@ namespace Valum {
 
 				throw new ClientError.NOT_FOUND ("The request URI %s was not found.".printf (req.uri.to_string (false)));
 			});
+		}
+
+		/**
+		 * Builder to chain route creation upon a given router.
+		 *
+		 * @since 0.3
+		 */
+		public class Builder : Object {
+
+			/**
+			 * @since 0.3
+			 */
+			public Router router { construct; get; }
+
+			/**
+			 * Node in the routes queue this is building upon.
+			 *
+			 * @since 0.3
+			 */
+			public unowned List<Route?> node { construct; get; }
+
+			/**
+			 * @since 0.3
+			 */
+			protected Builder (Router router, List<Route?> node) {
+				Object (router: router, node: node);
+			}
+
+			/**
+			 * Insert a {@link Valum.Route} right after the created route using
+			 * its matcher and a provided handler in the {@link Valum.Router}
+			 * queue.
+			 *
+			 * @since 0.2
+			 *
+			 * @param handler callback for the {@link Valum.Route} to be created.
+			 * @return a builder over the created {@link Valum.Route}
+			 */
+			public Builder then (owned HandlerCallback handler) {
+				router.routes.insert_after (node,
+				                            {node.data.method, node.data.match, (owned) handler});
+				return new Builder (router, node.next);
+			}
 		}
 	}
 }

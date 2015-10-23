@@ -22,20 +22,19 @@ using VSGI.Test;
  * @since 0.1
  */
 public void test_route () {
-	var router = new Router ();
-	var route  = new Route (router, "GET", (req) => { return true; }, (req, res) => {});
+	Route route  = {"GET", (req) => { return true; }, (req, res) => {}};
 	var req    = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var stack  = new Queue<Value?> ();
 
 	assert (route.match (req, stack));
-	assert (router == route.router);
 }
 
 /**
  * @since 0.1
  */
 public void test_route_from_rule () {
-	var route  = new Route.from_rule (new Router (), "GET", "<int:id>", (req, res) => {});
+	var router = new Router ();
+	var route  = router.get ("<int:id>", (req, res) => {}).node.data;
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var stack  = new Queue<Value?> ();
 
@@ -49,7 +48,8 @@ public void test_route_from_rule () {
  * @since 0.1
  */
 public void test_route_from_rule_null () {
-	var route  = new Route.from_rule (new Router (), "GET", null, (req, res) => {});
+	var router = new Router ();
+	var route  = router.get (null, (req, res) => {}).node.data;
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var stack  = new Queue<Value?> ();
 
@@ -64,7 +64,8 @@ public void test_route_from_rule_null () {
  * @since 0.1
  */
 public static void test_route_from_rule_null_matches_empty_path () {
-	var route  = new Route.from_rule (new Router (), "GET", null, (req, res) => {});
+	var router = new Router ();
+	var route  = router.get (null, (req, res) => {}).node.data;
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var stack  = new Queue<Value?> ();
 
@@ -77,7 +78,8 @@ public static void test_route_from_rule_null_matches_empty_path () {
  * @since 0.1
  */
 public void test_route_from_rule_any () {
-	var route  = new Route.from_rule (new Router (), "GET", "<any:id>", (req, res) => {});
+	var router = new Router ();
+	var route  = router.get ("<any:id>", (req, res) => {}).node.data;
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var stack  = new Queue<Value?> ();
 
@@ -92,7 +94,8 @@ public void test_route_from_rule_any () {
  * @since 0.1
  */
 public void test_route_from_rule_without_captures () {
-	var route  = new Route.from_rule (new Router (), "GET", "", (req, res) => {});
+	var router = new Router ();
+	var route  = router.get ("", (req, res) => {}).node.data;
 	var req    = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var stack  = new Queue<Value?> ();
 
@@ -110,14 +113,16 @@ public void test_route_from_rule_without_captures () {
  * @since 0.1
  */
 public void test_route_from_rule_undefined_type () {
-	var route  = new Route.from_rule (new Router (), "GET", "<uint:unknown_type>", (req, res) => {});
+	var router = new Router ();
+	router.get ("<uint:unknown_type>", (req, res) => {});
 }
 
 /**
  * @since 0.1
  */
 public void test_route_from_regex () {
-	var route  = new Route.from_regex (new Router (), "GET", /(?<id>\d+)/, (req, res) => {});
+	var router = new Router ();
+	var route  = router.regex ("GET", /(?<id>\d+)/, (req, res) => {}).node.data;
 	var req    = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var stack  = new Queue<Value?> ();
 
@@ -135,7 +140,8 @@ public void test_route_from_regex () {
  * @since 0.2
  */
 public void test_route_from_regex_multiple_captures () {
-	var route  = new Route.from_regex (new Router (), "GET", /(?<action>\w+)\/(?<id>\d+)/, (req, res) => {});
+	var router = new Router ();
+	var route  = router.regex ("GET", /(?<action>\w+)\/(?<id>\d+)/, (req, res) => {}).node.data;
 	var req    = new Request.with_uri (new Soup.URI ("http://localhost/user/5"));
 	var stack  = new Queue<Value?> ();
 
@@ -164,7 +170,7 @@ public void test_route_from_regex_scoped () {
 
 	router.scopes.push_tail ("test");
 
-	var route  = new Route.from_regex (router, "GET", /(?<id>\d+)/, (req, res) => {});
+	var route  = router.regex ("GET", /(?<id>\d+)/, (req, res) => {}).node.data;
 	var req    = new Request.with_uri (new Soup.URI ("http://localhost/test/5"));
 	var stack  = new Queue<Value?> ();
 
@@ -182,7 +188,8 @@ public void test_route_from_regex_scoped () {
  * @since 0.1
  */
 public void test_route_from_regex_without_captures () {
-	var route  = new Route.from_regex (new Router (), "GET", /.*/, (req, res) => {});
+	var router = new Router ();
+	var route  = router.regex ("GET", /.*/, (req, res) => {}).node.data;
 	var req    = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var stack  = new Queue<Value?> ();
 
@@ -198,7 +205,8 @@ public void test_route_from_regex_without_captures () {
  * @since 0.1
  */
 public void test_route_match () {
-	var route  = new Route.from_rule (new Router (), "GET", "<int:id>", (req, res) => {});
+	var router = new Router ();
+	var route  = router.get ("<int:id>", (req, res) => {}).node.data;
 	var req    = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var stack  = new Queue<Value?> ();
 
@@ -216,7 +224,8 @@ public void test_route_match () {
  * @since 0.1
  */
 public void test_route_match_not_matching () {
-	var route  = new Route.from_rule (new Router (), "GET", "<int:id>", (req, res) => {});
+	var router = new Router ();
+	var route  = router.get ("<int:id>", (req, res) => {}).node.data;
 	var req    = new Request.with_uri (new Soup.URI ("http://localhost/home"));
 	var stack  = new Queue<Value?> ();
 
@@ -231,9 +240,10 @@ public void test_route_match_not_matching () {
  */
 public void test_route_fire () {
 	var setted = false;
-	var route = new Route.from_rule (new Router (), "GET", "<int:id>", (req, res) => {
+	var router = new Router ();
+	var route = router.get ("<int:id>", (req, res) => {
 		setted = true;
-	});
+	}).node.data;
 	var req   = new Request.with_uri (new Soup.URI ("http://localhost/home"));
 	var res   = new Response (req, 200);
 	var stack  = new Queue<Value?> ();

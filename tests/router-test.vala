@@ -227,8 +227,8 @@ public static void test_router_methods () {
 	});
 
 	assert (2 == routes.length);
-	assert (methods[0] == routes[0].method);
-	assert (methods[1] == routes[1].method);
+	assert (methods[0] == routes[0].node.data.method);
+	assert (methods[1] == routes[1].node.data.method);
 
 	foreach (var method in methods) {
 		var request  = new Request (method, new Soup.URI ("http://localhost/"));
@@ -253,7 +253,7 @@ public static void test_router_all () {
 	assert (VSGI.Request.METHODS.length == routes.length);
 
 	for (int i = 0; i < routes.length; i++)
-		assert (VSGI.Request.METHODS[i] == routes[i].method);
+		assert (VSGI.Request.METHODS[i] == routes[i].node.data.method);
 
 	foreach (var method in VSGI.Request.METHODS) {
 		var request  = new Request (method, new Soup.URI ("http://localhost/"));
