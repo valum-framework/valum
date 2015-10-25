@@ -20,7 +20,7 @@ using VSGI.Soup;
 
 var app = new Router ();
 
-app.get ("", (req, res) => {
+app.get ("").and (accept ("application/json")).then ((req, res) => {
 	var builder   = new Json.Builder ();
 	var generator = new Json.Generator ();
 
