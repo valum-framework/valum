@@ -49,28 +49,25 @@ pretty much what you think is the best for your needs.
     src/
         app.vala
     vapi/
-        ctpl.vala
-        fcgi.vala
+        ctpl.vapi
 
 VAPI bindings
 -------------
 
-`CTPL`_ and `FastCGI`_ are not providing Vala bindings, so you need to copy
-them in your project ``vapi`` folder. They are included in Valum's
-`vapi folder`_ and you can also find more VAPIs in `nemequ/vala-extra-vapis`_
-GitHub repository.
+`CTPL`_ is not providing Vala bindings, so you need to copy the file in your
+project. It is available from `nemequ/vala-extra-vapis`_ GitHub repository.
+
+If you have installed Valum from a distributed package (see :doc:`install` for
+more details), CTPL binding is already included.
 
 .. _CTPL: http://ctpl.tuxfamily.org
-.. _FastCGI: http://www.fastcgi.com/drupal/
-.. _vapi folder: https://github.com/antono/valum/tree/master/vapi
 .. _nemequ/vala-extra-vapis: https://github.com/nemequ/vala-extra-vapis
 
 Building manually
 -----------------
 
 Building manually by invoking ``valac`` requires that you specifically link
-against the shared library. Eventually, Valum will be distributed in standard
-locations, so this wont be necessary.
+against the shared library.
 
 .. code-block:: bash
 

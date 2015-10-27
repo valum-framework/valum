@@ -89,6 +89,8 @@ def build(bld):
         VERSION      = VERSION,
         API_VERSION  = API_VERSION)
 
+    bld.install_files('${DATADIR}/valum/vapi', bld.path.ant_glob('vapi/*'))
+
     # RPM specfile
     bld(
         features     = 'subst',
