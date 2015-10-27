@@ -6,8 +6,10 @@ def configure(cfg):
 def build(bld):
     if bld.env.SPHINXBUILD:
         bld.load('gnu_dirs')
+        rst_docs = bld.path.ant_glob('*.rst') + bld.path.ant_glob('**/*.rst')
         bld(
-            rule         = '${SPHINXBUILD} -b html ../docs ${TGT}',
-            target       = '.',
-            source       = bld.path.ant_glob('*.rst') + bld.path.ant_glob('**/*.rst'),
+            rule         = '${SPHINXBUILD} -b html ../docs docs',
+            target       = [doc.change_ext('.html') for doc in rst_docs],
+            source       = rst_docs,
             install_path = '${HTMLDIR}')
+        bld.install_files('${HTMLDIR}/_static', bld.path.get_bld().ant_glob('_static/**'))
