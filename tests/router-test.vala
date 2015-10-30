@@ -804,3 +804,19 @@ public void test_router_then () {
 	assert (setted);
 	assert (then_setted);
 }
+
+public void test_router_error ()
+{
+	var router = new Router ();
+
+	router.get ("", (req, res) => {
+		throw new IOError.FAILED ("Just failed!");
+	});
+
+	var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
+	var res = new Response (req, 200);
+
+	router.handle (req, res);
+
+	assert (500 == res.status);
+}

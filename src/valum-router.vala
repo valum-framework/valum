@@ -257,7 +257,15 @@ namespace Valum {
 		 * @param stack  routing stack passed to match and fire
 		 * @return tells if something matched during the routing process
 		 */
-		private bool perform_routing (List<Route> routes, Request req, Response res, Queue<Value?> stack) throws Informational, Success, Redirection, ClientError, ServerError {
+		private bool perform_routing (List<Route> routes,
+		                              Request req,
+		                              Response res,
+		                              Queue<Value?> stack) throws Informational,
+		                                                          Success,
+		                                                          Redirection,
+		                                                          ClientError,
+		                                                          ServerError,
+		                                                          Error {
 			foreach (var route in routes) {
 				if ((route.method == null || route.method == req.method) && route.match (req, stack)) {
 					route.fire (req, res, (req, res) => {
@@ -329,7 +337,11 @@ namespace Valum {
 				res.status = c.code;
 				res.headers.append ("Upgrade", c.message);
 			} catch (Error e) {
-				res.status = e.code;
+				if (e is Informational || e is Success || e is ClientError || e is ServerError) {
+					res.status = e.code;
+				} else {
+					res.status = 500;
+				}
 				var @params = new HashTable<string, string> (str_hash, str_equal);
 				@params["charset"] = "utf-8";
 				res.headers.set_content_type ("text/plain", @params);

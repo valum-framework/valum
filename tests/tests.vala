@@ -73,6 +73,8 @@ public int main (string[] args) {
 
 	Test.add_func ("/router/then", test_router_then);
 
+	Test.add_func ("/router/error", test_router_error);
+
 	Test.add_func ("/route", test_route);
 	Test.add_func ("/route/from_rule", test_route_from_rule);
 	Test.add_func ("/route/from_rule/null", test_route_from_rule_null);

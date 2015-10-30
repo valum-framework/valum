@@ -52,9 +52,12 @@ namespace Valum {
 	 *
 	 * @since 0.0.1
 	 *
+	 * @throws Informational
+	 * @throws Success
 	 * @throws Redirection perform a 3xx HTTP redirection
 	 * @throws ClientError trigger a 4xx client error
 	 * @throws ServerError trigger a 5xx server error
+	 * @throws Error       any other error which will be handled as a {@link Valum.ServerError.INTERNAL}
 	 *
 	 * @param req   request being handled
 	 * @param res   response to send back to the requester
@@ -62,7 +65,15 @@ namespace Valum {
 	 * @param stack routing stack as altered by the preceeding next invocation
 	 *              or initialized by the first {@link Valum.MatcherCallback}
 	 */
-	public delegate void HandlerCallback (Request req, Response res, NextCallback next, Queue<Value?> stack) throws Informational, Success, Redirection, ClientError, ServerError;
+	public delegate void HandlerCallback (Request req,
+	                                      Response res,
+	                                      NextCallback next,
+	                                      Queue<Value?> stack) throws Informational,
+	                                                                  Success,
+	                                                                  Redirection,
+	                                                                  ClientError,
+	                                                                  ServerError,
+	                                                                  Error;
 
 	/**
 	 * Continuation passed in a {@link Valum.HandlerCallback} to *keep routing*
@@ -74,14 +85,17 @@ namespace Valum {
 	 * The passed {@link VSGI.Request} and {@link VSGI.Response} objects can be
 	 * optionally filtered using {@link VSGI.RequestFilter} and {@link VSGI.ResponseFilter}.
 	 *
-	 * @since 0.1
+	 * @see Valum.HandlerCallback for details on thrown error domains
 	 *
-	 * @throws Redirection perform a 3xx HTTP redirection
-	 * @throws ClientError trigger a 4xx client error
-	 * @throws ServerError trigger a 5xx server error
+	 * @since 0.1
 	 *
 	 * @param req request for the next handler
 	 * @param res response for the next handler
 	 */
-	public delegate void NextCallback (Request req, Response res) throws Informational, Success, Redirection, ClientError, ServerError;
+	public delegate void NextCallback (Request req, Response res) throws Informational,
+	                                                                     Success,
+	                                                                     Redirection,
+	                                                                     ClientError,
+	                                                                     ServerError,
+	                                                                     Error;
 }
