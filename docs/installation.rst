@@ -32,6 +32,13 @@ that is necessary to build an application.
 
     dnf install valum valum-devel
 
+Nix
+~~~
+
+.. code-block:: bash
+
+    nix-shell -p valum
+
 Dependencies
 ------------
 
