@@ -25,7 +25,7 @@ app.get ("", (req, res) => {
 
 });
 app.get ("async", (req, res) => {
-	res.body.write_all_async ("Hello world!".data, Priority.DEFAULT, null);
+	res.body.write_all_async.begin ("Hello world!".data, Priority.DEFAULT, null);
 });
 
 new Server ("org.valum.example.SCGI", app.handle).run ();

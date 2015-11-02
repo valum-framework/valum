@@ -35,7 +35,7 @@ namespace VSGI.Cookies {
 
 		foreach (var cookie in cookie_list.split (","))
 			if (cookie != null)
-				cookies.prepend (Cookie.parse (cookie, null));
+				cookies.prepend (Cookie.parse (cookie, request.uri));
 
 		cookies.reverse ();
 
@@ -125,6 +125,8 @@ namespace VSGI.Cookies {
 	 */
 	public bool verify (Cookie cookie, ChecksumType checksum_type, uint8[] key, out string? @value = null) {
 		var checksum_length = Hmac.compute_for_string (checksum_type, key, "").length;
+
+		@value = null;
 
 		if (cookie.@value.length < checksum_length)
 			return false;

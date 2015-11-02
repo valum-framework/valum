@@ -346,11 +346,20 @@ namespace Valum {
 				@params["charset"] = "utf-8";
 				res.headers.set_content_type ("text/plain", @params);
 				res.headers.set_content_length (e.message.data.length);
-				size_t bytes_written;
-				res.body.write_all (e.message.data, out bytes_written);
+				try {
+					size_t bytes_written;
+					res.body.write_all (e.message.data, out bytes_written);
+				} catch (IOError err) {
+					res.status = 500;
+					warning (err.message);
+				}
 			}
-
-			res.body.close ();
+			try {
+				res.body.close ();
+			} catch (IOError err) {
+				res.status = 500;
+				warning (err.message);
+			}
 		}
 
 		/**

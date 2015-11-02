@@ -43,17 +43,19 @@ app.get ("", (req, res) => {
 	openweathermap.send_async.begin (new Soup.Message ("GET", "http://api.openweathermap.org/data/2.5/weather?q=Montreal&units=metric"),
 	                                 null,
 	                                 (obj, result) => {
-		var parser = new Json.Parser ();
+		app.invoke (req, res, () => {
+			var parser = new Json.Parser ();
 
-		parser.load_from_stream (openweathermap.send_async.end (result));
+			parser.load_from_stream (openweathermap.send_async.end (result));
 
-		var root = parser.get_root ().get_object ();
+			var root = parser.get_root ().get_object ();
 
-		root.get_object_member ("main").foreach_member ((obj, member_name, member_node) => {
-			tpl.environment.push_float (member_name, member_node.get_double ());
+			root.get_object_member ("main").foreach_member ((obj, member_name, member_node) => {
+				tpl.environment.push_float (member_name, member_node.get_double ());
+			});
+
+			tpl.to_stream (res.body);
 		});
-
-		tpl.to_stream (res.body);
 	});
 });
 

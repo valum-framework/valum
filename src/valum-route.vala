@@ -121,7 +121,7 @@ namespace Valum {
 					return true;
 				}
 				return false;
-			}, callback);
+			}, (owned) callback);
 		}
 
 		/**

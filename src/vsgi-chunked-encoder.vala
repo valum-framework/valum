@@ -38,6 +38,10 @@ namespace VSGI {
 										ConverterFlags flags,
 										out size_t bytes_read,
 										out size_t bytes_written) throws IOError {
+
+			bytes_read    = 0;
+			bytes_written = 0;
+
 			// no internal state to flush
 			if (ConverterFlags.FLUSH in flags)
 				return ConverterResult.FLUSHED;
@@ -58,9 +62,6 @@ namespace VSGI {
 
 			if (required_size > outbuf.length)
 				throw new IOError.NO_SPACE ("need %u more bytes to write the chunk", (uint) (required_size - outbuf.length));
-
-			bytes_read    = 0;
-			bytes_written = 0;
 
 			// size
 			for (int i = 0; i < size_buffer.length; i++)

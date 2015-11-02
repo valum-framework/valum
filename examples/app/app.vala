@@ -47,18 +47,22 @@ app.get (null, (req, res, next) => {
 });
 
 app.get ("headers", (req, res) => {
+	var headers = new StringBuilder ();
 	req.headers.foreach ((name, header) => {
-		res.body.write_all ("%s: %s\n".printf (name, header).data, null);
+		headers.append_printf ("%s: %s\n", name, header);
 	});
+	res.body.write_all (headers.data, null);
 });
 
 app.get ("query", (req, res) => {
 	if (req.query == null) {
 		res.body.write_all ("null".data, null);
 	} else {
+		var query = new StringBuilder ();
 		req.query.foreach ((k, v) => {
-			res.body.write_all ("%s: %s\n".printf (k, v).data, null);
+			query.append_printf ("%s: %s\n", k, v);
 		});
+		res.body.write_all (query.data, null);
 	}
 });
 
@@ -109,14 +113,16 @@ app.scope ("urlencoded-data", (inner) => {
 	});
 
 	inner.post ("", (req, res) => {
-		var writer = new DataOutputStream (res.body);
 		var data   = new MemoryOutputStream (null, realloc, free);
+		var post   = new StringBuilder ();
 
 		data.splice (req.body, OutputStreamSpliceFlags.CLOSE_SOURCE);
 
 		Soup.Form.decode ((string) data.get_data ()).foreach ((k, v) => {
-			writer.put_string ("%s: %s".printf (k, v));
+			post.append_printf ("%s: %s", k, v);
 		});
+
+		res.body.write_all (post.data, null);
 	});
 });
 
@@ -244,7 +250,6 @@ app.get ("ctpl/<foo>/<bar>", (req, res) => {
 app.get ("static/<path:resource>.<any:type>", (req, res) => {
 	var resource = req.params["resource"];
 	var type     = req.params["type"];
-	var contents = new uint8[128];
 	var path     = "/static/%s.%s".printf (resource, type);
 	bool uncertain;
 
@@ -264,7 +269,9 @@ app.get ("static/<path:resource>.<any:type>", (req, res) => {
 			                         OutputStreamSpliceFlags.CLOSE_SOURCE | OutputStreamSpliceFlags.CLOSE_TARGET,
 			                         Priority.DEFAULT,
 			                         null, (obj, result) => {
-			var size = res.body.splice_async.end (result);
+			app.invoke (req, res, () => {
+				res.body.splice_async.end (result);
+			});
 		});
 	} catch (Error e) {
 		throw new ClientError.NOT_FOUND (e.message);

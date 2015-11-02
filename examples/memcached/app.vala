@@ -34,7 +34,6 @@ app.get ("<key>", (req, res, next, stack) => {
 			break;
 		case Memcached.ReturnCode.NOTFOUND:
 			throw new ClientError.NOT_FOUND ("key '%s' was not found", key);
-			break;
 		default:
 			throw new ServerError.INTERNAL_SERVER_ERROR (memcached.strerror (error));
 	}
@@ -70,7 +69,6 @@ app.delete ("<key>", (req, res, next, stack) => {
 			throw new Success.NO_CONTENT ("The key %s has been successfully deleted.", key);
 		case Memcached.ReturnCode.NOTFOUND:
 			throw new ClientError.NOT_FOUND ("key '%s' was not found", key);
-			break;
 		default:
 			throw new ServerError.INTERNAL_SERVER_ERROR (memcached.strerror (error));
 	}
