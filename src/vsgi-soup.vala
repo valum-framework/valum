@@ -289,6 +289,7 @@ namespace VSGI.Soup {
 			this.server.add_handler (null, (server, msg, path, query, client) => {
 #if SOUP_2_50
 				var connection = client.steal_connection ();
+				msg.response_headers.replace ("Connection", "close");
 #else
 				var connection = new Connection (server, msg);
 #endif
