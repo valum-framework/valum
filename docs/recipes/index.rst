@@ -6,6 +6,7 @@ their potential integration with Valum.
 
 .. toctree::
 
+    configuration
     json
     static-resource
     scripting
