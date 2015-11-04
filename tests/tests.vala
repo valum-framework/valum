@@ -61,6 +61,7 @@ public int main (string[] args) {
 	Test.add_func ("/router/subrouting", test_router_subrouting);
 
 	Test.add_func ("/router/status/propagates_error_message", test_router_status_propagates_error_message);
+	Test.add_func ("/router/status/handle_error", test_router_status_handle_error);
 
 	Test.add_func ("/router/next", test_router_next);
 	Test.add_func ("/router/next/not_found", test_router_next_not_found);

@@ -72,7 +72,7 @@ a :doc:`vsgi/request` and :doc:`vsgi/response`.
 
     new Server ("org.valum.example.App", (req, res) => {
         res.status = 200;
-        res.body.write ("Hello world!".data);
+        res.body.write_all ("Hello world!".data, null);
     }).run ({"app", "--port", "3003"});
 
 Usually, you would only pass the CLI arguments to ``run``, so that your runtime

@@ -195,6 +195,39 @@ will be caught by the ``Router`` and processed accordingly.
         throw new Redirection.PERMANENT ("http://example.com");
     });
 
+Error handling
+--------------
+
+.. versionadded:: 0.2.1
+
+    Prior to this release, any unhandled error would crash the main loop
+    iteration.
+
+The router will capture any thrown `GLib.Error`_ and produce an internal error
+accordingly. Similarly to status codes, errors are propagated in the
+``HandlerCallback`` and ``NextCallback`` delegate signatures and can be handled
+with a ``500`` handler.
+
+It provides a nice way to ignore passively unrecoverable errors.
+
+.. code:: vala
+
+    app.get ("", (req, res) => {
+        throw new IOError.FAILED ("I/O failed some some reason.");
+    });
+
+.. code:: vala
+
+    app.get ("", (req, res) => {
+        res.write_all_async ("Hello world!".data, null, () => {
+            app.invoke (req, res, () => {
+                throw new IOError.FAILED ("I/O failed undesirably.")
+            });
+        });
+    });
+If the routing context is lost, any operation can still be performed within
+``Router.invoke``
+
 Scoping
 -------
 
