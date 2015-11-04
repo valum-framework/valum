@@ -299,18 +299,25 @@ namespace Valum {
 				try {
 					next (req, res);
 					return;
-				} catch (Error e) {
+				} catch (Error err) {
+					// replace any other error by a 500 status
+					var status_code = (err is Informational ||
+					                   err is Success ||
+					                   err is Redirection ||
+					                   err is ClientError ||
+									   err is ServerError) ?  err.code : 500;
+
 					// handle using a registered status handler
-					if (this.status_handlers.contains (e.code)) {
+					if (this.status_handlers.contains (status_code)) {
 						var stack = new Queue<Value?> ();
-						stack.push_tail (e.message);
-						if (this.perform_routing (this.status_handlers[e.code].head, req, res, stack)) {
+						stack.push_tail (err.message);
+						if (this.perform_routing (this.status_handlers[status_code].head, req, res, stack)) {
 							return;
 						}
 					}
 
-					// propagate the error if it is not handled
-					throw e;
+					// propagate the status code
+					throw err;
 				}
 
 			// default status code handling
@@ -337,11 +344,11 @@ namespace Valum {
 				res.status = c.code;
 				res.headers.append ("Upgrade", c.message);
 			} catch (Error e) {
-				if (e is Informational || e is Success || e is ClientError || e is ServerError) {
-					res.status = e.code;
-				} else {
-					res.status = 500;
-				}
+				res.status = (e is Informational ||
+							  e is Success ||
+				              e is Redirection ||
+				              e is ClientError ||
+				              e is ServerError) ?  e.code : 500;
 				var @params = new HashTable<string, string> (str_hash, str_equal);
 				@params["charset"] = "utf-8";
 				res.headers.set_content_type ("text/plain", @params);

@@ -733,6 +733,28 @@ public static void test_router_status_propagates_error_message () {
 }
 
 /**
+ * @since 0.2.2
+ */
+public void test_router_status_handle_error () {
+	var router = new Router ();
+
+	router.get ("", (req, res) => {
+		throw new IOError.FAILED ("Just failed!");
+	});
+
+	router.status (500, (req, res) => {
+		res.status = 418;
+	});
+
+	var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
+	var res = new Response (req, 200);
+
+	router.handle (req, res);
+
+	assert (418 == res.status);
+}
+
+/**
  * @since 0.2
  */
 public static void test_router_invoke () {
@@ -805,8 +827,10 @@ public void test_router_then () {
 	assert (then_setted);
 }
 
-public void test_router_error ()
-{
+/**
+ * @since 0.2.1
+ */
+public void test_router_error () {
 	var router = new Router ();
 
 	router.get ("", (req, res) => {
@@ -820,3 +844,4 @@ public void test_router_error ()
 
 	assert (500 == res.status);
 }
+
