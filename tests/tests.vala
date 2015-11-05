@@ -52,6 +52,8 @@ public int main (string[] args) {
 	Test.add_func ("/router/connect", test_router_connect);
 	Test.add_func ("/router/patch", test_router_patch);
 
+	Test.add_func ("/router/soup_internal_method", test_router_soup_internal_method);
+
 	Test.add_func ("/router/methods", test_router_methods);
 	Test.add_func ("/router/all", test_router_all);
 

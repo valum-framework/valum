@@ -33,13 +33,21 @@ namespace VSGI {
 		 *
 		 * @since 0.1
 		 */
+		[Deprecated (since = "0.3", replacement = "Soup.Method.OPTIONS")]
 		public const string OPTIONS = "OPTIONS";
+		[Deprecated (since = "0.3", replacement = "Soup.Method.GET")]
 		public const string GET     = "GET";
+		[Deprecated (since = "0.3", replacement = "Soup.Method.HEAD")]
 		public const string HEAD    = "HEAD";
+		[Deprecated (since = "0.3", replacement = "Soup.Method.POST")]
 		public const string POST    = "POST";
+		[Deprecated (since = "0.3", replacement = "Soup.Method.PUT")]
 		public const string PUT     = "PUT";
+		[Deprecated (since = "0.3", replacement = "Soup.Method.DELETE")]
 		public const string DELETE  = "DELETE";
+		[Deprecated (since = "0.3", replacement = "Soup.Method.TRACE")]
 		public const string TRACE   = "TRACE";
+		[Deprecated (since = "0.3", replacement = "Soup.Method.CONNECT")]
 		public const string CONNECT = "CONNECT";
 
 		/**
@@ -52,6 +60,7 @@ namespace VSGI {
 		 *
 		 * @since 0.1
 		 */
+		[Deprecated (since = "0.3", replacement = "Soup.Method.PROPPATCH")]
 		public const string PATCH = "PATCH";
 
 		/**
@@ -59,6 +68,7 @@ namespace VSGI {
 		 *
 		 * @since 0.1
 		 */
+		[Deprecated (since = "0.3")]
 		public const string[] METHODS = {OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT, PATCH};
 
 		/**

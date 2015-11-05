@@ -47,7 +47,7 @@ namespace VSGI.Test {
 	public class Request : VSGI.Request {
 
 		private HTTPVersion _http_version         = HTTPVersion.@1_1;
-		private string _method                    = VSGI.Request.GET;
+		private string _method                    = Method.GET;
 		private URI _uri                          = new URI (null);
 		private MessageHeaders _headers           = new MessageHeaders (MessageHeadersType.REQUEST);
 		private HashTable<string, string>? _query = null;

@@ -7,7 +7,13 @@ by an application.
 Method
 ------
 
-The ``Request`` class provides constants for the following HTTP methods:
+.. versionchanged:: 0.2.2
+
+    Constants defined in the ``Request`` have been deprecated in favour of the
+    ones provided by libsoup-2.4. They are available from libsoup-2.4 (>=2.53).
+
+The following constants the following HTTP methods are provided by libsoup-2.4
+in the ``Soup.Method`` namespace:
 
 -  ``OPTIONS``
 -  ``GET``
@@ -17,23 +23,19 @@ The ``Request`` class provides constants for the following HTTP methods:
 -  ``DELETE``
 -  ``TRACE``
 -  ``CONNECT``
--  ``PATCH``
-
-Additionally, an array of supported HTTP methods is provided by
-``Request.METHODS``.
+-  ``PROPFIND``
+-  ``PROPPATCH``
 
 .. code:: vala
 
-    if (req.method == Request.GET) {
+    using Soup;
+
+    if (req.method == Method.GET) {
         res.body.write_all ("Hello world!".data, null);
     }
 
-    if (req.method == Request.POST) {
+    if (req.method == Method.POST) {
         res.body.splice (req.body, OutputStreamSpliceFlags.NONE);
-    }
-
-    if (req.method in Request.METHODS) {
-        // handle a standard HTTP method...
     }
 
 Request parameters
