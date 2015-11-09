@@ -80,26 +80,9 @@ def build(bld):
         vala_dir     = 'static',
         install_path = None)
 
-    # pkg-config file
-    bld(
-        features     = 'subst',
-        target       = 'valum.pc',
-        source       = ['src/valum.pc.in'],
-        install_path = '${LIBDIR}/pkgconfig',
-        VERSION      = VERSION,
-        API_VERSION  = API_VERSION)
-
-    # RPM specfile
-    bld(
-        features     = 'subst',
-        target       = 'valum.spec',
-        source       = ['valum.spec.in'],
-        install_path = None,
-        VERSION      = VERSION)
-
     # build examples
     if bld.env.ENABLE_EXAMPLES:
         bld.recurse(glob.glob('examples/*'))
 
-    bld.recurse(['docs', 'tests'])
+    bld.recurse(['data', 'docs', 'tests'])
 
