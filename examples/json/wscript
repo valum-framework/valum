@@ -9,4 +9,5 @@ def build(bld):
         target       = 'app',
         use          = 'valum JSON',
         source       = 'app.vala',
+        vapi_dirs    = '../../vapi',
         install_path = None)

@@ -9,4 +9,5 @@ def build(bld):
         target       = 'app',
         source       = ['app.vala', 'app.gresource.xml'],
         use          = 'valum',
+        vapi_dirs    = '../../vapi',
         install_path = None)

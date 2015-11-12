@@ -8,5 +8,6 @@ def build(bld):
         target       = 'fastcgi',
         use          = 'valum',
         source       = ['app.vala'],
+        vapi_dirs    = '../../vapi',
         install_path = None)
 

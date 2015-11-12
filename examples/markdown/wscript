@@ -9,5 +9,5 @@ def build(bld):
         target       = 'app',
         source       = 'app.vala',
         use          = 'valum MARKDOWN',
-        vapi_dirs    = 'vapi',
+        vapi_dirs    = ['vapi', '../../vapi'],
         install_path = None)

@@ -8,4 +8,5 @@ def build(bld):
         target       = 'app',
         source       = 'app.gs',
         use          = 'valum',
+        vapi_dirs    = '../../vapi',
         install_path = None)

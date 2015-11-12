@@ -9,5 +9,5 @@ def build(bld):
         target       = 'app',
         source       = 'app.vala',
         use          = 'valum MEMCACHED',
-        install_path = None,
-        vapi_dirs    = 'vapi')
+        vapi_dirs    = ['vapi', '../../vapi'],
+        install_path = None)

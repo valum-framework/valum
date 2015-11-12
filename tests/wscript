@@ -12,4 +12,5 @@ def build(bld):
         target       = 'tests',
         source       = ['tests.vala'] + bld.path.ant_glob('*-test.vala'),
         use          = 'valum',
+        vapi_dirs    = '../vapi',
         install_path = None)
