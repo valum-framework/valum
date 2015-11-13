@@ -171,33 +171,22 @@ namespace Valum {
 		}
 
 		/**
-		 * Create a Route for a given callback from a rule.
-         *
-		 * Rule are scoped from the {@link Router.scope} fragment stack and
-		 * compiled down to {@link GLib.Regex}.
+		 * Compile a rule into a regular expression.
 		 *
-		 * Rule start matching after the first '/' character of the request URI
-		 * path.
+		 * Parameters are compiled down to named captures and any other
+		 * character goes through {@link Regex.escape_string}.
+		 *
+		 * The compilation process is contextualized for this {@link Valum.Router}
+		 * to honor its defined types.
 		 *
 		 * @since 0.3
 		 *
-		 * @param method method matching this rule
-		 * @param rule   rule or 'null' to capture all possible paths
-		 * @param cb     handling callback
-		 *
-		 * @throws RegexError if the rule is incorrectly formed or a type is
-		 *                    undefined in the 'types' mapping
-		 *
-		 * @return a builder upon the created {@link Route} object
+		 * @param rule the rule to compile down to regular expression
+		 * @return a regular expression pattern
 		 */
-		public Builder rule (string method, string? rule, owned HandlerCallback cb) throws RegexError {
-			var params = /(<(?:\w+:)?\w+>)/.split_full (rule == null ? "" : rule);
+		public string compile_rule (string rule) throws RegexError {
+			var @params = /(<(?:\w+:)?\w+>)/.split_full (rule);
 			var pattern = new StringBuilder ();
-
-			// catch-all null rule
-			if (rule == null) {
-				pattern.append ("(?<path>.*)");
-			}
 
 			foreach (var p in @params) {
 				if (p[0] != '<') {
@@ -216,7 +205,38 @@ namespace Valum {
 				}
 			}
 
-			return this.regex (method, new Regex (pattern.str), (owned) cb);
+			return pattern.str;
+		}
+
+		/**
+		 * Create a Route for a given callback from a rule.
+         *
+		 * Rule are scoped from the {@link Router.scope} fragment stack and
+		 * compiled down to {@link GLib.Regex}.
+		 *
+		 * The 'null' rule is a special rule that captures anything '.*'.
+		 *
+		 * Rule start matching after the first '/' character of the request URI
+		 * path.
+		 *
+		 * @since 0.3
+		 *
+		 * @param method method matching this rule
+		 * @param rule   rule or 'null' to capture all possible paths
+		 * @param cb     handling callback
+		 *
+		 * @throws RegexError if the rule is incorrectly formed or a type is
+		 *                    undefined in the 'types' mapping
+		 *
+		 * @return a builder upon the created {@link Route} object
+		 */
+		public Builder rule (string method, string? rule, owned HandlerCallback cb) throws RegexError {
+			// catch-all null rule
+			if (rule == null) {
+				return this.regex (method, /(?<path>.*)/, (owned) cb);
+			} else {
+				return this.regex (method, new Regex (compile_rule (rule)), (owned) cb);
+			}
 		}
 
 		/**
@@ -246,7 +266,7 @@ namespace Valum {
 
 			// scope the route
 			foreach (var scope in this.scopes.head) {
-				pattern.append (Regex.escape_string ("%s/".printf (scope)));
+				pattern.append_printf ("%s/", compile_rule (scope));
 			}
 
 			pattern.append (regex.get_pattern ());
