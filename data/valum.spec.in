@@ -8,11 +8,13 @@ License:    LGPL
 URL:        https://github.com/valum-framework/valum
 Source0:    %{url}/releases/download/v%{version}/valum-%{version}.tar.bz2
 
-BuildRequires: ctpl-devel
+BuildRequires: pkgconfig(glib-2.0)
+BuildRequires: pkgconfig(gio-2.0)
+BuildRequires: pkgconfig(libsoup-2.4)
+BuildRequires: pkgconfig(ctpl)
+BuildRequires: pkgconfig(gee-0.8)
 BuildRequires: fcgi-devel
 BuildRequires: gobject-introspection-devel
-BuildRequires: libgee-devel
-BuildRequires: libsoup-devel
 BuildRequires: vala
 BuildRequires: vala-tools
 BuildRequires: waf
