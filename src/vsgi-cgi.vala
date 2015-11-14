@@ -148,7 +148,7 @@ namespace VSGI.CGI {
 		}
 
 		public override ssize_t read (uint8[] data, Cancellable? cancellable = null) {
-			return file_stream.read (data) == 1 ? data.length : 0;
+			return (ssize_t) file_stream.read (data, 1);
 		}
 
 		public override bool close (Cancellable? cancellable = null) {
@@ -165,7 +165,7 @@ namespace VSGI.CGI {
 		}
 
 		public override ssize_t write (uint8[] data, Cancellable? cancellable = null) {
-			return file_stream.write (data) == 1 ? data.length : 0;
+			return (ssize_t) file_stream.write (data, 1);
 		}
 
 		public override bool flush (Cancellable? cancellable = null) {
