@@ -234,6 +234,10 @@ namespace Valum {
 			// catch-all null rule
 			if (rule == null) {
 				return this.regex (method, /(?<path>.*)/, (owned) cb);
+			} else if (rule == "*") {
+				return this.matcher (method, (req) => {
+					return req.uri.get_path () == "*";
+				}, (owned) cb);
 			} else {
 				return this.regex (method, new Regex (compile_rule (rule)), (owned) cb);
 			}
