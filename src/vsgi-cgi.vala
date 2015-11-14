@@ -139,44 +139,6 @@ namespace VSGI.CGI {
 		}
 	}
 
-	private class FileStreamInputStream : InputStream {
-
-		public unowned FileStream file_stream { construct; get; }
-
-		public FileStreamInputStream (FileStream file_stream) {
-			Object (file_stream: file_stream);
-		}
-
-		public override ssize_t read (uint8[] data, Cancellable? cancellable = null) {
-			return (ssize_t) file_stream.read (data, 1);
-		}
-
-		public override bool close (Cancellable? cancellable = null) {
-			return true;
-		}
-	}
-
-	private class FileStreamOutputStream : OutputStream {
-
-		public unowned FileStream file_stream { construct; get; }
-
-		public FileStreamOutputStream (FileStream file_stream) {
-			Object (file_stream: file_stream);
-		}
-
-		public override ssize_t write (uint8[] data, Cancellable? cancellable = null) {
-			return (ssize_t) file_stream.write (data, 1);
-		}
-
-		public override bool flush (Cancellable? cancellable = null) {
-			return file_stream.flush () == 0;
-		}
-
-		public override bool close (Cancellable? cancellable = null) {
-			return true;
-		}
-	}
-
 	/**
 	 * {@inheritDoc}
 	 *
@@ -204,9 +166,9 @@ namespace VSGI.CGI {
 #if GIO_2_34
 			                                 command_line.get_stdin (),
 #else
-			                                 new FileStreamInputStream (stdin),
+			                                 new UnixInputStream (stdin.fileno (), true),
 #endif
-			                                 new FileStreamOutputStream (stdout));
+			                                 new UnixOutputStream (stdout.fileno (), true));
 
 			var req = new Request (connection, environment);
 			var res = new Response (req);

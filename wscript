@@ -17,6 +17,7 @@ def configure(conf):
 
     conf.check_cfg(package='glib-2.0', atleast_version='2.32', uselib_store='GLIB', args='--cflags --libs')
     conf.check_cfg(package='gio-2.0', atleast_version='2.32', uselib_store='GIO', args='--cflags --libs')
+    conf.check_cfg(package='gio-unix-2.0', atleast_version='2.32', uselib_store='GIOUNIX', args='--cflags --libs')
     conf.check_cfg(package='ctpl', atleast_version='0.3.3', uselib_store='CTPL', args='--cflags --libs')
     conf.check_cfg(package='gee-0.8', atleast_version='0.6.4', uselib_store='GEE', args='--cflags --libs')
     conf.check_cfg(package='libsoup-2.4', atleast_version='2.38',uselib_store='SOUP', args='--cflags --libs')
@@ -61,21 +62,21 @@ def configure(conf):
 
 def build(bld):
     bld.shlib(
-        packages     = ['glib-2.0', 'gio-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'fcgi'],
+        packages     = ['glib-2.0', 'gio-2.0', 'gio-unix-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'fcgi'],
         target       = 'valum',
         gir          = 'Valum-{}'.format(API_VERSION),
         source       = bld.path.ant_glob('src/*.vala'),
-        uselib       = ['GLIB', 'GIO', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
+        uselib       = ['GLIB', 'GIO', 'GIOUNIX', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
         vapi_dirs    = ['vapi'],
         header_path  = '${INCLUDEDIR}/valum',
         install_path = '${LIBDIR}')
 
     # static library for tests and examples
     bld.stlib(
-        packages     = ['glib-2.0', 'gio-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'fcgi'],
+        packages     = ['glib-2.0', 'gio-2.0', 'gio-unix-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'fcgi'],
         target       = 'valum',
         source       = bld.path.ant_glob('src/*.vala'),
-        use          = ['GLIB', 'GIO', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
+        use          = ['GLIB', 'GIO', 'GIOUNIX', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
         vapi_dirs    = ['vapi'],
         vala_dir     = 'static',
         install_path = None)
