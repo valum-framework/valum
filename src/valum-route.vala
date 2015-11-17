@@ -186,7 +186,10 @@ namespace Valum {
 		 * of callbacks that reuses the same matcher.
 		 */
 		public Route then (owned HandlerCallback handler) {
-			return this.router.matcher (this.method, (owned) match, (owned) handler);
+			return this.router.matcher (this.method, (req, stack) => {
+				// since the same matcher is shared, we preserve the stack intact
+				return match (req, new Queue<Value?> ());
+			}, (owned) handler);
 		}
 	}
 }

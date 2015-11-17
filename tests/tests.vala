@@ -73,6 +73,7 @@ public int main (string[] args) {
 	Test.add_func ("/router/invoke/propagate_state", test_router_invoke_propagate_state);
 
 	Test.add_func ("/router/then", test_router_then);
+	Test.add_func ("/router/then/preserve_matching_stack", test_router_then_preserve_matching_stack);
 
 	Test.add_func ("/router/error", test_router_error);
 

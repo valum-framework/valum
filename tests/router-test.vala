@@ -828,6 +828,31 @@ public void test_router_then () {
 }
 
 /**
+  * @since 0.2.2
+  */
+public void test_router_then_preserve_matching_stack () {
+	var router = new Router ();
+
+	var reached = false;
+
+	router.get ("<int:id>", (req, res, next, stack) => {
+		stack.push_tail ("test");
+		next (req, res);
+	}).then ((req, res, next, stack) => {
+		reached = true;
+		assert ("test" == stack.pop_tail ().get_string ());
+		assert ("5" == stack.pop_tail ().get_string ());
+	});
+
+	var req = new Request.with_uri (new Soup.URI ("http://localhost/5"));
+	var res = new Response (req, 200);
+
+	router.handle (req, res);
+
+	assert (reached);
+}
+
+/**
  * @since 0.2.1
  */
 public void test_router_error () {
