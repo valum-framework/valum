@@ -25,9 +25,6 @@ Valum is a web micro-framework able to create highly scalable expressive web
 applications or services by taking advantage of machine code execution and
 asynchronous I/O.
 
-%package docs
-Summary:    User documentation for Valum
-
 %package devel
 Summary:    Build files for Valum
 
@@ -51,9 +48,6 @@ meta-data.
 %files
 %doc README.md COPYING
 %{_libdir}/*
-
-%files docs
-%{_docdir}/*
 
 %files devel
 %{_datadir}/*

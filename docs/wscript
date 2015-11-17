@@ -9,5 +9,4 @@ def build(bld):
         bld(
             rule         = '${SPHINXBUILD} -b html ../docs ${TGT}',
             target       = '.',
-            source       = bld.path.ant_glob('*.rst') + bld.path.ant_glob('**/*.rst'),
-            install_path = '${HTMLDIR}')
+            source       = bld.path.ant_glob('*.rst') + bld.path.ant_glob('**/*.rst'))
