@@ -98,17 +98,15 @@ namespace VSGI.CGI {
 
 	public class Response : VSGI.Response {
 
+		private uint _status;
 		private MessageHeaders _headers = new MessageHeaders (MessageHeadersType.RESPONSE);
 
 		public override uint status {
 			get {
-				// the code is exactly three digit and since the value is expected
-				// to be setted, it is not important to perform a null-check
-				return int.parse (this._headers.get_one ("Status").substring (0, 3));
+				return _status;
 			}
 			set {
-				// update the 'Status' header
-				this._headers.replace ("Status", "%u %s".printf (value, Status.get_phrase (value)));
+				_status = value;
 			}
 		}
 
@@ -127,9 +125,12 @@ namespace VSGI.CGI {
 		protected override uint8[]? build_head () {
 			var head = new StringBuilder ();
 
+			// update the 'Status' header
+			head.append_printf ("Status: %u %s\r\n", _status, Status.get_phrase (_status));
+
 			// headers containing the status line
 			this.headers.foreach ((k, v) => {
-				head.append ("%s: %s\r\n".printf (k, v));
+				head.append_printf ("%s: %s\r\n", k, v);
 			});
 
 			// newline preceeding the body
