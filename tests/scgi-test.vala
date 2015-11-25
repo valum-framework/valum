@@ -29,7 +29,7 @@ public void test_vsgi_scgi_request_with_request_uri () {
 	environment["REQUEST_URI"]    = "/home?a=b";
 
 	var connection = new VSGI.Test.Connection ();
-	var request    = new Request (connection, environment);
+	var request    = new Request (connection, new DataInputStream (connection.input_stream), environment);
 
 	assert ("/home" == request.uri.path);
 }

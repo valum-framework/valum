@@ -33,11 +33,21 @@ namespace VSGI.SCGI {
 
 	public class Request : CGI.Request {
 
-		public Request (IOStream connection, HashTable<string, string> environment) {
+		private DataInputStream _body;
+
+		public Request (IOStream connection, DataInputStream body, HashTable<string, string> environment) {
 			base (connection, environment);
+
+			_body = body;
 
 			if (environment.contains ("REQUEST_URI"))
 				this.uri.set_path (environment["REQUEST_URI"].split ("?", 2)[0]); // avoid the query
+		}
+
+		public override InputStream body {
+			get {
+				return _body;
+			}
 		}
 	}
 
@@ -141,7 +151,7 @@ namespace VSGI.SCGI {
 					return true;
 				}
 
-				var req = new Request (connection, environment);
+				var req = new Request (connection, reader, environment);
 				var res = new Response (req);
 
 				this.handle (req, res);
