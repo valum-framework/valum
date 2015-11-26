@@ -82,12 +82,6 @@ public void test_vsgi_cgi_response () {
 	var request     = new Request (connection, environment);
 	var response    = new Response (request);
 
-	response.headers.replace ("Status", "200 OK");
-	assert (200 == response.status);
-
-	response.status = 404;
-	assert ("404 Not Found" == response.headers.get_one ("Status"));
-
 	response.write_head ();
 	assert (response.head_written);
 }
