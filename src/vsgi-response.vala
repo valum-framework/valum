@@ -132,7 +132,6 @@ namespace VSGI {
 		 */
 		public bool write_head (Cancellable? cancellable = null) throws IOError
 			requires (!this.head_written)
-			ensures  (this.head_written)
 		{
 			var head = this.build_head ();
 
@@ -156,7 +155,6 @@ namespace VSGI {
 		 */
 		public async bool write_head_async (int priority = GLib.Priority.DEFAULT, Cancellable? cancellable = null) throws Error
 			requires (!this.head_written)
-			ensures  (this.head_written)
 		{
 			var head = this.build_head ();
 
