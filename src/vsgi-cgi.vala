@@ -98,17 +98,7 @@ namespace VSGI.CGI {
 
 	public class Response : VSGI.Response {
 
-		private uint _status;
 		private MessageHeaders _headers = new MessageHeaders (MessageHeadersType.RESPONSE);
-
-		public override uint status {
-			get {
-				return _status;
-			}
-			set {
-				_status = value;
-			}
-		}
 
 		public override MessageHeaders headers { get { return this._headers; } }
 
@@ -125,10 +115,8 @@ namespace VSGI.CGI {
 		protected override uint8[]? build_head () {
 			var head = new StringBuilder ();
 
-			// update the 'Status' header
-			head.append_printf ("Status: %u %s\r\n", _status, Status.get_phrase (_status));
+			head.append_printf ("Status: %u %s\r\n", status, global::Soup.Status.get_phrase (status));
 
-			// headers containing the status line
 			this.headers.foreach ((k, v) => {
 				head.append_printf ("%s: %s\r\n", k, v);
 			});

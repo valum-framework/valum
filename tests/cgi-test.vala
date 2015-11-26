@@ -82,6 +82,8 @@ public void test_vsgi_cgi_response () {
 	var request     = new Request (connection, environment);
 	var response    = new Response (request);
 
+	assert (Soup.Status.OK == response.status);
+
 	response.write_head ();
 	assert (response.head_written);
 }

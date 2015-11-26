@@ -38,7 +38,7 @@ namespace VSGI {
 		 *
 		 * @since 0.0.1
 		 */
-		public abstract uint status { get; set; }
+		public virtual uint status { get; set; default = global::Soup.Status.OK; }
 
 		/**
 		 * Response headers.
