@@ -84,7 +84,9 @@ public void test_vsgi_cgi_response () {
 
 	assert (Soup.Status.OK == response.status);
 
-	response.write_head ();
+	size_t bytes_written;
+	response.write_head (out bytes_written);
+	assert (18 == bytes_written);
 	assert (response.head_written);
 }
 

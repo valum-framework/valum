@@ -51,6 +51,8 @@ namespace VSGI {
 		 * Tells if the head has been written in the connection
 		 * {@link GLib.OutputStream}.
 		 *
+		 * This property can only be set internally.
+		 *
 		 * @since 0.2
 		 */
 		public bool head_written { get; protected set; default = false; }
@@ -80,8 +82,10 @@ namespace VSGI {
 			get {
 				try {
 					// write head synchronously
-					if (!this.head_written)
-						this.write_head ();
+					if (!this.head_written) {
+						size_t bytes_written;
+						this.write_head (out bytes_written);
+					}
 				} catch (IOError err) {
 					warning ("could not write the head in the connection stream");
 				}
@@ -104,13 +108,14 @@ namespace VSGI {
 			var head = new StringBuilder ();
 
 			// status line
-			head.append ("%s %u %s\r\n".printf (this.request.http_version == HTTPVersion.@1_0 ? "HTTP/1.0" : "HTTP/1.1",
-						status,
-						Status.get_phrase (status)));
+			head.append_printf ("HTTP/%s %u %s\r\n",
+			                    this.request.http_version == HTTPVersion.@1_0 ? "1.0" : "1.1",
+			                    status,
+			                    Status.get_phrase (status));
 
 			// headers
-			this.headers.foreach ((k, v) => {
-				head.append ("%s: %s\r\n".printf (k, v));
+			this.headers.foreach ((name, header) => {
+				head.append_printf ("%s: %s\r\n", name, header);
 			});
 
 			// newline preceeding the body
@@ -127,18 +132,19 @@ namespace VSGI {
 		 *
 		 * @since 0.2
 		 *
-		 * @return the status line and headers data or null if nothing should be
-		 *         written in the output stream.
+		 * @param bytes_written number of bytes written in the stream see
+		 *                      {@link GLib.OutputStream.write_all}
+		 * @return wether the head was effectively written
 		 */
-		public bool write_head (Cancellable? cancellable = null) throws IOError
+		public bool write_head (out size_t bytes_written, Cancellable? cancellable = null) throws IOError
 			requires (!this.head_written)
 		{
 			var head = this.build_head ();
 
 			if (head == null) {
+				bytes_written = 0;
 				this.head_written = true;
 			} else {
-				size_t bytes_written;
 				this.head_written = this.request.connection.output_stream.write_all (head,
 				                                                                     out bytes_written,
 				                                                                     cancellable);
@@ -152,16 +158,22 @@ namespace VSGI {
 		 * Write status line and headers asynchronously.
 		 *
 		 * @since 0.2
+		 *
+		 * @param bytes_written number of bytes written in the stream see
+		 *                      {@link GLib.OutputStream.write_all_async}
+		 * @return wether the head was effectively written
 		 */
-		public async bool write_head_async (int priority = GLib.Priority.DEFAULT, Cancellable? cancellable = null) throws Error
+		public async bool write_head_async (int priority = GLib.Priority.DEFAULT,
+		                                    Cancellable? cancellable = null,
+		                                    out size_t bytes_written) throws Error
 			requires (!this.head_written)
 		{
 			var head = this.build_head ();
 
 			if (head == null) {
+				bytes_written = 0;
 				this.head_written = true;
 			} else {
-				size_t bytes_written;
 				this.head_written = yield this.request.connection.output_stream.write_all_async (head,
 																								 priority,
 																								 cancellable,
