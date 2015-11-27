@@ -24,21 +24,58 @@ using GLib;
  * fully implemented with GIO APIs.
  *
  * The request InputStream is initially consumed as a netstring to extract the
- * environment variables.
+ * environment variables using a {@link GLib.DataInputStream}. The resulting
+ * stream is then exposed as the request body.
  *
  * @since 0.2
  */
 [CCode (gir_namespace = "VSGI.SCGI", gir_version = "0.2")]
 namespace VSGI.SCGI {
 
+	/**
+	 * Produce an artificial EOF when the body has been fully read.
+	 */
+	public class SCGIInputStream : FilterInputStream {
+
+		public int64 bytes_read = 0;
+
+		public int64 content_length { construct; get; }
+
+		public SCGIInputStream (InputStream base_stream, int64 content_length) {
+			Object (base_stream: base_stream, content_length: content_length);
+		}
+
+		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
+			if (bytes_read >= content_length)
+				return 0; // EOF
+
+			if (buffer.length > (content_length - bytes_read)) {
+				// the 'int' cast is guarantee since difference is smaller than
+				// the buffer length
+				buffer.length = (int) (content_length - bytes_read);
+			}
+
+			var ret = base_stream.read (buffer, cancellable);
+
+			if (ret > 0)
+				bytes_read += ret;
+
+			return ret;
+		}
+
+		public override bool close (Cancellable? cancellable = null) throws IOError {
+			return base_stream.close (cancellable);
+		}
+	}
+
 	public class Request : CGI.Request {
 
-		private DataInputStream _body;
+		private SCGIInputStream _body;
 
-		public Request (IOStream connection, DataInputStream body, HashTable<string, string> environment) {
+		public Request (IOStream connection, SCGIInputStream reader, HashTable<string, string> environment) {
 			base (connection, environment);
 
-			_body = body;
+			_body = reader;
 
 			if (environment.contains ("REQUEST_URI"))
 				this.uri.set_path (environment["REQUEST_URI"].split ("?", 2)[0]); // avoid the query
@@ -113,7 +150,7 @@ namespace VSGI.SCGI {
 
 				try {
 					size_t length;
-					var size   = int.parse (reader.read_upto (":", 1, out length));
+					var size = int.parse (reader.read_upto (":", 1, out length));
 
 					// consume the semi-colon
 					if (reader.read_byte () != ':') {
@@ -122,21 +159,25 @@ namespace VSGI.SCGI {
 					}
 
 					// consume and extract the environment
-					string? last_key = null;
-					size_t last_length;
 					size_t read = 0;
 					while (read < size) {
-						if (last_key == null) {
-							last_key = reader.read_upto ("", 1, out last_length);
-						} else {
-							environment[last_key] = reader.read_upto ("", 1, out last_length);
-							last_key = null;
-						}
+						size_t key_length;
+						var key = reader.read_upto ("", 1, out key_length);
 						if (reader.read_byte () != '\0') {
 							command_line.printerr ("malformed netstring, missing EOF\n");
 							return true;
 						}
-						read += 1 + last_length;
+
+						size_t value_length;
+						var @value = reader.read_upto ("", 1, out value_length);
+						if (reader.read_byte () != '\0') {
+							command_line.printerr ("malformed netstring, missing EOF\n");
+							return true;
+						}
+
+						read += key_length + 1 + value_length + 1;
+
+						environment[key] = @value;
 					}
 
 					assert (read == size);
@@ -146,17 +187,28 @@ namespace VSGI.SCGI {
 						command_line.printerr ("malformed netstring, missing ','\n");
 						return true;
 					}
-				} catch (IOError err) {
+
+					var content_length = int.parse (environment["CONTENT_LENGTH"]);
+
+					// buffer the rest of the body
+					if (content_length > 0) {
+						reader.set_buffer_size (content_length);
+						reader.fill (content_length);
+					}
+
+					assert (content_length == reader.get_available ());
+
+					var req = new Request (connection, new SCGIInputStream (reader, content_length), environment);
+					var res = new Response (req);
+
+					this.handle (req, res);
+
+					debug ("%u %s %s", res.status, req.method, req.uri.path);
+
+				} catch (Error err) {
 					command_line.printerr (err.message);
 					return true;
 				}
-
-				var req = new Request (connection, reader, environment);
-				var res = new Response (req);
-
-				this.handle (req, res);
-
-				debug ("%u %s %s", res.status, req.method, req.uri.path);
 
 				return false;
 			});
