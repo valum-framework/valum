@@ -213,9 +213,9 @@ namespace VSGI.Soup {
 				{"file-descriptor", 'f', 0, OptionArg.INT, null, "listen to the provided file descriptor", "0"},
 
 				// https options
-				{"https",           0, 0, OptionArg.NONE,     null, "listen for https connections rather than plain http"},
-				{"ssl-cert-file",   0, 0, OptionArg.FILENAME, null, "path to a file containing a PEM-encoded certificate"},
-				{"ssl-key-file",    0, 0, OptionArg.FILENAME, null, "path to a file containing a PEM-encoded private key"},
+				{"https",         0, 0, OptionArg.NONE,     null, "listen for https connections rather than plain http"},
+				{"ssl-cert-file", 0, 0, OptionArg.FILENAME, null, "path to a file containing a PEM-encoded certificate"},
+				{"ssl-key-file",  0, 0, OptionArg.FILENAME, null, "path to a file containing a PEM-encoded private key"},
 
 				// headers options
 				{"server-header", 'h', 0, OptionArg.STRING, null, "value to use for the 'Server' header on Messages processed by this server"},
@@ -248,13 +248,32 @@ namespace VSGI.Soup {
 
 #if GIO_2_40
 			if (options.contains ("https")) {
+				if (!options.contains ("ssl-cert-file") || !options.contains ("ssl-key-file")) {
+					command_line.printerr ("both '--ssl-cert-file' and '--ssl-key-file' must be provided\n");
+					return 1;
+				}
+#if SOUP_2_38
+				TlsCertificate? tls_certificate = null;
+				try {
+					tls_certificate = new TlsCertificate.from_files (options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING).get_bytestring (),
+					                                                 options.lookup_value ("ssl-key-file", VariantType.BYTESTRING).get_bytestring ());
+				} catch (GLib.Error err) {
+					command_line.printerr ("%s\n", err.message);
+					return 1;
+				}
+#endif
 				this.server = new global::Soup.Server (
 #if !SOUP_2_48
-					global::Soup.SERVER_PORT, port,
+					global::Soup.SERVER_PORT,            port,
 #endif
-					global::Soup.SERVER_RAW_PATHS,     options.contains ("raw-paths"),
-					global::Soup.SERVER_SSL_CERT_FILE, options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING).get_bytestring (),
-					global::Soup.SERVER_SSL_KEY_FILE,  options.lookup_value ("ssl-key-file", VariantType.BYTESTRING).get_bytestring ());
+					global::Soup.SERVER_RAW_PATHS,       options.contains ("raw-paths"),
+#if SOUP_2_38
+					global::Soup.SERVER_TLS_CERTIFICATE, tls_certificate,
+#else
+					global::Soup.SERVER_SSL_CERT_FILE,   options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING).get_bytestring (),
+					global::Soup.SERVER_SSL_KEY_FILE,    options.lookup_value ("ssl-key-file", VariantType.BYTESTRING).get_bytestring (),
+#endif
+					global::Soup.SERVER_SERVER_HEADER, null);
 			} else
 #endif
 			{
@@ -271,18 +290,6 @@ namespace VSGI.Soup {
 #if GIO_2_40
 			if (options.contains ("server-header"))
 				this.server.server_header = options.lookup_value ("server-header", VariantType.STRING).get_string ();
-
-#if SOUP_2_48
-			if (options.contains ("https")) {
-				try {
-					this.server.set_ssl_cert_file (options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING).get_bytestring (),
-					                               options.lookup_value ("ssl-key-file", VariantType.BYTESTRING).get_bytestring ());
-				} catch (Error err) {
-					command_line.printerr ("%s\n", err.message);
-					return 1;
-				}
-			}
-#endif
 #endif
 
 			// register a catch-all handler
