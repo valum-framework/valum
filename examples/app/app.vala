@@ -85,12 +85,7 @@ app.scope ("cookie", (inner) => {
 	});
 
 	inner.post ("<name>", (req, res) => {
-		var @value = new MemoryOutputStream (null, realloc, free);
-
-		@value.splice (req.body, OutputStreamSpliceFlags.CLOSE_SOURCE);
-
-		var cookie = new Soup.Cookie (req.params["name"], (string) @value.data, "0.0.0.0", "/", 60);
-
+		var cookie = new Soup.Cookie (req.params["name"], (string) req.flatten (), "0.0.0.0", "/", 60);
 		res.headers.append ("Set-Cookie", cookie.to_set_cookie_header ());
 	});
 });
@@ -113,16 +108,14 @@ app.scope ("urlencoded-data", (inner) => {
 	});
 
 	inner.post ("", (req, res) => {
-		var data   = new MemoryOutputStream (null, realloc, free);
-		var post   = new StringBuilder ();
+		var post = Soup.Form.decode ((string) req.flatten ());
+		var builder = new StringBuilder ();
 
-		data.splice (req.body, OutputStreamSpliceFlags.CLOSE_SOURCE);
-
-		Soup.Form.decode ((string) data.get_data ()).foreach ((k, v) => {
-			post.append_printf ("%s: %s", k, v);
+		post.foreach ((k, v) => {
+			builder.append_printf ("%s: %s\n", k, v);
 		});
 
-		res.body.write_all (post.data, null);
+		res.body.write_all (builder.str.data, null);
 	});
 });
 
