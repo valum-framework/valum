@@ -39,6 +39,10 @@ namespace VSGI.SCGI {
 
 		public int64 bytes_read = 0;
 
+		/**
+		 * The {@link GLib.int64} type is used to be consistent with
+		 * {@link Soup.Headers.get_content_length}
+		 */
 		public int64 content_length { construct; get; }
 
 		public SCGIInputStream (InputStream base_stream, int64 content_length) {
@@ -149,6 +153,10 @@ namespace VSGI.SCGI {
 				var reader      = new DataInputStream (connection.input_stream);
 
 				try {
+					// buffer approximately the netstring (~460B)
+					reader.set_buffer_size (512);
+					reader.fill (512);
+
 					size_t length;
 					var size = int.parse (reader.read_upto (":", 1, out length));
 
@@ -188,15 +196,15 @@ namespace VSGI.SCGI {
 						return true;
 					}
 
-					var content_length = int.parse (environment["CONTENT_LENGTH"]);
+					var content_length = int64.parse (environment["CONTENT_LENGTH"]);
 
 					// buffer the rest of the body
 					if (content_length > 0) {
-						reader.set_buffer_size (content_length);
-						reader.fill (content_length);
+						reader.set_buffer_size ((size_t) content_length);
+						reader.fill (-1); // fill the buffer
 					}
 
-					assert (content_length == reader.get_available ());
+					assert ((size_t) content_length == reader.get_available ());
 
 					var req = new Request (connection, new SCGIInputStream (reader, content_length), environment);
 					var res = new Response (req);
