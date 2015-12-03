@@ -170,6 +170,13 @@ namespace VSGI {
 		}
 
 		/**
+		 * @since 0.2
+		 */
+		public Bytes flatten_bytes (Cancellable? cancellable = null) throws IOError {
+			return new Bytes.take (flatten (cancellable));
+		}
+
+		/**
 		 * Buffer the body stream asynchronously.
 		 *
 		 * @see VSGI.Request.flatten_async
@@ -177,7 +184,8 @@ namespace VSGI {
 		 *
 		 * @return buffer containing the stream data
 		 */
-		public virtual async uint8[] flatten_async (int io_priority = GLib.Priority.DEFAULT, Cancellable? cancellable = null) throws IOError {
+		public virtual async uint8[] flatten_async (int io_priority = GLib.Priority.DEFAULT,
+		                                            Cancellable? cancellable = null) throws IOError {
 			var buffer = this.headers.get_encoding () == Encoding.CONTENT_LENGTH ?
 				new MemoryOutputStream (new uint8[this.headers.get_content_length ()], null, free) :
 				new MemoryOutputStream (null, realloc, free);
@@ -191,6 +199,14 @@ namespace VSGI {
 			data.length = (int) buffer.get_data_size ();
 
 			return data;
+		}
+
+		/**
+		 * @since 0.2
+		 */
+		public async Bytes flatten_bytes_async (int io_priority = GLib.Priority.DEFAULT,
+		                                        Cancellable? cancellable = null) throws IOError {
+			return new Bytes.take (yield flatten_async (io_priority, cancellable));
 		}
 	}
 }
