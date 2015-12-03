@@ -150,7 +150,7 @@ namespace VSGI {
 		 * If the 'Content-Length' header is set, a fixed-size buffer is used
 		 * instead of dynamically resizing the buffer to fit the stream content.
 		 *
-		 * @since 0.2
+		 * @since 0.2.3
 		 *
 		 * @return buffer containing the stream data
 		 */
@@ -170,7 +170,7 @@ namespace VSGI {
 		}
 
 		/**
-		 * @since 0.2
+		 * @since 0.2.3
 		 */
 		public Bytes flatten_bytes (Cancellable? cancellable = null) throws IOError {
 			return new Bytes.take (flatten (cancellable));
@@ -180,7 +180,7 @@ namespace VSGI {
 		 * Buffer the body stream asynchronously.
 		 *
 		 * @see VSGI.Request.flatten_async
-		 * @since 0.2
+		 * @since 0.2.3
 		 *
 		 * @return buffer containing the stream data
 		 */
@@ -202,7 +202,7 @@ namespace VSGI {
 		}
 
 		/**
-		 * @since 0.2
+		 * @since 0.2.3
 		 */
 		public async Bytes flatten_bytes_async (int io_priority = GLib.Priority.DEFAULT,
 		                                        Cancellable? cancellable = null) throws IOError {
