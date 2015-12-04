@@ -211,8 +211,6 @@ namespace VSGI.SCGI {
 
 					this.handle (req, res);
 
-					debug ("%u %s %s", res.status, req.method, req.uri.path);
-
 				} catch (Error err) {
 					command_line.printerr (err.message);
 					return true;

@@ -319,8 +319,6 @@ namespace VSGI.Soup {
 				var res = new Response (req, msg);
 
 				this.handle (req, res);
-
-				debug ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
 			});
 
 #if SOUP_2_48
