@@ -417,8 +417,8 @@ namespace Valum {
 		 * Perform the routing of the request by calling {@link Valum.Router.invoke}.
 		 *
 		 * If nothing matches the request, look for alternate HTTP methods and
-		 * raise a {@link Valum.Status.ClientError.METHOD_NOT_ALLOWED}, otherwise
-		 * raise a {@link Valum.Status.ClientError.NOT_FOUND} exception.
+		 * raise a {@link Valum.ClientError.METHOD_NOT_ALLOWED}, otherwise
+		 * raise a {@link Valum.ClientError.NOT_FOUND} exception.
 		 *
 		 * The response is initialized with 'chunked' transfer encoding since
 		 * most processing are generally based on stream.
