@@ -24,8 +24,6 @@ Options
 +-----------------------+---------+-----------------------------------------------+
 | ``--file-descriptor`` | 0       | listen to the provided file descriptor        |
 +-----------------------+---------+-----------------------------------------------+
-| ``--backlog``         | 0       | connection queue depth in the ``listen`` call |
+| ``--backlog``         | 10      | connection queue depth in the ``listen`` call |
 +-----------------------+---------+-----------------------------------------------+
-
-In the case of ``--max-threads``, ``-1`` means no limit.
 

@@ -32,6 +32,8 @@ namespace VSGI.CGI {
 
 		/**
 		 * CGI environment variables.
+		 *
+		 * @since 0.2
 		 */
 		public HashTable<string, string> environment { construct; get; }
 

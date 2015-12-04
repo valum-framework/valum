@@ -26,10 +26,14 @@ public void test_vsgi_scgi_request_with_request_uri () {
 	environment["REQUEST_METHOD"] = "GET";
 	environment["SERVER_NAME"]    = "0.0.0.0";
 	environment["SERVER_PORT"]    = "3003";
+	environment["QUERY_STRING"]   = "a=b";
 	environment["REQUEST_URI"]    = "/home?a=b";
 
 	var connection = new VSGI.Test.Connection ();
 	var request    = new Request (connection, new SCGIInputStream (connection.input_stream, 0), environment);
 
+	assert ("GET" == request.method);
 	assert ("/home" == request.uri.path);
+	assert ("a" in request.query);
+	assert ("b" == request.query["a"]);
 }

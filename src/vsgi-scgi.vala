@@ -33,22 +33,43 @@ using GLib;
 namespace VSGI.SCGI {
 
 	/**
-	 * Produce an artificial EOF when the body has been fully read.
+	 * Filter a SCGI request stream to provide the end-of-file behaviour of a
+	 * typical {@link GLib.InputStream}.
+	 *
+	 * @since 0.2.3
 	 */
 	public class SCGIInputStream : FilterInputStream {
 
-		public int64 bytes_read = 0;
+		/**
+		 * Number of bytes read from the base stream.
+		 */
+		private int64 bytes_read = 0;
 
 		/**
-		 * The {@link GLib.int64} type is used to be consistent with
+		 * The {@link GLib.int64} type is used to remain consistent with
 		 * {@link Soup.Headers.get_content_length}
+		 *
+		 * @since 0.2.3
 		 */
 		public int64 content_length { construct; get; }
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @param content_length number of bytes that can be read from the base
+		 *                       stream
+		 */
 		public SCGIInputStream (InputStream base_stream, int64 content_length) {
 			Object (base_stream: base_stream, content_length: content_length);
 		}
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * Ensures that the read buffer is smaller than the remaining bytes to
+		 * read from the base stream. If no more data is available, it produces
+		 * an artificial EOF.
+		 */
 		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
 			if (bytes_read >= content_length)
 				return 0; // EOF
@@ -67,15 +88,32 @@ namespace VSGI.SCGI {
 			return ret;
 		}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public override bool close (Cancellable? cancellable = null) throws IOError {
 			return base_stream.close (cancellable);
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * The connection {@link GLib.InputStream} is ignored as it is being
+	 * typically consumed for its netstring. This is why the constructor
+	 * expects a separate body stream.
+	 */
 	public class Request : CGI.Request {
 
 		private SCGIInputStream _body;
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @since 2.3.3
+		 *
+		 * @param reader stream holding the request body
+		 */
 		public Request (IOStream connection, SCGIInputStream reader, HashTable<string, string> environment) {
 			base (connection, environment);
 
@@ -92,6 +130,9 @@ namespace VSGI.SCGI {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public class Response : CGI.Response {
 
 		public Response (Request request) {
@@ -99,6 +140,9 @@ namespace VSGI.SCGI {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public class Server : VSGI.Server {
 
 		public Server (string application_id, owned VSGI.ApplicationCallback application) {
@@ -108,7 +152,7 @@ namespace VSGI.SCGI {
 			const OptionEntry[] options = {
 				{"port",            'p', 0, OptionArg.INT, null, "TCP port on this host"},
 				{"file-descriptor", 0,   0, OptionArg.INT, null, "listen on a file descriptor", "0"},
-				{"backlog",         'b', 0, OptionArg.INT, null, "listen queue depth used in the listen() call", "0"},
+				{"backlog",         'b', 0, OptionArg.INT, null, "listen queue depth used in the listen() call", "10"},
 				{null}
 			};
 
@@ -155,7 +199,7 @@ namespace VSGI.SCGI {
 				try {
 					// buffer approximately the netstring (~460B)
 					reader.set_buffer_size (512);
-					reader.fill (512);
+					reader.fill (-1);
 
 					size_t length;
 					var size = int.parse (reader.read_upto (":", 1, out length));
