@@ -145,6 +145,11 @@ namespace VSGI.SCGI {
 	 */
 	public class Server : VSGI.Server {
 
+		/**
+		 * @since 0.2.4
+		 */
+		public SocketService listener { get; protected set; default = new SocketService (); }
+
 		public Server (string application_id, owned VSGI.ApplicationCallback application) {
 			base (application_id, (owned) application);
 
@@ -162,8 +167,6 @@ namespace VSGI.SCGI {
 		}
 
 		public override int command_line (ApplicationCommandLine command_line) {
-			var listener = new SocketService ();
-
 #if GIO_2_40
 			var options  = command_line.get_options_dict ();
 
@@ -268,6 +271,9 @@ namespace VSGI.SCGI {
 			});
 
 			listener.start ();
+
+			// gracefully stop accepting new connections
+			shutdown.connect (listener.stop);
 
 			this.hold ();
 
