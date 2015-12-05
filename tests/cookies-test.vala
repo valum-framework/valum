@@ -45,7 +45,7 @@ public void test_vsgi_cookies_from_request () {
  */
 public void test_vsgi_cookies_from_response () {
 	var req = new Request ("GET", new Soup.URI ("http://localhost/"));
-	var res = new Response (req, 200);
+	var res = new Response (req);
 
 	res.headers.append ("Set-Cookie", "a=b, c=d");
 	res.headers.append ("Set-Cookie", "e=f");

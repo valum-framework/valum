@@ -94,10 +94,7 @@ namespace VSGI.Test {
 	 */
 	public class Response : VSGI.Response {
 
-		private uint _status;
 		private MessageHeaders _headers = new MessageHeaders (MessageHeadersType.RESPONSE);
-
-		public override uint status { get { return this._status; } set { this._status = value; } }
 
 		public override MessageHeaders headers {
 			get {
@@ -105,9 +102,12 @@ namespace VSGI.Test {
 			}
 		}
 
-		public Response (Request req, uint status) {
+		public Response (Request req) {
 			Object (request: req);
-			this._status = status;
+		}
+
+		public Response.with_status (Request req, uint status) {
+			Object (request: req, status: status);
 		}
 	}
 }

@@ -235,7 +235,7 @@ public void test_route_fire () {
 		setted = true;
 	});
 	var req   = new Request.with_uri (new Soup.URI ("http://localhost/home"));
-	var res   = new Response (req, 200);
+	var res   = new Response (req);
 	var stack  = new Queue<Value?> ();
 
 	assert (setted == false);
