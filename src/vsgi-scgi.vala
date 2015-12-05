@@ -150,9 +150,10 @@ namespace VSGI.SCGI {
 
 #if GIO_2_40
 			const OptionEntry[] options = {
-				{"port",            'p', 0, OptionArg.INT, null, "TCP port on this host"},
-				{"file-descriptor", 0,   0, OptionArg.INT, null, "listen on a file descriptor", "0"},
-				{"backlog",         'b', 0, OptionArg.INT, null, "listen queue depth used in the listen() call", "10"},
+				{"any",             'a', 0, OptionArg.NONE, null, "listen on any open TCP port"},
+				{"port",            'p', 0, OptionArg.INT,  null, "TCP port on this host"},
+				{"file-descriptor", 0,   0, OptionArg.INT,  null, "listen on a file descriptor",                  "0"},
+				{"backlog",         'b', 0, OptionArg.INT,  null, "listen queue depth used in the listen() call", "10"},
 				{null}
 			};
 
@@ -172,7 +173,10 @@ namespace VSGI.SCGI {
 
 			try {
 #if GIO_2_40
-				if (options.contains ("port")) {
+				if (options.contains ("any")) {
+					var port = listener.add_any_inet_port (null);
+					command_line.print ("listening on tcp://0.0.0.0:%u\n", port);
+				} else if (options.contains ("port")) {
 					var port = (uint16) options.lookup_value ("port", VariantType.INT32).get_int32 ();
 					listener.add_inet_port (port, null);
 					command_line.print ("listening on tcp://0.0.0.0:%u\n", port);
