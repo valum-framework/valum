@@ -41,7 +41,7 @@ public static void test_router_handle () {
 		res.status = 418;
 	});
 
-	var request  = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -64,7 +64,7 @@ public static void test_router_get () {
 		res.status = 418;
 	});
 
-	var request  = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -82,7 +82,7 @@ public static void test_router_post () {
 		res.status = 418;
 	});
 
-	var request  = new Request (VSGI.Request.POST, new Soup.URI ("http://localhost/"));
+	var request  = new Request.with_method (VSGI.Request.POST, new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -100,7 +100,7 @@ public static void test_router_put () {
 		res.status = 418;
 	});
 
-	var request  = new Request (VSGI.Request.PUT, new Soup.URI ("http://localhost/"));
+	var request  = new Request.with_method (VSGI.Request.PUT, new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -118,7 +118,7 @@ public static void test_router_delete () {
 		res.status = 418;
 	});
 
-	var request  = new Request (VSGI.Request.DELETE, new Soup.URI ("http://localhost/"));
+	var request  = new Request.with_method (VSGI.Request.DELETE, new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -136,7 +136,7 @@ public static void test_router_head () {
 		res.status = 418;
 	});
 
-	var request  = new Request (VSGI.Request.HEAD, new Soup.URI ("http://localhost/"));
+	var request  = new Request.with_method (VSGI.Request.HEAD, new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -154,7 +154,7 @@ public static void test_router_options () {
 		res.status = 418;
 	});
 
-	var request  = new Request (VSGI.Request.OPTIONS, new Soup.URI ("http://localhost/"));
+	var request  = new Request.with_method (VSGI.Request.OPTIONS, new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -172,7 +172,7 @@ public static void test_router_trace () {
 		res.status = 418;
 	});
 
-	var request  = new Request (VSGI.Request.TRACE, new Soup.URI ("http://localhost/"));
+	var request  = new Request.with_method (VSGI.Request.TRACE, new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -190,7 +190,7 @@ public static void test_router_connect () {
 		res.status = 418;
 	});
 
-	var request  = new Request (VSGI.Request.CONNECT, new Soup.URI ("http://localhost/"));
+	var request  = new Request.with_method (VSGI.Request.CONNECT, new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -207,7 +207,7 @@ public static void test_router_patch () {
 		res.status = 418;
 	});
 
-	var request  = new Request (VSGI.Request.PATCH, new Soup.URI ("http://localhost/"));
+	var request  = new Request.with_method (VSGI.Request.PATCH, new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -231,7 +231,7 @@ public static void test_router_methods () {
 	assert (methods[1] == routes[1].method);
 
 	foreach (var method in methods) {
-		var request  = new Request (method, new Soup.URI ("http://localhost/"));
+		var request  = new Request.with_method (method, new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		router.handle (request, response);
@@ -256,7 +256,7 @@ public static void test_router_all () {
 		assert (VSGI.Request.METHODS[i] == routes[i].method);
 
 	foreach (var method in VSGI.Request.METHODS) {
-		var request  = new Request (method, new Soup.URI ("http://localhost/"));
+		var request  = new Request.with_method (method, new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		router.handle (request, response);
@@ -275,7 +275,7 @@ public static void test_router_regex () {
 		res.status = 418;
 	});
 
-	var request  = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/home"));
+	var request  = new Request.with_uri (new Soup.URI ("http://localhost/home"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -293,7 +293,7 @@ public static void test_router_matcher () {
 		res.status = 418;
 	});
 
-	var request  = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -350,7 +350,7 @@ public static void test_router_success_created () {
 		throw new Success.CREATED ("/document/5");
 	});
 
-	var request  = new Request (VSGI.Request.PUT, new Soup.URI ("http://localhost/document"));
+	var request  = new Request.with_method (VSGI.Request.PUT, new Soup.URI ("http://localhost/document"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -370,7 +370,7 @@ public static void test_router_success_partial_content () {
 		throw new Success.PARTIAL_CONTENT ("bytes 21010-47021/47022");
 	});
 
-	var request  = new Request (VSGI.Request.PUT, new Soup.URI ("http://localhost/document"));
+	var request  = new Request.with_method (VSGI.Request.PUT, new Soup.URI ("http://localhost/document"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -480,7 +480,7 @@ public static void test_router_custom_method () {
 		res.status = 418;
 	});
 
-	var request = new Request ("TEST", new Soup.URI ("http://localhost/"));
+	var request = new Request.with_method ("TEST", new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -502,7 +502,7 @@ public static void test_router_method_not_allowed () {
 
 	});
 
-	var request = new Request ("POST", new Soup.URI ("http://localhost/"));
+	var request = new Request.with_method ("POST", new Soup.URI ("http://localhost/"));
 	var response = new Response.with_status (request, Soup.Status.METHOD_NOT_ALLOWED);
 
 	router.handle (request, response);
@@ -531,7 +531,7 @@ public static void test_router_method_not_allowed_excludes_request_method () {
 
 	});
 
-	var request = new Request ("POST", new Soup.URI ("http://localhost/"));
+	var request = new Request.with_method ("POST", new Soup.URI ("http://localhost/"));
 	var response = new Response.with_status (request, Soup.Status.METHOD_NOT_ALLOWED);
 
 	router.handle (request, response);
@@ -550,7 +550,7 @@ public static void test_router_method_not_allowed_excludes_request_method () {
 public static void test_router_not_found () {
 	var router = new Router ();
 
-	var request = new Request ("GET", new Soup.URI ("http://localhost/"));
+	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -573,7 +573,7 @@ public static void test_router_subrouting () {
 
 	router.get ("", subrouter.handle);
 
-	var request = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response.with_status (request, Soup.Status.NOT_FOUND);
 
 	router.handle (request, response);
@@ -600,7 +600,7 @@ public static void test_router_next () {
 		res.status = 418;
 	});
 
-	var request = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response.with_status (request, Soup.Status.NOT_FOUND);
 
 	router.handle (request, response);
@@ -622,7 +622,7 @@ public static void test_router_next_not_found () {
 
 	// no more route matching
 
-	var request = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -648,7 +648,7 @@ public static void test_router_next_propagate_error () {
 		throw new ClientError.UNAUTHORIZED ("");
 	});
 
-	var request = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -677,7 +677,7 @@ public static void test_router_next_propagate_state () {
 		assert (st.pop_tail () == state);
 	});
 
-	var request = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -707,7 +707,7 @@ public static void test_router_next_replace_propagated_state () {
 		assert (stack.is_empty ());
 	});
 
-	var request = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -724,7 +724,7 @@ public static void test_router_status_propagates_error_message () {
 		assert ("The request URI http://localhost/ was not found." == message.get_string ());
 	});
 
-	var request = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -768,7 +768,7 @@ public static void test_router_invoke () {
 		throw new ClientError.IM_A_TEAPOT ("this is insane!");
 	});
 
-	var request  = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -793,7 +793,7 @@ public static void test_router_invoke_propagate_state () {
 		throw new ClientError.IM_A_TEAPOT ("this is insane!");
 	});
 
-	var request  = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
+	var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);

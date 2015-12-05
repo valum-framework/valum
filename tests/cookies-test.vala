@@ -21,7 +21,7 @@ using VSGI.Test;
  * @since 0.1
  */
 public void test_vsgi_cookies_from_request () {
-	var req = new Request ("GET", new Soup.URI ("http://localhost/"));
+	var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
 
 	req.headers.append ("Cookie", "a=b, c=d");
 	req.headers.append ("Cookie", "e=f");
@@ -44,7 +44,7 @@ public void test_vsgi_cookies_from_request () {
  * @since 0.1
  */
 public void test_vsgi_cookies_from_response () {
-	var req = new Request ("GET", new Soup.URI ("http://localhost/"));
+	var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var res = new Response (req);
 
 	res.headers.append ("Set-Cookie", "a=b, c=d");
@@ -68,7 +68,7 @@ public void test_vsgi_cookies_from_response () {
  * @since 0.2
  */
 public void test_vsgi_cookies_lookup () {
-	var req = new Request ("GET", new Soup.URI ("http://localhost/"));
+	var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
 
 	req.headers.append ("Cookie", "a=b");
 	req.headers.append ("Cookie", "a=c"); // override

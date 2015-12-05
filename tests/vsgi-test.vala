@@ -24,20 +24,30 @@ using Soup;
 namespace VSGI.Test {
 
 	/**
+	 * Stubbed connection with in-memory streams.
 	 *
+	 * The typical use case is to create a {@link VSGI.Test.Request} with a
+	 * stubbed connection so that the produced and consumed messages can be
+	 * easily inspected.
 	 */
 	public class Connection : IOStream {
 
-		private MemoryInputStream _input_stream;
-		private MemoryOutputStream _output_stream;
+		/**
+		 * @since 0.2.4
+		 */
+		public MemoryInputStream memory_input_stream { construct; get; }
 
-		public override InputStream input_stream { get { return this._input_stream; } }
+		/**
+		 * @since 0.2.4
+		 */
+		public MemoryOutputStream memory_output_stream { construct; get; }
 
-		public override OutputStream output_stream { get { return this._output_stream; } }
+		public override InputStream input_stream { get { return memory_input_stream; } }
+
+		public override OutputStream output_stream { get { return memory_output_stream; } }
 
 		public Connection () {
-			this._input_stream  = new MemoryInputStream ();
-			this._output_stream = new MemoryOutputStream (null, realloc, free);
+			Object (memory_input_stream: new MemoryInputStream (), memory_output_stream: new MemoryOutputStream (null, realloc, free));
 		}
 	}
 
@@ -66,21 +76,24 @@ namespace VSGI.Test {
 			}
 		}
 
-		public Request (string method, URI uri, HashTable<string, string>? query = null) {
-			Object (connection: new Connection ());
+		/**
+		 * @since 0.3
+		 */
+		public Request (Connection connection, string method, URI uri, HashTable<string, string>? query = null) {
+			Object (connection: connection);
 			this._method = method;
 			this._uri    = uri;
 			this._query  = query;
 		}
 
-		public Request.with_method (string method) {
-			Object (connection: new Connection ());
-			this._method = method;
+		public Request.with_method (string method, URI uri, HashTable<string, string>? query = null) {
+			this (new Connection (), method, uri, query);
 		}
 
-		public Request.with_uri (URI uri) {
+		public Request.with_uri (URI uri, HashTable<string, string>? query = null) {
 			Object (connection: new Connection ());
-			this._uri = uri;
+			this._uri   = uri;
+			this._query = query;
 		}
 
 		public Request.with_query (HashTable<string, string>? query) {
