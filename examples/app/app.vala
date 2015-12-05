@@ -85,7 +85,7 @@ app.scope ("cookie", (inner) => {
 	});
 
 	inner.post ("<name>", (req, res) => {
-		var cookie = new Soup.Cookie (req.params["name"], (string) req.flatten (), "0.0.0.0", "/", 60);
+		var cookie = new Soup.Cookie (req.params["name"], req.flatten_utf8 (), "0.0.0.0", "/", 60);
 		res.headers.append ("Set-Cookie", cookie.to_set_cookie_header ());
 	});
 });
@@ -108,7 +108,7 @@ app.scope ("urlencoded-data", (inner) => {
 	});
 
 	inner.post ("", (req, res) => {
-		var post = Soup.Form.decode ((string) req.flatten ());
+		var post = Soup.Form.decode (req.flatten_utf8 ());
 		var builder = new StringBuilder ();
 
 		post.foreach ((k, v) => {

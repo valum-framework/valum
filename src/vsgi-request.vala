@@ -177,9 +177,15 @@ namespace VSGI {
 		}
 
 		/**
+		 * @since 0.2.4
+		 */
+		public string flatten_utf8 (Cancellable? cancellable = null) throws IOError {
+			return (string) flatten (cancellable);
+		}
+
+		/**
 		 * Buffer the body stream asynchronously.
 		 *
-		 * @see VSGI.Request.flatten_async
 		 * @since 0.2.3
 		 *
 		 * @return buffer containing the stream data
@@ -207,6 +213,14 @@ namespace VSGI {
 		public async Bytes flatten_bytes_async (int io_priority = GLib.Priority.DEFAULT,
 		                                        Cancellable? cancellable = null) throws IOError {
 			return new Bytes.take (yield flatten_async (io_priority, cancellable));
+		}
+
+		/**
+		 * @since 0.2.4
+		 */
+		public async string flatten_utf8_async (int io_priority = GLib.Priority.DEFAULT,
+		                                        Cancellable? cancellable = null) throws IOError {
+			return (string) yield flatten_async (io_priority, cancellable);
 		}
 	}
 }
