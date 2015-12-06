@@ -22,7 +22,10 @@ public void test_server_sent_events_send () {
 	var expected_message = resources_lookup_data ("/data/server-sent-events/send-expected-message",
 	                                              ResourceLookupFlags.NONE);
 
-	assert (expected_message.compare (connection.memory_output_stream.steal_as_bytes ()) == 0);
+	var data = connection.memory_output_stream.steal_data ();
+	data.length = (int) connection.memory_output_stream.get_data_size ();
+
+	assert (expected_message.compare (new Bytes (data)) == 0);
 }
 
 public void test_server_sent_events_send_multiline () {
@@ -43,5 +46,8 @@ public void test_server_sent_events_send_multiline () {
 	var expected_message = resources_lookup_data ("/data/server-sent-events/send-multiline-expected-message",
 	                                              ResourceLookupFlags.NONE);
 
-	assert (expected_message.compare (connection.memory_output_stream.steal_as_bytes ()) == 0);
+	var data = connection.memory_output_stream.steal_data ();
+	data.length = (int) connection.memory_output_stream.get_data_size ();
+
+	assert (expected_message.compare (new Bytes (data)) == 0);
 }
