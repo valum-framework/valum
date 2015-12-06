@@ -251,11 +251,22 @@ namespace VSGI.SCGI {
 
 					// buffer the rest of the body
 					if (content_length > 0) {
-						reader.set_buffer_size ((size_t) content_length);
-						reader.fill (-1); // fill the buffer
-					}
+						if (sizeof (size_t) < sizeof (int64) && content_length > size_t.MAX) {
+							command_line.printerr ("request body is too big (%sB) to be held in a buffer",
+							                       content_length.to_string ());
+							return true;
+						}
 
-					assert ((size_t) content_length == reader.get_available ());
+						// fill the buffer
+						reader.set_buffer_size ((size_t) content_length);
+						reader.fill (-1);
+
+						if (content_length < reader.get_available ()) {
+							command_line.printerr ("request body (%sB) could not be buffered",
+												   content_length.to_string ());
+							return true;
+						}
+					}
 
 					var req = new Request (connection, new SCGIInputStream (reader, content_length), environment);
 					var res = new Response (req);
