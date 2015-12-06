@@ -12,8 +12,9 @@ provide a ``send`` callback to transmit the actual events.
 .. code-block:: vala
 
     using Valum;
+    using Valum.ServerSentEvents;
 
-    app.get ("sse", ServerSentEvents.context ((req, send) => {
+    app.get ("sse", stream_events ((req, send) => {
         send (null, "some data");
     }));
 

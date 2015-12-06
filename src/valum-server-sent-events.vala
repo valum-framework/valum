@@ -60,9 +60,9 @@ namespace Valum.ServerSentEvents {
 	 *
 	 * @throws GLib.Error
 	 */
-	public delegate void ContextCallback (Request request,
-	                                      owned SendEventCallback send_event,
-	                                      Queue<Value?> stack) throws Error;
+	public delegate void EventStreamCallback (Request request,
+	                                          owned SendEventCallback send_event,
+	                                          Queue<Value?> stack) throws Error;
 
 	/**
 	 * Middleware that create a context for sending Server-Sent Events.
@@ -80,9 +80,9 @@ namespace Valum.ServerSentEvents {
 	 *
 	 * @since 0.3
 	 *
-	 * @param context
+	 * @param context context for sending events
 	 */
-	public HandlerCallback context (owned ContextCallback context) {
+	public HandlerCallback stream_events (owned EventStreamCallback context) {
 		return (req, res, next, stack) => {
 			HashTable<string, string> @params;
 			res.headers.get_content_type (out @params);

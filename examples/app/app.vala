@@ -16,6 +16,7 @@
  */
 
 using Valum;
+using Valum.ServerSentEvents;
 using VSGI.Soup;
 
 var app = new Router ();
@@ -271,7 +272,7 @@ app.get ("static/<path:resource>.<any:type>", (req, res) => {
 	}
 });
 
-app.get ("server-sent-events", ServerSentEvents.context ((req, send) => {
+app.get ("server-sent-events", stream_events ((req, send) => {
 	send (null, "now!");
 	GLib.Timeout.add_seconds (5, () => {
 		send (null, "later!");
