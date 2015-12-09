@@ -40,6 +40,7 @@ public static void test_vsgi_cgi_request () {
 	assert ("root" == request.uri.get_user ());
 	assert ("0.0.0.0" == request.uri.get_host ());
 	assert ("a=b" == request.uri.get_query ());
+	assert ("http://root@0.0.0.0:3003/?a=b" == request.uri.to_string (false));
 	assert (request.query.contains ("a"));
 	assert ("b" == request.query["a"]);
 	assert (3003 == request.uri.get_port ());
@@ -71,6 +72,20 @@ public void test_vsgi_cgi_request_http_1_1 () {
 	var request = new Request (connection, environment);
 
 	assert (Soup.HTTPVersion.@1_1 == request.http_version);
+}
+
+/**
+ * @since 0.2.4
+ */
+public void test_vsgi_cgi_request_https_detection () {
+	var connection = new VSGI.Test.Connection ();
+	var environment = new HashTable<string, string> (str_hash, str_equal);
+
+	environment["PATH_TRANSLATED"] = "https://example.com:80/";
+
+	var request = new Request (connection, environment);
+
+	assert ("https" == request.uri.scheme);
 }
 
 /**

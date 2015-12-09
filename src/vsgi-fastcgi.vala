@@ -192,12 +192,6 @@ namespace VSGI.FastCGI {
 		 */
 		public Request (IOStream connection, HashTable<string, string> environment) {
 			base (connection, environment);
-
-			if (environment.contains ("HTTPS") && environment["HTTPS"] == "on")
-				this.uri.set_scheme ("https");
-
-			if (environment.contains ("REQUEST_URI"))
-				this.uri.set_path (environment["REQUEST_URI"].split ("?", 2)[0]); // avoid the query
 		}
 	}
 

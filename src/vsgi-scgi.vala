@@ -116,11 +116,7 @@ namespace VSGI.SCGI {
 		 */
 		public Request (IOStream connection, SCGIInputStream reader, HashTable<string, string> environment) {
 			base (connection, environment);
-
 			_body = reader;
-
-			if (environment.contains ("REQUEST_URI"))
-				this.uri.set_path (environment["REQUEST_URI"].split ("?", 2)[0]); // avoid the query
 		}
 
 		public override InputStream body {

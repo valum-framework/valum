@@ -26,6 +26,7 @@ using Soup;
  *
  * @since 0.2
  */
+[CCode (gir_namespace = "VSGI.CGI", gir_version = "0.2")]
 namespace VSGI.CGI {
 
 	public class Request : VSGI.Request {
@@ -65,25 +66,46 @@ namespace VSGI.CGI {
 			get { return this._headers; }
 		}
 
+		/**
+		 * Create a request from the provided environment variables.
+		 *
+		 * Although not part of CGI/1.1 specification, the 'REQUEST_URI' and
+		 * 'HTTPS' environment variables are reckognized.
+		 *
+		 * {@inheritDoc}
+		 *
+		 * @since 0.2
+		 *
+		 * @param environment environment variables
+		 */
 		public Request (IOStream connection, HashTable<string, string> environment) {
 			Object (connection: connection, environment: environment);
 
-			// authentication information
+			if (environment.contains ("HTTPS") && environment["HTTPS"].length > 0 ||
+			    environment.contains ("PATH_TRANSLATED") && environment["PATH_TRANSLATED"].has_prefix ("https://"))
+				this._uri.set_scheme ("https");
+			else
+				this._uri.set_scheme ("http");
+
 			if (environment.contains ("REMOTE_USER"))
 				this._uri.set_user (environment["REMOTE_USER"]);
 
-			this._uri.set_host (environment["SERVER_NAME"]);
+			if (environment.contains ("SERVER_NAME"))
+				this._uri.set_host (environment["SERVER_NAME"]);
 
 			if (environment.contains ("SERVER_PORT"))
 				this._uri.set_port (int.parse (environment["SERVER_PORT"]));
 
-			if (environment.contains ("PATH_INFO") && environment["PATH_INFO"].length > 0)
+			if (environment.contains ("REQUEST_URI") && environment["REQUEST_URI"].length > 0)
+				this._uri.set_path (environment["REQUEST_URI"].split ("?", 2)[0]); // strip the query
+			else if (environment.contains ("PATH_INFO") && environment["PATH_INFO"].length > 0)
 				this._uri.set_path (environment["PATH_INFO"]);
 			else
 				this._uri.set_path ("/");
 
 			// raw HTTP query
-			this._uri.set_query (environment["QUERY_STRING"]);
+			if (environment.contains ("QUERY_STRING"))
+				this._uri.set_query (environment["QUERY_STRING"]);
 
 			// parsed HTTP query
 			if (environment.contains ("QUERY_STRING"))
