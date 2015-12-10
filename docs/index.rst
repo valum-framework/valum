@@ -28,6 +28,7 @@ development. If you think that this document could be improved,
     redirection-and-error
     route
     router
+    middlewares/index
     recipes/index
     module
     ctpl

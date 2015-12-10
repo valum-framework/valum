@@ -101,6 +101,11 @@ public int main (string[] args) {
 	Test.add_func ("/route/match/not_matching", test_route_match_not_matching);
 	Test.add_func ("/route/fire", test_route_match_not_matching);
 
+	Test.add_func ("/subdomain", test_subdomain);
+	Test.add_func ("/subdomain/joker", test_subdomain_joker);
+	Test.add_func ("/subdomain/strict", test_subdomain_strict);
+	Test.add_func ("/subdomain/extract", test_subdomain_extract);
+
 	Test.add_func ("/view/from_string", test_view_from_string);
 	Test.add_func ("/view/from_path", test_view_from_path);
 	Test.add_func ("/view/from_stream", test_view_from_stream);
