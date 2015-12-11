@@ -66,11 +66,21 @@ def configure(conf):
 
 def build(bld):
     bld.shlib(
-        packages     = ['glib-2.0', 'gio-2.0', 'gio-unix-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'fcgi'],
+        packages     = ['glib-2.0', 'gio-2.0', 'gio-unix-2.0', 'libsoup-2.4', 'fcgi'],
+        target       = 'vsgi',
+        gir          = 'VSGI-{}'.format(API_VERSION),
+        source       = ['src/vsgi.vala'] + bld.path.ant_glob('src/vsgi-*.vala'),
+        use          = ['GLIB', 'GIO', 'GIOUNIX', 'SOUP', 'FCGI'],
+        vapi_dirs    = ['vapi'],
+        header_path  = '${INCLUDEDIR}/vsgi',
+        install_path = '${LIBDIR}')
+
+    bld.shlib(
+        packages     = ['gee-0.8', 'ctpl'],
         target       = 'valum',
         gir          = 'Valum-{}'.format(API_VERSION),
-        source       = bld.path.ant_glob('src/*.vala'),
-        uselib       = ['GLIB', 'GIO', 'GIOUNIX', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
+        source       = ['src/valum.vala'] + bld.path.ant_glob('src/valum-*.vala'),
+        use          = ['vsgi', 'CTPL', 'GEE'],
         vapi_dirs    = ['vapi'],
         header_path  = '${INCLUDEDIR}/valum',
         install_path = '${LIBDIR}')

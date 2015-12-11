@@ -5,6 +5,14 @@ from waflib import Context
 # pkg-config file
 bld(
     features     = 'subst',
+    target       = 'vsgi.pc',
+    source       = ['vsgi.pc.in'],
+    install_path = '${LIBDIR}/pkgconfig',
+    VERSION      = Context.g_module.VERSION,
+    API_VERSION  = Context.g_module.API_VERSION)
+
+bld(
+    features     = 'subst',
     target       = 'valum.pc',
     source       = ['valum.pc.in'],
     install_path = '${LIBDIR}/pkgconfig',
