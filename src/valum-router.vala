@@ -335,7 +335,7 @@ namespace Valum {
 		 */
 		private Builder route (owned Route route) {
 			this.routes.push_tail (route);
-			return new Builder (this, routes.tail);
+			return new Builder (routes.tail);
 		}
 
 		/**
@@ -354,7 +354,7 @@ namespace Valum {
 				this.status_handlers[status] = new Queue<Route?> ();
 
 			this.status_handlers[status].push_tail ({null, () => { return true; }, (owned) cb});
-			return new Builder (this, status_handlers[status].tail);
+			return new Builder (status_handlers[status].tail);
 		}
 
 		/**
@@ -522,11 +522,6 @@ namespace Valum {
 		public class Builder : Object {
 
 			/**
-			 * @since 0.3
-			 */
-			public Router router { construct; get; }
-
-			/**
 			 * Node in the routes queue this is building upon.
 			 *
 			 * @since 0.3
@@ -536,8 +531,8 @@ namespace Valum {
 			/**
 			 * @since 0.3
 			 */
-			protected Builder (Router router, List<Route?> node) {
-				Object (router: router, node: node);
+			protected Builder (List<Route?> node) {
+				Object (node: node);
 			}
 
 			/**
@@ -545,15 +540,14 @@ namespace Valum {
 			 * its matcher and a provided handler in the {@link Valum.Router}
 			 * queue.
 			 *
-			 * @since 0.2
+			 * @since 0.3
 			 *
 			 * @param handler callback for the {@link Valum.Route} to be created.
 			 * @return a builder over the created {@link Valum.Route}
 			 */
 			public Builder then (owned HandlerCallback handler) {
-				router.routes.insert_after (node,
-				                            {node.data.method, node.data.match, (owned) handler});
-				return new Builder (router, node.next);
+				node.insert ({node.data.method, node.data.match, (owned) handler}, 1);
+				return new Builder (node.next);
 			}
 		}
 	}
