@@ -1,0 +1,3 @@
+#!/usr/bin/env python
+
+bld.install_files ('${DATADIR}/vala/vapi', bld.path.ant_glob('*.deps') + bld.path.ant_glob('*.vapi'))

@@ -101,5 +101,5 @@ def build(bld):
     if bld.env.ENABLE_EXAMPLES:
         bld.recurse(glob.glob('examples/*'))
 
-    bld.recurse(['data', 'docs', 'tests'])
+    bld.recurse(['data', 'docs', 'tests', 'vapi'])
 
