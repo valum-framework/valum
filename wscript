@@ -87,14 +87,15 @@ def build(bld):
 
     # static library for tests and examples
     bld.stlib(
-        packages     = ['glib-2.0', 'gio-2.0', 'gio-unix-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'fcgi'],
-        target       = 'valum',
-        source       = bld.path.ant_glob('src/*.vala'),
-        use          = ['GLIB', 'GIO', 'GIOUNIX', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
-        vapi_dirs    = ['vapi'],
-        vala_dir     = 'static',
+        packages        = ['glib-2.0', 'gio-2.0', 'gio-unix-2.0', 'libsoup-2.4', 'gee-0.8', 'ctpl', 'fcgi'],
+        target          = 'valum',
+        source          = bld.path.ant_glob('src/*.vala'),
+        use             = ['GLIB', 'GIO', 'GIOUNIX', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
+        vapi_dirs       = ['vapi'],
+        vala_dir        = 'static',
         install_binding = False,
-        install_path = None)
+        header_path     = None,
+        install_path    = None)
 
     # build examples
     if bld.env.ENABLE_EXAMPLES:
