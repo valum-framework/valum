@@ -93,6 +93,7 @@ def build(bld):
         use          = ['GLIB', 'GIO', 'GIOUNIX', 'CTPL', 'GEE', 'SOUP', 'FCGI', 'GCOV'],
         vapi_dirs    = ['vapi'],
         vala_dir     = 'static',
+        install_binding = False,
         install_path = None)
 
     # build examples
