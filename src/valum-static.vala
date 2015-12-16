@@ -34,6 +34,12 @@ namespace Valum.Static {
 	[Flags]
 	public enum ServeFlags {
 		/**
+		 * Splice the resource asynchronously in the response.
+		 *
+		 * @since 0.3
+		 */
+		ASYNC,
+		/**
 		 * Produce a 'ETag' header and raise {@link Valum.Redirection.NOT_MODIFIED}
 		 * if the resource has already been transmitte.
 		 *
@@ -45,7 +51,7 @@ namespace Valum.Static {
 		 *
 		 * @since 0.3
 		 */
-		DEFAULT = ETAG
+		DEFAULT = ASYNC | ETAG
 	}
 
 	/**
@@ -99,17 +105,21 @@ namespace Valum.Static {
 					warning ("could not infer content type of file '%s' with certainty", file.get_path ());
 
 				// transfer the file
-				res.body.splice_async.begin (file_read_stream,
-				                             OutputStreamSpliceFlags.CLOSE_SOURCE,
-				                             Priority.DEFAULT,
-				                             null,
-				                             (obj, result) => {
-					try {
-						res.body.splice_async.end (result);
-					} catch (IOError ioe) {
-						warning ("could not serve file '%s': %s", file.get_path (), ioe.message);
-					}
-				});
+				if (ServeFlags.ASYNC in serve_flags) {
+					res.body.splice_async.begin (file_read_stream,
+												 OutputStreamSpliceFlags.CLOSE_SOURCE,
+												 Priority.DEFAULT,
+												 null,
+												 (obj, result) => {
+						try {
+							res.body.splice_async.end (result);
+						} catch (IOError ioe) {
+							warning ("could not serve file '%s': %s", file.get_path (), ioe.message);
+						}
+					});
+				} else {
+					res.body.splice (file_read_stream, OutputStreamSpliceFlags.CLOSE_SOURCE);
+				}
 			} catch (FileError.ACCES fe) {
 				throw new ClientError.FORBIDDEN ("You are cannot access this resource.");
 			} catch (FileError.NOENT fe) {
@@ -183,17 +193,21 @@ namespace Valum.Static {
 				resource.open_stream (path, ResourceLookupFlags.NONE);
 
 			// transfer the file
-			res.body.splice_async.begin (file,
-			                             OutputStreamSpliceFlags.CLOSE_SOURCE,
-			                             Priority.DEFAULT,
-			                             null,
-			                             (obj, result) => {
-				try {
-					res.body.splice_async.end (result);
-				} catch (IOError ioe) {
-					warning ("could not serve resource '%s': %s", path, ioe.message);
-				}
-			});
+			if (ServeFlags.ASYNC in serve_flags) {
+				res.body.splice_async.begin (file,
+											 OutputStreamSpliceFlags.CLOSE_SOURCE,
+											 Priority.DEFAULT,
+											 null,
+											 (obj, result) => {
+					try {
+						res.body.splice_async.end (result);
+					} catch (IOError ioe) {
+						warning ("could not serve resource '%s': %s", path, ioe.message);
+					}
+				});
+			} else {
+				res.body.splice (file, OutputStreamSpliceFlags.CLOSE_SOURCE);
+			}
 		};
 	}
 }
