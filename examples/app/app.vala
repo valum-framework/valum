@@ -240,7 +240,7 @@ app.get ("ctpl/<foo>/<bar>", (req, res) => {
 });
 
 // serve static resource using a path route parameter
-app.get ("static/<any:path>", Static.serve_from_resource (null, "/static/"));
+app.get ("static/<any:path>", Static.serve_from_resources ("/static/"));
 
 app.status (Soup.Status.NOT_FOUND, (req, res, next, stack) => {
 	var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));

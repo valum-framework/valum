@@ -61,6 +61,8 @@ namespace Valum.Static {
 	 * If the file is not found, the request is delegated to the next
 	 * middleware.
 	 *
+	 * If the file is not readable, a '403 Forbidden' is raised.
+	 *
 	 * @since 0.3
 	 *
 	 * @param root        path from which resources are resolved
@@ -105,9 +107,11 @@ namespace Valum.Static {
 							try {
 								res.body.splice_async.end (result);
 							} catch (IOError ioe) {
-								warning ("could not serve file '%s'", file.get_path ());
+								warning ("could not serve file '%s': %s", file.get_path (), ioe.message);
 							}
 				});
+			} catch (FileError.ACCES fe) {
+				throw new ClientError.FORBIDDEN ("You are cannot access this resource.");
 			} catch (FileError.NOENT fe) {
 				next (req, res);
 			}
@@ -173,15 +177,15 @@ namespace Valum.Static {
 
 			// transfer the file
 			res.body.splice_async.begin (file,
-					OutputStreamSpliceFlags.CLOSE_SOURCE | OutputStreamSpliceFlags.CLOSE_TARGET,
-					Priority.DEFAULT,
-					null,
-					(obj, result) => {
-						try {
-							res.body.splice_async.end (result);
-						} catch (IOError ioe) {
-							warning ("could not serve static resource '%s'", path);
-						}
+			                             OutputStreamSpliceFlags.CLOSE_SOURCE,
+			                             Priority.DEFAULT,
+			                             null,
+			                             (obj, result) => {
+				try {
+					res.body.splice_async.end (result);
+				} catch (IOError ioe) {
+					warning ("could not serve resource '%s': %s", path, ioe.message);
+				}
 			});
 		};
 	}
