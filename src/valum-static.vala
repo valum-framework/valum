@@ -147,9 +147,15 @@ namespace Valum.Static {
 		return (req, res, next, stack) => {
 			var path = "%s%s".printf (prefix, stack.pop_tail ().get_string ());
 
-			var lookup = resource == null ?
-				resources_lookup_data (path, ResourceLookupFlags.NONE) :
-				resource.lookup_data (path, ResourceLookupFlags.NONE);
+			Bytes lookup;
+			try {
+				lookup = resource == null ?
+					resources_lookup_data (path, ResourceLookupFlags.NONE) :
+					resource.lookup_data (path, ResourceLookupFlags.NONE);
+			} catch (Error err) {
+				next (req, res);
+				return;
+			}
 
 			if (ServeFlags.ETAG in serve_flags) {
 				var etag = path in etag_cache ?
