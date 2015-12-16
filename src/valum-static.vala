@@ -100,15 +100,15 @@ namespace Valum.Static {
 
 				// transfer the file
 				res.body.splice_async.begin (file_read_stream,
-						OutputStreamSpliceFlags.CLOSE_SOURCE | OutputStreamSpliceFlags.CLOSE_TARGET,
-						Priority.DEFAULT,
-						null,
-				        (obj, result) => {
-							try {
-								res.body.splice_async.end (result);
-							} catch (IOError ioe) {
-								warning ("could not serve file '%s': %s", file.get_path (), ioe.message);
-							}
+				                             OutputStreamSpliceFlags.CLOSE_SOURCE,
+				                             Priority.DEFAULT,
+				                             null,
+				                             (obj, result) => {
+					try {
+						res.body.splice_async.end (result);
+					} catch (IOError ioe) {
+						warning ("could not serve file '%s': %s", file.get_path (), ioe.message);
+					}
 				});
 			} catch (FileError.ACCES fe) {
 				throw new ClientError.FORBIDDEN ("You are cannot access this resource.");
@@ -119,7 +119,8 @@ namespace Valum.Static {
 	}
 
 	/**
-	 * Serve files from a {@link GLib.Resource} bundle.
+	 * Serve files from the global resources or a provided {@link GLib.Resource}
+	 * bundle.
 	 *
 	 * The 'ETag' header is obtained from a SHA1 checksum.
 	 *
@@ -131,15 +132,15 @@ namespace Valum.Static {
 	 *
 	 * @since 0.3
 	 *
-	 * @param resourcea   resource bundle to serve or the global one if null
 	 * @param prefix      prefix from which resources are resolved in the
 	 *                    resource bundle; a valid prefix begin and start with a
 	 *                    '/' character
+	 * @param resourcea   resource bundle to serve or the global one if null
 	 * @param serve_flags
 	 */
-	public HandlerCallback serve_from_resource (Resource? resource = null,
-	                                            string prefix = "/",
-												ServeFlags serve_flags = ServeFlags.DEFAULT) {
+	public HandlerCallback serve_from_resources (string prefix = "/",
+	                                             Resource? resource = null,
+	                                             ServeFlags serve_flags = ServeFlags.DEFAULT) {
 		// cache for already computed 'ETag' values
 		var etag_cache = new HashTable <string, string> (str_hash, str_equal);
 
