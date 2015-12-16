@@ -34,6 +34,10 @@ namespace Valum.Static {
 	[Flags]
 	public enum ServeFlags {
 		/**
+		 * @since 0.3
+		 */
+		NONE,
+		/**
 		 * Splice the resource asynchronously in the response.
 		 *
 		 * @since 0.3
@@ -45,13 +49,7 @@ namespace Valum.Static {
 		 *
 		 * @since 0.3
 		 */
-		ETAG,
-		/**
-		 * Sane defaults for serving files and resources.
-		 *
-		 * @since 0.3
-		 */
-		DEFAULT = ASYNC | ETAG
+		ETAG
 	}
 
 	/**
@@ -74,7 +72,7 @@ namespace Valum.Static {
 	 * @param root        path from which resources are resolved
 	 * @param serve_flags
 	 */
-	public HandlerCallback serve_from_path (File root, ServeFlags serve_flags = ServeFlags.DEFAULT) {
+	public HandlerCallback serve_from_path (File root, ServeFlags serve_flags) {
 		return (req, res, next, stack) => {
 			var file = root.resolve_relative_path (stack.pop_tail ().get_string ());
 
@@ -145,12 +143,12 @@ namespace Valum.Static {
 	 * @param prefix      prefix from which resources are resolved in the
 	 *                    resource bundle; a valid prefix begin and start with a
 	 *                    '/' character
-	 * @param resourcea   resource bundle to serve or the global one if null
 	 * @param serve_flags
+	 * @param resourcea   resource bundle to serve or the global one if null
 	 */
-	public HandlerCallback serve_from_resources (string prefix = "/",
-	                                             Resource? resource = null,
-	                                             ServeFlags serve_flags = ServeFlags.DEFAULT) {
+	public HandlerCallback serve_from_resources (string prefix,
+	                                             ServeFlags serve_flags,
+	                                             Resource? resource = null) {
 		// cache for already computed 'ETag' values
 		var etag_cache = new HashTable <string, string> (str_hash, str_equal);
 
