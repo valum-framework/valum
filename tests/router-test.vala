@@ -721,7 +721,7 @@ public static void test_router_status_propagates_error_message () {
 	router.status (404, (req, res, next, stack) => {
 		var message = stack.pop_tail ();
 		res.status = 418;
-		assert ("The request URI http://localhost/ was not found." == message.get_string ());
+		assert ("The request URI / was not found." == message.get_string ());
 	});
 
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));

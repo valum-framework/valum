@@ -274,7 +274,7 @@ namespace Valum {
 						if (current.next != null)
 							if (perform_routing (current.next, req, res, stack))
 								return;
-						throw new ClientError.NOT_FOUND ("The request URI %s was not found.".printf (req.uri.to_string (false)));
+						throw new ClientError.NOT_FOUND ("The request URI %s was not found.", req.uri.to_string (true));
 					}, stack);
 					return true;
 				}
@@ -412,7 +412,7 @@ namespace Valum {
 				if (allowed.length > 0)
 					throw new ClientError.METHOD_NOT_ALLOWED (string.joinv (", ", allowed));
 
-				throw new ClientError.NOT_FOUND ("The request URI %s was not found.".printf (req.uri.to_string (false)));
+				throw new ClientError.NOT_FOUND ("The request URI %s was not found.", req.uri.to_string (true));
 			});
 		}
 	}
