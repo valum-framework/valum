@@ -56,7 +56,14 @@ namespace Valum.Static {
 		 *
 		 * @since 0.3
 		 */
-		LAST_MODIFIED
+		LAST_MODIFIED,
+		/**
+		 * Indicate that the delivered resource can be cached by anyone using
+		 * the 'Cache-Control: public' header.
+		 *
+		 * @since 0.3
+		 */
+		PUBLIC
 	}
 
 	/**
@@ -82,6 +89,9 @@ namespace Valum.Static {
 	public HandlerCallback serve_from_path (File root, ServeFlags serve_flags) {
 		return (req, res, next, stack) => {
 			var file = root.resolve_relative_path (stack.pop_tail ().get_string ());
+
+			if (ServeFlags.PUBLIC in serve_flags)
+				res.headers.append ("Cache-Control", "public");
 
 			try {
 				var cached = false;
@@ -189,6 +199,9 @@ namespace Valum.Static {
 				next (req, res);
 				return;
 			}
+
+			if (ServeFlags.PUBLIC in serve_flags)
+				res.headers.append ("Cache-Control", "public");
 
 			if (ServeFlags.ETAG in serve_flags) {
 				var etag = path in etag_cache ?
