@@ -370,18 +370,19 @@ namespace Valum {
 		}
 
 		/**
-		 * {@inheritDoc}
+		 * Perform the routing of the request by calling {@link Valum.Router.invoke}.
 		 *
-		 * The response is initialized with sane default such as 200 status
-		 * code, 'text/html' content type, 'chunked' transfer encoding and
-		 * request cookies.
+		 * If nothing matches the request, look for alternate HTTP methods and
+		 * raise a {@link Valum.Status.ClientError.METHOD_NOT_ALLOWED}, otherwise
+		 * raise a {@link Valum.Status.ClientError.NOT_FOUND} exception.
+		 *
+		 * The response is initialized with 'chunked' transfer encoding since
+		 * most processing are generally based on stream.
+		 *
+		 * @since 0.1
 		 */
 		public void handle (Request req, Response res) {
 			// sane initialization
-			res.status = Soup.Status.OK;
-			var @params = new HashTable<string, string> (str_hash, str_equal);
-			@params["charset"] = "utf-8";
-			res.headers.set_content_type ("text/html", @params);
 			if (req.http_version == Soup.HTTPVersion.@1_1)
 				res.headers.set_encoding (Soup.Encoding.CHUNKED);
 

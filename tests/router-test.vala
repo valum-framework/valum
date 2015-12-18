@@ -48,10 +48,7 @@ public static void test_router_handle () {
 
 	HashTable<string, string>? @params;
 	assert (418 == response.status);
-	assert ("text/html" == response.headers.get_content_type (out @params));
-	assert (null != @params);
-	assert ("charset" in @params);
-	assert ("utf-8" == @params["charset"]);
+	assert (null == response.headers.get_content_type (out @params));
 }
 
 /**

@@ -308,6 +308,8 @@ namespace VSGI.Soup {
 
 			// register a catch-all handler
 			this.server.add_handler (null, (server, msg, path, query, client) => {
+				msg.set_status (global::Soup.Status.OK);
+
 #if SOUP_2_50
 				var connection = client.steal_connection ();
 				msg.response_headers.replace ("Connection", "close");

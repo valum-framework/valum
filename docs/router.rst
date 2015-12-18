@@ -5,22 +5,17 @@ Router is the core component of Valum. It dispatches request to the right
 handler and processes certain error conditions described in
 :doc:`redirection-and-error`.
 
-It initializes the :doc:`vsgi/response` with sane defaults:
+It initializes the :doc:`vsgi/response` with chunked encoding if the requester
+uses HTTP/1.1 before dispatching it through the attached routes.
 
- - status code to ``200 OK``
- - ``Content-Type: text/html; charset=utf-8``
- - ``Transfer-Encoding: chunked`` if the requester uses HTTP/1.1
-
-.. warning::
-
-    If you intend to serve a different content type or use a different
-    charset, you must override the ``Content-Type`` header using
-    `Soup.MessageHeaders.set_content_type`_.
-
-It can be set appropriately in a catch-all handling middleware. They are
-described later in this document.
+The ``Content-Type`` header should be set explicitly with
+`Soup.MessageHeaders.set_content_type`_ based on the content transmitted to the
+user agent.
 
 .. _Soup.MessageHeaders.set_content_type: http://valadoc.org/#!api=libsoup-2.4/Soup.MessageHeaders.set_content_type
+
+It can be performed automatically in a catch-all handling middleware. They are
+described later in this document.
 
 .. code:: vala
 

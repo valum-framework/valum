@@ -22,6 +22,9 @@ var app = new Router ();
 
 app.all (null, (req, res, next) => {
 	res.headers.append ("Server", "Valum/1.0");
+	HashTable<string, string>? @params = new HashTable<string, string> (str_hash, str_equal);
+	@params["charset"] = "utf-8";
+	res.headers.set_content_type ("text/html", @params);
 	next (req, res);
 });
 
