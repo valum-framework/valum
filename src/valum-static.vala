@@ -90,37 +90,32 @@ namespace Valum.Static {
 		return (req, res, next, stack) => {
 			var file = root.resolve_relative_path (stack.pop_tail ().get_string ());
 
-			if (ServeFlags.PUBLIC in serve_flags)
-				res.headers.append ("Cache-Control", "public");
-
 			try {
-				var cached = false;
-
 				if (ServeFlags.ETAG in serve_flags) {
 					var etag = "\"%s\"".printf (file.query_info (FileAttribute.ETAG_VALUE,
 					                                             FileQueryInfoFlags.NONE).get_etag ());
 
-					res.headers.replace ("ETag", etag);
+					if (etag == req.headers.get_one ("If-None-Match"))
+						throw new Redirection.NOT_MODIFIED ("");
 
-					cached |= (etag == req.headers.get_one ("If-None-Match"));
+					res.headers.replace ("ETag", etag);
 				}
 
-				if (ServeFlags.LAST_MODIFIED in serve_flags) {
+				else if (ServeFlags.LAST_MODIFIED in serve_flags) {
 					var last_modified = file.query_info (FileAttribute.TIME_MODIFIED,
 					                                     FileQueryInfoFlags.NONE).get_modification_time ();
 
-					res.headers.replace ("Last-Modified",
-					                     new Soup.Date.from_time_t (last_modified.tv_sec).to_string (Soup.DateFormat.HTTP));
-
 					var if_modified_since = req.headers.get_one ("If-Modified-Since");
 
-					cached |=
-						if_modified_since != null &&
-						new Soup.Date.from_string (if_modified_since).to_timeval ().tv_sec >= last_modified.tv_sec;
+					if (if_modified_since != null && new Soup.Date.from_string (if_modified_since).to_timeval ().tv_sec >= last_modified.tv_sec)
+						throw new Redirection.NOT_MODIFIED ("");
+
+					res.headers.replace ("Last-Modified",
+					                     new Soup.Date.from_time_t (last_modified.tv_sec).to_string (Soup.DateFormat.HTTP));
 				}
 
-				if (cached)
-					throw new Redirection.NOT_MODIFIED ("");
+				if (ServeFlags.PUBLIC in serve_flags)
+					res.headers.append ("Cache-Control", "public");
 
 				var file_read_stream = file.read ();
 
@@ -200,9 +195,6 @@ namespace Valum.Static {
 				return;
 			}
 
-			if (ServeFlags.PUBLIC in serve_flags)
-				res.headers.append ("Cache-Control", "public");
-
 			if (ServeFlags.ETAG in serve_flags) {
 				var etag = path in etag_cache ?
 					etag_cache[path] :
@@ -210,11 +202,14 @@ namespace Valum.Static {
 
 				etag_cache[path] = etag;
 
-				res.headers.replace ("ETag", etag);
-
 				if (etag == req.headers.get_one ("If-None-Match"))
 					throw new Redirection.NOT_MODIFIED ("");
+
+				res.headers.replace ("ETag", etag);
 			}
+
+			if (ServeFlags.PUBLIC in serve_flags)
+				res.headers.append ("Cache-Control", "public");
 
 			// set the content-type based on a good guess
 			bool uncertain;

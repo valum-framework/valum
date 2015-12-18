@@ -334,6 +334,9 @@ namespace Valum {
 			} catch (Success.PARTIAL_CONTENT s) {
 				res.status = s.code;
 				res.headers.append ("Range", s.message);
+			} catch (Redirection.NOT_MODIFIED r) {
+				res.status = r.code;
+				res.headers.set_encoding (global::Soup.Encoding.NONE);
 			} catch (Redirection r) {
 				res.status = r.code;
 				res.headers.append ("Location", r.message);
