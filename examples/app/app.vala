@@ -16,6 +16,7 @@
  */
 
 using Valum;
+using Valum.ServerSentEvents;
 using VSGI.Soup;
 
 var app = new Router ();
@@ -273,6 +274,14 @@ app.get ("static/<path:resource>.<any:type>", (req, res) => {
 		throw new ClientError.NOT_FOUND (e.message);
 	}
 });
+
+app.get ("server-sent-events", stream_events ((req, send) => {
+	send (null, "now!");
+	GLib.Timeout.add_seconds (5, () => {
+		send (null, "later!");
+		return false;
+	});
+}));
 
 app.status (Soup.Status.NOT_FOUND, (req, res, next, stack) => {
 	var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));
