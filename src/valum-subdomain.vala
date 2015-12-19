@@ -17,12 +17,7 @@
 
 using GLib;
 
-/**
- * Subdomain utilities.
- *
- * @since 0.3
- */
-namespace Valum.Subdomain {
+namespace Valum {
 
 	/**
 	 * Extract subdomains from a domain name excluding the top and second level
@@ -36,12 +31,28 @@ namespace Valum.Subdomain {
 	 * @return a list of subdomains in their left-to-right order of appearance
 	 *         in the domain excluding the two top-most levels
 	 */
-	public string[] extract (string domain, uint skip = 2) {
+	public string[] extract_subdomains (string domain, uint skip = 2) {
 		var labels = domain.split (".");
 		if (labels.length <= skip)
 			return {};
 		return labels[0:labels.length - skip];
 	}
+
+	/**
+	 * Flags for {@link Valum.subdomain}
+	 */
+	[Flags]
+	public enum SubdomainFlags {
+		NONE,
+		/**
+		 * Strictly match the subdomains to have the exactly same amount of
+		 * labels.
+		 *
+		 * @since 0.3
+		 */
+		STRICT
+	}
+
 
 	/**
 	 * Produce a matching middleware that accepts request which subdomain is
@@ -55,16 +66,16 @@ namespace Valum.Subdomain {
 	 * @since 0.3
 	 *
 	 * @param expected_subdomain expected subdomain pattern
-	 * @param strict             strictly match the subdomain by refusing sub-subdomains
-	 * @param skip               see {@link Valum.Subdomain.extract}
+	 * @param flags              see {@link Valum.SubdomainFlags}
+	 * @param skip               see {@link Valum.extract_subdomains}
 	 */
-	public MatcherCallback subdomain (string expected_subdomain, bool strict = false, uint skip = 2) {
+	public MatcherCallback subdomain (string expected_subdomain, SubdomainFlags flags, uint skip = 2) {
 		return (req) => {
 			var expected_labels = expected_subdomain.split (".");
-			var labels          = extract (req.uri.host, skip);
+			var labels          = extract_subdomains (req.uri.host, skip);
 			if (expected_labels.length > labels.length)
 				return false;
-			if (strict && expected_labels.length != labels.length)
+			if (SubdomainFlags.STRICT in flags && expected_labels.length != labels.length)
 				return false;
 			for (var i = 1; i <= expected_labels.length; i++)
 				if (expected_labels[expected_labels.length - i] != "*" &&

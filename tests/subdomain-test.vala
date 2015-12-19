@@ -16,22 +16,22 @@
  */
 
 using GLib;
-using Valum.Subdomain;
+using Valum;
 using VSGI.Test;
 
 /**
  * @since 0.3
  */
 public void test_subdomain () {
-	assert (!subdomain ("api") (new Request.with_uri (new Soup.URI ("http://127.0.0.1/")), null));
+	assert (!subdomain ("api", SubdomainFlags.NONE) (new Request.with_uri (new Soup.URI ("http://127.0.0.1/")), null));
 }
 
 /**
  * @since 0.3
  */
 public void test_subdomain_joker () {
-	assert (subdomain("*") (new Request.with_uri (new Soup.URI ("http://api.example.com/")), null));
-	assert (!subdomain("*") (new Request.with_uri (new Soup.URI ("http://example.com/")), null));
+	assert (subdomain("*", SubdomainFlags.NONE) (new Request.with_uri (new Soup.URI ("http://api.example.com/")), null));
+	assert (!subdomain("*", SubdomainFlags.NONE) (new Request.with_uri (new Soup.URI ("http://example.com/")), null));
 }
 
 /**
@@ -40,26 +40,26 @@ public void test_subdomain_joker () {
 public void test_subdomain_strict () {
 	var req = new Request.with_uri (new Soup.URI ("http://dev.api.example.com/"));
 
-	assert (subdomain ("api") (req, null));
-	assert (subdomain ("dev.api") (req, null));
-	assert (!subdomain ("api", true) (req, null));
-	assert (subdomain ("dev.api.example.com", true, 0) (req, null));
+	assert (subdomain ("api", SubdomainFlags.NONE) (req, null));
+	assert (subdomain ("dev.api", SubdomainFlags.NONE) (req, null));
+	assert (!subdomain ("api", SubdomainFlags.STRICT) (req, null));
+	assert (subdomain ("dev.api.example.com", SubdomainFlags.STRICT, 0) (req, null));
 }
 
 /**
  * @since 0.3
  */
 public void test_subdomain_extract () {
-	assert (0 == extract ("com").length);
-	assert (0 == extract ("example.com").length);
-	assert (2 == extract ("example.com", 0).length); // keep all the labels
-	assert (0 == extract ("example.com", 3).length); // skip more labels than provided
+	assert (0 == extract_subdomains ("com").length);
+	assert (0 == extract_subdomains ("example.com").length);
+	assert (2 == extract_subdomains ("example.com", 0).length); // keep all the labels
+	assert (0 == extract_subdomains ("example.com", 3).length); // skip more labels than provided
 
-	var labels = extract ("api.example.com");
+	var labels = extract_subdomains ("api.example.com");
 	assert (1 == labels.length);
 	assert ("api" == labels[0]);
 
-	labels = extract ("v1.api.example.com");
+	labels = extract_subdomains ("v1.api.example.com");
 	assert (2 == labels.length);
 	assert ("v1" == labels[0]);
 	assert ("api" == labels[1]);
