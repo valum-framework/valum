@@ -6,8 +6,8 @@ stream notifications over a persistent connection.
 
 .. _Server-Sent Events: http://www.w3.org/TR/eventsource/
 
-The ``ServerSentEvents.context`` function create a handling middleware and
-provide a ``send`` callback to transmit the actual events.
+The ``ServerSentEvents.stream_events`` function creates a handling middleware
+and provide a ``send`` callback to transmit the actual events.
 
 .. code-block:: vala
 
@@ -22,11 +22,15 @@ provide a ``send`` callback to transmit the actual events.
 
     var eventSource = new EventSource ("/sse");
 
-    eventSource.onmessage = function(data) {
-        console.log ("some data"); // displays 'some data'
+    eventSource.onmessage = function(message) {
+        console.log (message.data); // displays 'some data'
     };
 
-Multi-line messages are handled correctly by sending multiple ``data:`` chunks.
+Multi-line messages
+-------------------
+
+Multi-line messages are handled correctly by splitting the data into into
+multiple ``data:`` chunks.
 
 .. code-block:: vala
 
