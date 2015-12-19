@@ -24,6 +24,8 @@ public int main (string[] args) {
 	Test.init (ref args);
 	Test.bug_base ("https://github.com/valum-framework/valum/issues/%s");
 
+	Test.add_func ("/negociate", test_negociate);
+
 	Test.add_func ("/router", test_router);
 	Test.add_func ("/router/handle", test_router_handle);
 	Test.add_func ("/router/custom_method", test_router_custom_method);
