@@ -3,7 +3,7 @@
 import glob
 
 APPNAME='valum'
-VERSION='0.2.4'
+VERSION='0.2.5'
 API_VERSION='0.2'
 
 def options(opt):
