@@ -190,7 +190,7 @@ namespace VSGI.FastCGI {
 		 *
 		 * Initialize FastCGI-specific environment variables.
 		 */
-		public Request (IOStream connection, HashTable<string, string> environment) {
+		public Request (IOStream connection, string[] environment) {
 			base (connection, environment);
 		}
 	}
@@ -332,16 +332,9 @@ namespace VSGI.FastCGI {
 					return false;
 				}
 
-				var environment = new HashTable<string, string> (str_hash, str_equal);
-
-				foreach (var e in request.environment.get_all ()) {
-					var parts = e.split ("=", 2);
-					environment[parts[0]] = parts.length == 2 ? parts[1] : "";
-				}
-
 				var connection = new Connection (this, request);
 
-				var req = new Request (connection, environment);
+				var req = new Request (connection, request.environment.get_all ());
 				var res = new Response (req);
 
 				this.handle (req, res);

@@ -21,21 +21,20 @@ using VSGI.CGI;
  * @since 0.2
  */
 public static void test_vsgi_cgi_request () {
-	var environment   = new HashTable<string, string> (str_hash, str_equal);
-
-	environment["PATH_INFO"]      = "/";
-	environment["QUERY_STRING"]   = "a=b";
-	environment["REMOTE_USER"]    = "root";
-	environment["REQUEST_METHOD"] = "GET";
-	environment["SERVER_NAME"]    = "0.0.0.0";
-	environment["SERVER_PORT"]    = "3003";
-	environment["HTTP_HOST"]      = "example.com";
+	string[] environment = {
+		"PATH_INFO=/",
+		"QUERY_STRING=a=b",
+		"REMOTE_USER=root",
+		"REQUEST_METHOD=GET",
+		"SERVER_NAME=0.0.0.0",
+		"SERVER_PORT=3003",
+		"HTTP_HOST=example.com"
+	};
 
 	var connection = new VSGI.Test.Connection ();
 	var request    = new Request (connection, environment);
 
 	assert (Soup.HTTPVersion.@1_0 == request.http_version);
-	assert (environment == request.environment);
 	assert ("GET" == request.method);
 	assert ("root" == request.uri.get_user ());
 	assert ("0.0.0.0" == request.uri.get_host ());
@@ -53,7 +52,7 @@ public static void test_vsgi_cgi_request () {
  * @since 0.2
  */
 public static void test_vsgi_cgi_request_missing_path_info () {
-	var environment = new HashTable<string, string> (str_hash, str_equal);
+	string[] environment = {};
 	var connection  = new VSGI.Test.Connection ();
 	var request     = new Request (connection, environment);
 
@@ -65,9 +64,7 @@ public static void test_vsgi_cgi_request_missing_path_info () {
  */
 public void test_vsgi_cgi_request_http_1_1 () {
 	var connection  = new VSGI.Test.Connection ();
-	var environment = new HashTable<string, string> (str_hash, str_equal);
-
-	environment["SERVER_PROTOCOL"] = "HTTP/1.1";
+	string[] environment = {"SERVER_PROTOCOL=HTTP/1.1"};
 
 	var request = new Request (connection, environment);
 
@@ -78,10 +75,8 @@ public void test_vsgi_cgi_request_http_1_1 () {
  * @since 0.2.4
  */
 public void test_vsgi_cgi_request_https_detection () {
-	var connection = new VSGI.Test.Connection ();
-	var environment = new HashTable<string, string> (str_hash, str_equal);
-
-	environment["PATH_TRANSLATED"] = "https://example.com:80/";
+	var connection       = new VSGI.Test.Connection ();
+	string[] environment = {"PATH_TRANSLATED=https://example.com:80/"};
 
 	var request = new Request (connection, environment);
 
@@ -92,7 +87,7 @@ public void test_vsgi_cgi_request_https_detection () {
  * @since 0.2
  */
 public void test_vsgi_cgi_response () {
-	var environment = new HashTable<string, string> (str_hash, str_equal);
+	string[] environment = {};
 	var connection  = new VSGI.Test.Connection ();
 	var request     = new Request (connection, environment);
 	var response    = new Response (request);

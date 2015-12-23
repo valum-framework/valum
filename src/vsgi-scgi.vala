@@ -114,7 +114,7 @@ namespace VSGI.SCGI {
 		 *
 		 * @param reader stream holding the request body
 		 */
-		public Request (IOStream connection, SCGIInputStream reader, HashTable<string, string> environment) {
+		public Request (IOStream connection, SCGIInputStream reader, string[] environment) {
 			base (connection, environment);
 			_body = reader;
 		}
@@ -196,8 +196,8 @@ namespace VSGI.SCGI {
 
 			listener.incoming.connect ((connection) => {
 				// consume the environment from the stream
-				var environment = new HashTable<string, string> (str_hash, str_equal);
-				var reader      = new DataInputStream (connection.input_stream);
+				string[] environment = {};
+				var reader           = new DataInputStream (connection.input_stream);
 
 				try {
 					// buffer approximately the netstring (~460B)
@@ -232,7 +232,7 @@ namespace VSGI.SCGI {
 
 						read += key_length + 1 + value_length + 1;
 
-						environment[key] = @value;
+						environment = Environ.set_variable (environment, key, @value);
 					}
 
 					assert (read == size);
@@ -243,7 +243,7 @@ namespace VSGI.SCGI {
 						return true;
 					}
 
-					var content_length = int64.parse (environment["CONTENT_LENGTH"]);
+					var content_length = int64.parse (Environ.get_variable (environment, "CONTENT_LENGTH"));
 
 					// buffer the rest of the body
 					if (content_length > 0) {

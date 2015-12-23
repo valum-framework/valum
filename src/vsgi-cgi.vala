@@ -32,11 +32,11 @@ namespace VSGI.CGI {
 	public class Request : VSGI.Request {
 
 		/**
-		 * CGI environment variables.
+		 * CGI environment variables encoded in 'NAME=VALUE'.
 		 *
 		 * @since 0.2
 		 */
-		public HashTable<string, string> environment { construct; get; }
+		public string[] environment { construct; get; }
 
 		private URI _uri                          = new URI (null);
 		private HashTable<string, string>? _query = null;
@@ -44,13 +44,14 @@ namespace VSGI.CGI {
 
 		public override HTTPVersion http_version {
 			get {
-				return environment["SERVER_PROTOCOL"] == "HTTP/1.1" ?  HTTPVersion.@1_1 : HTTPVersion.@1_0;
+				return Environ.get_variable (environment, "SERVER_PROTOCOL") == "HTTP/1.1" ?  HTTPVersion.@1_1 :
+				                                                                              HTTPVersion.@1_0;
 			}
 		}
 
 		public override string method {
 			owned get {
-				return this.environment["REQUEST_METHOD"];
+				return Environ.get_variable (environment, "REQUEST_METHOD") ?? "GET";
 			}
 		}
 
@@ -78,45 +79,47 @@ namespace VSGI.CGI {
 		 *
 		 * @param environment environment variables
 		 */
-		public Request (IOStream connection, HashTable<string, string> environment) {
+		public Request (IOStream connection, string[] environment) {
 			Object (connection: connection, environment: environment);
 
-			if (environment.contains ("HTTPS") && environment["HTTPS"].length > 0 ||
-			    environment.contains ("PATH_TRANSLATED") && environment["PATH_TRANSLATED"].has_prefix ("https://"))
+			var https           = Environ.get_variable (environment, "HTTPS");
+			var path_translated = Environ.get_variable (environment, "PATH_TRANSLATED");
+			if (https != null && https.length > 0 || path_translated != null && path_translated.has_prefix ("https://"))
 				this._uri.set_scheme ("https");
 			else
 				this._uri.set_scheme ("http");
 
-			if (environment.contains ("REMOTE_USER"))
-				this._uri.set_user (environment["REMOTE_USER"]);
+			this._uri.set_user (Environ.get_variable (environment, "REMOTE_USER"));
+			this._uri.set_host (Environ.get_variable (environment, "SERVER_NAME"));
 
-			if (environment.contains ("SERVER_NAME"))
-				this._uri.set_host (environment["SERVER_NAME"]);
+			var port = Environ.get_variable (environment, "SERVER_PORT");
+			if (port != null)
+				this._uri.set_port (int.parse (port));
 
-			if (environment.contains ("SERVER_PORT"))
-				this._uri.set_port (int.parse (environment["SERVER_PORT"]));
-
-			if (environment.contains ("REQUEST_URI") && environment["REQUEST_URI"].length > 0)
-				this._uri.set_path (environment["REQUEST_URI"].split ("?", 2)[0]); // strip the query
-			else if (environment.contains ("PATH_INFO") && environment["PATH_INFO"].length > 0)
-				this._uri.set_path (environment["PATH_INFO"]);
+			var request_uri = Environ.get_variable (environment, "REQUEST_URI");
+			var path_info   = Environ.get_variable (environment, "PATH_INFO");
+			if (request_uri != null && request_uri.length > 0)
+				this._uri.set_path (request_uri.split ("?", 2)[0]); // strip the query
+			else if (path_info != null && path_info.length > 0)
+				this._uri.set_path (path_info);
 			else
 				this._uri.set_path ("/");
 
 			// raw HTTP query
-			if (environment.contains ("QUERY_STRING"))
-				this._uri.set_query (environment["QUERY_STRING"]);
+			this._uri.set_query (Environ.get_variable (environment, "QUERY_STRING"));
 
 			// parsed HTTP query
-			if (environment.contains ("QUERY_STRING"))
-				this._query = Form.decode (environment["QUERY_STRING"]);
+			var query_string = Environ.get_variable (environment, "QUERY_STRING");
+			if (query_string != null)
+				this._query = Form.decode (query_string);
 
 			// extract HTTP headers, they are prefixed by 'HTTP_' in environment variables
-			environment.foreach ((name, @value) => {
-				if (name.has_prefix ("HTTP_")) {
-					this.headers.append (name.substring (5).replace ("_", "-").casefold (), @value);
+			foreach (var variable in environment) {
+				var parts = variable.split ("=", 2);
+				if (parts[0].has_prefix ("HTTP_")) {
+					this.headers.append (parts[0].substring (5).replace ("_", "-").casefold (), parts[1]);
 				}
-			});
+			}
 		}
 	}
 
@@ -168,13 +171,6 @@ namespace VSGI.CGI {
 		}
 
 		public override int command_line (ApplicationCommandLine command_line) {
-			var environment = new HashTable<string, string> (str_hash, str_equal);
-
-			foreach (var variable in command_line.get_environ ()) {
-				var parts             = variable.split ("=", 2);
-				environment[parts[0]] = parts.length == 2 ? parts[1] : "";
-			}
-
 			var connection = new Connection (this,
 #if GIO_2_34
 			                                 command_line.get_stdin (),
@@ -183,7 +179,7 @@ namespace VSGI.CGI {
 #endif
 			                                 new UnixOutputStream (stdout.fileno (), true));
 
-			var req = new Request (connection, environment);
+			var req = new Request (connection, command_line.get_environ ());
 			var res = new Response (req);
 
 			// handle a single request and quit
