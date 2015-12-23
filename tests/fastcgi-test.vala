@@ -69,7 +69,6 @@ public static void test_vsgi_fastcgi_request_uri_with_query () {
 	string[] environment = {
 		"PATH_INFO=/",
 		"REQUEST_METHOD=GET",
-		"REQUEST_URI=/",
 		"SERVER_NAME=0.0.0.0",
 		"SERVER_PORT=3003",
 		"REQUEST_URI=/home?a=b"
