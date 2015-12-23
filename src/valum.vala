@@ -48,6 +48,38 @@ namespace Valum {
 	public delegate bool MatcherCallback (Request req, Queue<Value?> initial_stack);
 
 	/**
+	 * Produce a matching middleware that negates the provided middleware.
+	 *
+	 * @since 0.3
+	 */
+	public MatcherCallback not (owned MatcherCallback matcher)  {
+		return (req, stack) => { return ! matcher (req, stack); };
+	}
+
+	/**
+	 * Produce a matching middleware that consist of the conjunction of
+	 * passed matchers.
+	 *
+	 * @since 0.3
+	 */
+	public MatcherCallback and (owned MatcherCallback left, owned MatcherCallback right) {
+		return (req, stack) => {
+			return left (req, stack) && right (req, stack);
+		};
+	}
+
+	/**
+	 * Produce a matching middleware that consist of the disjunction of
+	 * passed matchers.
+	 * @since 0.3
+	 */
+	public MatcherCallback or (owned MatcherCallback left, owned MatcherCallback right) {
+		return (req, stack) => {
+			return left (req, stack) || right (req, stack);
+		};
+	}
+
+	/**
 	 * Handle a pair of request and response.
 	 *
 	 * @since 0.0.1
