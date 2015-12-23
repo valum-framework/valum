@@ -46,10 +46,8 @@ namespace Valum {
 
 		/**
 		 * Stack of scopes.
-		 *
-		 * @since 0.1
 		 */
-		public Queue<string> scopes = new Queue<string> ();
+		private Queue<string> scopes = new Queue<string> ();
 
 		/**
 		 * @since 0.0.1

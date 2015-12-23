@@ -168,9 +168,11 @@ public void test_route_from_regex_multiple_captures () {
 public void test_route_from_regex_scoped () {
 	var router = new Router ();
 
-	router.scopes.push_tail ("test");
+	Route route = {};
+	router.scope ("test", (inner) => {
+		route = inner.regex ("GET", /(?<id>\d+)/, (req, res) => {}).node.data;
+	});
 
-	var route  = router.regex ("GET", /(?<id>\d+)/, (req, res) => {}).node.data;
 	var req    = new Request.with_uri (new Soup.URI ("http://localhost/test/5"));
 	var stack  = new Queue<Value?> ();
 
