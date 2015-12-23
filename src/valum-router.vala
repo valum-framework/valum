@@ -266,8 +266,13 @@ namespace Valum {
 		                                                          ClientError,
 		                                                          ServerError,
 		                                                          Error {
+			var tmp_stack = new Queue<Value?> ();
 			foreach (var route in routes) {
-				if ((route.method == null || route.method == req.method) && route.match (req, stack)) {
+				tmp_stack.clear ();
+				if ((route.method == null || route.method == req.method) && route.match (req, tmp_stack)) {
+					// commit the stack pushes
+					while (!tmp_stack.is_empty ())
+						stack.push_tail (tmp_stack.pop_head ());
 					route.fire (req, res, (req, res) => {
 						unowned List<Route> current = routes.find (route);
 						// keep routing if there are more routes to explore
