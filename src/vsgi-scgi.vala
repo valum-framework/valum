@@ -207,6 +207,12 @@ namespace VSGI.SCGI {
 					size_t length;
 					var size = int.parse (reader.read_upto (":", 1, out length));
 
+					// prefill based on the size knowledge if appliable
+					if (size > 1 + 512) {
+						reader.set_buffer_size (1 + size);
+						reader.fill (-1);
+					}
+
 					// consume the semi-colon
 					if (reader.read_byte () != ':') {
 						command_line.printerr ("malformed netstring, missing ':'\n");
