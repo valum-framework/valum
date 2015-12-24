@@ -63,6 +63,15 @@ namespace Valum {
 		}
 
 		/**
+		 * Mount a handling middleware on the routing queue.
+		 *
+		 * @since 0.3
+		 */
+		public Route use (owned HandlerCallback cb) {
+			return matcher (null, () => { return true; }, (owned) cb);
+		}
+
+		/**
 		 * @since 0.0.1
 		 */
 		public new Route get (string? rule, owned HandlerCallback cb) throws RegexError {
@@ -146,8 +155,11 @@ namespace Valum {
 		/**
 		 * Bind a callback to all HTTP methods defined in {@link VSGI.Request.METHODS}.
 		 *
+		 * This function is deprecated in favour of {@link Valum.Router.use}.
+		 *
 		 * @since 0.1
 		 */
+		[Deprecated (replacement = "Valum.Router.use", since = "0.3")]
 		public Route[] all (string? rule, owned HandlerCallback cb) throws RegexError {
 			return this.methods (Request.METHODS, rule, (owned) cb);
 		}
@@ -194,7 +206,7 @@ namespace Valum {
 		 * @param matcher callback used to match the request
 		 * @param cb      callback used to process the pair of request and response.
 		 */
-		public Route matcher (string method, owned MatcherCallback matcher, owned HandlerCallback cb) {
+		public Route matcher (string? method, owned MatcherCallback matcher, owned HandlerCallback cb) {
 			return this.route (new Route (this, method, (owned) matcher, (owned) cb));
 		}
 

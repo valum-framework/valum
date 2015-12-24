@@ -21,7 +21,7 @@ using VSGI.Soup;
 
 var app = new Router ();
 
-app.all (null, (req, res, next) => {
+app.use ((req, res, next) => {
 	res.headers.append ("Server", "Valum/1.0");
 	HashTable<string, string>? @params = new HashTable<string, string> (str_hash, str_equal);
 	@params["charset"] = "utf-8";
@@ -43,7 +43,7 @@ app.get ("gzip", (req, res, next) => {
 });
 
 // replace 'Content-Type' for 'text/plain'
-app.get (null, (req, res, next) => {
+app.use ((req, res, next) => {
 	HashTable<string, string>? @params;
 	res.headers.get_content_type (out @params);
 	res.headers.set_content_type ("text/plain", @params);
@@ -130,10 +130,6 @@ app.get ("hello", (req, res) => {
 
 app.get ("hello/", (req, res) => {
 	res.body.write_all ("Hello world!".data, null);
-});
-
-app.all ("all", (req, res) => {
-	res.body.write_all ("Matches all HTTP methods".data, null);
 });
 
 app.methods ({VSGI.Request.GET, VSGI.Request.POST}, "get-and-post", (req, res) => {

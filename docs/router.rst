@@ -14,12 +14,11 @@ user agent.
 
 .. _Soup.MessageHeaders.set_content_type: http://valadoc.org/#!api=libsoup-2.4/Soup.MessageHeaders.set_content_type
 
-It can be performed automatically in a catch-all handling middleware. They are
-described later in this document.
+It can be performed automatically with ``Router.use``:
 
 .. code:: vala
 
-    app.get (null, (req, res, next) => {
+    app.use ((req, res, next) => {
         var @params = new HashTable<string, string> (str_hash, str_equal);
         @params["charset"] = "iso-8859-1";
         res.headers.set_content_type ("text/xhtml+xml", @params);
@@ -110,13 +109,9 @@ convenience.
 
     app.method (Request.GET, "rule", (req, res) => {});
 
-Multiple methods can be captured with ``methods`` and ``all``.
+Multiple methods can be captured with ``methods``:
 
 .. code:: vala
-
-    app.all ("", (req, res) => {
-        // matches all methods registered in VSGI.Request.METHODS
-    });
 
     app.methods (Request.GET, Request.POST, "", (req, res) => {
         // matches GET and POST
@@ -442,12 +437,22 @@ processing the :doc:`vsgi/request` or :doc:`vsgi/response`.
 A handling middleware can also pass a filtered :doc:`vsgi/request` or
 :doc:`vsgi/response` objects using :doc:`vsgi/filters`,
 
+These middlewares can be mounted on the routing queue with ``Router.use`` or
+conditionally to a matching middleware.
+
+.. code:: vala
+
+    app.use ((req, res, next) => {
+        // executed on every request
+        next (req, res);
+    });
+
 The following example shows a middleware that provide a compressed stream over
 the :doc:`vsgi/response` body.
 
 .. code:: vala
 
-    app.get (null, (req, res, next) => {
+    app.use ((req, res, next) => {
         res.headers.replace ("Content-Encoding", "gzip");
         next (req, new ConvertedResponse (res, new ZLibCompressor (ZlibCompressorFormat.GZIP)));
     });
