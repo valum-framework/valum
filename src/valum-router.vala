@@ -29,10 +29,8 @@ namespace Valum {
 
 		/**
 		 * Registered types used to extract {@link VSGI.Request} parameters.
-         *
-		 * @since 0.1
 		 */
-		public HashTable<string, Regex> types = new HashTable<string, Regex> (str_hash, str_equal);
+		private HashTable<string, Regex> types = new HashTable<string, Regex> (str_hash, str_equal);
 
 		/**
 		 * Registered routes by HTTP method.
@@ -49,15 +47,24 @@ namespace Valum {
 		 */
 		private Queue<string> scopes = new Queue<string> ();
 
-		/**
-		 * @since 0.0.1
-		 */
-		public Router () {
+		construct {
 			// initialize default types
-			this.types["int"]    = /\d+/;
-			this.types["string"] = /\w+/;
-			this.types["path"]   = /[\w\/]+/;
-			this.types["any"]    = /.+/;
+			register_type ("int", /\d+/);
+			register_type ("string", /\w+/);
+			register_type ("path", /[\w\/]+/);
+			register_type ("any", /.+/);
+		}
+
+		/**
+		 * Register or overwrite an existing type.
+		 *
+		 * @since 0.3
+		 *
+		 * @param name  name used in rules
+		 * @param regex
+		 */
+		public void register_type (string name, Regex regex) {
+			types[name] = regex;
 		}
 
 		/**

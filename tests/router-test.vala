@@ -23,12 +23,10 @@ using VSGI.Test;
  */
 public static void test_router () {
 	var router = new Router ();
-
-	assert (router.types != null);
-	assert (router.types.contains ("int"));
-	assert (router.types.contains ("string"));
-	assert (router.types.contains ("path"));
-	assert (router.types.contains ("any"));
+	router.get ("<int:i>", () => {});
+	router.get ("<string:s>", () => {});
+	router.get ("<path:p>", () => {});
+	router.get ("<any:a>", () => {});
 }
 
 /**
