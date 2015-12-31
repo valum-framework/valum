@@ -313,76 +313,116 @@ namespace Valum {
 		 */
 		public void invoke (Request req, Response res, owned NextCallback next) {
 			try {
-				try {
-					next (req, res);
-					return;
-				} catch (Error err) {
-					// replace any other error by a 500 status
-					var status_code = (err is Informational ||
-					                   err is Success ||
-					                   err is Redirection ||
-					                   err is ClientError ||
-									   err is ServerError) ?  err.code : 500;
+				next (req, res);
+			} catch (Error err) {
+				// replace any other error by a 500 status
+				var status_code = (err is Informational ||
+								   err is Success ||
+								   err is Redirection ||
+								   err is ClientError ||
+								   err is ServerError) ?  err.code : 500;
 
-					// handle using a registered status handler
-					if (this.status_handlers.contains (status_code)) {
-						var stack = new Queue<Value?> ();
-						stack.push_tail (err.message);
-						if (this.perform_routing (this.status_handlers[status_code].head, req, res, stack)) {
-							return;
-						}
+				/*
+				 * Only the error message is pushed on the stack, the handler
+				 * should assume that the status code is the one for which it
+				 * has been registered.
+				 */
+				if (this.status_handlers.contains (status_code)) {
+					var stack = new Queue<Value?> ();
+					stack.push_tail (err.message);
+					try {
+						if (this.perform_routing (this.status_handlers[status_code].head, req, res, stack))
+							return; // handled!
+					} catch (Error err) {
+						// feed the error back in the invocation
+						invoke (req, res, () => {
+							throw err;
+						});
+						return;
 					}
-
-					// propagate the status code
-					throw err;
 				}
 
-			// default status code handling
-			} catch (Informational.SWITCHING_PROTOCOLS i) {
-				res.status = i.code;
-				res.headers.append ("Upgrade", i.message);
-			} catch (Success.CREATED s) {
-				res.status = s.code;
-				res.headers.append ("Location", s.message);
-			} catch (Success.NO_CONTENT s) {
-				res.status = s.code;
-			} catch (Success.RESET_CONTENT s) {
-				res.status = s.code;
-			} catch (Success.PARTIAL_CONTENT s) {
-				res.status = s.code;
-				res.headers.append ("Range", s.message);
-			} catch (Redirection r) {
-				res.status = r.code;
-				res.headers.append ("Location", r.message);
-			} catch (ClientError.METHOD_NOT_ALLOWED c) {
-				res.status = c.code;
-				res.headers.append ("Allow", c.message);
-			} catch (ClientError.UPGRADE_REQUIRED c) {
-				res.status = c.code;
-				res.headers.append ("Upgrade", c.message);
-			} catch (Error e) {
-				res.status = (e is Informational ||
-							  e is Success ||
-				              e is Redirection ||
-				              e is ClientError ||
-				              e is ServerError) ?  e.code : 500;
-				var @params = new HashTable<string, string> (str_hash, str_equal);
-				@params["charset"] = "utf-8";
-				res.headers.set_content_type ("text/plain", @params);
-				res.headers.set_content_length (e.message.data.length);
+				// default status code handling
+				res.status = status_code;
+
+				/*
+				 * The error message is used as a header if the HTTP/1.1
+				 * specification indicate that it MUST be provided.
+				 *
+				 * The content encoding is set to NONE if the HTTP/1.1
+				 * specification indicates that an entity MUST NOT be
+				 * provided.
+				 *
+				 * For practical purposes, the error message is used for the
+				 * 'Location' of redirection codes.
+				 */
+				switch (status_code) {
+					case global::Soup.Status.SWITCHING_PROTOCOLS:
+						res.headers.replace ("Upgrade", err.message);
+						res.headers.set_encoding (Soup.Encoding.NONE);
+						break;
+
+					case global::Soup.Status.CREATED:
+						res.headers.replace ("Location", err.message);
+						break;
+
+					// no content
+					case global::Soup.Status.NO_CONTENT:
+					case global::Soup.Status.RESET_CONTENT:
+						res.headers.set_encoding (Soup.Encoding.NONE);
+						break;
+
+					case global::Soup.Status.PARTIAL_CONTENT:
+						res.headers.replace ("Range", err.message);
+						break;
+
+					case global::Soup.Status.MOVED_PERMANENTLY:
+					case global::Soup.Status.FOUND:
+					case global::Soup.Status.SEE_OTHER:
+						res.headers.replace ("Location", err.message);
+						break;
+
+					case global::Soup.Status.NOT_MODIFIED:
+						res.headers.set_encoding (Soup.Encoding.NONE);
+						break;
+
+					case global::Soup.Status.USE_PROXY:
+					case global::Soup.Status.TEMPORARY_REDIRECT:
+						res.headers.replace ("Location", err.message);
+						break;
+
+					case global::Soup.Status.UNAUTHORIZED:
+						res.headers.replace ("WWW-Authenticate", err.message);
+						break;
+
+					case global::Soup.Status.METHOD_NOT_ALLOWED:
+						res.headers.append ("Allow", err.message);
+						break;
+
+					case 426: // Upgrade Required
+						res.headers.replace ("Upgrade", err.message);
+						break;
+
+					// basic handling
+					default:
+						var @params = new HashTable<string, string> (str_hash, str_equal);
+						@params["charset"] = "utf-8";
+						res.headers.set_content_type ("text/plain", @params);
+						res.headers.set_content_length (err.message.data.length);
+						try {
+							size_t bytes_written;
+							res.body.write_all (err.message.data, out bytes_written);
+						} catch (IOError io_err) {
+							warning (io_err.message);
+						}
+						break;
+				}
+
 				try {
-					size_t bytes_written;
-					res.body.write_all (e.message.data, out bytes_written);
-				} catch (IOError err) {
-					res.status = 500;
-					warning (err.message);
+					res.body.close ();
+				} catch (IOError io_err) {
+					warning (io_err.message);
 				}
-			}
-			try {
-				res.body.close ();
-			} catch (IOError err) {
-				res.status = 500;
-				warning (err.message);
 			}
 		}
 
