@@ -279,17 +279,16 @@ namespace Valum {
 		                                                          ServerError,
 		                                                          Error {
 			var tmp_stack = new Queue<Value?> ();
-			foreach (var route in routes) {
+			for (unowned List<Route> node = routes; node != null; node = node.next) {
 				tmp_stack.clear ();
-				if ((route.method == null || route.method == req.method) && route.match (req, tmp_stack)) {
+				if ((node.data.method == null || node.data.method == req.method) && node.data.match (req, tmp_stack)) {
 					// commit the stack pushes
 					while (!tmp_stack.is_empty ())
 						stack.push_tail (tmp_stack.pop_head ());
-					route.fire (req, res, (req, res) => {
-						unowned List<Route> current = routes.find (route);
+					node.data.fire (req, res, (req, res) => {
 						// keep routing if there are more routes to explore
-						if (current.next != null)
-							if (perform_routing (current.next, req, res, stack))
+						if (node.next != null)
+							if (perform_routing (node.next, req, res, stack))
 								return;
 						throw new ClientError.NOT_FOUND ("The request URI %s was not found.", req.uri.to_string (true));
 					}, stack);
