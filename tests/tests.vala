@@ -101,38 +101,6 @@ public int main (string[] args) {
 	Test.add_func ("/route/match/not_matching", test_route_match_not_matching);
 	Test.add_func ("/route/fire", test_route_match_not_matching);
 
-	Test.add_func ("/view/from_string", test_view_from_string);
-	Test.add_func ("/view/from_path", test_view_from_path);
-	Test.add_func ("/view/from_stream", test_view_from_stream);
-
-	Test.add_func ("/view/push_string", test_view_push_string);
-	Test.add_func ("/view/push_int", test_view_push_int);
-	Test.add_func ("/view/push_float", test_view_push_float);
-
-	Test.add_func ("/view/push_strings", test_view_push_strings);
-	Test.add_func ("/view/push_ints", test_view_push_ints);
-	Test.add_func ("/view/push_floats", test_view_push_floats);
-
-	Test.add_func ("/view/push_collection/strings", test_view_push_collection_strings);
-	Test.add_func ("/view/push_collection/ints", test_view_push_collection_ints);
-	Test.add_func ("/view/push_collection/floats", test_view_push_collection_floats);
-	Test.add_func ("/view/push_collection/unknown_type", test_view_push_collection_unknown_type);
-
-	Test.add_func ("/view/push_map", test_view_push_map);
-	Test.add_func ("/view/push_string_map", test_view_push_string_map);
-	Test.add_func ("/view/push_int_map", test_view_push_int_map);
-
-	Test.add_func ("/view/push_string_multimap", test_view_push_string_multimap);
-	Test.add_func ("/view/push_int_multimap", test_view_push_int_multimap);
-
-	Test.add_func ("/view/push_hashtable", test_view_push_hashtable);
-	Test.add_func ("/view/push_string_hashtable", test_view_push_string_hashtable);
-	Test.add_func ("/view/push_int_hashtable", test_view_push_int_hashtable);
-
-	Test.add_func ("/view/push_value/null", test_view_push_value_null);
-	Test.add_func ("/view/push_value/string", test_view_push_value_string);
-	Test.add_func ("/view/push_value/unknown_type", test_view_push_value_unknown_type);
-
 	Test.add_func ("/vsgi/cookies/from_request", test_vsgi_cookies_from_request);
 	Test.add_func ("/vsgi/cookies/from_response", test_vsgi_cookies_from_response);
 	Test.add_func ("/vsgi/cookies/lookup", test_vsgi_cookies_lookup);

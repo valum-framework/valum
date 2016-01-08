@@ -5,9 +5,6 @@ Through `Vala VAPI bindings <https://wiki.gnome.org/Projects/Vala/Bindings>`__,
 application written with Valum can embed multiple interpreters and JIT to
 provide facilities for computation and templating.
 
-:doc:`ctpl` integration is provided, but if you need something more powerful,
-this document will cover exactly what you need.
-
 Lua
 ---
 

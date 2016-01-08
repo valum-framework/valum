@@ -30,7 +30,6 @@ development. If you think that this document could be improved,
     router
     recipes/index
     module
-    ctpl
     hacking
     about/gnu-lgpl-v3.0
 

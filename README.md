@@ -37,7 +37,6 @@ Features
  - powerful routing mechanism with scope, typed parameters and
    low-level utilities to write expressive web services
  - deploy anywhere with libsoup-2.4 built-in HTTP server, CGI, [FastCGI](http://www.fastcgi.com/drupal/) or SCGI
- - handy [CTPL](http://ctpl.tuxfamily.org/) integration for templating
  - extensive documentation available at [valum-framework.readthedocs.org](http://valum-framework.readthedocs.org/en/latest)
 
 

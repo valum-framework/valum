@@ -2,12 +2,15 @@
 
 def configure(cfg):
     cfg.load('glib2')
+    cfg.check_cfg(package='ctpl', uselib_store='CTPL', args='--cflags --libs')
+    cfg.check_cfg(package='gee-0.8', uselib_store='GEE', args='--cflags --libs')
 
 def build(bld):
     bld.load('glib2')
     bld.program(
+        packages     = ['ctpl', 'gee-0.8'],
         target       = 'app',
-        source       = ['app.vala', 'app.gresource.xml'],
-        use          = 'valum',
+        source       = ['app.vala', 'view.vala', 'app.gresource.xml'],
+        use          = 'valum CTPL GEE',
         vapi_dirs    = '../../vapi',
         install_path = None)
