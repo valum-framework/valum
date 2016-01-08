@@ -7,6 +7,6 @@ Name: Valum
 Description: Web micro-framework written in Vala
 URL: https://github.com/valum-framework/valum
 Version: @VERSION@
-Requires: vsgi ctpl gee-0.8
+Requires: vsgi
 Libs: -L${libdir} -lvalum
 Cflags: -I${includedir}/valum

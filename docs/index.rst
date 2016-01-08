@@ -31,7 +31,6 @@ development. If you think that this document could be improved,
     middlewares/index
     recipes/index
     module
-    ctpl
     hacking
     about/gnu-lgpl-v3.0
 

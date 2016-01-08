@@ -29,17 +29,6 @@ openweathermap.authenticate.connect ((msg, auth) => {
 });
 
 app.get ("", (req, res) => {
-	var tpl = new View.from_string ("""
-    <h1>Weather in Montreal</h1>
-    <dl>
-	  <dt>Humidity</dt><dd>{humidity}%</dd>
-	  <dt>Pressure</dt><dd>{pressure}hPa</dd>
-	  <dt>Temperature</dt><dd>{temp}°C</dd>
-	  <dt>Max</dt><dd>{temp_max}°C</dd>
-	  <dt>Min</dt><dd>{temp_min}°C</dd>
-    </dl>
-	""");
-
 	openweathermap.send_async.begin (new Soup.Message ("GET", "http://api.openweathermap.org/data/2.5/weather?q=Montreal&units=metric"),
 	                                 null,
 	                                 (obj, result) => {
@@ -48,13 +37,22 @@ app.get ("", (req, res) => {
 
 			parser.load_from_stream (openweathermap.send_async.end (result));
 
-			var root = parser.get_root ().get_object ();
+			var main = parser.get_root ().get_object ().get_object_member ("main");
 
-			root.get_object_member ("main").foreach_member ((obj, member_name, member_node) => {
-				tpl.environment.push_float (member_name, member_node.get_double ());
-			});
-
-			tpl.to_stream (res.body);
+			res.body.write_all ("""
+			<h1>Weather in Montreal</h1>
+			<dl>
+			  <dt>Humidity</dt><dd>%s</dd>
+			  <dt>Pressure</dt><dd>%shPa</dd>
+			  <dt>Temperature</dt><dd>%s°C</dd>
+			  <dt>Max</dt><dd>%s°C</dd>
+			  <dt>Min</dt><dd>%s°C</dd>
+			</dl>
+			""".printf (main.get_string_member ("humidity"),
+			            main.get_string_member ("pressure"),
+			            main.get_string_member ("temp"),
+			            main.get_string_member ("temp_max"),
+						main.get_string_member ("temp_min")).data, null);
 		});
 	});
 });
