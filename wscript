@@ -50,10 +50,11 @@ def configure(conf):
 
     # other dependencies
     conf.check(lib='fcgi', uselib_store='FCGI', args='--cflags --libs')
+    conf.check(lib='gcov', mandatory=False, uselib_store='GCOV', args='--cflags --libs')
 
     if conf.options.enable_gcov:
-        conf.check(lib='gcov', uselib_store='GCOV', args='--cflags --libs')
         conf.env.append_unique('CFLAGS', ['-fprofile-arcs', '-ftest-coverage'])
+        conf.env.append_unique('VALAFLAGS', ['--debug'])
 
     # configure examples
     if conf.options.enable_examples:
