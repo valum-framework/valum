@@ -139,7 +139,7 @@ namespace Valum {
 		 * @param rule   rule
 		 * @param cb     callback used to process the pair of request and response.
 		 */
-		public Route method (string method, string? rule, owned HandlerCallback cb) throws RegexError {
+		public Route method (string? method, string? rule, owned HandlerCallback cb) throws RegexError {
 			return this.route (new Route.from_rule (this, method, rule, (owned) cb));
 		}
 
@@ -177,11 +177,11 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 *
-		 * @param method HTTP method
+		 * @param method HTTP method or 'null' for any
 		 * @param regex  regular expression matching the request path.
 		 * @param cb     callback used to process the pair of request and response.
 		 */
-		public Route regex (string method, Regex regex, owned HandlerCallback cb) throws RegexError {
+		public Route regex (string? method, Regex regex, owned HandlerCallback cb) throws RegexError {
 			return this.route (new Route.from_regex (this, method, regex, (owned) cb));
 		}
 
@@ -190,7 +190,7 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 *
-		 * @param method  HTTP method
+		 * @param method  HTTP method or 'null' for any
 		 * @param matcher callback used to match the request
 		 * @param cb      callback used to process the pair of request and response.
 		 */
