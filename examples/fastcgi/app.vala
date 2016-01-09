@@ -26,8 +26,8 @@ public static int main (string[] args) {
 		res.body.write_all ("Hello world!".data, null);
 	});
 
-	app.get ("random/<int:size>", (req, res) => {
-		var size   = int.parse (req.params["size"]);
+	app.get ("random/<int:size>", (req, res, next, context) => {
+		var size   = int.parse (context["size"].get_string ());
 		var writer = new DataOutputStream (res.body);
 
 		for (; size > 0; size--) {

@@ -21,8 +21,8 @@ using VSGI.Soup;
 var app       = new Router ();
 var memcached = new Memcached.Context.from_configuration ("--SERVER=localhost".data);
 
-app.get ("<key>", (req, res, next, stack) => {
-	var key = stack.pop_tail ().get_string ();
+app.get ("<key>", (req, res, next, context) => {
+	var key = context["key"].get_string ();
 
 	uint32 flags;
 	Memcached.ReturnCode error;
@@ -39,8 +39,8 @@ app.get ("<key>", (req, res, next, stack) => {
 	}
 });
 
-app.put ("<key>", (req, res, next, stack) => {
-	var key = stack.pop_tail ().get_string ();
+app.put ("<key>", (req, res, next, context) => {
+	var key = context["key"].get_string ();
 
 	var buffer = new MemoryOutputStream (null, realloc, free);
 
@@ -59,8 +59,8 @@ app.put ("<key>", (req, res, next, stack) => {
 	}
 });
 
-app.delete ("<key>", (req, res, next, stack) => {
-	var key = stack.pop_tail ().get_string ();
+app.delete ("<key>", (req, res, next, context) => {
+	var key = context["key"].get_string ();
 
 	var error = memcached.delete (key.data, 0);
 

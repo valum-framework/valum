@@ -660,8 +660,8 @@ public static void test_router_next_propagate_state () {
 	var router = new Router ();
 	var state  = new Object ();
 
-	router.get ("", (req, res, next, stack) => {
-		stack.push_tail (state);
+	router.get ("", (req, res, next, context) => {
+		context["state"] = state;
 		next (req, res);
 	});
 
@@ -669,9 +669,9 @@ public static void test_router_next_propagate_state () {
 		next (req, res);
 	});
 
-	router.get ("", (req, res, next, st) => {
+	router.get ("", (req, res, next, context) => {
 		res.status = 413;
-		assert (st.pop_tail () == state);
+		assert (state == context["state"]);
 	});
 
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
@@ -689,19 +689,22 @@ public static void test_router_next_replace_propagated_state () {
 	var router = new Router ();
 	var state  = new Object ();
 
-	router.get ("", (req, res, next, stack) => {
-		stack.push_tail (state);
+	router.get ("", (req, res, next, context) => {
+		context["state"] = state;
 		next (req, res);
 	});
 
-	router.get ("", (req, res, next, stack) => {
-		assert (state == stack.pop_tail ());
+	router.get ("", (req, res, next, context) => {
+		assert (state == context["state"]);
+		context["state"] = "something really different";
 		next (req, res);
 	});
 
-	router.get ("", (req, res, next, stack) => {
+	router.get ("", (req, res, next, context) => {
 		res.status = 413;
-		assert (stack.is_empty ());
+		assert (context["state"].holds (typeof (string)));
+		assert (context.parent["state"].holds (typeof (string)));
+		assert (context.parent.parent["state"].holds (typeof (Object)));
 	});
 
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
@@ -715,8 +718,8 @@ public static void test_router_next_replace_propagated_state () {
 public static void test_router_status_propagates_error_message () {
 	var router = new Router ();
 
-	router.status (404, (req, res, next, stack) => {
-		var message = stack.pop_tail ();
+	router.status (404, (req, res, next, context) => {
+		var message = context["message"];
 		res.status = 418;
 		assert ("The request URI / was not found." == message.get_string ());
 	});
@@ -780,13 +783,13 @@ public static void test_router_invoke_propagate_state () {
 	var router  = new Router ();
 	var message = "test";
 
-	router.get ("", (req, res, next, stack) => {
-		stack.push_tail (message);
+	router.get ("", (req, res, next, context) => {
+		context["message"] = message;
 		router.invoke (req, res, next);
 	});
 
-	router.get ("", (req, res, next, stack) => {
-		assert (message == stack.pop_tail ().get_string ());
+	router.get ("", (req, res, next, context) => {
+		assert (message == context["message"].get_string ());
 		throw new ClientError.IM_A_TEAPOT ("this is insane!");
 	});
 
@@ -827,18 +830,18 @@ public void test_router_then () {
 /**
   * @since 0.2.2
   */
-public void test_router_then_preserve_matching_stack () {
+public void test_router_then_preserve_matching_context () {
 	var router = new Router ();
 
 	var reached = false;
 
-	router.get ("<int:id>", (req, res, next, stack) => {
-		stack.push_tail ("test");
+	router.get ("<int:id>", (req, res, next, context) => {
+		context["test"] = "test";
 		next (req, res);
-	}).then ((req, res, next, stack) => {
+	}).then ((req, res, next, context) => {
 		reached = true;
-		assert ("test" == stack.pop_tail ().get_string ());
-		assert ("5" == stack.pop_tail ().get_string ());
+		assert ("test" == context["test"].get_string ());
+		assert ("5" == context["id"].get_string ());
 	});
 
 	var req = new Request.with_uri (new Soup.URI ("http://localhost/5"));

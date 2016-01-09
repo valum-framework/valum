@@ -25,29 +25,21 @@ It can be performed automatically with ``Router.use``:
         next (req, res);
     });
 
-Routing stack
--------------
+Routing context
+---------------
 
 During the routing, states can obtained from a previous handler or passed to
-the next one using the routing stack. The stack is a simple `GLib.Queue`_ that
-can be accessed from its head or tail.
-
-.. warning::
-
-    The queue tail is used to perform stack operations with ``push_tail`` and
-    ``pop_tail``.
-
-.. _GLib.Queue: http://valadoc.org/#!api=glib-2.0/GLib.Queue
+the next one using the routing context.
 
 .. code:: vala
 
-    app.get ("", (req, res, next, stack) => {
-        stack.push_tail ("some value");
+    app.get ("", (req, res, next, context) => {
+        context["some key"] = "some value";
         next (req, res);
     });
 
-    app.get ("", (req, res, next, stack) => {
-        var some_value = stack.pop_tail ().get_string ();
+    app.get ("", (req, res, next, context) => {
+        var some_value = context["some key"]; // or context.parent["some key"]
     });
 
 HTTP methods
@@ -151,14 +143,14 @@ Thrown status code can be handled by a ``HandlerCallback`` pretty much like how
 typically matched requests are being handled.
 
 The received :doc:`vsgi/request` and :doc:`vsgi/response` object are in the
-same state they were when the status was thrown. The error message is stacked
-and available in the ``HandlerCallback`` last parameter.
+same state they were when the status was thrown. The error message is bound to
+the key ``message`` in the routing context.
 
 .. code:: vala
 
-    app.status (Soup.Status.NOT_FOUND, (req, res, next, stack) => {
+    app.status (Soup.Status.NOT_FOUND, (req, res, next, context) => {
         // produce a 404 page...
-        var message = stack.pop_tail ().get_string ();
+        var message = context["message"].get_string ();
     });
 
 Similarly to conventional request handling, the ``next`` continuation can be
@@ -257,7 +249,7 @@ application.
     a maximum inter-operability with other frameworks based on VSGI.
 
 The following example delegates all ``GET`` requests to another router which
-will process in isolation with its own routing stack.
+will process in isolation with its own routing context.
 
 .. code:: vala
 
@@ -300,25 +292,6 @@ Filters
     app.get ("", (req, res) => {
         // res is transparently gzipped
     })
-
-Stacked states
-~~~~~~~~~~~~~~
-
-Additionally, states can be passed to the next handler in the queue by pushing
-them in a stack.
-
-.. code:: vala
-
-    app.get ("", (req, res, next, stack) => {
-        message ("pre");
-        stack.push_tail (new Object ()); // propagate the state
-        next (req, res);
-    });
-
-    app.get ("", (req, res, next, stack) => {
-        // perform an operation with the provided state
-        var obj = stack.pop_tail ();
-    });
 
 Sequence
 --------
@@ -386,8 +359,8 @@ responses designed for non-human client.
         });
     });
 
-    app.status (Status.NOT_ACCEPTABLE, (req, res, next, stack) => {
-        res.body.write_all ("<p>%s</p>".printf (stack.pop_tail ().get_string ()).data, null);
+    app.status (Status.NOT_ACCEPTABLE, (req, res, next, context) => {
+        res.body.write_all ("<p>%s</p>".printf (context["message"].get_string ()).data, null);
     });
 
 Middleware
@@ -482,8 +455,8 @@ attached to a :doc:`route`, the processing will happen in a ``NextCallback``.
 
 .. code:: vala
 
-    app.get ("home", (req, res, next, stack) => {
+    app.get ("home", (req, res, next, context) => {
         compress (req, res, (req, res) => {
             res.body.write_all ("Hello world!".data, null);
-        }, stack);
+        }, new Context.with_parent (context));
     });

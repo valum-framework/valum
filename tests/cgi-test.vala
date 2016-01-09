@@ -43,7 +43,6 @@ public static void test_vsgi_cgi_request () {
 	assert (request.query.contains ("a"));
 	assert ("b" == request.query["a"]);
 	assert (3003 == request.uri.get_port ());
-	assert (null == request.params);
 	assert ("example.com" == request.headers.get_one ("Host"));
 	assert (connection.input_stream == request.body);
 }

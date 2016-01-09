@@ -35,17 +35,14 @@ namespace Valum {
 	public delegate void LoaderCallback (Router router);
 
 	/**
-	 * Match the request and populate the {@link VSGI.Request.params}.
-	 *
-	 * It is important for a matcher to populate the
-	 * {@link VSGI.Request.params} only if it matches the request.
+	 * Match the request and populate the initial {@link Valum.Context}.
 	 *
 	 * @since 0.1
 	 *
-	 * @param req           request being matched
-	 * @param initial_stack destination for the initial routing stack
+	 * @param req     request being matched
+	 * @param context initial context
 	 */
-	public delegate bool MatcherCallback (Request req, Queue<Value?> initial_stack);
+	public delegate bool MatcherCallback (Request req, Context context);
 
 	/**
 	 * Produce a matching middleware that negates the provided middleware.
@@ -91,21 +88,22 @@ namespace Valum {
 	 * @throws ServerError trigger a 5xx server error
 	 * @throws Error       any other error which will be handled as a {@link Valum.ServerError.INTERNAL}
 	 *
-	 * @param req   request being handled
-	 * @param res   response to send back to the requester
-	 * @param next  keep routing
-	 * @param stack routing stack as altered by the preceeding next invocation
-	 *              or initialized by the first {@link Valum.MatcherCallback}
+	 * @param req     request being handled
+	 * @param res     response to send back to the requester
+	 * @param next    keep routing
+	 * @param context routing context which parent is the context of the
+	 *                preceeding 'next' invocation or initialized by the
+	 *                first {@link Valum.MatcherCallback}
 	 */
 	public delegate void HandlerCallback (Request req,
 	                                      Response res,
 	                                      NextCallback next,
-	                                      Queue<Value?> stack) throws Informational,
-	                                                                  Success,
-	                                                                  Redirection,
-	                                                                  ClientError,
-	                                                                  ServerError,
-	                                                                  Error;
+	                                      Context context) throws Informational,
+	                                                              Success,
+	                                                              Redirection,
+	                                                              ClientError,
+	                                                              ServerError,
+	                                                              Error;
 
 	/**
 	 * Continuation passed in a {@link Valum.HandlerCallback} to *keep routing*

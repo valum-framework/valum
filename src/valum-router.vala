@@ -263,35 +263,32 @@ namespace Valum {
 		/**
 		 * Perform the routing given a specific list of routes.
 		 *
-		 * @param routes sequence of routes to traverse
-		 * @param req    request
-		 * @param res    response
-		 * @param stack  routing stack passed to match and fire
+		 * @param routes  sequence of routes to traverse
+		 * @param req     request
+		 * @param res     response
+		 * @param context routing context passed to match and fire
 		 * @return tells if something matched during the routing process
 		 */
 		private bool perform_routing (List<Route> routes,
 		                              Request req,
 		                              Response res,
-		                              Queue<Value?> stack) throws Informational,
+		                              Context context) throws Informational,
 		                                                          Success,
 		                                                          Redirection,
 		                                                          ClientError,
 		                                                          ServerError,
 		                                                          Error {
-			var tmp_stack = new Queue<Value?> ();
 			for (unowned List<Route> node = routes; node != null; node = node.next) {
-				tmp_stack.clear ();
-				if ((node.data.method == null || node.data.method == req.method) && node.data.match (req, tmp_stack)) {
-					// commit the stack pushes
-					while (!tmp_stack.is_empty ())
-						stack.push_tail (tmp_stack.pop_head ());
+				var local_context = new Context.with_parent (context);
+				if ((node.data.method == null || node.data.method == req.method) &&
+					node.data.match (req, local_context)) {
 					node.data.fire (req, res, (req, res) => {
 						// keep routing if there are more routes to explore
 						if (node.next != null)
-							if (perform_routing (node.next, req, res, stack))
+							if (perform_routing (node.next, req, res, local_context))
 								return;
 						throw new ClientError.NOT_FOUND ("The request URI %s was not found.", req.uri.to_string (true));
-					}, stack);
+					}, local_context);
 					return true;
 				}
 			}
@@ -322,15 +319,15 @@ namespace Valum {
 								   err is ServerError) ?  err.code : 500;
 
 				/*
-				 * Only the error message is pushed on the stack, the handler
-				 * should assume that the status code is the one for which it
-				 * has been registered.
+				 * Only the error message is pushed on the routing context, the
+				 * handler should assume that the status code is the one for
+				 * which it has been registered.
 				 */
 				if (this.status_handlers.contains (status_code)) {
-					var stack = new Queue<Value?> ();
-					stack.push_tail (err.message);
+					var context = new Context ();
+					context["message"] = err.message;
 					try {
-						if (this.perform_routing (this.status_handlers[status_code].head, req, res, stack))
+						if (this.perform_routing (this.status_handlers[status_code].head, req, res, context))
 							return; // handled!
 					} catch (Error err) {
 						// feed the error back in the invocation
@@ -444,10 +441,10 @@ namespace Valum {
 
 			// initial invocation
 			this.invoke (req, res, () => {
-				var stack = new Queue<Value?> ();
+				var context = new Context ();
 
 				// ensure at least one route has been declared with that method
-				if (this.perform_routing (this.routes.head, req, res, stack))
+				if (this.perform_routing (this.routes.head, req, res, context))
 					return; // something matched
 
 				// find routes from other methods matching this request
@@ -460,7 +457,7 @@ namespace Valum {
 #else
 					    !string.joinv (",", allowed).contains (route.method) &&
 #endif
-					    route.match (req, stack)) {
+					    route.match (req, new Context ())) {
 						allowed += route.method;
 					}
 				}

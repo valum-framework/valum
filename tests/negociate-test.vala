@@ -9,9 +9,9 @@ public void test_negociate () {
 
 	req.headers.append ("Accept", "text/html; q=0.9, text/xml; q=0");
 
-	assert (negociate ("Accept", "text/html") (req, null));
-	assert (!negociate ("Accept", "text/xml") (req, null));
-	assert (!negociate ("Accept-Encoding", "utf-8") (req, null));
+	assert (negociate ("Accept", "text/html") (req, new Context ()));
+	assert (!negociate ("Accept", "text/xml") (req, new Context ()));
+	assert (!negociate ("Accept-Encoding", "utf-8") (req, new Context ()));
 }
 
 
