@@ -25,7 +25,7 @@ namespace Valum {
 	 *
 	 * @since 0.3
 	 *
-	 * @param domain
+	 * @param domain domain from which subdomains will be extracted
 	 * @param skip   number of labels to skip, which defaults to 2 (eg. 'example'
 	 *               and 'com')
 	 * @return a list of subdomains in their left-to-right order of appearance

@@ -34,7 +34,7 @@ namespace Valum.ServerSentEvents {
 	 *
 	 * @since 0.3
 	 *
-	 * @param name  event name, or 'null' to omit the field
+	 * @param event event name, or 'null' to omit the field
 	 * @param data  event data
 	 * @param id    event identifier, or 'null' to omit the field
 	 * @param retry retry, or 'null' to omit the field
@@ -50,15 +50,15 @@ namespace Valum.ServerSentEvents {
 	/**
 	 * Create a context for sending SSE messages.
 	 *
-	 * It replaces the {@link VSGI.Response} by a {@link Valum.SSE.SendEventCallback}.
+	 * It replaces the {@link VSGI.Response} by a {@link Valum.ServerSentEvents.SendEventCallback}.
 	 *
 	 * @since 0.3
 	 *
 	 * @param request    request this is responding to
 	 * @param send_event send a SSE message
-	 * @param stack
+	 * @param stack      routing stack
 	 *
-	 * @throws GLib.Error
+	 * @throws GLib.Error thrown errors are suppressed with {@link GLib.warning}
 	 */
 	public delegate void EventStreamCallback (Request request,
 	                                          owned SendEventCallback send_event,

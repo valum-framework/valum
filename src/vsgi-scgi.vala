@@ -46,8 +46,8 @@ namespace VSGI.SCGI {
 		private int64 bytes_read = 0;
 
 		/**
-		 * The {@link GLib.int64} type is used to remain consistent with
-		 * {@link Soup.Headers.get_content_length}
+		 * The {@link int64} type is used to remain consistent with
+		 * {@link Soup.MessageHeaders.get_content_length}
 		 *
 		 * @since 0.2.3
 		 */
