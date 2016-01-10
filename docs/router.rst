@@ -353,7 +353,7 @@ Sequence
 
 :doc:`route` has a ``then`` function that can be used to produce to sequence
 handlers for a common matcher. It can be used to create a pipeline of
-processing for a resource using handling middlewares.
+processing for a resource using middlewares.
 
 ::
 
@@ -422,59 +422,22 @@ responses designed for non-human client.
 Middleware
 ----------
 
-Anything that does not handle the user request, typically by invoking ``next``,
-is considered to be a middleware. Two kind of middleware can coexist to provide
-reusable matching and handling capabilities.
+Middlewares are reusable pieces of processing that can perform various work
+from authentication to the delivery of a static resource. They are described in
+the :doc:`middlewares/index` document.
 
-Matching middleware
-~~~~~~~~~~~~~~~~~~~
-
-These middlewares respect the ``Route.MatcherCallback`` delegate signature.
-
-The following piece of code is a reusable and generic content negociator:
+The typical way of declaring them involve closures. It is parametrized and
+returned to perform a specific task:
 
 ::
 
-    public MatcherCallback accept (string content_type) {
-        return (req) => {
-            return req.headers.get_one ("Accept") == content_type;
+    public HandlerCallback middleware (/* parameters here */) {
+        return (req, res, next, ctx) => {
+            var referer = req.headers.get_one ("Referer");
+            ctx["referer"] = new Soup.URI (referer);
+            return next (req, res);
         };
     }
-
-It is not really powerful as it does not support fuzzy matching like
-``application/*``, but it demonstrates the potential capabilities.
-
-It can conveniently be used as a matcher callback to capture all requests that
-accept the ``application/json`` content type as a response.
-
-::
-
-    app.matcher (accept ("application/json"), (req, res) => {
-        // produce a JSON output...
-    });
-
-Handling middleware
-~~~~~~~~~~~~~~~~~~~
-
-These middlewares are reusable pieces of processing that can perform various
-work from authentication to the delivery of a static resource.
-
-It is possible for a handling middleware to pass a state to the next handling
-route, allowing them to produce content that can be consumed instead of simply
-processing the :doc:`vsgi/request` or :doc:`vsgi/response`.
-
-A handling middleware can also pass a filtered :doc:`vsgi/request` or
-:doc:`vsgi/response` objects using :doc:`vsgi/filters`,
-
-These middlewares can be mounted on the routing queue with ``Router.use`` or
-conditionally to a matching middleware.
-
-::
-
-    app.use ((req, res, next) => {
-        // executed on every request
-        return next (req, res);
-    });
 
 The following example shows a middleware that provide a compressed stream over
 the :doc:`vsgi/response` body.
@@ -506,8 +469,8 @@ used directly from the handler.
         return res.expand_utf8 ("Hello world!");
     });
 
-Alternatively, a handling middleware can be used directly instead of being
-attached to a :doc:`route`, the processing will happen in a ``NextCallback``.
+Alternatively, a middleware can be used directly instead of being attached to
+a :doc:`route`, the processing will happen in a ``NextCallback``.
 
 ::
 
@@ -515,4 +478,18 @@ attached to a :doc:`route`, the processing will happen in a ``NextCallback``.
         return compress (req, res, (req, res) => {
             return res.expand_utf8 ("Hello world!");
         }, new Context.with_parent (context));
+    });
+
+Forward
+~~~~~~~
+
+One typical pattern is to supply a ``HandlerCallback`` that is forwarded on
+success (or any other event) like it's the case for the ``accept`` middleware.
+
+.. code:: vala
+
+    app.get ("", accept ("text/xml", (req, res) => {
+        res.body.write_all ("<a>b</a>".data, null);
+    }), (req, res) => {
+        throw new ClientError.NOT_ACCEPTABLE ("We're only producing 'text/xml here!");
     });
