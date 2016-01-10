@@ -66,22 +66,30 @@ namespace Valum {
 	 * @since 0.3
 	 *
 	 * @param expected_subdomain expected subdomain pattern
+	 * @param forward            invoked if the subdomain matches
 	 * @param flags              see {@link Valum.SubdomainFlags}
 	 * @param skip               see {@link Valum.extract_subdomains}
 	 */
-	public MatcherCallback subdomain (string expected_subdomain, SubdomainFlags flags, uint skip = 2) {
-		return (req) => {
+	public HandlerCallback subdomain (string expected_subdomain,
+	                                  owned HandlerCallback forward,
+	                                  SubdomainFlags flags = SubdomainFlags.NONE,
+	                                  uint skip            = 2) {
+		return (req, res, next, stack) => {
 			var expected_labels = expected_subdomain.split (".");
 			var labels          = extract_subdomains (req.uri.host, skip);
-			if (expected_labels.length > labels.length)
-				return false;
-			if (SubdomainFlags.STRICT in flags && expected_labels.length != labels.length)
-				return false;
-			for (var i = 1; i <= expected_labels.length; i++)
+			if (expected_labels.length > labels.length) {
+				next (req, res); return;
+			}
+			if (SubdomainFlags.STRICT in flags && expected_labels.length != labels.length) {
+				next (req, res); return;
+			}
+			for (var i = 1; i <= expected_labels.length; i++) {
 				if (expected_labels[expected_labels.length - i] != "*" &&
-					expected_labels[expected_labels.length - i] != labels[labels.length - i])
-					return false;
-			return true;
+					expected_labels[expected_labels.length - i] != labels[labels.length - i]) {
+					next (req, res); return;
+				}
+			}
+			forward (req, res, next, stack);
 		};
 	}
 }

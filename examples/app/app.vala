@@ -193,6 +193,8 @@ app.get ("not-found", (req, res) => {
 
 var api = new Router ();
 
+app.use (subdomain ("api", api.handle));
+
 api.get ("repository/<name>", (req, res) => {
 	var name = req.params["name"];
 	res.body.write_all (name.data, null);
@@ -278,6 +280,17 @@ app.get ("server-sent-events", stream_events ((req, send) => {
 		return false;
 	});
 }));
+
+app.get ("negociate", accept ("application/json", (req, res) => {
+	res.headers.set_content_type ("application/json", null);
+	res.body.write_all ("{\"a\":\"b\"}".data, null);
+})).then (accept ("text/xml", (req, res) => {
+	res.headers.set_content_type ("text/xml", null);
+	res.body.write_all ("<a>b</a>".data, null);
+})).then ((req, res) => {
+	res.status = global::Soup.Status.NOT_ACCEPTABLE;
+	res.body.write_all ("Supply the 'Accept' header with either 'application/json' or 'text/xml'.".data, null);
+});
 
 app.status (Soup.Status.NOT_FOUND, (req, res, next, stack) => {
 	var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));

@@ -14,13 +14,14 @@ which specify that any supplied label satisfy that position.
 
 .. code:: vala
 
-    app.get (subdomain ("api"), (req, res) => {
-        // match every request from 'api.*.*'
-    });
+    app.use (subdomain ("api", (req, res) => {
+        // match domains like 'api.example.com' and 'v1.api.example.com'
+    }));
 
-    app.get (subdomain ("*.*.user"), (req, res) => {
-        // match any '*.*.user'
-    });
+    app.use (subdomain ("\*.user", (req, res) => {
+        // match at least two labels: the first can be anything and the second
+        // is exactly 'user'
+    }));
 
 This middleware can be used along with subrouting to mount any :doc:`../router`
 on a specific domain pattern.
@@ -30,7 +31,7 @@ on a specific domain pattern.
     var app = new Router ();
     var api = new Router ();
 
-    app.matcher (subdomain ("api"), api.handle);
+    app.use (subdomain ("api", api.handle));
 
 Strict
 ------
@@ -45,9 +46,8 @@ of labels matching the expectations.
 
 .. code:: vala
 
-    app.get (subdomain ("api", true), (req, res) => {
-        // match every request exactly from 'api.*.*'
-    });
+    // match every request exactly from 'api.*.*'
+    app.use (subdomain ("api", api.handle, SubdomainFlags.STRICT));
 
 Skip labels
 -----------
@@ -58,7 +58,5 @@ case, the number of skipped labels can be set to any desirable value.
 
 .. code:: vala
 
-    app.get (subdomain ("api.example.com", true, 0), (req, res) => {
-        // match every request from 'api.example.com'
-    });
-
+    // match exactly 'api.example.com'
+    app.use (subdomain ("api.example.com", api.handle, SubdomainFlags.STRICT, 0));

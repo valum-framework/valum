@@ -30,45 +30,49 @@ namespace Valum {
 	 * @param header_name header to negociate
 	 * @param expectation expected value in the quality list
 	 */
-	public MatcherCallback negociate (string header_name, string expectation) {
-		return (req) => {
+	public HandlerCallback negociate (string header_name, string expectation, owned HandlerCallback forward) {
+		return (req, res, next, stack) => {
 			var header = req.headers.get_list (header_name);
-			return header != null && header_parse_quality_list (header, null).find_custom (expectation, strcmp) != null;
+			if (header != null && header_parse_quality_list (header, null).find_custom (expectation, strcmp) != null) {
+				forward (req, res, next, stack);
+			} else {
+				next (req, res);
+			}
 		};
 	}
 
 	/**
 	 * @since 0.3
 	 */
-	public MatcherCallback accept (string content_type) {
-		return negociate ("Accept", content_type);
+	public HandlerCallback accept (string content_type, owned HandlerCallback forward) {
+		return negociate ("Accept", content_type, (owned) forward);
 	}
 
 	/**
 	 * @since 0.3
 	 */
-	public MatcherCallback accept_charset (string charset) {
-		return negociate ("Accept-Charset", charset);
+	public HandlerCallback accept_charset (string charset, owned HandlerCallback forward) {
+		return negociate ("Accept-Charset", charset, (owned) forward);
 	}
 
 	/**
 	 * @since 0.3
 	 */
-	public MatcherCallback accept_encoding (string encoding) {
-		return negociate ("Accept-Encoding", encoding);
+	public HandlerCallback accept_encoding (string encoding, owned HandlerCallback forward) {
+		return negociate ("Accept-Encoding", encoding, (owned) forward);
 	}
 
 	/**
 	 * @since 0.3
 	 */
-	public MatcherCallback accept_language (string language) {
-		return negociate ("Accept-Language", language);
+	public HandlerCallback accept_language (string language, owned HandlerCallback forward) {
+		return negociate ("Accept-Language", language, (owned) forward);
 	}
 
 	/**
 	 * @since 0.3
 	 */
-	public MatcherCallback accept_ranges (string ranges) {
-		return negociate ("Accept-Ranges", ranges);
+	public HandlerCallback accept_ranges (string ranges, owned HandlerCallback forward) {
+		return negociate ("Accept-Ranges", ranges, (owned) forward);
 	}
 }

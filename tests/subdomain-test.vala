@@ -23,27 +23,52 @@ using VSGI.Test;
  * @since 0.3
  */
 public void test_subdomain () {
-	assert (!subdomain ("api", SubdomainFlags.NONE) (new Request.with_uri (new Soup.URI ("http://127.0.0.1/")), null));
+	var req   = new Request.with_uri (new Soup.URI ("http://127.0.0.1/"));
+	var res   = new Response (req);
+	var stack = new Queue<Value?> ();
+
+	subdomain ("api", () => {
+		assert_not_reached ();
+	}, SubdomainFlags.NONE) (req, res, () => {}, stack);
 }
 
 /**
  * @since 0.3
  */
 public void test_subdomain_joker () {
-	assert (subdomain("*", SubdomainFlags.NONE) (new Request.with_uri (new Soup.URI ("http://api.example.com/")), null));
-	assert (!subdomain("*", SubdomainFlags.NONE) (new Request.with_uri (new Soup.URI ("http://example.com/")), null));
+	{
+		var req   = new Request.with_uri (new Soup.URI ("http://api.example.com/"));
+		var res   = new Response (req);
+		var stack = new Queue<Value?> ();
+
+		subdomain("*", () => {}) (req, res, () => {
+			assert_not_reached ();
+		}, stack);
+	}
+
+	{
+		var req   = new Request.with_uri (new Soup.URI ("http://example.com/"));
+		var res   = new Response (req);
+		var stack = new Queue<Value?> ();
+
+		subdomain("*", () => {
+			assert_not_reached ();
+		}) (req, res, () => {}, stack);
+	}
 }
 
 /**
  * @since 0.3
  */
 public void test_subdomain_strict () {
-	var req = new Request.with_uri (new Soup.URI ("http://dev.api.example.com/"));
+	var req   = new Request.with_uri (new Soup.URI ("http://dev.api.example.com/"));
+	var res   = new Response (req);
+	var stack = new Queue<Value?> ();
 
-	assert (subdomain ("api", SubdomainFlags.NONE) (req, null));
-	assert (subdomain ("dev.api", SubdomainFlags.NONE) (req, null));
-	assert (!subdomain ("api", SubdomainFlags.STRICT) (req, null));
-	assert (subdomain ("dev.api.example.com", SubdomainFlags.STRICT, 0) (req, null));
+	subdomain ("api", () => {}) (req, res, () => { assert_not_reached (); }, stack);
+	subdomain ("dev.api", () => {}) (req, res, () => { assert_not_reached (); }, stack);
+	subdomain ("api", () => { assert_not_reached (); }, SubdomainFlags.STRICT) (req, res, () => {}, stack);
+	subdomain ("dev.api.example.com", () => {}, SubdomainFlags.STRICT, 0) (req, res, () => { assert_not_reached (); }, stack);
 }
 
 /**
