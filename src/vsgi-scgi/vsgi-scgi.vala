@@ -17,6 +17,13 @@
 
 using GLib;
 
+#if INCLUDE_TYPE_MODULE
+[ModuleInit]
+public Type plugin_init (TypeModule type_module) {
+	return typeof (VSGI.SCGI.Server);
+}
+#endif
+
 /**
  * SCGI implementation of VSGI.
  *

@@ -17,7 +17,7 @@
 
 using Lua;
 using Valum;
-using VSGI.Soup;
+using VSGI.HTTP;
 
 var app = new Router ();
 var vm  = new LuaVM ();

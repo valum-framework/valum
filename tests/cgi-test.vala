@@ -31,7 +31,7 @@ public static void test_vsgi_cgi_request () {
 		"HTTP_HOST=example.com"
 	};
 
-	var connection = new VSGI.Test.Connection ();
+	var connection = new VSGI.Mock.Connection ();
 	var request    = new Request (connection, environment);
 
 	assert (Soup.HTTPVersion.@1_0 == request.http_version);
@@ -53,7 +53,7 @@ public static void test_vsgi_cgi_request () {
  */
 public static void test_vsgi_cgi_request_missing_path_info () {
 	string[] environment = {};
-	var connection  = new VSGI.Test.Connection ();
+	var connection  = new VSGI.Mock.Connection ();
 	var request     = new Request (connection, environment);
 
 	assert ("/" == request.uri.get_path ());
@@ -63,7 +63,7 @@ public static void test_vsgi_cgi_request_missing_path_info () {
  * @since 0.2
  */
 public void test_vsgi_cgi_request_http_1_1 () {
-	var connection  = new VSGI.Test.Connection ();
+	var connection  = new VSGI.Mock.Connection ();
 	string[] environment = {"SERVER_PROTOCOL=HTTP/1.1"};
 
 	var request = new Request (connection, environment);
@@ -75,7 +75,7 @@ public void test_vsgi_cgi_request_http_1_1 () {
  * @since 0.2.4
  */
 public void test_vsgi_cgi_request_https_detection () {
-	var connection       = new VSGI.Test.Connection ();
+	var connection       = new VSGI.Mock.Connection ();
 	string[] environment = {"PATH_TRANSLATED=https://example.com:80/"};
 
 	var request = new Request (connection, environment);
@@ -88,7 +88,7 @@ public void test_vsgi_cgi_request_https_detection () {
  */
 public void test_vsgi_cgi_response () {
 	string[] environment = {};
-	var connection  = new VSGI.Test.Connection ();
+	var connection  = new VSGI.Mock.Connection ();
 	var request     = new Request (connection, environment);
 	var response    = new Response (request);
 

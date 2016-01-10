@@ -14,7 +14,7 @@ a ``using`` statement as they all respect a common interface.
 .. code:: vala
 
     using Valum;
-    using VSGI.Soup; // or VSGI.FastCGI
+    using VSGI.HTTP; // or VSGI.FastCGI
 
 Many implementations are provided and documented in :doc:`vsgi/server/index`.
 
@@ -55,8 +55,8 @@ Serving the application
 -----------------------
 
 This part is pretty straightforward: you create a server that will serve your
-application at port ``3003`` and since ``using VSGI.Soup`` was specified,
-``Server`` refers to :doc:`vsgi/server/soup`.
+application at port ``3003`` and since ``using VSGI.HTTP`` was specified,
+``Server`` refers to :doc:`vsgi/server/http`.
 
 .. code:: vala
 

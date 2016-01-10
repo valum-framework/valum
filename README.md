@@ -10,7 +10,7 @@ Valum is a web micro-framework entirely written in the
 
 ```vala
 using Valum;
-using VSGI.Soup;
+using VSGI.HTTP;
 
 var app = new Router ();
 

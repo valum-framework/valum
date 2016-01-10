@@ -11,7 +11,7 @@ def build(bld):
     bld.program(
         features     = 'test',
         target       = 'tests',
-        source       = ['tests.vala', 'tests.gresource.xml'] + bld.path.ant_glob('*-test.vala'),
+        source       = bld.path.ant_glob('*.vala') + ['tests.gresource.xml'],
         use          = 'valum',
-        vapi_dirs    = '../vapi',
+        vapi_dirs    = '../src/vsgi-fastcgi',
         install_path = None)

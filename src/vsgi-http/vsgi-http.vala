@@ -18,18 +18,25 @@
 using GLib;
 using Soup;
 
+#if INCLUDE_TYPE_MODULE
+[ModuleInit]
+public Type plugin_init (TypeModule type_module) {
+	return typeof (VSGI.HTTP.Server);
+}
+#endif
+
 /**
- * Soup implementation of VSGI.
+ * HTTP implementation of VSGI.
  *
  * @since 0.1
  */
-[CCode (gir_namespace = "VSGI.Soup", gir_version = "0.2")]
-namespace VSGI.Soup {
+[CCode (gir_namespace = "VSGI.HTTP", gir_version = "0.2")]
+namespace VSGI.HTTP {
 
 #if !SOUP_2_50
 	private class MessageBodyOutputStream : OutputStream {
 
-		public global::Soup.MessageBody message_body { construct; get; }
+		public MessageBody message_body { construct; get; }
 
 		public MessageBodyOutputStream (MessageBody message_body) {
 			Object (message_body: message_body);
@@ -207,7 +214,7 @@ namespace VSGI.Soup {
 	 */
 	public class Server : VSGI.Server {
 
-		private global::Soup.Server server;
+		private Soup.Server server;
 
 		/**
 		 * {@inheritDoc}
@@ -276,29 +283,29 @@ namespace VSGI.Soup {
 					return 1;
 				}
 #endif
-				this.server = new global::Soup.Server (
+				this.server = new Soup.Server (
 #if !SOUP_2_48
-					global::Soup.SERVER_PORT,            port,
+					SERVER_PORT,            port,
 #endif
-					global::Soup.SERVER_RAW_PATHS,       options.contains ("raw-paths"),
+					SERVER_RAW_PATHS,       options.contains ("raw-paths"),
 #if SOUP_2_38
-					global::Soup.SERVER_TLS_CERTIFICATE, tls_certificate,
+					SERVER_TLS_CERTIFICATE, tls_certificate,
 #else
-					global::Soup.SERVER_SSL_CERT_FILE,   options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING).get_bytestring (),
-					global::Soup.SERVER_SSL_KEY_FILE,    options.lookup_value ("ssl-key-file", VariantType.BYTESTRING).get_bytestring (),
+					SERVER_SSL_CERT_FILE,   options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING).get_bytestring (),
+					SERVER_SSL_KEY_FILE,    options.lookup_value ("ssl-key-file", VariantType.BYTESTRING).get_bytestring (),
 #endif
-					global::Soup.SERVER_SERVER_HEADER, null);
+					SERVER_SERVER_HEADER, null);
 			} else
 #endif
 			{
-				this.server = new global::Soup.Server (
+				this.server = new Soup.Server (
 #if !SOUP_2_48
-					global::Soup.SERVER_PORT, port,
+					SERVER_PORT, port,
 #endif
 #if GIO_2_40
-					global::Soup.SERVER_RAW_PATHS, options.contains ("raw-paths"),
+					SERVER_RAW_PATHS, options.contains ("raw-paths"),
 #endif
-					global::Soup.SERVER_SERVER_HEADER, null);
+					SERVER_SERVER_HEADER, null);
 			}
 
 #if GIO_2_40
@@ -310,7 +317,7 @@ namespace VSGI.Soup {
 			this.server.add_handler (null, (server, msg, path, query, client) => {
 #if SOUP_2_50
 				var connection = client.steal_connection ();
-				msg.set_status (global::Soup.Status.OK);
+				msg.set_status (Status.OK);
 				msg.response_headers.replace ("Connection", "close");
 #else
 				var connection = new Connection (server, msg);
@@ -378,9 +385,9 @@ namespace VSGI.Soup {
 			private InputStream _input_stream;
 			private OutputStream _output_stream;
 
-			public global::Soup.Server server { construct; get; }
+			public Soup.Server server { construct; get; }
 
-			public global::Soup.Message message { construct; get; }
+			public Message message { construct; get; }
 
 			public override InputStream input_stream {
 				get {
@@ -401,7 +408,7 @@ namespace VSGI.Soup {
 			 *                until the connection lives
 			 * @param message message wrapped to provide the IOStream
 			 */
-			public Connection (global::Soup.Server server, global::Soup.Message message) {
+			public Connection (Soup.Server server, Message message) {
 				Object (server: server, message: message);
 
 				this._input_stream  = new MemoryInputStream.from_data (message.request_body.flatten ().data, null);

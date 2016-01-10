@@ -16,7 +16,7 @@
  */
 
 using Valum;
-using VSGI.Soup;
+using VSGI.HTTP;
 
 var app       = new Router ();
 var memcached = new Memcached.Context.from_configuration ("--SERVER=localhost".data);

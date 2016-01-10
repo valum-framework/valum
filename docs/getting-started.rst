@@ -27,7 +27,7 @@ the latest changes in the framework.
 .. code:: vala
 
     using Valum;
-    using VSGI.Soup;
+    using VSGI.HTTP;
 
     var app = new Router ();
 
@@ -48,22 +48,6 @@ pretty much what you think is the best for your needs.
     build/
     src/
         app.vala
-    vapi/
-        ctpl.vala
-        fcgi.vala
-
-VAPI bindings
--------------
-
-`CTPL`_ and `FastCGI`_ are not providing Vala bindings, so you need to copy
-them in your project ``vapi`` folder. They are included in Valum's
-`vapi folder`_ and you can also find more VAPIs in `nemequ/vala-extra-vapis`_
-GitHub repository.
-
-.. _CTPL: http://ctpl.tuxfamily.org
-.. _FastCGI: http://www.fastcgi.com/drupal/
-.. _vapi folder: https://github.com/antono/valum/tree/master/vapi
-.. _nemequ/vala-extra-vapis: https://github.com/nemequ/vala-extra-vapis
 
 Building manually
 -----------------
@@ -74,13 +58,13 @@ locations, so this wont be necessary.
 
 .. code-block:: bash
 
-    valac --pkg valum --vapidir=vapi
+    valac --pkg=valum --pkg=vsgi-http --vapidir=vapi
           -X -I/usr/local/include/valum -X -lvalum # compiler options
           src/app.vala
           -o build/app
 
     # if installed in default location /usr
-    valac --pkg valum --vapidir=vapi src/app.vala -o build/app
+    valac --pkg=valum --pkg=vsgi-http --vapidir=vapi src/app.vala -o build/app
 
 Building with waf
 -----------------
@@ -101,15 +85,15 @@ at the root of your project.
     def configure(cfg):
         cfg.load('compiler_c vala')
         cfg.check_cfg(package='valum', uselib_store='VALUM', args='--libs --cflags')
+        cfg.check_cfg(package='vsgi-http', uselib_store='VSGI_HTTP', args='--libs --cflags')
 
     def build(bld):
         bld.load('vala')
         bld.program(
-            packages = ['valum'],
+            packages = ['valum', 'vsgi-http'],
             target    = 'app',
             source    = 'src/app.vala',
-            use       = 'VALUM'
-            vapi_dirs = ['vapi'])
+            use       = 'VALUM VSGI_HTTP')
 
 You should now be able to build by issuing the following commands:
 
@@ -124,7 +108,7 @@ Running the example
 VSGI produces process-based applications that are either self-hosted or able to
 communicate with a HTTP server according to a standardized protocol.
 
-The :doc:`vsgi/server/soup` implementation is self-hosting, so you just have to
+The :doc:`vsgi/http/soup` implementation is self-hosting, so you just have to
 run it and point your browser at http://127.0.0.1:3003 to see the result.
 
 .. code-block:: bash

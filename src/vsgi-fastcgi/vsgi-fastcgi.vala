@@ -16,8 +16,14 @@
  */
 
 using GLib;
-using FastCGI;
 using Soup;
+
+#if INCLUDE_TYPE_MODULE
+[ModuleInit]
+public Type plugin_init (TypeModule type_module) {
+	return typeof (VSGI.FastCGI.Server);
+}
+#endif
 
 /**
  * FastCGI implementation of VSGI.
@@ -264,7 +270,7 @@ namespace VSGI.FastCGI {
 #if GIO_2_40
 				if (options.contains ("socket")) {
 					var socket_path = options.lookup_value ("socket", VariantType.BYTESTRING).get_bytestring ();
-					this.socket     = new GLib.Socket.from_fd (open_socket (socket_path, backlog));
+					this.socket     = new GLib.Socket.from_fd (global::FastCGI.open_socket (socket_path, backlog));
 
 					if (!this.socket.is_connected ()) {
 						command_line.printerr ("could not open socket path %s\n", socket_path);
@@ -276,7 +282,7 @@ namespace VSGI.FastCGI {
 
 				else if (options.contains ("port")) {
 					var port    = ":%d".printf(options.lookup_value ("port", VariantType.INT32).get_int32 ());
-					this.socket = new GLib.Socket.from_fd (open_socket (port, backlog));
+					this.socket = new GLib.Socket.from_fd (global::FastCGI.open_socket (port, backlog));
 
 					if (!this.socket.is_connected ()) {
 						command_line.printerr ("could not open TCP socket at port %s\n", port);

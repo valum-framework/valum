@@ -15,7 +15,7 @@
  * along with Valum.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using VSGI.Soup;
+using VSGI.HTTP;
 
 /**
  * @since 0.2
@@ -23,7 +23,7 @@ using VSGI.Soup;
 public static void test_vsgi_soup_request () {
 	var message      = new Soup.Message ("GET", "http://0.0.0.0:3003/");
 
-	var connection = new VSGI.Test.Connection ();
+	var connection = new VSGI.Mock.Connection ();
 	var request    = new Request (connection, message, null);
 
 	assert (message == request.message);
@@ -42,7 +42,7 @@ public static void test_vsgi_soup_request () {
 public static void test_vsgi_soup_response () {
 	var message       = new Soup.Message ("GET", "http://0.0.0.0:3003/");
 
-	var connection = new VSGI.Test.Connection ();
+	var connection = new VSGI.Mock.Connection ();
 	var request    = new Request (connection, message, null);
 	var response   = new Response (request, message);
 

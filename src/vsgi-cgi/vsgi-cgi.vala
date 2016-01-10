@@ -142,7 +142,7 @@ namespace VSGI.CGI {
 		protected override uint8[]? build_head () {
 			var head = new StringBuilder ();
 
-			head.append_printf ("Status: %u %s\r\n", status, global::Soup.Status.get_phrase (status));
+			head.append_printf ("Status: %u %s\r\n", status, Status.get_phrase (status));
 
 			this.headers.foreach ((k, v) => {
 				head.append_printf ("%s: %s\r\n", k, v);

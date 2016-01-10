@@ -30,7 +30,7 @@ public static void test_vsgi_fastcgi_request () {
 		"HTTP_HOST=example.com"
 	};
 
-	var connection = new VSGI.Test.Connection ();
+	var connection = new VSGI.Mock.Connection ();
 	var request    = new Request (connection, environment);
 
 	assert (Soup.HTTPVersion.@1_0 == request.http_version);
@@ -56,7 +56,7 @@ public static void test_vsgi_fastcgi_request_https_on () {
 		"HTTPS=on"
 	};
 
-	var connection = new VSGI.Test.Connection ();
+	var connection = new VSGI.Mock.Connection ();
 	var request    = new Request (connection, environment);
 
 	assert ("https" == request.uri.scheme);
@@ -74,7 +74,7 @@ public static void test_vsgi_fastcgi_request_uri_with_query () {
 		"REQUEST_URI=/home?a=b"
 	};
 
-	var connection = new VSGI.Test.Connection ();
+	var connection = new VSGI.Mock.Connection ();
 	var request    = new Request (connection, environment);
 
 	assert ("/home" == request.uri.path);
@@ -92,7 +92,7 @@ public static void test_vsgi_fastcgi_response () {
 		"SERVER_PORT=3003"
 	};
 
-	var connection = new VSGI.Test.Connection ();
+	var connection = new VSGI.Mock.Connection ();
 	var request    = new Request (connection, environment);
 	var response   = new Response (request);
 

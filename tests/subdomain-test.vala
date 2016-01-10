@@ -17,7 +17,7 @@
 
 using GLib;
 using Valum;
-using VSGI.Test;
+using VSGI.Mock;
 
 /**
  * @since 0.3

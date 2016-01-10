@@ -19,14 +19,14 @@ using GLib;
 using Soup;
 
 /**
- * Test implementation of VSGI.
+ * Mock implementation of VSGI used for testing purposes.
  */
-namespace VSGI.Test {
+namespace VSGI.Mock {
 
 	/**
 	 * Stubbed connection with in-memory streams.
 	 *
-	 * The typical use case is to create a {@link VSGI.Test.Request} with a
+	 * The typical use case is to create a {@link VSGI.Mock.Request} with a
 	 * stubbed connection so that the produced and consumed messages can be
 	 * easily inspected.
 	 */

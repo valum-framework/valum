@@ -1,5 +1,5 @@
-libsoup-2.4 built-in server
-============================
+HTTP
+====
 
 libsoup-2.4 provides a `built-in HTTP server`_ that you can use to test your
 application or spawn workers in production.
@@ -9,9 +9,9 @@ application or spawn workers in production.
 .. code:: vala
 
     using Valum;
-    using VSGI.Soup;
+    using VSGI.HTTP;
 
-    new Server ("org.vsgi.Soup", () => {
+    new Server ("org.vsgi.HTTP", () => {
         res.status = Soup.Status.OK;
         res.body.write_all ("Hello world!".data, null);
     }).run ({"app", "--port", "3003"});

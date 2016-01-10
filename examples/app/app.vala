@@ -17,7 +17,7 @@
 
 using Valum;
 using Valum.ServerSentEvents;
-using VSGI.Soup;
+using VSGI.HTTP;
 
 var app = new Router ();
 

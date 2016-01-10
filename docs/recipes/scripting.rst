@@ -20,7 +20,7 @@ Lua
 .. code:: vala
 
     using Valum;
-    using VSGI.Soup;
+    using VSGI.HTTP;
     using Lua;
 
     var app = new Router ();
@@ -41,7 +41,7 @@ Lua
         writer.put_string (lua.do_file ("scripts/hello.lua"));
     });
 
-    new Soup (app).run ();
+    new Server ("org.valum.example.Lua", app).run ();
 
 The sample Lua script contains:
 

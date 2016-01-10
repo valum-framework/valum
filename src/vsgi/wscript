@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+
+def configure(cfg):
+    cfg.check_cfg(package='glib-2.0', atleast_version='2.32', uselib_store='GLIB', args='--cflags --libs')
+    cfg.check_cfg(package='gio-2.0', atleast_version='2.32', uselib_store='GIO', args='--cflags --libs')
+    cfg.check_cfg(package='libsoup-2.4', atleast_version='2.38',uselib_store='SOUP', args='--cflags --libs')
+
+    # glib (>=2.38) to enable subprocess in tests
+    if cfg.check_cfg(package='glib-2.0', atleast_version='2.38', mandatory=False, uselib_store='GLIB', args='--cflags --libs'):
+        cfg.env.append_unique('VALAFLAGS', ['--define=GIO_2_38'])
+
+    # gio (>=2.34) is necessary for ApplicationCommandLine.get_stdin
+    if cfg.check_cfg(package='gio-2.0', atleast_version='2.34', mandatory=False, uselib_store='GIO', args='--cflags --libs'):
+        cfg.env.append_unique('VALAFLAGS', ['--define=GIO_2_34'])
+
+    # gio (>=2.40) is necessary for CLI arguments parsing
+    if cfg.check_cfg(package='gio-2.0', atleast_version='2.40', mandatory=False, uselib_store='GIO', args='--cflags --libs'):
+        cfg.env.append_unique('VALAFLAGS', ['--define=GIO_2_40'])
+
+    # gio (>=2.44) is necessary for 'write_all_async' and 'strv_contains'
+    if cfg.check_cfg(package='gio-2.0', atleast_version='2.44', mandatory=False, uselib_store='GIO', args='--cflags --libs'):
+        cfg.env.append_unique('VALAFLAGS', ['--define=GIO_2_44'])
+
+    # libsoup (>=2.38) to support TLS certificate
+    if cfg.check_cfg(package='libsoup-2.4', atleast_version='2.38', mandatory=False, uselib_store='SOUP', args='--cflags --libs'):
+        cfg.env.append_unique('VALAFLAGS', ['--define=SOUP_2_38'])
+
+    # libsoup (>=2.48) is necessary for the new server API
+    if cfg.check_cfg(package='libsoup-2.4', atleast_version='2.48', mandatory=False, uselib_store='SOUP', args='--cflags --libs'):
+        cfg.env.append_unique('VALAFLAGS', ['--define=SOUP_2_48'])
+
+    # libsoup (>=2.50) for steal_connection
+    if cfg.check_cfg(package='libsoup-2.4', atleast_version='2.50', mandatory=False, uselib_store='SOUP', args='--cflags --libs'):
+        cfg.env.append_unique('VALAFLAGS', ['--define=SOUP_2_50'])
+
+def build(bld):
+    from waflib import Context
+    bld.shlib(
+        packages     = ['glib-2.0', 'gio-2.0', 'libsoup-2.4'],
+        target       = 'vsgi',
+        gir          = 'VSGI-{}'.format(Context.g_module.API_VERSION),
+        source       = bld.path.ant_glob('*.vala'),
+        use          = ['GLIB', 'GIO', 'SOUP'],
+        header_path  = '${INCLUDEDIR}/vsgi',
+        install_path = '${LIBDIR}')
+

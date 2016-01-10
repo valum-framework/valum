@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+
+def configure(cfg):
+    pass
+
+def build(bld):
+    from waflib import Context
+    bld.shlib(
+        target       = 'valum',
+        gir          = 'Valum-{}'.format(Context.g_module.API_VERSION),
+        source       = bld.path.ant_glob('*.vala'),
+        use          = 'vsgi',
+        header_path  = '${INCLUDEDIR}/valum',
+        install_path = '${LIBDIR}')
+
