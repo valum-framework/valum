@@ -84,9 +84,9 @@ namespace Valum.Static {
 	 * @since 0.3
 	 *
 	 * @param root        path from which resources are resolved
-	 * @param serve_flags
+	 * @param serve_flags flags for serving the resources
 	 */
-	public HandlerCallback serve_from_path (File root, ServeFlags serve_flags) {
+	public HandlerCallback serve_from_path (File root, ServeFlags serve_flags = ServeFlags.NONE) {
 		return (req, res, next, stack) => {
 			var file = root.resolve_relative_path (stack.pop_tail ().get_string ());
 
@@ -173,12 +173,12 @@ namespace Valum.Static {
 	 * @param prefix      prefix from which resources are resolved in the
 	 *                    resource bundle; a valid prefix begin and start with a
 	 *                    '/' character
-	 * @param serve_flags
+	 * @param serve_flags flags for serving the resources
 	 * @param resourcea   resource bundle to serve or the global one if null
 	 */
 	public HandlerCallback serve_from_resources (string prefix,
-	                                             ServeFlags serve_flags,
-	                                             Resource? resource = null) {
+	                                             ServeFlags serve_flags = ServeFlags.NONE,
+	                                             Resource? resource     = null) {
 		// cache for already computed 'ETag' values
 		var etag_cache = new HashTable <string, string> (str_hash, str_equal);
 
