@@ -206,7 +206,7 @@ namespace Valum {
 		 * @param matcher callback used to match the request
 		 * @param cb      callback used to process the pair of request and response.
 		 */
-		public Route matcher (string method, owned MatcherCallback matcher, owned HandlerCallback cb) {
+		public Route matcher (string? method, owned MatcherCallback matcher, owned HandlerCallback cb) {
 			return this.route (new Route (this, method, (owned) matcher, (owned) cb));
 		}
 
