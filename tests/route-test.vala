@@ -22,7 +22,7 @@ using VSGI.Test;
  * @since 0.1
  */
 public void test_route () {
-	Route route  = {"GET", (req) => { return true; }, (req, res) => {}};
+	Route route  = {(req) => { return true; }, (req, res) => {}, RouteFlags.GET};
 	var req    = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var stack  = new Queue<Value?> ();
 

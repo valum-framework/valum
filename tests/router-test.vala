@@ -225,8 +225,8 @@ public static void test_router_methods () {
 	});
 
 	assert (2 == routes.length);
-	assert (methods[0] == routes[0].node.data.method);
-	assert (methods[1] == routes[1].node.data.method);
+	assert (RouteFlags.GET in routes[0].node.data.flags);
+	assert (RouteFlags.POST in routes[1].node.data.flags);
 
 	foreach (var method in methods) {
 		var request  = new Request (method, new Soup.URI ("http://localhost/"));
@@ -251,7 +251,7 @@ public static void test_router_all () {
 	assert (VSGI.Request.METHODS.length == routes.length);
 
 	for (int i = 0; i < routes.length; i++)
-		assert (VSGI.Request.METHODS[i] == routes[i].node.data.method);
+		assert (RouteFlags.from_method (VSGI.Request.METHODS[i]) in routes[i].node.data.flags);
 
 	foreach (var method in VSGI.Request.METHODS) {
 		var request  = new Request (method, new Soup.URI ("http://localhost/"));
@@ -287,9 +287,9 @@ public static void test_router_regex () {
 public static void test_router_matcher () {
 	var router = new Router ();
 
-	router.matcher (VSGI.Request.GET, (req) => { return req.uri.get_path () == "/"; }, (req, res) => {
+	router.route ((req) => { return req.uri.get_path () == "/"; }, (req, res) => {
 		res.status = 418;
-	});
+	}, RouteFlags.GET);
 
 	var request  = new Request (VSGI.Request.GET, new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.OK);
@@ -520,14 +520,14 @@ public static void test_router_method_not_allowed_excludes_request_method () {
 	var post_matched = 0;
 
 	// matching, but not the same HTTP method
-	router.matcher (VSGI.Request.GET, () => { get_matched++; return true; }, (req, res) => {
+	router.route (() => { get_matched++; return true; }, (req, res) => {
 
-	});
+	}, RouteFlags.GET);
 
 	// not matching, but same HTTP method
-	router.matcher (VSGI.Request.POST, () => { post_matched++; return false; }, (req, res) => {
+	router.route (() => { post_matched++; return false; }, (req, res) => {
 
-	});
+	}, RouteFlags.POST);
 
 	var request = new Request ("POST", new Soup.URI ("http://localhost/"));
 	var response = new Response (request, Soup.Status.METHOD_NOT_ALLOWED);

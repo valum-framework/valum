@@ -70,7 +70,7 @@ namespace Valum {
 		/**
 		 * @since 0.0.1
 		 */
-		public new Builder get (string? rule, owned HandlerCallback cb) throws RegexError {
+		public new Builder @get (string? rule, owned HandlerCallback cb) throws RegexError {
 			return this.rule (Request.GET, rule, (owned) cb);
 		}
 
@@ -91,7 +91,7 @@ namespace Valum {
 		/**
 		 * @since 0.0.1
 		 */
-		public Builder delete (string? rule, owned HandlerCallback cb) throws RegexError {
+		public Builder @delete (string? rule, owned HandlerCallback cb) throws RegexError {
 			return this.rule (Request.DELETE, rule, (owned) cb);
 		}
 
@@ -133,29 +133,12 @@ namespace Valum {
 		}
 
 		/**
-		 * Bind a callback with a custom method.
-		 *
-		 * Useful if you need to support a non-standard HTTP method, otherwise you
-		 * should use the predefined methods.
-		 *
-		 * @since 0.1
-		 *
-		 * @param method HTTP method
-		 * @param rule   rule
-		 * @param cb     callback used to process the pair of request and response.
-		 */
-		[Deprecated (since = "0.3", replacement = "rule")]
-		public Builder method (string method, string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.rule (method, rule, (owned) cb);
-		}
-
-		/**
 		 * Bind a callback to all HTTP methods defined in {@link VSGI.Request.METHODS}.
 		 *
 		 * @since 0.1
 		 */
-		public Builder[] all (string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.methods (Request.METHODS, rule, (owned) cb);
+		public Builder all (string? rule, owned HandlerCallback cb) throws RegexError {
+			return this.rule (null, rule, (owned) cb);
 		}
 
 		/**
@@ -226,7 +209,7 @@ namespace Valum {
 		 *
 		 * @since 0.3
 		 *
-		 * @param method method matching this rule
+		 * @param method method matching this rule, or 'null' for any
 		 * @param rule   rule or 'null' to capture all possible paths
 		 * @param cb     handling callback
 		 *
@@ -235,14 +218,14 @@ namespace Valum {
 		 *
 		 * @return a builder upon the created {@link Route} object
 		 */
-		public Builder rule (string method, string? rule, owned HandlerCallback cb) throws RegexError {
+		public Builder rule (string? method, string? rule, owned HandlerCallback cb) throws RegexError {
 			// catch-all null rule
 			if (rule == null) {
 				return this.regex (method, /(?<path>.*)/, (owned) cb);
 			} else if (rule == "*") {
-				return this.matcher (method, (req) => {
+				return this.route ((req) => {
 					return req.uri.get_path () == "*";
-				}, (owned) cb);
+				}, (owned) cb, RouteFlags.from_method (method));
 			} else {
 				return this.regex (method, new Regex (compile_rule (rule)), (owned) cb);
 			}
@@ -261,13 +244,13 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 *
-		 * @param method HTTP method
+		 * @param method HTTP method or 'null' for any
 		 * @param regex  regular expression matching the request path.
 		 * @param cb     callback used to process the pair of request and response.
 		 *
 		 * @return a builder upon the created {@link Route} object
 		 */
-		public Builder regex (string method, Regex regex, owned HandlerCallback cb) throws RegexError {
+		public Builder regex (string? method, Regex regex, owned HandlerCallback cb) throws RegexError {
 			var pattern = new StringBuilder ("^");
 
 			// root the route
@@ -295,8 +278,13 @@ namespace Valum {
 			// regex are optimized automatically :)
 			var prepared_regex = new Regex (pattern.str, RegexCompileFlags.OPTIMIZE);
 
-			return this.matcher (method, (req, stack) => {
+			return this.route ((req, stack) => {
 				MatchInfo match_info;
+				// check non-standard method
+				if (RouteFlags.NONE == RouteFlags.from_method (req.method) &&
+						method != null &&
+						method != req.method)
+					return false;
 				if (prepared_regex.match (req.uri.get_path (), 0, out match_info)) {
 					if (captures.length () > 0) {
 						// populate the request parameters
@@ -310,36 +298,18 @@ namespace Valum {
 					return true;
 				}
 				return false;
-			}, (owned) cb);
+			}, (owned) cb, method == null ? RouteFlags.ALL : RouteFlags.from_method (method));
 		}
 
 		/**
-		 * Bind a callback with a custom HTTP method and a matcher callback.
-		 *
-		 * @since 0.1
-		 *
-		 * @param method  HTTP method
-		 * @param matcher callback used to match the request
-		 * @param cb      callback used to process the pair of request and response.
+		 * Bind a {@link Route} with a custom matcher, handler and flags.
 		 *
 		 * @return a builder upon the created {@link Route} object
 		 */
-		public Builder matcher (string method, owned MatcherCallback matcher, owned HandlerCallback cb) {
-			return this.route ({method, (owned) matcher, (owned) cb});
-		}
-
-		/**
-		 * Bind a {@link Route} to a custom HTTP method.
-		 *
-		 * This is a low-level function and should be used with care.
-		 *
-		 * @param route  an instance of Route defining the matching process and the
-		 *               handling callback.
-		 *
-		 * @return a builder upon the created {@link Route} object
-		 */
-		private Builder route (owned Route route) {
-			this.routes.push_tail (route);
+		public Builder route (owned MatcherCallback match,
+		                      owned HandlerCallback handle,
+							  RouteFlags flags = RouteFlags.NONE) {
+			this.routes.push_tail ({match, handle, flags});
 			return new Builder (routes.tail);
 		}
 
@@ -358,7 +328,7 @@ namespace Valum {
 			if (!this.status_handlers.contains (status))
 				this.status_handlers[status] = new Queue<Route?> ();
 
-			this.status_handlers[status].push_tail ({null, () => { return true; }, (owned) cb});
+			this.status_handlers[status].push_tail ({() => { return true; }, (owned) cb, RouteFlags.ALL});
 			return new Builder (status_handlers[status].tail);
 		}
 
@@ -389,8 +359,9 @@ namespace Valum {
 		 * @return tells if something matched during the routing process
 		 */
 		private bool perform_routing (List<Route?> routes, Request req, Response res, Queue<Value?> stack) throws Informational, Success, Redirection, ClientError, ServerError {
+			var request_flags = RouteFlags.from_request (req);
 			foreach (var route in routes) {
-				if ((route.method == null || route.method == req.method) && route.match (req, stack)) {
+				if (request_flags in route.flags && route.match (req, stack)) {
 					route.fire (req, res, (req, res) => {
 						unowned List<Route?> current = routes.find (route);
 						// keep routing if there are more routes to explore
@@ -497,8 +468,33 @@ namespace Valum {
 					return; // something matched
 
 				// find routes from other methods matching this request
+				RouteFlags flags = RouteFlags.NONE;
+
+				// collect flags
+				foreach (var route in this.routes.head)
+					if (route.match (req, stack))
+						flags |= route.flags;
+
+				// exclude the request method
+				flags ^= RouteFlags.from_method (req.method);
+
+				// other method(s) match this request
+				if ((RouteFlags.ALL & flags) > 0)
+					throw new ClientError.METHOD_NOT_ALLOWED (flags.to_allowed_header ());
+
+				/*
 				string[] allowed = {};
-				foreach (var route in this.routes.head) {
+				if (RouteFlags.GET in flags)
+					allowed += Request.GET;
+				if (RouteFlags.GET in flags)
+					allowed += Request.GET;
+				if (RouteFlags.GET in flags)
+					allowed += Request.GET;
+				if (RouteFlags.GET in flags)
+					allowed += Request.GET;
+				if (RouteFlags.GET in flags)
+					allowed += Request.GET;
+
 					if (route.method != null &&                  // null method allow anything
 					    route.method != req.method &&            // exclude the request method (it's not allowed already)
 #if GLIB_2_44
@@ -507,13 +503,9 @@ namespace Valum {
 					    !string.joinv ("", allowed).contains (route.method) &&
 #endif
 					    route.match (req, stack)) {
-						allowed += route.method;
 					}
 				}
-
-				// other method(s) match this request
-				if (allowed.length > 0)
-					throw new ClientError.METHOD_NOT_ALLOWED (string.joinv (", ", allowed));
+				*/
 
 				throw new ClientError.NOT_FOUND ("The request URI %s was not found.".printf (req.uri.to_string (false)));
 			});
@@ -551,7 +543,7 @@ namespace Valum {
 			 * @return a builder over the created {@link Valum.Route}
 			 */
 			public Builder then (owned HandlerCallback handler) {
-				node.insert ({node.data.method, node.data.match, (owned) handler}, 1);
+				node.insert ({node.data.match, (owned) handler, node.data.flags}, 1);
 				return new Builder (node.next);
 			}
 		}
