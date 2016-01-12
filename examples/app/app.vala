@@ -16,6 +16,7 @@
  */
 
 using Valum;
+using Valum.ContentNegotiation;
 using Valum.ServerSentEvents;
 using VSGI.Soup;
 

@@ -1,32 +1,33 @@
 using Valum;
+using Valum.ContentNegotiation;
 using VSGI.Test;
 
 /**
  * @since 0.3
  */
-public void test_negociate () {
+public void test_content_negotiation_negotiate () {
 	var req   = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
 	var res   = new Response (req);
 	var stack = new Queue<Value?> ();
 
 	req.headers.append ("Accept", "text/html; q=0.9, text/xml; q=0");
 
-	negociate ("Accept", "text/html", () => {}) (req, res, () => {
+	negotiate ("Accept", "text/html", () => {}) (req, res, () => {
 		assert_not_reached ();
 	}, stack);
 
 	// explicitly refuse the content type with 'q=0'
-	negociate ("Accept", "text/xml", () => {
+	negotiate ("Accept", "text/xml", () => {
 		assert_not_reached ();
 	}) (req, res, () => {}, stack);
 
-	negociate ("Accept", "application/octet-stream", () => {
+	negotiate ("Accept", "application/octet-stream", () => {
 		assert_not_reached ();
 	}) (req, res, () => {}, stack);
 
 	// header is missing, so forward unconditionnaly
 	assert (null == req.headers.get_one ("Accept-Encoding"));
-	negociate ("Accept-Encoding", "utf-8", () => {
+	negotiate ("Accept-Encoding", "utf-8", () => {
 		assert_not_reached ();
 	}) (req, res, () => {}, stack);
 }
@@ -34,7 +35,7 @@ public void test_negociate () {
 /**
  * @since 0.3
  */
-public void test_negociate_final () {
+public void test_content_negotiation_negotiate_final () {
 	var req   = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
 	var res   = new Response (req);
 	var stack = new Queue<Value?> ();
@@ -43,9 +44,9 @@ public void test_negociate_final () {
 
 	var reached = false;
 	try {
-		negociate ("Accept", "application/octet-stream", () => {
+		negotiate ("Accept", "application/octet-stream", () => {
 			assert_not_reached ();
-		}, NegociateFlags.FINAL) (req, res, () => {}, stack);
+		}, NegotiateFlags.FINAL) (req, res, () => {}, stack);
 	} catch (ClientError.NOT_ACCEPTABLE err) {
 		reached = true;
 	}
@@ -55,7 +56,7 @@ public void test_negociate_final () {
 /**
  * @since 0.3
  */
-public void test_negociate_accept () {
+public void test_content_negotiation_accept () {
 	var req   = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
 	var res   = new Response (req);
 	var stack = new Queue<Value?> ();
