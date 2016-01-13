@@ -10,7 +10,7 @@ def build(bld):
         gir          = 'VSGI.HTTP-{}'.format(Context.g_module.API_VERSION),
         source       = 'vsgi-http.vala',
         use          = 'vsgi',
-        vala_define  = 'INCLUDE_TYPE_MODULE',
+        vala_defines = ['INCLUDE_TYPE_MODULE'],
         header_path  = '${INCLUDEDIR}/vsgi',
         install_path = '${LIBDIR}')
 
