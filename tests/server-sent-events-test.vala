@@ -9,7 +9,7 @@ public void test_server_sent_events_send () {
 	var router = new Router ();
 
 	router.get ("", stream_events ((req, send) => {
-		send (null, "some event");
+		send ("important", "some event", "1234", TimeSpan.MILLISECOND);
 	}));
 
 	var connection = new Connection ();
