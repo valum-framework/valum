@@ -6,15 +6,15 @@ def configure(cfg):
 def build(bld):
     from waflib import Context
     bld.shlib(
-        packages     = 'fcgi',
-        target       = 'vsgi-fastcgi',
-        gir          = 'VSGI.FastCGI-{}'.format(Context.g_module.API_VERSION),
-        source       = 'vsgi-fastcgi.vala',
-        use          = 'vsgi vsgi-cgi FCGI',
-        vala_defines = ['INCLUDE_TYPE_MODULE'],
-        vapi_dirs    = '.',
-        header_path  = '${INCLUDEDIR}/vsgi',
-        install_path = '${LIBDIR}')
+        packages_private = 'fcgi',
+        target           = 'vsgi-fastcgi',
+        gir              = 'VSGI.FastCGI-{}'.format(Context.g_module.API_VERSION),
+        source           = 'vsgi-fastcgi.vala',
+        use              = 'vsgi vsgi-cgi FCGI',
+        vala_defines     = ['INCLUDE_TYPE_MODULE'],
+        vapi_dirs        = '.',
+        header_path      = '${INCLUDEDIR}/vsgi',
+        install_path     = '${LIBDIR}')
 
     bld(
         features     = 'subst',
