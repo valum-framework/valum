@@ -130,11 +130,11 @@ the :doc:`router` can handle them properly.
         throw new ClientError.NOT_FOUND ("");
     });
 
-During status handling, the error message will be pushed on the routing stack
-as a ``string``.
+During status handling, the error message will be pushed on the routing context
+as a ``string`` to the key ``message``.
 
 .. code:: vala
 
-    app.status (404, (req, res, next, stack) => {
-        var message = stack.pop_tail ().get_string ();
+    app.status (404, (req, res, next, context) => {
+        var message = context["message"].get_string ();
     });

@@ -32,7 +32,6 @@ public static void test_vsgi_soup_request () {
 	assert ("0.0.0.0" == request.uri.get_host ());
 	assert (3003 == request.uri.get_port ());
 	assert (null == request.query);
-	assert (null == request.params);
 	assert (message.request_headers == request.headers);
 }
 
