@@ -16,53 +16,6 @@ There are three ways of matching user requests:
 -  with a regular expression on the request path
 -  with a matching callback
 
-Once matched, the :doc:`vsgi/request` parameters might be populated to provide
-additional information about the request.
-
-Request parameters
-~~~~~~~~~~~~~~~~~~
-
-.. deprecated:: 0.2
-    Request parameters are stored in the stack.
-
-.. warning::
-
-    It is important to keep in mind that the request parameters result from
-    a side-effect. If a matcher accept the request, it may populate the
-    parameters. The matching process in :doc:`router` guarantees that only one
-    matcher can accept the request and thus populate the parameters.
-
-Request can be parametrized in a general manner:
-
--  extract data from the URI path like an integer identifier
--  extract data from the headers such as the request refeerer
-
-:doc:`../route` created from a rule or a regular expression will populate the
-parameters with their named captures.
-
-.. code:: vala
-
-    app.get ("<int:i>", (req, res) => {
-        var i = req.params["i"];
-    });
-
-Parameters default to ``null`` if it is not populated by any matchers.
-
-Request parameters (stacked)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Request parameters are accumulated in the routing stack in their conventional
-order and can be popped in a handler in the reverse order.
-
-All parameters are represented by ``string`` and must be parsed accordingly.
-
-.. code:: vala
-
-    app.get ("<controller><action>", (req, res, next, stack) => {
-        var action     = stack.pop_tail ();
-        var controller = stack.pop_tail ();
-    });
-
 Matching using a rule
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -180,6 +133,15 @@ If you would like ``ìnt`` to match negatives integer, you may just do:
 
     app.types["int"] = /-?\d+/;
 
+Rule parameters are available from the routing context by their name.
+
+.. code:: vala
+
+    app.get ("<controller>/<action>", (req, res, next, context) => {
+        var controller = context["controller"].get_string ();
+        var action     = context["action"].get_string ();
+    });
+
 Matching using a regular expression
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -192,6 +154,14 @@ and optimized.
     app.regex (Request.GET, /home\/?/, (req, res) => {
         var writer = new DataOutputStream (res.body);
         writer.put_string ("Matched using a regular expression.");
+    });
+
+Named captures are registered in the routing context.
+
+.. code:: vala
+
+    app.get (/(?<word>\w+)/, (req, res, next, context) => {
+        var word = context["word"].get_string ();
     });
 
 Matching using a callback

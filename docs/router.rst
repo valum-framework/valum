@@ -31,6 +31,9 @@ Routing context
 During the routing, states can obtained from a previous handler or passed to
 the next one using the routing context.
 
+Keys are resolved recursively in the tree of context by looking at the parent
+context if it's missing.
+
 .. code:: vala
 
     app.get ("", (req, res, next, context) => {

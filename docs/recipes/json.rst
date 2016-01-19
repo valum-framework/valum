@@ -87,14 +87,14 @@ code duplication. They are described in the :doc:`../router` document.
 
     app.scope ("user", (user) => {
         // fetch the user
-        app.get ("<username>", (req, res, next, stack) => {
-            stack.push_tail (new User.from_username (req.params["username"]));
+        app.get ("<username>", (req, res, next, context) => {
+            context["user"] = new User.from_username (context["username"].get_string ());
             next (req, res);
         });
 
         // update model data
-        app.post ("<username>", (req, res, next, stack) => {
-            var username = stack.pop_tail ().get_string ();
+        app.post ("<username>", (req, res, next, context) => {
+            var username = context["username"].get_string ();
             var user     = new User.from_username (username);
             var parser   = new Json.Parser ();
 
@@ -119,16 +119,16 @@ code duplication. They are described in the :doc:`../router` document.
                 throw new Success.CREATED ("/user/%s".printf (user.username));
             }
 
-            stack.push_tail (user);
+            context["user"] = user;
 
             next (req, res);
         });
 
         // serialize to JSON any provided GObject
-        app.all (null, (req, res, next, stack) => {
+        app.all (null, (req, res, next, context) => {
             var generator = new Json.Generator ();
 
-            generator.root   = Json.gobject_serialize (stack.pop_tail ().get_object ());
+            generator.root   = Json.gobject_serialize (context["user"].get_object ());
             generator.pretty = false;
 
             res.headers.set_content_type ("application/json", null);
@@ -150,7 +150,7 @@ expecting a considerable user input.
 
         user.update ();
 
-        stack.push_tail (user);
+        context["user"] = user;
 
         // execute 'next' in app context
         app.invoke (req, res, next);
