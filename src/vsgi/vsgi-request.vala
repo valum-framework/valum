@@ -62,16 +62,6 @@ namespace VSGI {
 		public const string[] METHODS = {OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT, PATCH};
 
 		/**
-		 * Parameters for the request.
-		 *
-		 * These should be extracted from the URI path.
-		 *
-		 * @since 0.0.1
-		 */
-		[Deprecated (since = "0.2")]
-		public HashTable<string, string?>? @params { get; set; default = null; }
-
-		/**
 		 * Connection containing raw streams.
 		 *
 		 * @since 0.2

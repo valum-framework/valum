@@ -38,7 +38,6 @@ public static void test_vsgi_fastcgi_request () {
 	assert ("0.0.0.0" == request.uri.get_host ());
 	assert (3003 == request.uri.get_port ());
 	assert (null == request.query);
-	assert (null == request.params);
 	assert ("example.com" == request.headers.get_one ("Host"));
 	assert (connection.input_stream == request.body);
 }

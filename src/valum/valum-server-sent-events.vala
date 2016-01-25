@@ -56,13 +56,13 @@ namespace Valum.ServerSentEvents {
 	 *
 	 * @param request    request this is responding to
 	 * @param send_event send a SSE message
-	 * @param stack      routing stack
+	 * @param context    routing context
 	 *
 	 * @throws GLib.Error thrown errors are suppressed with {@link GLib.warning}
 	 */
 	public delegate void EventStreamCallback (Request request,
 	                                          owned SendEventCallback send_event,
-	                                          Queue<Value?> stack) throws Error;
+	                                          Context context) throws Error;
 
 	/**
 	 * Middleware that create a context for sending Server-Sent Events.
@@ -83,7 +83,7 @@ namespace Valum.ServerSentEvents {
 	 * @param context context for sending events
 	 */
 	public HandlerCallback stream_events (owned EventStreamCallback context) {
-		return (req, res, next, stack) => {
+		return (req, res, next, _context) => {
 			HashTable<string, string> @params;
 			res.headers.get_content_type (out @params);
 			res.headers.set_content_type ("text/event-stream", @params);
@@ -111,7 +111,7 @@ namespace Valum.ServerSentEvents {
 
 					res.body.write_all (message.str.data, null);
 					res.body.flush ();
-				}, stack);
+				}, _context);
 			} catch (Error err) {
 				warning (err.message);
 			}

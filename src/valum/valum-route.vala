@@ -106,17 +106,14 @@ namespace Valum {
 			// regex are optimized automatically :)
 			var prepared_regex = new Regex (pattern.str, RegexCompileFlags.OPTIMIZE);
 
-			this (router, method, (req, stack) => {
+			this (router, method, (req, context) => {
 				MatchInfo match_info;
 				if (prepared_regex.match (req.uri.get_path (), 0, out match_info)) {
 					if (captures.length () > 0) {
-						// populate the request parameters
-						var p = new HashTable<string, string?> (str_hash, str_equal);
+						// populate the context parameters
 						foreach (var capture in captures) {
-							p[capture] = match_info.fetch_named (capture);
-							stack.push_tail (match_info.fetch_named (capture));
+							context[capture] = match_info.fetch_named (capture);
 						}
-						req.params = p;
 					}
 					return true;
 				}
@@ -188,9 +185,9 @@ namespace Valum {
 		 * @since 0.2
 		 */
 		public Route then (owned HandlerCallback handler) {
-			return this.router.matcher (this.method, (req, stack) => {
-				// since the same matcher is shared, we preserve the stack intact
-				return match (req, new Queue<Value?> ());
+			return this.router.matcher (this.method, (req, context) => {
+				// since the same matcher is shared, we preserve the context intact
+				return match (req, new Context.with_parent (context));
 			}, (owned) handler);
 		}
 	}

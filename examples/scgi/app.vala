@@ -32,4 +32,4 @@ app.get ("async", (req, res) => {
 	res.body.write_all_async.begin ("Hello world!".data, Priority.DEFAULT, null);
 });
 
-new Server ("org.valum.example.SCGI", app.handle).run ();
+new Server ("org.valum.example.SCGI", app.handle).run ({"app", "--port", "3003"});
