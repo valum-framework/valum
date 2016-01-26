@@ -343,7 +343,8 @@ namespace VSGI.FastCGI {
 				var req = new Request (connection, request.environment.get_all ());
 				var res = new Response (req);
 
-				this.handle (req, res);
+				// dispatch the app in the main loop
+				dispatch (req, res);
 
 				debug ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
 

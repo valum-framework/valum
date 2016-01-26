@@ -311,7 +311,7 @@ namespace VSGI.SCGI {
 					var req = new Request (new Connection (connection), new SCGIInputStream (reader, content_length), environment);
 					var res = new Response (req);
 
-					this.handle (req, res);
+					dispatch (req, res);
 
 				} catch (Error err) {
 					command_line.printerr (err.message);
