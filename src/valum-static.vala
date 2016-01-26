@@ -49,21 +49,39 @@ namespace Valum.Static {
 		 *
 		 * @since 0.3
 		 */
-		ETAG,
+		ENABLE_ETAG,
 		/**
 		 * Produce a 'Last-Modified' header and raise {@link Valum.Redirection.NOT_MODIFIED}
 		 * if the resource has already been transmitted.
 		 *
 		 * @since 0.3
 		 */
-		LAST_MODIFIED,
+		ENABLE_LAST_MODIFIED,
 		/**
 		 * Indicate that the delivered resource can be cached by anyone using
 		 * the 'Cache-Control: public' header.
 		 *
 		 * @since 0.3
 		 */
-		PUBLIC
+		ENABLE_CACHE_CONTROL_PUBLIC,
+		/**
+		 * Yield a {@link ClientError.FORBIDDEN} if rights are missing on the
+		 * resource rather than calling 'next'.
+		 *
+		 * @since 0.3
+		 */
+		PRODUCE_FORBIDDEN,
+		/**
+		 * If supported, generate a 'X-Sendfile' header instead of delivering
+		 * the actual resource in the response body.
+		 *
+		 * The absolute path as provided by {@link GLib.File.get_path} will be
+		 * produced in the 'X-Sendfile' header. It must therefore be accessible
+		 * for the HTTP server.
+		 *
+		 * @since 0.3
+		 */
+		PRODUCE_X_SENDFILE
 	}
 
 	/**
@@ -91,7 +109,7 @@ namespace Valum.Static {
 			var file = root.resolve_relative_path (stack.pop_tail ().get_string ());
 
 			try {
-				if (ServeFlags.ETAG in serve_flags) {
+				if (ServeFlags.ENABLE_ETAG in serve_flags) {
 					var etag = "\"%s\"".printf (file.query_info (FileAttribute.ETAG_VALUE,
 					                                             FileQueryInfoFlags.NONE).get_etag ());
 
@@ -101,7 +119,7 @@ namespace Valum.Static {
 					res.headers.replace ("ETag", etag);
 				}
 
-				else if (ServeFlags.LAST_MODIFIED in serve_flags) {
+				else if (ServeFlags.ENABLE_LAST_MODIFIED in serve_flags) {
 					var last_modified = file.query_info (FileAttribute.TIME_MODIFIED,
 					                                     FileQueryInfoFlags.NONE).get_modification_time ();
 
@@ -114,7 +132,7 @@ namespace Valum.Static {
 					                     new Soup.Date.from_time_t (last_modified.tv_sec).to_string (Soup.DateFormat.HTTP));
 				}
 
-				if (ServeFlags.PUBLIC in serve_flags)
+				if (ServeFlags.ENABLE_CACHE_CONTROL_PUBLIC in serve_flags)
 					res.headers.append ("Cache-Control", "public");
 
 				var file_read_stream = file.read ();
@@ -195,7 +213,7 @@ namespace Valum.Static {
 				return;
 			}
 
-			if (ServeFlags.ETAG in serve_flags) {
+			if (ServeFlags.ENABLE_ETAG in serve_flags) {
 				var etag = path in etag_cache ?
 					etag_cache[path] :
 					"\"%s\"".printf (Checksum.compute_for_bytes (ChecksumType.SHA1, lookup));
@@ -208,7 +226,7 @@ namespace Valum.Static {
 				res.headers.replace ("ETag", etag);
 			}
 
-			if (ServeFlags.PUBLIC in serve_flags)
+			if (ServeFlags.ENABLE_CACHE_CONTROL_PUBLIC in serve_flags)
 				res.headers.append ("Cache-Control", "public");
 
 			// set the content-type based on a good guess
