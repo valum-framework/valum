@@ -321,7 +321,7 @@ namespace VSGI.Soup {
 				var req = new Request (connection, msg, query);
 				var res = new Response (req, msg);
 
-				this.handle (req, res);
+				dispatch (req, res);
 			});
 
 #if SOUP_2_48

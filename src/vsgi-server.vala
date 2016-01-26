@@ -35,13 +35,6 @@ namespace VSGI {
 	public class Server : GLib.Application {
 
 		/**
-		 * Handle a pair of {@link VSGI.Request} and {@link VSGI.Response}.
-		 *
-		 * @since 0.2
-		 */
-		protected ApplicationCallback handle;
-
-		/**
 		 * Enforces implementation to take the application as a sole argument
 		 * and set the {@link GLib.ApplicationFlags.HANDLES_COMMAND_LINE},
 		 * {@link GLib.ApplicationFlags.SEND_ENVIRONMENT} and
@@ -52,8 +45,31 @@ namespace VSGI {
 		 * @since 0.2
 		 */
 		public Server (string application_id, owned ApplicationCallback application) {
-			Object (application_id: application_id, flags: ApplicationFlags.HANDLES_COMMAND_LINE | ApplicationFlags.SEND_ENVIRONMENT | ApplicationFlags.NON_UNIQUE);
-			this.handle = (owned) application;
+			Object (application_id: application_id);
+			set_application_callback ((owned) application);
+		}
+
+		private ApplicationCallback _application;
+
+		/**
+		 * Assign the callback used when {@link VSGI.Application.dispatch} is
+		 * called.
+		 */
+		public void set_application_callback (owned ApplicationCallback application) {
+			_application = (owned) application;
+		}
+
+		construct {
+			flags |= ApplicationFlags.HANDLES_COMMAND_LINE |
+			         ApplicationFlags.SEND_ENVIRONMENT |
+			         ApplicationFlags.NON_UNIQUE;
+		}
+
+		/**
+		 * Dispatch the request to the application callback.
+		 */
+		protected void dispatch (Request req, Response res) {
+			_application (req, res);
 		}
 	}
 }

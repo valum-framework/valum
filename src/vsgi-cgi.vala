@@ -187,7 +187,7 @@ namespace VSGI.CGI {
 			var res = new Response (req);
 
 			// handle a single request and quit
-			this.handle (req, res);
+			dispatch (req, res);
 
 			return 0;
 		}
