@@ -167,7 +167,11 @@ namespace Valum.Static {
 					res.body.splice (file_read_stream, OutputStreamSpliceFlags.CLOSE_SOURCE);
 				}
 			} catch (FileError.ACCES fe) {
-				throw new ClientError.FORBIDDEN ("You are cannot access this resource.");
+				if (ServeFlags.PRODUCE_FORBIDDEN in serve_flags) {
+					throw new ClientError.FORBIDDEN ("You are cannot access this resource.");
+				} else {
+					next (req, res);
+				}
 			} catch (FileError.NOENT fe) {
 				next (req, res);
 			}
