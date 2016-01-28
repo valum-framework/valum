@@ -32,7 +32,7 @@ namespace Valum {
          *
 		 * @since 0.1
 		 */
-		public HashTable<string, Regex> types = new HashTable<string, Regex> (str_hash, str_equal);
+		private HashTable<string, Regex> types = new HashTable<string, Regex> (str_hash, str_equal);
 
 		/**
 		 * Registered routes by HTTP method.
@@ -49,12 +49,9 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public Queue<string> scopes = new Queue<string> ();
+		private Queue<string> scopes = new Queue<string> ();
 
-		/**
-		 * @since 0.0.1
-		 */
-		public Router () {
+		construct {
 			// initialize default types
 			register_type ("int",    /\d+/);
 			register_type ("string", /\w+/);
@@ -86,7 +83,7 @@ namespace Valum {
 		 * @since 0.3
 		 */
 		public Route use (owned HandlerCallback cb) {
-			return matcher (null, () => { return true; }, (owned) cb);
+			return route (new AnyRoute (null, (owned) cb));
 		}
 
 		/**
@@ -167,7 +164,18 @@ namespace Valum {
 		 * @param cb     callback used to process the pair of request and response.
 		 */
 		public Route method (string? method, string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.route (new Route.from_rule (this, method, rule, (owned) cb));
+			if (scopes.is_empty () && rule == "*") {
+				return this.route (new WildcardRoute (method, (owned) cb));
+			}
+			var pattern = new StringBuilder ();
+			// scope the route
+			foreach (var scope in scopes.head) {
+				pattern.append_printf ("%s/", scope);
+			}
+			if (rule != null) {
+				pattern.append (rule);
+			}
+			return this.route (new RuleRoute (method, pattern.str, rule == null, types, (owned) cb));
 		}
 
 		/**
@@ -194,7 +202,7 @@ namespace Valum {
 			var routes = new Route[methods.length];
 			var i      = 0;
 			foreach (var method in methods) {
-				routes[i++] = this.route (new Route.from_rule (this, method, rule, (owned) cb));
+				routes[i++] = this.method (method, rule, (owned) cb);
 			}
 			return routes;
 		}
@@ -212,7 +220,19 @@ namespace Valum {
 		 * @param cb     callback used to process the pair of request and response.
 		 */
 		public Route regex (string? method, Regex regex, owned HandlerCallback cb) throws RegexError {
-			return this.route (new Route.from_regex (this, method, regex, (owned) cb));
+			if (scopes.is_empty ())
+				return route (new RegexRoute (method, regex, (owned) cb));
+
+			var pattern = new StringBuilder ();
+
+			// scope the route
+			foreach (var scope in scopes.head) {
+				pattern.append_printf ("%s/", Regex.escape_string (scope));
+			}
+
+			pattern.append (regex.get_pattern ());
+
+			return this.route (new RegexRoute (method, new Regex (pattern.str), (owned) cb));
 		}
 
 		/**
@@ -225,7 +245,7 @@ namespace Valum {
 		 * @param cb      callback used to process the pair of request and response.
 		 */
 		public Route matcher (string? method, owned MatcherCallback matcher, owned HandlerCallback cb) {
-			return this.route (new Route (this, method, (owned) matcher, (owned) cb));
+			return this.route (new MatcherRoute (method, (owned) matcher, (owned) cb));
 		}
 
 		/**
@@ -255,10 +275,7 @@ namespace Valum {
 			if (!this.status_handlers.contains (status))
 				this.status_handlers[status] = new Queue<Route> ();
 
-			this.status_handlers[status].push_tail (new Route (this,
-			                                                   null,
-			                                                   () => { return true; },
-			                                                   (owned) cb));
+			this.status_handlers[status].push_tail (new AnyRoute (null, (owned) cb));
 		}
 
 		/**

@@ -22,20 +22,18 @@ using VSGI.Mock;
  * @since 0.1
  */
 public void test_route () {
-	var router  = new Router ();
-	var route   = new Route (router, "GET", (req) => { return true; }, (req, res) => {});
+	var route   = new MatcherRoute ("GET", (req) => { return true; }, (req, res) => {});
 	var req     = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var context = new Context ();
 
 	assert (route.match (req, context));
-	assert (router == route.router);
 }
 
 /**
  * @since 0.1
  */
 public void test_route_from_rule () {
-	var route   = new Route.from_rule (new Router (), "GET", "<int:id>", (req, res) => {});
+	var route   = new RuleRoute ("GET", "<int:id>", false, null, (req, res) => {});
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var context = new Context ();
 
@@ -47,7 +45,7 @@ public void test_route_from_rule () {
  * @since 0.1
  */
 public void test_route_from_rule_null () {
-	var route   = new Route.from_rule (new Router (), "GET", null, (req, res) => {});
+	var route   = new RuleRoute ("GET", "", true, null, (req, res) => {});
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var context = new Context ();
 
@@ -60,7 +58,7 @@ public void test_route_from_rule_null () {
  * @since 0.1
  */
 public static void test_route_from_rule_null_matches_empty_path () {
-	var route   = new Route.from_rule (new Router (), "GET", null, (req, res) => {});
+	var route   = new RuleRoute ("GET", "", true, null, (req, res) => {});
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var context = new Context ();
 
@@ -72,7 +70,7 @@ public static void test_route_from_rule_null_matches_empty_path () {
  * @since 0.1
  */
 public void test_route_from_rule_any () {
-	var route   = new Route.from_rule (new Router (), "GET", "<any:id>", (req, res) => {});
+	var route   = new RuleRoute ("GET", "<any:id>", false, null, (req, res) => {});
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var context = new Context ();
 
@@ -85,7 +83,7 @@ public void test_route_from_rule_any () {
  * @since 0.1
  */
 public void test_route_from_rule_without_captures () {
-	var route   = new Route.from_rule (new Router (), "GET", "", (req, res) => {});
+	var route   = new RuleRoute ("GET", "", false, null, (req, res) => {});
 	var req     = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var context = new Context ();
 
@@ -99,14 +97,19 @@ public void test_route_from_rule_without_captures () {
  * @since 0.1
  */
 public void test_route_from_rule_undefined_type () {
-	var route  = new Route.from_rule (new Router (), "GET", "<uint:unknown_type>", (req, res) => {});
+	try {
+		var route  = new RuleRoute ("GET", "<uint:unknown_type>", false, new HashTable<string, Regex> (str_hash, str_equal), (req, res) => {});
+	} catch (RegexError err) {
+		return;
+	}
+	assert_not_reached ();
 }
 
 /**
  * @since 0.1
  */
 public void test_route_from_regex () {
-	var route   = new Route.from_regex (new Router (), "GET", /(?<id>\d+)/, (req, res) => {});
+	var route   = new RegexRoute ("GET", /(?<id>\d+)/, (req, res) => {});
 	var req     = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var context = new Context ();
 
@@ -120,7 +123,7 @@ public void test_route_from_regex () {
  * @since 0.2
  */
 public void test_route_from_regex_multiple_captures () {
-	var route   = new Route.from_regex (new Router (), "GET", /(?<action>\w+)\/(?<id>\d+)/, (req, res) => {});
+	var route   = new RegexRoute ("GET", /(?<action>\w+)\/(?<id>\d+)/, (req, res) => {});
 	var req     = new Request.with_uri (new Soup.URI ("http://localhost/user/5"));
 	var context = new Context ();
 
@@ -136,25 +139,8 @@ public void test_route_from_regex_multiple_captures () {
 /**
  * @since 0.1
  */
-public void test_route_from_regex_scoped () {
-	var router = new Router ();
-
-	router.scopes.push_tail ("test");
-
-	var route   = new Route.from_regex (router, "GET", /(?<id>\d+)/, (req, res) => {});
-	var req     = new Request.with_uri (new Soup.URI ("http://localhost/test/5"));
-	var context = new Context ();
-
-	assert (route.match (req, context));
-
-	assert ("5" == context["id"].get_string ());
-}
-
-/**
- * @since 0.1
- */
 public void test_route_from_regex_without_captures () {
-	var route   = new Route.from_regex (new Router (), "GET", /.*/, (req, res) => {});
+	var route   = new RegexRoute ("GET", /.*/, (req, res) => {});
 	var req     = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var context = new Context ();
 
@@ -168,7 +154,7 @@ public void test_route_from_regex_without_captures () {
  * @since 0.1
  */
 public void test_route_match () {
-	var route   = new Route.from_rule (new Router (), "GET", "<int:id>", (req, res) => {});
+	var route   = new RuleRoute ("GET", "<int:id>", false, null, (req, res) => {});
 	var req     = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var context = new Context ();
 
@@ -183,7 +169,9 @@ public void test_route_match () {
  * @since 0.1
  */
 public void test_route_match_not_matching () {
-	var route   = new Route.from_rule (new Router (), "GET", "<int:id>", (req, res) => {});
+	var types   = new HashTable<string, Regex> (str_hash, str_equal);
+	types["int"] = /\d+/;
+	var route   = new RuleRoute ("GET", "<int:id>", false, types, (req, res) => {});
 	var req     = new Request.with_uri (new Soup.URI ("http://localhost/home"));
 	var context = new Context ();
 
@@ -196,7 +184,7 @@ public void test_route_match_not_matching () {
  */
 public void test_route_fire () {
 	var setted = false;
-	var route = new Route.from_rule (new Router (), "GET", "<int:id>", (req, res) => {
+	var route = new RuleRoute ("GET", "<int:id>", false, null, (req, res) => {
 		setted = true;
 	});
 

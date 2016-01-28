@@ -324,6 +324,26 @@ public static void test_router_scope () {
 /**
  * @since 0.1
  */
+public void test_router_scope_regex () {
+	var router = new Router ();
+
+	Route? route = null;
+	router.scope ("test", (test) => {
+		route = test.regex ("GET", /(?<id>\d+)/, (req, res) => {});
+	});
+
+	var req     = new Request.with_uri (new Soup.URI ("http://localhost/test/5"));
+	var context = new Context ();
+
+	assert (route != null);
+	assert (route.match (req, context));
+
+	assert ("5" == context["id"].get_string ());
+}
+
+/**
+ * @since 0.1
+ */
 public static void test_router_informational_switching_protocols () {
 	var router = new Router ();
 

@@ -30,6 +30,7 @@ public int main (string[] args) {
 	Test.add_func ("/router/handle", test_router_handle);
 	Test.add_func ("/router/custom_method", test_router_custom_method);
 	Test.add_func ("/router/scope", test_router_scope);
+	Test.add_func ("/router/scope/regex", test_router_scope_regex);
 
 	Test.add_func ("/router/informational/switching_protocols", test_router_informational_switching_protocols);
 	Test.add_func ("/router/success/created", test_router_success_created);
@@ -85,19 +86,10 @@ public int main (string[] args) {
 	Test.add_func ("/route/from_rule/null/matches_empty_path", test_route_from_rule_null_matches_empty_path);
 	Test.add_func ("/route/from_rule/any", test_route_from_rule_any);
 	Test.add_func ("/route/from_rule/without_captures", test_route_from_rule_without_captures);
-
-#if GLIB_2_38
-	Test.add_func ("/route/from_rule/undefined_type", () => {
-		Test.trap_subprocess ("/route/from_rule/undefined_type/subprocess", 0, 0);
-		Test.trap_assert_failed ();
-	});
-
-	Test.add_func ("/route/from_rule/undefined_type/subprocess", test_route_from_rule_undefined_type);
-#endif
+	Test.add_func ("/route/from_rule/undefined_type", test_route_from_rule_undefined_type);
 
 	Test.add_func ("/route/from_regex", test_route_from_regex);
 	Test.add_func ("/route/from_regex/multiple_captures", test_route_from_regex_multiple_captures);
-	Test.add_func ("/route/from_regex/scoped", test_route_from_regex_scoped);
 	Test.add_func ("/route/from_regex/without_captures", test_route_from_regex_without_captures);
 	Test.add_func ("/route/match", test_route_match);
 	Test.add_func ("/route/match/not_matching", test_route_match_not_matching);
