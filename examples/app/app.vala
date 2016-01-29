@@ -153,7 +153,7 @@ app.get ("users/<int:id>/<action>", (req, res, next, context) => {
 	writer.put_string (@"action\t=> $test");
 });
 
-app.types["permutations"] = /abc|acb|bac|bca|cab|cba/;
+app.register_type ("permutations", /abc|acb|bac|bca|cab|cba/);
 
 app.get ("custom-route-type/<permutations:p>", (req, res, next, context) => {
 	res.body.write_all (context["p"].get_string ().data, null);

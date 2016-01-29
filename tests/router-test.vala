@@ -24,11 +24,14 @@ using VSGI.Mock;
 public static void test_router () {
 	var router = new Router ();
 
-	assert (router.types != null);
-	assert (router.types.contains ("int"));
-	assert (router.types.contains ("string"));
-	assert (router.types.contains ("path"));
-	assert (router.types.contains ("any"));
+	try {
+		router.get ("<int:i>", (req, res) => {});
+		router.get ("<string:i>", (req, res) => {});
+		router.get ("<path:i>", (req, res) => {});
+		router.get ("<any:i>", (req, res) => {});
+	} catch (RegexError err) {
+		assert_not_reached ();
+	}
 }
 
 /**

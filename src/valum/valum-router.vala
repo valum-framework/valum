@@ -56,10 +56,28 @@ namespace Valum {
 		 */
 		public Router () {
 			// initialize default types
-			this.types["int"]    = /\d+/;
-			this.types["string"] = /\w+/;
-			this.types["path"]   = /[\w\/]+/;
-			this.types["any"]    = /.+/;
+			register_type ("int",    /\d+/);
+			register_type ("string", /\w+/);
+			register_type ("path",   /[\w\/]+/);
+			register_type ("any",    /.+/);
+		}
+
+		/**
+		 * Register a type to be understood by {@link Valum.RuleRoute}.
+		 *
+		 * If a type is already registered with that name, it is replaced with
+		 * the new definition.
+		 *
+		 * @since 0.3
+		 *
+		 * @param name             name by which types are identified in the
+		 *                         rule pattern
+		 * @param pattern          matches instance of the type in a path
+		 * @param destination_type type into which the extracted value will be
+		 *                         converted
+		 */
+		public void register_type (string name, Regex pattern, Type destination_type = typeof (string)) {
+			types[name] = pattern;
 		}
 
 		/**
