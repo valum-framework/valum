@@ -37,7 +37,7 @@ namespace Valum {
 		 *
 		 * @since 0.2
 		 */
-		public string? method { construct; get; }
+		public Method method { construct; get; }
 
 		/**
 		 * Matches the given request and populate its parameters on success.

@@ -26,7 +26,7 @@ namespace Valum {
 
 		private MatcherCallback _match;
 
-		public MatcherRoute (string? method, owned MatcherCallback matcher, owned HandlerCallback handler) {
+		public MatcherRoute (Method method, owned MatcherCallback matcher, owned HandlerCallback handler) {
 			Object (method: method);
 			_match = (owned) matcher;
 			fire   = (owned) handler;

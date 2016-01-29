@@ -11,7 +11,7 @@ namespace Valum {
 	 */
 	public class WildcardRoute : Route {
 
-		public WildcardRoute (string? method, owned HandlerCallback handler) {
+		public WildcardRoute (Method method, owned HandlerCallback handler) {
 			Object (method: method);
 		}
 

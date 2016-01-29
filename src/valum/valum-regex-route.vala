@@ -48,7 +48,7 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public RegexRoute (string? method, Regex regex, owned HandlerCallback handler) throws RegexError {
+		public RegexRoute (Method method, Regex regex, owned HandlerCallback handler) throws RegexError {
 			Object (method: method, regex: regex);
 
 			var pattern = new StringBuilder ("^");

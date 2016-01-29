@@ -132,11 +132,11 @@ app.get ("hello/", (req, res) => {
 	res.body.write_all ("Hello world!".data, null);
 });
 
-app.methods ({VSGI.Request.GET, VSGI.Request.POST}, "get-and-post", (req, res) => {
+app.rule (Method.GET | Method.POST, "get-and-post", (req, res) => {
 	res.body.write_all ("Matches GET and POST".data, null);
 });
 
-app.method (VSGI.Request.GET, "custom-method", (req, res) => {
+app.rule (Method.GET, "custom-method", (req, res) => {
 	res.body.write_all (req.method.data, null);
 });
 
@@ -159,11 +159,11 @@ app.get ("custom-route-type/<permutations:p>", (req, res, next, context) => {
 	res.body.write_all (context["p"].get_string ().data, null);
 });
 
-app.regex (VSGI.Request.GET, /custom-regular-expression/, (req, res) => {
+app.regex (Method.GET, /custom-regular-expression/, (req, res) => {
 	res.body.write_all ("This route was matched using a custom regular expression.".data, null);
 });
 
-app.matcher (VSGI.Request.GET, (req) => { return req.uri.get_path () == "/custom-matcher"; }, (req, res) => {
+app.matcher (Method.GET, (req) => { return req.uri.get_path () == "/custom-matcher"; }, (req, res) => {
 	res.body.write_all ("This route was matched using a custom matcher.".data, null);
 });
 

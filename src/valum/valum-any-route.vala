@@ -21,7 +21,7 @@ namespace Valum {
 
 	public class AnyRoute : Route {
 
-		public AnyRoute (string? method, owned HandlerCallback handler) {
+		public AnyRoute (Method method, owned HandlerCallback handler) {
 			Object (method: method);
 			fire = (owned) handler;
 		}

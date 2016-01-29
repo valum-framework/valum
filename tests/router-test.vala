@@ -82,7 +82,7 @@ public static void test_router_post () {
 		res.status = 418;
 	});
 
-	var request  = new Request.with_method (VSGI.Request.POST, new Soup.URI ("http://localhost/"));
+	var request  = new Request.with_method ("POST", new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -218,60 +218,10 @@ public static void test_router_patch () {
 /**
  * @since 0.1
  */
-public static void test_router_methods () {
-	var router       = new Router ();
-	string[] methods = {VSGI.Request.GET, VSGI.Request.POST};
-
-	var routes = router.methods (methods, "", (req, res) => {
-		res.status = 418;
-	});
-
-	assert (2 == routes.length);
-	assert (methods[0] == routes[0].method);
-	assert (methods[1] == routes[1].method);
-
-	foreach (var method in methods) {
-		var request  = new Request.with_method (method, new Soup.URI ("http://localhost/"));
-		var response = new Response (request);
-
-		router.handle (request, response);
-
-		assert (418 == response.status);
-	}
-}
-
-/**
- * @since 0.1
- */
-public static void test_router_all () {
-	var router = new Router ();
-
-	var routes = router.all ("", (req, res) => {
-		res.status = 418;
-	});
-
-	assert (VSGI.Request.METHODS.length == routes.length);
-
-	for (int i = 0; i < routes.length; i++)
-		assert (VSGI.Request.METHODS[i] == routes[i].method);
-
-	foreach (var method in VSGI.Request.METHODS) {
-		var request  = new Request.with_method (method, new Soup.URI ("http://localhost/"));
-		var response = new Response (request);
-
-		router.handle (request, response);
-
-		assert (418 == response.status);
-	}
-}
-
-/**
- * @since 0.1
- */
 public static void test_router_regex () {
 	var router = new Router ();
 
-	router.regex (VSGI.Request.GET, /home/, (req, res) => {
+	router.regex (Method.GET, /home/, (req, res) => {
 		res.status = 418;
 	});
 
@@ -289,7 +239,7 @@ public static void test_router_regex () {
 public static void test_router_matcher () {
 	var router = new Router ();
 
-	router.matcher (VSGI.Request.GET, (req) => { return req.uri.get_path () == "/"; }, (req, res) => {
+	router.matcher (Method.GET, (req) => { return req.uri.get_path () == "/"; }, (req, res) => {
 		res.status = 418;
 	});
 
@@ -329,7 +279,7 @@ public void test_router_scope_regex () {
 
 	Route? route = null;
 	router.scope ("test", (test) => {
-		route = test.regex ("GET", /(?<id>\d+)/, (req, res) => {});
+		route = test.regex (Method.GET, /(?<id>\d+)/, (req, res) => {});
 	});
 
 	var req     = new Request.with_uri (new Soup.URI ("http://localhost/test/5"));
@@ -347,7 +297,7 @@ public void test_router_scope_regex () {
 public static void test_router_informational_switching_protocols () {
 	var router = new Router ();
 
-	router.all ("", (req, res) => {
+	router.use ((req, res) => {
 		throw new Informational.SWITCHING_PROTOCOLS ("HTTP/1.1");
 	});
 
@@ -429,7 +379,7 @@ public static void test_router_client_error_method_not_allowed () {
 
 	});
 
-	router.all ("", (req, res) => {
+	router.use ((req, res) => {
 		throw new ClientError.METHOD_NOT_ALLOWED ("POST");
 	});
 
@@ -449,7 +399,7 @@ public static void test_router_client_error_method_not_allowed () {
 public static void test_router_client_error_upgrade_required () {
 	var router = new Router ();
 
-	router.all ("", (req, res) => {
+	router.use ((req, res) => {
 		throw new ClientError.UPGRADE_REQUIRED ("HTTP/1.1");
 	});
 
@@ -496,7 +446,7 @@ public static void test_router_server_error () {
 public static void test_router_custom_method () {
 	var router = new Router ();
 
-	router.method ("TEST", "", (req, res) => {
+	router.rule (Method.OTHER, "", (req, res) => {
 		res.status = 418;
 	});
 
@@ -542,12 +492,12 @@ public static void test_router_method_not_allowed_excludes_request_method () {
 	var post_matched = 0;
 
 	// matching, but not the same HTTP method
-	router.matcher (VSGI.Request.GET, () => { get_matched++; return true; }, (req, res) => {
+	router.matcher (Method.GET, () => { get_matched++; return true; }, (req, res) => {
 
 	});
 
 	// not matching, but same HTTP method
-	router.matcher (VSGI.Request.POST, () => { post_matched++; return false; }, (req, res) => {
+	router.matcher (Method.POST, () => { post_matched++; return false; }, (req, res) => {
 
 	});
 
@@ -555,9 +505,6 @@ public static void test_router_method_not_allowed_excludes_request_method () {
 	var response = new Response.with_status (request, Soup.Status.METHOD_NOT_ALLOWED);
 
 	router.handle (request, response);
-
-	assert (post_matched == 1); // matched only once during initial lookup
-	assert (get_matched == 1);
 
 	assert (response.status == 405);
 	assert ("GET" == response.headers.get_one ("Allow"));

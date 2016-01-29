@@ -48,7 +48,7 @@ namespace Valum {
 		 * @param types  type mapping to figure out types in rule or 'null' to
 		 *               prevent any form of typing
 		 */
-		public RuleRoute (string? method,
+		public RuleRoute (Method method,
 		                  string rule,
 		                  bool prefix,
 		                  HashTable<string, Regex>? types,

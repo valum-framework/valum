@@ -83,63 +83,63 @@ namespace Valum {
 		 * @since 0.3
 		 */
 		public Route use (owned HandlerCallback cb) {
-			return route (new AnyRoute (null, (owned) cb));
+			return route (new AnyRoute (Method.ANY, (owned) cb));
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
 		public new Route get (string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.method (Request.GET, rule, (owned) cb);
+			return this.rule (Method.GET, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
 		public Route post (string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.method (Request.POST, rule, (owned) cb);
+			return this.rule (Method.POST, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
 		public Route put (string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.method (Request.PUT, rule, (owned) cb);
+			return this.rule (Method.PUT, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
 		public Route delete (string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.method (Request.DELETE, rule, (owned) cb);
+			return this.rule (Method.DELETE, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
 		public Route head (string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.method (Request.HEAD, rule, (owned) cb);
+			return this.rule (Method.HEAD, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
 		public Route options (string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.method (Request.OPTIONS, rule, (owned) cb);
+			return this.rule (Method.OPTIONS, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
 		public Route trace (string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.method (Request.TRACE, rule, (owned) cb);
+			return this.rule (Method.TRACE, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
 		public new Route connect (string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.method (Request.CONNECT, rule, (owned) cb);
+			return this.rule (Method.CONNECT, rule, (owned) cb);
 		}
 
 		/**
@@ -148,7 +148,7 @@ namespace Valum {
 		 * @since 0.0.1
 		 */
 		public Route patch (string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.method (Request.PATCH, rule, (owned) cb);
+			return this.rule (Method.PATCH, rule, (owned) cb);
 		}
 
 		/**
@@ -163,7 +163,7 @@ namespace Valum {
 		 * @param rule   rule
 		 * @param cb     callback used to process the pair of request and response.
 		 */
-		public Route method (string? method, string? rule, owned HandlerCallback cb) throws RegexError {
+		public Route rule (Method method, string? rule, owned HandlerCallback cb) throws RegexError {
 			if (scopes.is_empty () && rule == "*") {
 				return this.route (new WildcardRoute (method, (owned) cb));
 			}
@@ -179,35 +179,6 @@ namespace Valum {
 		}
 
 		/**
-		 * Bind a callback to all HTTP methods defined in {@link VSGI.Request.METHODS}.
-		 *
-		 * This function is deprecated in favour of {@link Valum.Router.use}.
-		 *
-		 * @since 0.1
-		 */
-		[Deprecated (replacement = "Valum.Router.use", since = "0.3")]
-		public Route[] all (string? rule, owned HandlerCallback cb) throws RegexError {
-			return this.methods (Request.METHODS, rule, (owned) cb);
-		}
-
-		/**
-		 * Bind a callback to a list of HTTP methods.
-		 *
-		 * @since 0.1
-		 *
-		 * @param methods methods to which the callback will be bound
-		 * @param rule    rule
-		 */
-		public Route[] methods (string[] methods, string? rule, owned HandlerCallback cb) throws RegexError {
-			var routes = new Route[methods.length];
-			var i      = 0;
-			foreach (var method in methods) {
-				routes[i++] = this.method (method, rule, (owned) cb);
-			}
-			return routes;
-		}
-
-		/**
 		 * Bind a callback with a custom HTTP method and regular expression.
 		 *
 		 * The regular expression will be scoped, anchored and optimized by the
@@ -219,7 +190,7 @@ namespace Valum {
 		 * @param regex  regular expression matching the request path.
 		 * @param cb     callback used to process the pair of request and response.
 		 */
-		public Route regex (string? method, Regex regex, owned HandlerCallback cb) throws RegexError {
+		public Route regex (Method method, Regex regex, owned HandlerCallback cb) throws RegexError {
 			if (scopes.is_empty ())
 				return route (new RegexRoute (method, regex, (owned) cb));
 
@@ -244,7 +215,7 @@ namespace Valum {
 		 * @param matcher callback used to match the request
 		 * @param cb      callback used to process the pair of request and response.
 		 */
-		public Route matcher (string? method, owned MatcherCallback matcher, owned HandlerCallback cb) {
+		public Route matcher (Method method, owned MatcherCallback matcher, owned HandlerCallback cb) {
 			return this.route (new MatcherRoute (method, (owned) matcher, (owned) cb));
 		}
 
@@ -275,7 +246,7 @@ namespace Valum {
 			if (!this.status_handlers.contains (status))
 				this.status_handlers[status] = new Queue<Route> ();
 
-			this.status_handlers[status].push_tail (new AnyRoute (null, (owned) cb));
+			this.status_handlers[status].push_tail (new AnyRoute (Method.ANY, (owned) cb));
 		}
 
 		/**
@@ -314,9 +285,9 @@ namespace Valum {
 		                                                          ServerError,
 		                                                          Error {
 			for (unowned List<Route> node = routes; node != null; node = node.next) {
+				var req_method = Method.from_string (req.method);
 				var local_context = new Context.with_parent (context);
-				if ((node.data.method == null || node.data.method == req.method) &&
-					node.data.match (req, local_context)) {
+				if (req_method in node.data.method && node.data.match (req, local_context)) {
 					node.data.fire (req, res, (req, res) => {
 						// keep routing if there are more routes to explore
 						if (node.next != null)
@@ -483,23 +454,27 @@ namespace Valum {
 					return; // something matched
 
 				// find routes from other methods matching this request
-				string[] allowed = {};
+				var req_method = Method.from_string (req.method);
+				Method allowed = 0;
 				foreach (var route in this.routes.head) {
-					if (route.method != null &&                  // null method allow anything
-					    route.method != req.method &&            // exclude the request method (it's not allowed already)
-#if GLIB_2_44
-					    !strv_contains (allowed, route.method) && // skip already allowed method
-#else
-					    !string.joinv (",", allowed).contains (route.method) &&
-#endif
-					    route.match (req, new Context ())) {
-						allowed += route.method;
+					if (route.match (req, new Context ())) {
+						allowed |= route.method & ~req_method;
 					}
 				}
 
 				// other method(s) match this request
-				if (allowed.length > 0)
-					throw new ClientError.METHOD_NOT_ALLOWED (string.joinv (", ", allowed));
+				if (allowed > 0) {
+					string[] allowedv = {};
+					var method_class = (FlagsClass) typeof (Method).class_ref ();
+
+					do {
+						unowned FlagsValue flags_value = method_class.get_first_value (allowed);
+						allowed  &= ~flags_value.@value;
+						allowedv += flags_value.value_nick.up ();
+					} while (allowed > 0);
+
+					throw new ClientError.METHOD_NOT_ALLOWED (string.joinv (", ", allowedv));
+				}
 
 				throw new ClientError.NOT_FOUND ("The request URI %s was not found.", req.uri.to_string (true));
 			});
