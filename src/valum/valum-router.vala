@@ -251,11 +251,13 @@ namespace Valum {
 		 * @param status status handled
 		 * @param cb     callback used to handle the status
 		 */
-		public void status (uint status, owned HandlerCallback cb) {
+		public Route status (uint status, owned HandlerCallback cb) {
 			if (!this.status_handlers.contains (status))
 				this.status_handlers[status] = new Queue<Route> ();
 
-			this.status_handlers[status].push_tail (new AnyRoute (Method.ANY, (owned) cb));
+			var route = new AnyRoute (Method.ANY, (owned) cb);
+			this.status_handlers[status].push_tail (route);
+			return route;
 		}
 
 		/**
