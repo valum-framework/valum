@@ -150,8 +150,26 @@ namespace Valum.Static {
 				if (uncertain)
 					warning ("could not infer content type of file '%s' with certainty", file.get_path ());
 
-				// transfer the file
-				if (ServeFlags.ASYNC in serve_flags) {
+				if (ServeFlags.PRODUCE_X_SENDFILE in serve_flags) {
+					res.headers.set_encoding (Soup.Encoding.NONE);
+					res.headers.replace ("X-Sendfile", file.get_path ());
+#if GIO_2_44
+					if (ServeFlags.ASYNC in serve_flags) {
+						res.write_head_async.begin (Priority.DEFAULT, null, (obj, result) => {
+							try {
+								size_t bytes_written;
+								res.write_head_async.end (result, out bytes_written);
+							} catch (Error ioe) {
+								warning ("could not serve file '%s': %s", file.get_path (), ioe.message);
+							}
+						});
+					} else
+#endif
+					{
+						size_t bytes_written;
+						res.write_head (out bytes_written);
+					}
+				} else if (ServeFlags.ASYNC in serve_flags) {
 					res.body.splice_async.begin (file_read_stream,
 												 OutputStreamSpliceFlags.CLOSE_SOURCE,
 												 Priority.DEFAULT,

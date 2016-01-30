@@ -16,6 +16,7 @@
  */
 
 using Valum;
+using Valum.Static;
 using VSGI.FastCGI;
 
 public static int main (string[] args) {
@@ -35,6 +36,8 @@ public static int main (string[] args) {
 			writer.put_uint32 (Random.next_int ());
 		}
 	});
+
+	app.get (null, serve_from_path (File.new_for_path (""), ServeFlags.PRODUCE_X_SENDFILE));
 
 	app.get ("<any:path>", (req, res) => {
 		res.status = 404;
