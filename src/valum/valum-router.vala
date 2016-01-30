@@ -87,6 +87,18 @@ namespace Valum {
 		}
 
 		/**
+		 * Bind a callback to handle asterisk '*'.
+		 *
+		 * Typically, this is used with {@link Valum.Method.OPTIONS} to provide
+		 * general information about the service.
+		 *
+		 * @since 0.3
+		 */
+		public Route asterisk (Method method, owned HandlerCallback cb) {
+			return this.route (new AsteriskRoute (method, (owned) cb));
+		}
+
+		/**
 		 * @since 0.0.1
 		 */
 		public new Route get (string? rule, owned HandlerCallback cb) throws RegexError {
@@ -164,10 +176,6 @@ namespace Valum {
 		 * @param cb     callback used to process the pair of request and response.
 		 */
 		public Route rule (Method method, string? rule, owned HandlerCallback cb) throws RegexError {
-			if (scopes.is_empty () && rule == "*") {
-				return this.route (new WildcardRoute (method, (owned) cb));
-			}
-
 			var pattern = new StringBuilder ();
 
 			// root the route
