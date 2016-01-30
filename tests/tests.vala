@@ -55,6 +55,10 @@ public int main (string[] args) {
 	Test.add_func ("/router/connect", test_router_connect);
 	Test.add_func ("/router/patch", test_router_patch);
 
+	Test.add_func ("/router/rule/null", test_router_rule_null);
+	Test.add_func ("/router/rule/null/matches_empty_path", test_router_rule_null_matches_empty_path);
+	Test.add_func ("/router/rule/any", test_router_rule_any);
+
 	Test.add_func ("/router/regex", test_router_regex);
 	Test.add_func ("/router/matcher", test_router_matcher);
 
@@ -79,9 +83,6 @@ public int main (string[] args) {
 
 	Test.add_func ("/route", test_route);
 	Test.add_func ("/route/from_rule", test_route_from_rule);
-	Test.add_func ("/route/from_rule/null", test_route_from_rule_null);
-	Test.add_func ("/route/from_rule/null/matches_empty_path", test_route_from_rule_null_matches_empty_path);
-	Test.add_func ("/route/from_rule/any", test_route_from_rule_any);
 	Test.add_func ("/route/from_rule/without_captures", test_route_from_rule_without_captures);
 	Test.add_func ("/route/from_rule/undefined_type", test_route_from_rule_undefined_type);
 

@@ -56,7 +56,7 @@ namespace Valum {
 			register_type ("int",    /\d+/);
 			register_type ("string", /\w+/);
 			register_type ("path",   /[\w\/]+/);
-			register_type ("any",    /.+/);
+			register_type ("any",    /.*/);
 		}
 
 		/**
@@ -167,15 +167,20 @@ namespace Valum {
 			if (scopes.is_empty () && rule == "*") {
 				return this.route (new WildcardRoute (method, (owned) cb));
 			}
+
 			var pattern = new StringBuilder ();
+
+			// root the route
+			pattern.append ("/");
+
 			// scope the route
 			foreach (var scope in scopes.head) {
 				pattern.append_printf ("%s/", scope);
 			}
-			if (rule != null) {
-				pattern.append (rule);
-			}
-			return this.route (new RuleRoute (method, pattern.str, rule == null, types, (owned) cb));
+
+			pattern.append (rule ?? "<any:path>");
+
+			return this.route (new RuleRoute (method, pattern.str, types, (owned) cb));
 		}
 
 		/**
@@ -191,10 +196,12 @@ namespace Valum {
 		 * @param cb     callback used to process the pair of request and response.
 		 */
 		public Route regex (Method method, Regex regex, owned HandlerCallback cb) throws RegexError {
-			if (scopes.is_empty ())
-				return route (new RegexRoute (method, regex, (owned) cb));
-
 			var pattern = new StringBuilder ();
+
+			pattern.append ("^");
+
+			// root the route
+			pattern.append ("/");
 
 			// scope the route
 			foreach (var scope in scopes.head) {
@@ -202,6 +209,8 @@ namespace Valum {
 			}
 
 			pattern.append (regex.get_pattern ());
+
+			pattern.append ("$");
 
 			return this.route (new RegexRoute (method, new Regex (pattern.str), (owned) cb));
 		}

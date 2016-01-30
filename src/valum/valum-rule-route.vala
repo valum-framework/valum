@@ -21,6 +21,11 @@ using VSGI;
 namespace Valum {
 
 	/**
+	 * Route based on the rule system.
+	 *
+	 * The actual rule is compiled down to {@link GLib.Regex} and starts
+	 * matching after the leading slash '/' in the request URI path.
+	 *
 	 * @since 0.3
 	 */
 	public class RuleRoute : RegexRoute {
@@ -32,34 +37,24 @@ namespace Valum {
 
 		/**
 		 * Create a Route for a given callback from a rule.
-         *
-		 * Rule are scoped from the {@link Router.scope} fragment stack and
-		 * compiled down to {@link GLib.Regex}.
-		 *
-		 * Rule start matching after the first '/' character of the request URI
-		 * path.
 		 *
 		 * @since 0.0.1
 		 *
-		 * @param rule   compiled down ot a regular expression and captures all
-		 *               paths if set to 'null'
-		 * @param prefix the rule is only a prefix match, the rest of the path
-		 *               will be captured in the 'path' parameter
-		 * @param types  type mapping to figure out types in rule or 'null' to
-		 *               prevent any form of typing
+		 * @param rule  compiled down ot a regular expression and captures all
+		 *              paths if set to 'null'
+		 * @param types type mapping to figure out types in rule or 'null' to
+		 *              prevent any form of typing
+		 * @param flags enable rule features
 		 */
-		public RuleRoute (Method method,
-		                  string rule,
-		                  bool prefix,
+		public RuleRoute (Method                    method,
+		                  string                    rule,
 		                  HashTable<string, Regex>? types,
-		                  owned HandlerCallback handler) throws RegexError {
-			var params = /(<(?:\w+:)?\w+>)/.split_full (rule == null ? "" : rule);
+		                  owned HandlerCallback     handler) throws RegexError {
 			var pattern = new StringBuilder ();
 
-			// catch-all null rule
-			if (prefix) {
-				pattern.append ("(?<path>.*)");
-			}
+			var @params = /(<(?:\w+:)?\w+>)/.split_full (rule);
+
+			pattern.append ("^");
 
 			foreach (var p in @params) {
 				if (p[0] != '<') {
@@ -82,7 +77,9 @@ namespace Valum {
 				}
 			}
 
-			base (method, new Regex (pattern.str), (owned) handler);
+			pattern.append ("$");
+
+			base (method, new Regex (pattern.str, RegexCompileFlags.OPTIMIZE), (owned) handler);
 		}
 	}
 }

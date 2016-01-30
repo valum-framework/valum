@@ -16,68 +16,54 @@
  */
 
 using GLib;
-
 using VSGI;
 
 namespace Valum {
 
 	/**
+	 * Route based on {@link GLib.Regex}.
+	 *
+	 * The providen regular expression pattern will be extracted, scoped,
+	 * anchored and optimized. This means you must not anchor the regex yourself
+	 * with '^' and '$' characters and providing a pre-optimized {@link  GLib.Regex}
+	 * is useless.
+	 *
+	 * Like for the rules, the regular expression starts matching after the
+	 * scopes and the leading '/' character.
+	 *
 	 * @since 0.3
 	 */
 	public class RegexRoute : Route {
 
-		private SList<string> captures = new SList<string> ();
-
-		private Regex prepared_regex;
-
 		/**
-		 * Regular expression matching the request path.
+		 * @since 0.3
 		 */
 		public Regex regex { construct; get; }
 
+		private SList<string> captures = new SList<string> ();
+
+
 		/**
-		 * Create a Route for a given callback using a {@link GLib.Regex}.
-		 *
-		 * The providen regular expression pattern will be extracted, scoped,
-		 * anchored and optimized. This means you must not anchor the regex
-		 * yourself with '^' and '$' characters and providing a pre-optimized
-		 * {@link GLib.Regex} is useless.
-		 *
-		 * Like for the rules, the regular expression starts matching after the
-		 * scopes and the leading '/' character.
 		 *
 		 * @since 0.1
 		 */
 		public RegexRoute (Method method, Regex regex, owned HandlerCallback handler) throws RegexError {
 			Object (method: method, regex: regex);
 
-			var pattern = new StringBuilder ("^");
-
-			// root the route
-			pattern.append ("/");
-
-			pattern.append (regex.get_pattern ());
-
-			pattern.append ("$");
-
 			// extract the captures from the regular expression
 			MatchInfo capture_match_info;
-
-			if (/\(\?<(\w+)>.+?\)/.match (pattern.str, 0, out capture_match_info)) {
+			if (/\(\?<(\w+)>.+?\)/.match (regex.get_pattern (), 0, out capture_match_info)) {
 				do {
 					captures.append (capture_match_info.fetch (1));
 				} while (capture_match_info.next ());
 			}
-
-			// regex are optimized automatically :)
-			prepared_regex = new Regex (pattern.str, RegexCompileFlags.OPTIMIZE);
 
 			fire = (owned) handler;
 		}
 
 		public override bool match (Request req, Context context) {
 			MatchInfo match_info;
-			if (prepared_regex.match (req.uri.get_path (), 0, out match_info)) {
+			if (_regex.match (req.uri.get_path (), 0, out match_info)) {
 				if (captures.length () > 0) {
 					// populate the context parameters
 					foreach (var capture in captures) {

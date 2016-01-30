@@ -218,6 +218,62 @@ public static void test_router_patch () {
 /**
  * @since 0.1
  */
+public void test_router_rule_null () {
+	var router  = new Router ();
+
+	router.get (null, (req, res, next, context) => {
+		res.status = 418;
+		assert (context.contains ("path"));
+		assert ("5" == context["path"].get_string ());
+	});
+
+	var req = new Request.with_uri (new Soup.URI ("http://localhost/5"));
+	var res = new Response (req);
+
+	router.handle (req, res);
+
+	assert (418 == res.status);
+}
+
+/**
+ * @since 0.1
+ */
+public void test_router_rule_null_matches_empty_path () {
+	var router  = new Router ();
+
+	router.get (null, (req, res, next, context) => {
+		res.status = 418;
+		assert ("" == context["path"].get_string ());
+	});
+
+	var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
+	var res = new Response (req);
+
+	router.handle (req, res);
+
+	assert (418 == res.status);
+}
+
+/**
+ * @since 0.1
+ */
+public void test_router_rule_any () {
+	var router  = new Router ();
+
+	router.get ("<any:id>", (req, res, next, context) => {
+		res.status = 418;
+		assert ("5" == context["id"].get_string ());
+	});
+
+	var req = new Request.with_uri (new Soup.URI ("http://localhost/5"));
+	var res = new Response (req);
+
+	router.handle (req, res);
+}
+
+/**
+ * @since 0.1
+ */
 public static void test_router_regex () {
 	var router = new Router ();
 
