@@ -37,12 +37,12 @@ namespace Valum {
 		/**
 		 * Registered routes by HTTP method.
 		 */
-		private Queue<Route> routes = new Queue<Route> ();
+		private Sequence<Route> routes = new Sequence<Route> ();
 
 		/**
 		 * Registered status handlers.
 		 */
-		private HashTable<uint , Queue<Route>> status_handlers = new HashTable<uint, Queue<Route>> (direct_hash, direct_equal);
+		private HashTable<uint , Sequence<Route>> status_handlers = new HashTable<uint, Sequence<Route>> (direct_hash, direct_equal);
 
 		/**
 		 * Stack of scopes.
@@ -238,7 +238,7 @@ namespace Valum {
 		 *               callback.
 		 */
 		private Route route (Route route) {
-			this.routes.push_tail (route);
+			this.routes.append (route);
 			return route;
 		}
 
@@ -253,10 +253,10 @@ namespace Valum {
 		 */
 		public Route status (uint status, owned HandlerCallback cb) {
 			if (!this.status_handlers.contains (status))
-				this.status_handlers[status] = new Queue<Route> ();
+				this.status_handlers[status] = new Sequence<Route> ();
 
 			var route = new AnyRoute (Method.ANY, (owned) cb);
-			this.status_handlers[status].push_tail (route);
+			this.status_handlers[status].append (route);
 			return route;
 		}
 
@@ -286,7 +286,7 @@ namespace Valum {
 		 * @param context routing context passed to match and fire
 		 * @return tells if something matched during the routing process
 		 */
-		private bool perform_routing (List<Route> routes,
+		private bool perform_routing (SequenceIter<Route> routes,
 		                              Request req,
 		                              Response res,
 		                              Context context) throws Informational,
@@ -295,14 +295,14 @@ namespace Valum {
 		                                                          ClientError,
 		                                                          ServerError,
 		                                                          Error {
-			for (unowned List<Route> node = routes; node != null; node = node.next) {
+			for (SequenceIter<Route> node = routes; !node.is_end (); node = node.next ()) {
 				var req_method = Method.from_string (req.method);
 				var local_context = new Context.with_parent (context);
-				if (req_method in node.data.method && node.data.match (req, local_context)) {
-					node.data.fire (req, res, (req, res) => {
+				if (req_method in node.@get ().method && node.@get ().match (req, local_context)) {
+					node.@get ().fire (req, res, (req, res) => {
 						// keep routing if there are more routes to explore
-						if (node.next != null)
-							if (perform_routing (node.next, req, res, local_context))
+						if (!node.next ().is_end ())
+							if (perform_routing (node.next (), req, res, local_context))
 								return;
 						throw new ClientError.NOT_FOUND ("The request URI %s was not found.", req.uri.to_string (true));
 					}, local_context);
@@ -344,7 +344,7 @@ namespace Valum {
 					var context = new Context ();
 					context["message"] = err.message;
 					try {
-						if (this.perform_routing (this.status_handlers[status_code].head, req, res, context))
+						if (this.perform_routing (this.status_handlers[status_code].get_begin_iter (), req, res, context))
 							return; // handled!
 					} catch (Error err) {
 						// feed the error back in the invocation
@@ -461,17 +461,17 @@ namespace Valum {
 				var context = new Context ();
 
 				// ensure at least one route has been declared with that method
-				if (this.perform_routing (this.routes.head, req, res, context))
+				if (this.perform_routing (this.routes.get_begin_iter (), req, res, context))
 					return; // something matched
 
 				// find routes from other methods matching this request
 				var req_method = Method.from_string (req.method);
 				Method allowed = 0;
-				foreach (var route in this.routes.head) {
+				this.routes.@foreach ((route) => {
 					if (route.match (req, new Context ())) {
 						allowed |= route.method & ~req_method;
 					}
-				}
+				});
 
 				// other method(s) match this request
 				if (allowed > 0) {
