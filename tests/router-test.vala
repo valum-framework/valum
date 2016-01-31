@@ -73,6 +73,42 @@ public static void test_router_get () {
 }
 
 /**
+ * @since 0.3
+ */
+public void test_router_get_default_head () {
+	var router = new Router ();
+
+	router.get ("", (req, res) => {
+		res.status = 418;
+	});
+
+	var request  = new Request.with_method ("HEAD", new Soup.URI ("http://localhost/"));
+	var response = new Response (request);
+
+	router.handle (request, response);
+
+	assert (418 == response.status);
+}
+
+/**
+ * @since 0.3
+ */
+public void test_router_only_get () {
+	var router = new Router ();
+
+	router.rule (Method.ONLY_GET, "", (req, res) => {
+		res.status = 418;
+	});
+
+	var request  = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
+	var response = new Response (request);
+
+	router.handle (request, response);
+
+	assert (418 == response.status);
+}
+
+/**
  * @since 0.1
  */
 public static void test_router_post () {
@@ -534,7 +570,8 @@ public static void test_router_method_not_allowed () {
 	router.handle (request, response);
 
 	assert (response.status == 405);
-	assert ("GET, PUT" == response.headers.get_one ("Allow"));
+	message (response.headers.get_one ("Allow"));
+	assert ("GET, HEAD, PUT" == response.headers.get_one ("Allow"));
 	assert (response.head_written);
 }
 
@@ -563,7 +600,7 @@ public static void test_router_method_not_allowed_excludes_request_method () {
 	router.handle (request, response);
 
 	assert (response.status == 405);
-	assert ("GET" == response.headers.get_one ("Allow"));
+	assert ("GET, HEAD" == response.headers.get_one ("Allow"));
 	assert (response.head_written);
 }
 

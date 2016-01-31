@@ -46,6 +46,8 @@ public int main (string[] args) {
 	Test.add_func ("/router/server_error", test_router_server_error);
 
 	Test.add_func ("/router/get", test_router_get);
+	Test.add_func ("/router/get/default_head", test_router_get_default_head);
+	Test.add_func ("/router/only_get", test_router_only_get);
 	Test.add_func ("/router/post", test_router_post);
 	Test.add_func ("/router/put", test_router_put);
 	Test.add_func ("/router/delete", test_router_delete);

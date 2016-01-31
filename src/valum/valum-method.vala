@@ -28,8 +28,9 @@ namespace Valum {
 	[Flags]
 	public enum Method {
 		OPTIONS,
-		GET,
+		ONLY_GET,
 		HEAD,
+		GET = ONLY_GET | HEAD,
 		PUT,
 		POST,
 		DELETE,
@@ -58,7 +59,7 @@ namespace Valum {
 				case "OPTIONS":
 					return OPTIONS;
 				case "GET":
-					return GET;
+					return ONLY_GET;
 				case "HEAD":
 					return HEAD;
 				case "PUT":

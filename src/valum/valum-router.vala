@@ -489,7 +489,7 @@ namespace Valum {
 					do {
 						unowned FlagsValue flags_value = method_class.get_first_value (allowed);
 						allowed  &= ~flags_value.@value;
-						allowedv += flags_value.value_nick.up ();
+						allowedv += flags_value.value_nick == "only-get" ? "GET" : flags_value.value_nick.up ();
 					} while (allowed > 0);
 
 					throw new ClientError.METHOD_NOT_ALLOWED (string.joinv (", ", allowedv));
