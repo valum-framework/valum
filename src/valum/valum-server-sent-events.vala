@@ -89,7 +89,16 @@ namespace Valum.ServerSentEvents {
 			res.headers.set_content_type ("text/event-stream", @params);
 			res.headers.set_encoding (req.http_version == Soup.HTTPVersion.@1_0 ? Soup.Encoding.EOF :
 			                                                                      Soup.Encoding.CHUNKED);
+
 			try {
+				// write headers right away
+				size_t bytes_size;
+				res.write_head (out bytes_size);
+
+				// don't hang the user agent on a 'HEAD' request
+				if (req.method == Request.HEAD)
+					return;
+
 				context (req, (event, data, id, retry) => {
 					var message = new StringBuilder ();
 
