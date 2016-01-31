@@ -26,6 +26,7 @@ using Soup;
  *
  * @since 0.3
  */
+[CCode (gir_namespace = "VSGI", gir_version = "0.3")]
 namespace VSGI.CGI {
 
 	/**

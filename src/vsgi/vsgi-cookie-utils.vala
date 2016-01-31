@@ -22,7 +22,7 @@ using Soup;
  *
  * @since 0.2
  */
-[CCode (gir_namespace = "VsgiCookieUtils", gir_version = "0.2")]
+[CCode (gir_namespace = "VSGI", gir_version = "0.3")]
 namespace VSGI.CookieUtils {
 
 	/**
