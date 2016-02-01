@@ -144,9 +144,9 @@ app.get ("hello/<id>", (req, res, next, context) => {
 	res.body.write_all ("hello %s!".printf (context["id"].get_string ()).data, null);
 });
 
-app.get ("users/<int:id>/<action>", (req, res, next, context) => {
+app.get ("users/<int:id>(/<action>)?", (req, res, next, context) => {
 	var id     = context["id"].get_string ();
-	var test   = context["action"].get_string ();
+	var test   = "action" in context ? context["action"].get_string () : "index";
 	var writer = new DataOutputStream (res.body);
 
 	writer.put_string (@"id\t=> $id\n");
@@ -157,6 +157,14 @@ app.register_type ("permutations", /abc|acb|bac|bca|cab|cba/);
 
 app.get ("custom-route-type/<permutations:p>", (req, res, next, context) => {
 	res.body.write_all (context["p"].get_string ().data, null);
+});
+
+app.get ("trailing-slash/?", (req, res) => {
+	if (req.uri.get_path ().has_suffix ("/")) {
+		res.body.write_all ("It has it!".data, null);
+	} else {
+		res.body.write_all ("It does not!".data, null);
+	}
 });
 
 app.regex (Method.GET, /custom-regular-expression/, (req, res) => {
