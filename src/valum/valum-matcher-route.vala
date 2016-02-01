@@ -24,13 +24,13 @@ namespace Valum {
 	 */
 	public class MatcherRoute : Route {
 
-		private MatcherCallback _match;
-
 		public MatcherRoute (Method method, owned MatcherCallback matcher, owned HandlerCallback handler) {
 			Object (method: method);
 			_match = (owned) matcher;
-			fire   = (owned) handler;
+			set_handler_callback ((owned) handler);
 		}
+
+		private MatcherCallback _match;
 
 		public override bool match (Request req, Context ctx) {
 			return _match (req, ctx);

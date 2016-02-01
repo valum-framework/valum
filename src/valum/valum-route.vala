@@ -32,6 +32,8 @@ namespace Valum {
 	 */
 	public abstract class Route : Object {
 
+		private HandlerCallback _fire;
+
 		/**
 		 * HTTP method this is matching or 'null' if it does apply.
 		 *
@@ -51,7 +53,20 @@ namespace Valum {
          *
 		 * @since 0.0.1
 		 */
-		public HandlerCallback fire;
+		public void fire (Request req, Response res, NextCallback next, Context ctx) throws Success,
+		                                                                                    Redirection,
+		                                                                                    ClientError,
+		                                                                                    ServerError,
+																							Error {
+			_fire (req, res, next, ctx);
+		}
+
+		/**
+		 * @since 0.3
+		 */
+		public void set_handler_callback (owned HandlerCallback fire) {
+			_fire = (owned) fire;
+		}
 
 		/**
 		 * Pushes the handler in the {@link Router} queue to produce a sequence
@@ -60,8 +75,8 @@ namespace Valum {
 		 * @since 0.2
 		 */
 		public Route then (owned HandlerCallback handler) {
-			var old_fire = (owned) fire;
-			fire = (req, res, next, context) => {
+			var old_fire = (owned) _fire;
+			_fire = (req, res, next, context) => {
 				old_fire (req, res, (req, res) => {
 					// since the same matcher is shared, we preserve the context intact
 					handler (req, res, next, context);

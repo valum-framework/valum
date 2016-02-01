@@ -37,6 +37,10 @@ public void test_route_from_rule () {
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var context = new Context ();
 
+	message (route.rule);
+	assert ("/<int:id>" == route.rule);
+	assert ("^/(?<id>\\w+)$" == route.regex.get_pattern ());
+	assert (RegexCompileFlags.OPTIMIZE in route.regex.get_compile_flags ());
 	assert (route.match (request, context));
 	assert ("5" == context["id"].get_string ());
 }
@@ -75,6 +79,8 @@ public void test_route_from_regex () {
 	var route   = new RegexRoute (Method.GET, /\/(?<id>\d+)/, (req, res) => {});
 	var req     = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var context = new Context ();
+
+	assert ("\\/(?<id>\\d+)" == route.regex.get_pattern ());
 
 	var matches = route.match (req, context);
 

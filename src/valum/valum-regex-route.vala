@@ -40,30 +40,34 @@ namespace Valum {
 		 */
 		public Regex regex { construct; get; }
 
-		private SList<string> captures = new SList<string> ();
-
-
 		/**
 		 *
 		 * @since 0.1
 		 */
-		public RegexRoute (Method method, Regex regex, owned HandlerCallback handler) throws RegexError {
+		public RegexRoute (Method method, Regex regex, owned HandlerCallback handler) {
 			Object (method: method, regex: regex);
+			set_handler_callback ((owned) handler);
+		}
 
+		private SList<string> captures = new SList<string> ();
+
+		construct {
 			// extract the captures from the regular expression
 			MatchInfo capture_match_info;
 			if (/\(\?<(\w+)>.+?\)/.match (regex.get_pattern (), 0, out capture_match_info)) {
-				do {
-					captures.append (capture_match_info.fetch (1));
-				} while (capture_match_info.next ());
+				try {
+					do {
+						captures.append (capture_match_info.fetch (1));
+					} while (capture_match_info.next ());
+				} catch (RegexError err) {
+					// ...
+				}
 			}
-
-			fire = (owned) handler;
 		}
 
 		public override bool match (Request req, Context context) {
 			MatchInfo match_info;
-			if (_regex.match (req.uri.get_path (), 0, out match_info)) {
+			if (regex.match (req.uri.get_path (), 0, out match_info)) {
 				if (captures.length () > 0) {
 					// populate the context parameters
 					foreach (var capture in captures) {

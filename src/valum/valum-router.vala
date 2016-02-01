@@ -165,8 +165,9 @@ namespace Valum {
 		/**
 		 * Bind a callback with a custom method.
 		 *
-		 * Useful if you need to support a non-standard HTTP method, otherwise you
-		 * should use the predefined methods.
+		 * The actual rule is rooted, scoped, anchored and compiled down to
+		 * {@link GLib.Regex}. It starts matching after the leading slash '/'
+		 * in the request URI path.
 		 *
 		 * @since 0.1
 		 *
@@ -193,8 +194,13 @@ namespace Valum {
 		/**
 		 * Bind a callback with a custom HTTP method and regular expression.
 		 *
-		 * The regular expression will be scoped, anchored and optimized by the
-		 * {@link Route} automatically.
+		 * The providen regular expression pattern will be extracted, scoped,
+		 * anchored and optimized. This means you must not anchor the regex yourself
+		 * with '^' and '$' characters and providing a pre-optimized {@link  GLib.Regex}
+		 * is useless.
+		 *
+		 * Like for the rules, the regular expression starts matching after the
+		 * scopes and the leading '/' character.
 		 *
 		 * @since 0.1
 		 *
@@ -219,9 +225,7 @@ namespace Valum {
 
 			pattern.append ("$");
 
-			return route (new RegexRoute (method, new Regex (pattern.str,
-			                                                 regex.get_compile_flags () | RegexCompileFlags.OPTIMIZE),
-			                                                 (owned) cb));
+			return route (new RegexRoute (method, new Regex (pattern.str, RegexCompileFlags.OPTIMIZE), (owned) cb));
 		}
 
 		/**
@@ -240,13 +244,12 @@ namespace Valum {
 		/**
 		 * Bind a {@link Route} to a custom HTTP method.
 		 *
-		 * This is a low-level function and should be used with care.
+		 * @since 0.3
 		 *
-		 * @param method HTTP method
-		 * @param route  an instance of Route defining the matching process and the
-		 *               callback.
+		 * @param route an instance of Route defining the matching process and
+		 *              the callback.
 		 */
-		private Route route (Route route) {
+		public Route route (Route route) {
 			this.routes.append (route);
 			return route;
 		}

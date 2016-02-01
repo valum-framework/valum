@@ -23,7 +23,7 @@ namespace Valum {
 
 		public AnyRoute (Method method, owned HandlerCallback handler) {
 			Object (method: method);
-			fire = (owned) handler;
+			set_handler_callback ((owned) handler);
 		}
 
 		public override bool match (Request req, Context ctx) {

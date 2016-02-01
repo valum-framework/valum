@@ -23,8 +23,24 @@ namespace Valum {
 	/**
 	 * Route based on the rule system.
 	 *
-	 * The actual rule is compiled down to {@link GLib.Regex} and starts
-	 * matching after the leading slash '/' in the request URI path.
+	 * The rule pattern is composed of a few elements:
+	 *
+	 * - '<' '>' for parameters
+	 * - '(' and ')' for group
+	 * - '?' for optional
+	 * - '*' for wildcard
+	 *
+	 * The content of a parameters is a name with an optional type such as
+	 * '<type:name>'. Types are resolved in a provided mapping and names are
+	 * pushed on the routing {@link Valum.Context}.
+	 *
+	 * A group allow a more fine-grained application for optional parts.
+	 *
+	 * The optional symbol makes the last character or group optional. If it
+	 * contains parameters, they will not be pushed on the context.
+	 *
+	 * The wildcard stands for the '.*' regular expression, which match pretty
+	 * much anything.
 	 *
 	 * @since 0.3
 	 */
@@ -44,7 +60,6 @@ namespace Valum {
 		 *              paths if set to 'null'
 		 * @param types type mapping to figure out types in rule or 'null' to
 		 *              prevent any form of typing
-		 * @param flags enable rule features
 		 */
 		public RuleRoute (Method                    method,
 		                  string                    rule,
@@ -85,7 +100,8 @@ namespace Valum {
 
 			pattern.append_c ('$');
 
-			base (method, new Regex (pattern.str, RegexCompileFlags.OPTIMIZE), (owned) handler);
+			Object (method: method, rule: rule, regex: new Regex (pattern.str, RegexCompileFlags.OPTIMIZE));
+			set_handler_callback ((owned) handler);
 		}
 	}
 }
