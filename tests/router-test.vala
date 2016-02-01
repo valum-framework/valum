@@ -291,6 +291,26 @@ public void test_router_rule_null_matches_empty_path () {
 }
 
 /**
+ * @since 0.3
+ */
+public void test_router_rule_path () {
+	var router  = new Router ();
+
+	router.get ("<path:path>", (req, res, next, context) => {
+		assert_not_reached ();
+	});
+
+	string[] bad_paths = {"..", "."};
+
+	foreach (var bad_path in bad_paths) {
+		var req = new Request.with_uri (new Soup.URI ("http://localhost/%s".printf (bad_path)));
+		var res = new Response (req);
+
+		router.handle (req, res);
+	}
+}
+
+/**
  * @since 0.1
  */
 public void test_router_rule_any () {

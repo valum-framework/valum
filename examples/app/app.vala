@@ -242,10 +242,8 @@ app.get ("ctpl/<foo>/<bar>", (req, res, next, context) => {
 });
 
 // serve static resource using a path route parameter
-app.get ("static/<path:resource>.<any:type>", (req, res, next, context) => {
-	var resource = context["resource"].get_string ();
-	var type     = context["type"].get_string ();
-	var path     = "/static/%s.%s".printf (resource, type);
+app.get ("static/<path:path>", (req, res, next, context) => {
+	var path = "/static/%s".printf (context["path"].get_string ());
 	bool uncertain;
 
 	try {
@@ -255,7 +253,7 @@ app.get ("static/<path:resource>.<any:type>", (req, res, next, context) => {
 		res.headers.set_content_type (ContentType.guess (path, lookup.get_data (), out uncertain), null);
 
 		if (uncertain)
-			warning ("could not infer content type of file %s.%s with certainty".printf (resource, type));
+			warning ("could not infer content type of file '%s' with certainty".printf (path));
 
 		var file = resources_open_stream (path, ResourceLookupFlags.NONE);
 
