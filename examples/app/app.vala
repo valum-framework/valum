@@ -201,7 +201,7 @@ api.get ("repository/<name>", (req, res, next, context) => {
 });
 
 // delegate all other GET requests to a subrouter
-app.get ("repository/<any:path>", api.handle);
+app.get ("repository/*", api.handle);
 
 app.get ("next", (req, res, next) => {
 	next (req, res);

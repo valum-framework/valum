@@ -56,7 +56,6 @@ namespace Valum {
 			register_type ("int",    /\d+/);
 			register_type ("string", /\w+/);
 			register_type ("path",   /(?:\.?[\w-\s\/])+/);
-			register_type ("any",    /.*/);
 		}
 
 		/**
@@ -186,7 +185,7 @@ namespace Valum {
 				pattern.append_printf ("%s/", scope);
 			}
 
-			pattern.append (rule ?? "<any:path>");
+			pattern.append (rule ?? "*");
 
 			return this.route (new RuleRoute (method, pattern.str, types, (owned) cb));
 		}

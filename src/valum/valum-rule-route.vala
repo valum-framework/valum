@@ -52,12 +52,14 @@ namespace Valum {
 		                  owned HandlerCallback     handler) throws RegexError {
 			var pattern = new StringBuilder ();
 
-			var @params = /(<(?:\w+:)?\w+>)/.split_full (rule);
+			var @params = /(<(?:\w+:)?\w+>|\*)/.split_full (rule);
 
-			pattern.append ("^");
+			pattern.append_c ('^');
 
 			foreach (var p in @params) {
-				if (p[0] != '<') {
+				if (p == "*") {
+					pattern.append (".*");
+				} else if (p[0] != '<') {
 					// regular piece of route
 					pattern.append (Regex.escape_string (p));
 				} else {
@@ -77,7 +79,7 @@ namespace Valum {
 				}
 			}
 
-			pattern.append ("$");
+			pattern.append_c ('$');
 
 			base (method, new Regex (pattern.str, RegexCompileFlags.OPTIMIZE), (owned) handler);
 		}

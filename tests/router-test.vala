@@ -28,7 +28,6 @@ public static void test_router () {
 		router.get ("<int:i>", (req, res) => {});
 		router.get ("<string:i>", (req, res) => {});
 		router.get ("<path:i>", (req, res) => {});
-		router.get ("<any:i>", (req, res) => {});
 	} catch (RegexError err) {
 		assert_not_reached ();
 	}
@@ -259,8 +258,6 @@ public void test_router_rule_null () {
 
 	router.get (null, (req, res, next, context) => {
 		res.status = 418;
-		assert (context.contains ("path"));
-		assert ("5" == context["path"].get_string ());
 	});
 
 	var req = new Request.with_uri (new Soup.URI ("http://localhost/5"));
@@ -279,7 +276,6 @@ public void test_router_rule_null_matches_empty_path () {
 
 	router.get (null, (req, res, next, context) => {
 		res.status = 418;
-		assert ("" == context["path"].get_string ());
 	});
 
 	var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
@@ -316,9 +312,8 @@ public void test_router_rule_path () {
 public void test_router_rule_any () {
 	var router  = new Router ();
 
-	router.get ("<any:id>", (req, res, next, context) => {
+	router.get ("*", (req, res, next, context) => {
 		res.status = 418;
-		assert ("5" == context["id"].get_string ());
 	});
 
 	var req = new Request.with_uri (new Soup.URI ("http://localhost/5"));
