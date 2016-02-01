@@ -219,7 +219,9 @@ namespace Valum {
 
 			pattern.append ("$");
 
-			return this.route (new RegexRoute (method, new Regex (pattern.str), (owned) cb));
+			return route (new RegexRoute (method, new Regex (pattern.str,
+			                                                 regex.get_compile_flags () | RegexCompileFlags.OPTIMIZE),
+			                                                 (owned) cb));
 		}
 
 		/**

@@ -328,9 +328,12 @@ public void test_router_rule_any () {
 public static void test_router_regex () {
 	var router = new Router ();
 
-	router.regex (Method.GET, /home/, (req, res) => {
+	var route = router.regex (Method.GET, /home/, (req, res) => {
 		res.status = 418;
-	});
+	}) as RegexRoute;
+
+	assert ("^/home$" == route.regex.get_pattern ());
+	assert (RegexCompileFlags.OPTIMIZE in route.regex.get_compile_flags ());
 
 	var request  = new Request.with_uri (new Soup.URI ("http://localhost/home"));
 	var response = new Response (request);
