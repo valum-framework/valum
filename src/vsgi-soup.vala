@@ -214,7 +214,9 @@ namespace VSGI.Soup {
 		 */
 		public Server (string application_id, owned ApplicationCallback application) {
 			base (application_id, (owned) application);
+		}
 
+		construct {
 #if GIO_2_40
 			const OptionEntry[] entries = {
 				// port options
