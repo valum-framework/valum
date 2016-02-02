@@ -151,6 +151,11 @@ namespace VSGI.HTTP {
 			set { this.message.set_status (value); }
 		}
 
+		public override string? reason_phrase {
+			owned get { return this.message.reason_phrase; }
+			set { this.message.reason_phrase = value ?? Status.get_phrase (this.message.status_code); }
+		}
+
 		public override MessageHeaders headers {
 			get { return this.message.response_headers; }
 		}

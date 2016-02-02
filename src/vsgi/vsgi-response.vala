@@ -41,6 +41,13 @@ namespace VSGI {
 		public virtual uint status { get; set; default = global::Soup.Status.OK; }
 
 		/**
+		 * Response status message.
+		 *
+		 * @since 0.3
+		 */
+		public virtual string? reason_phrase { owned get; set; default = null; }
+
+		/**
 		 * Response headers.
 		 *
 		 * @since 0.0.1
@@ -111,7 +118,7 @@ namespace VSGI {
 			head.append_printf ("HTTP/%s %u %s\r\n",
 			                    this.request.http_version == HTTPVersion.@1_0 ? "1.0" : "1.1",
 			                    status,
-			                    Status.get_phrase (status));
+			                    reason_phrase ?? Status.get_phrase (status));
 
 			// headers
 			this.headers.foreach ((name, header) => {
