@@ -149,6 +149,37 @@ namespace VSGI.SCGI {
 	public class Server : VSGI.Server {
 
 		/**
+		 * Provide an auto-closing SCGI connection.
+		 */
+		private class Connection : IOStream {
+
+			/**
+			 *
+			 */
+			public IOStream base_connection { construct; get; }
+
+			public override InputStream input_stream {
+				get {
+					return base_connection.input_stream;
+				}
+			}
+
+			public override OutputStream output_stream {
+				get {
+					return base_connection.output_stream;
+				}
+			}
+
+			public Connection (IOStream base_connection) {
+				Object (base_connection: base_connection);
+			}
+
+			~Connection ()  {
+				base_connection.close ();
+			}
+		}
+
+		/**
 		 * @since 0.2.4
 		 */
 		public SocketService listener { get; protected set; default = new SocketService (); }
@@ -277,7 +308,7 @@ namespace VSGI.SCGI {
 						}
 					}
 
-					var req = new Request (connection, new SCGIInputStream (reader, content_length), environment);
+					var req = new Request (new Connection (connection), new SCGIInputStream (reader, content_length), environment);
 					var res = new Response (req);
 
 					this.handle (req, res);
