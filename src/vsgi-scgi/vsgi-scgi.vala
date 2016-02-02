@@ -186,8 +186,10 @@ namespace VSGI.SCGI {
 
 		public Server (string application_id, owned VSGI.ApplicationCallback application) {
 			base (application_id, (owned) application);
+		}
 
 #if GIO_2_40
+		construct {
 			const OptionEntry[] options = {
 				{"any",             'a', 0, OptionArg.NONE, null, "listen on any open TCP port"},
 				{"port",            'p', 0, OptionArg.INT,  null, "TCP port on this host"},
@@ -197,8 +199,8 @@ namespace VSGI.SCGI {
 			};
 
 			this.add_main_option_entries (options);
-#endif
 		}
+#endif
 
 		public override int command_line (ApplicationCommandLine command_line) {
 #if GIO_2_40

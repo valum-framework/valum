@@ -231,7 +231,9 @@ namespace VSGI.FastCGI {
 		 */
 		public Server (string application_id, owned ApplicationCallback application) {
 			base (application_id, (owned) application);
+		}
 
+		construct {
 #if GIO_2_40
 			const OptionEntry[] options = {
 				{"socket",          's', 0, OptionArg.FILENAME, null, "path to the UNIX socket"},
