@@ -34,6 +34,29 @@ highlighted:
 
 .. _Vala compiler coding style: https://wiki.gnome.org/Projects/Vala/Hacking#Coding_Style
 
+General Strategies
+------------------
+
+Produce minimal headers, especially if the response has an empty body as every
+byte will count.
+
+Since ``GET`` handle ``HEAD`` as well, verifying the request method to prevent
+spending time on producing a body that won't be considered is important.
+
+.. code:: vala
+
+    res.headers.set_content_type ("text/html", null);
+
+    if (req.method == "HEAD") {
+        res.write_head ();
+        return;
+    }
+
+    res.body.write_all ("<!DOCTYPE html><html>...</html>");
+
+Use the ``construct`` block to perform post-initialization work. It will be
+called independently of how the object is constructed.
+
 Coverage
 --------
 
