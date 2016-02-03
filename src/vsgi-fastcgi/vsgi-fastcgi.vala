@@ -64,14 +64,12 @@ namespace VSGI.FastCGI {
 		throw (IOError) error;
 	}
 
-	private class StreamInputStream : InputStream, PollableInputStream {
-
-		public GLib.Socket socket { construct; get; }
+	private class StreamInputStream : UnixInputStream {
 
 		public unowned global::FastCGI.Stream @in { construct; get; }
 
-		public StreamInputStream (GLib.Socket socket, global::FastCGI.Stream @in) {
-			Object (socket: socket, @in: @in);
+		public StreamInputStream (int fd, global::FastCGI.Stream @in) {
+			Object (fd: fd, close_fd: false, @in: @in);
 		}
 
 		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
@@ -91,49 +89,27 @@ namespace VSGI.FastCGI {
 
 			return this.in.is_closed;
 		}
-
-		public bool can_poll () {
-			return true; // hope so!
-		}
-
-		public PollableSource create_source (Cancellable? cancellable = null) {
-			var source = new PollableSource (this);
-			source.add_child_source (this.socket.create_source (IOCondition.IN, cancellable));
-			return source;
-		}
-
-		public bool is_readable () {
-			return true;
-		}
-
-		public ssize_t read_nonblocking_fn (uint8[] buffer) throws Error {
-			return read (buffer);
-		}
 	}
 
-	private class StreamOutputStream : OutputStream, PollableOutputStream {
-
-		public GLib.Socket socket { construct; get; }
+	private class StreamOutputStream : UnixOutputStream {
 
 		public unowned global::FastCGI.Stream @out { construct; get; }
 
 		public unowned global::FastCGI.Stream err { construct; get; }
 
-		/**
-		 * @param socket socket used to obtain {@link GLib.SocketSource}
-		 */
-		public StreamOutputStream (GLib.Socket socket, global::FastCGI.Stream @out, global::FastCGI.Stream err) {
-			Object (socket: socket, @out: @out, err: err);
+		public StreamOutputStream (int fd, global::FastCGI.Stream @out, global::FastCGI.Stream err) {
+			Object (fd: fd, close_fd: false, @out: @out, err: err);
 		}
 
 		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
 			var written = this.out.put_str (buffer);
 
 			if (written == GLib.FileStream.EOF) {
+				message ("err write");
 				process_error (this.out);
 			}
 
-			return written;
+			return buffer.length;
 		}
 
 		/**
@@ -156,24 +132,6 @@ namespace VSGI.FastCGI {
 			}
 
 			return this.err.is_closed && this.out.is_closed;
-		}
-
-		public bool can_poll () {
-			return true; // hope so!
-		}
-
-		public PollableSource create_source (Cancellable? cancellable = null) {
-			var source = new PollableSource (this);
-			source.add_child_source (this.socket.create_source (IOCondition.OUT, cancellable));
-			return source;
-		}
-
-		public bool is_writable () {
-			return true;
-		}
-
-		public ssize_t write_nonblocking (uint8[] buffer) throws Error {
-			return write (buffer);
 		}
 	}
 
@@ -220,11 +178,6 @@ namespace VSGI.FastCGI {
 	public class Server : VSGI.Server {
 
 		/**
-		 * FastCGI socket file descriptor.
-		 */
-		public GLib.Socket? socket { get; protected set; default = null; }
-
-		/**
 		 * {@inheritDoc}
 		 */
 		public Server (string application_id, owned ApplicationCallback application) {
@@ -266,58 +219,49 @@ namespace VSGI.FastCGI {
 			var backlog = options.contains ("backlog") ? options.lookup_value ("backlog", VariantType.INT32).get_int32 () : 0;
 #endif
 
-			try {
+			var fd = global::FastCGI.LISTENSOCK_FILENO;
+
 #if GIO_2_40
-				if (options.contains ("socket")) {
-					var socket_path = options.lookup_value ("socket", VariantType.BYTESTRING).get_bytestring ();
-					this.socket     = new GLib.Socket.from_fd (global::FastCGI.open_socket (socket_path, backlog));
+			if (options.contains ("socket")) {
+				var socket_path = options.lookup_value ("socket", VariantType.BYTESTRING).get_bytestring ();
 
-					if (!this.socket.is_connected ()) {
-						command_line.printerr ("could not open socket path %s\n", socket_path);
-						return 1;
-					}
+				fd = global::FastCGI.open_socket (socket_path, backlog);
 
-					command_line.print ("listening on %s (backlog %d)\n", socket_path, backlog);
+				if (fd == -1) {
+					command_line.printerr ("could not open socket path %s\n", socket_path);
+					return 1;
 				}
 
-				else if (options.contains ("port")) {
-					var port    = ":%d".printf(options.lookup_value ("port", VariantType.INT32).get_int32 ());
-					this.socket = new GLib.Socket.from_fd (global::FastCGI.open_socket (port, backlog));
+				command_line.print ("listening on '%s' (backlog '%d')\n", socket_path, backlog);
+			}
 
-					if (!this.socket.is_connected ()) {
-						command_line.printerr ("could not open TCP socket at port %s\n", port);
-						return 1;
-					}
+			else if (options.contains ("port")) {
+				var port = ":%d".printf (options.lookup_value ("port", VariantType.INT32).get_int32 ());
 
-					command_line.print ("listening on tcp://0.0.0.0:%s (backlog %d)\n", port, backlog);
+				fd = global::FastCGI.open_socket (port, backlog);
+
+				if (fd == -1) {
+					command_line.printerr ("could not open TCP port '%s'\n", port[1:-1]);
+					return 1;
 				}
 
-				else if (options.contains ("file-descriptor")) {
-					var file_descriptor = options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 ();
-					this.socket         = new GLib.Socket.from_fd (file_descriptor);
+				command_line.print ("listening on 'fcgi://0.0.0.0:%s' (backlog '%d')\n", port, backlog);
+			}
 
-					if (!this.socket.is_connected ()) {
-						command_line.printerr ("could not open file descriptor %d\n", file_descriptor);
-						return 1;
-					}
+			else if (options.contains ("file-descriptor")) {
+				fd = options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 ();
+				command_line.print ("listening on the file descriptor '%d'\n", fd);
+			}
 
-					command_line.print ("listening on the file descriptor %d\n", file_descriptor);
-				}
-
-				else
+			else
 #endif
-				{
-					this.socket = new GLib.Socket.from_fd (global::FastCGI.LISTENSOCK_FILENO);
-					command_line.print ("listening the default socket\n");
-				}
-			} catch (Error err) {
-				command_line.printerr ("%s\n", err.message);
-				return 1;
+			{
+				command_line.print ("listening from the default file descriptor");
 			}
 
 			new Thread<int> (null, () => {
 				do {
-					var connection = new Connection (this);
+					var connection = new Connection (fd);
 
 					try {
 						if (!connection.init ())
@@ -356,7 +300,7 @@ namespace VSGI.FastCGI {
 			/**
 			 * @since 0.2
 			 */
-			public Server server { construct; get; }
+			public int fd { construct; get; }
 
 			/**
 			 * @since 0.3
@@ -381,8 +325,8 @@ namespace VSGI.FastCGI {
 			/**
 			 * @since 0.2
 			 */
-			public Connection (Server server) {
-				Object (server: server);
+			public Connection (int fd) {
+				Object (fd: fd);
 			}
 
 			/**
@@ -390,8 +334,7 @@ namespace VSGI.FastCGI {
 			 */
 			public bool init (Cancellable? cancellable = null) throws Error {
 				// accept a request
-				var request_status = global::FastCGI.request.init (out request,
-				                                                   server.socket.fd);
+				var request_status = global::FastCGI.request.init (out request, fd);
 
 				if (request_status != 0) {
 					throw new RequestError.FAILED ("could not initialize FCGX request (code %d)",
@@ -401,8 +344,8 @@ namespace VSGI.FastCGI {
 				// accept loop
 				while (request.accept () < 0);
 
-				this._input_stream  = new StreamInputStream (server.socket, request.in);
-				this._output_stream = new StreamOutputStream (server.socket, request.out, request.err);
+				this._input_stream  = new StreamInputStream (fd, request.in);
+				this._output_stream = new StreamOutputStream (fd, request.out, request.err);
 
 				return true;
 			}
