@@ -52,8 +52,7 @@ namespace VSGI {
 		private ApplicationCallback _application;
 
 		/**
-		 * Assign the callback used when {@link VSGI.Application.dispatch} is
-		 * called.
+		 * Assign the callback used when {@link VSGI.Server.dispatch} is called.
 		 */
 		public void set_application_callback (owned ApplicationCallback application) {
 			_application = (owned) application;

@@ -40,6 +40,7 @@ def build(bld):
             features        = 'valadoc',
             packages        = ['glib-2.0', 'gio-2.0', 'gio-unix-2.0', 'libsoup-2.4', 'fcgi'],
             files           = bld.path.ant_glob('src/**/*.vala'),
+            vala_defines    = 'GLIB_2_32',
             package_name    = 'valum',
             package_version = VERSION,
             vapi_dirs       = 'src/vsgi-fastcgi',

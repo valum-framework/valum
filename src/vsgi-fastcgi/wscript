@@ -12,7 +12,7 @@ def build(bld):
         gir              = 'VSGI.FastCGI-{}'.format(Context.g_module.API_VERSION),
         source           = 'vsgi-fastcgi.vala',
         use              = 'vsgi vsgi-cgi GTHREAD FCGI',
-        vala_defines     = ['INCLUDE_TYPE_MODULE'],
+        vala_defines     = 'INCLUDE_TYPE_MODULE',
         vapi_dirs        = '.',
         header_path      = '${INCLUDEDIR}/vsgi',
         install_path     = '${LIBDIR}')

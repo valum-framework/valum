@@ -10,7 +10,7 @@ def build(bld):
         gir          = 'VSGI.SCGI-{}'.format(Context.g_module.API_VERSION),
         source       = 'vsgi-scgi.vala',
         use          = 'vsgi vsgi-cgi',
-        vala_defines = ['INCLUDE_TYPE_MODULE'],
+        vala_defines = 'INCLUDE_TYPE_MODULE',
         header_path  = '${INCLUDEDIR}/vsgi',
         install_path = '${LIBDIR}')
 
