@@ -101,13 +101,7 @@ namespace VSGI.FastCGI {
 		}
 
 		public ssize_t read_nonblocking_fn (uint8[] buffer) throws Error {
-			var read = this.in.read (buffer);
-
-			if (read == GLib.FileStream.EOF) {
-				process_error (this.in);
-			}
-
-			return read;
+			return read (buffer);
 		}
 	}
 
@@ -140,9 +134,12 @@ namespace VSGI.FastCGI {
 		 * Headers are written on the first flush call.
 		 */
 		public override bool flush (Cancellable? cancellable = null) {
-			return this.out.flush ();
+			return this.err.flush () && this.out.flush ();
 		}
 
+		/**
+		 * The 'err' stream is closed before 'out' to avoid an extra write.
+		 */
 		public override bool close (Cancellable? cancellable = null) throws IOError {
 			if (this.err.close () == GLib.FileStream.EOF) {
 				process_error (this.err);
@@ -170,13 +167,7 @@ namespace VSGI.FastCGI {
 		}
 
 		public ssize_t write_nonblocking (uint8[] buffer) throws Error {
-			var written = this.out.put_str (buffer);
-
-			if (written == GLib.FileStream.EOF) {
-				process_error (this.out);
-			}
-
-			return written;
+			return write (buffer);
 		}
 	}
 
@@ -310,7 +301,7 @@ namespace VSGI.FastCGI {
 				else
 #endif
 				{
-					this.socket = new GLib.Socket.from_fd (0);
+					this.socket = new GLib.Socket.from_fd (global::FastCGI.LISTENSOCK_FILENO);
 					command_line.print ("listening the default socket\n");
 				}
 			} catch (Error err) {
