@@ -14,7 +14,7 @@ a ``using`` statement as they all respect a common interface.
 .. code:: vala
 
     using Valum;
-    using VSGI.Soup; // or VSGI.FastCGI
+    using VSGI.HTTP; // or VSGI.FastCGI
 
 Many implementations are provided and documented in :doc:`vsgi/server/index`.
 
@@ -38,7 +38,7 @@ a :doc:`route` instance.
 
 .. code:: vala
 
-    app.get ("", (req, res, next, stack) => {
+    app.get ("", (req, res, next, context) => {
         res.body.write_all ("Hello world!".data, null);
     });
 
@@ -48,15 +48,15 @@ processing. The callback, named handler, receives four arguments:
 -  a :doc:`vsgi/request` that describes a resource being requested
 -  a :doc:`vsgi/response` that correspond to that resource
 -  a ``next`` continuation to `keep routing`
--  a routing ``stack`` to retrieve and store states from previous and for
+-  a routing ``context`` to retrieve and store states from previous and for
    following handlers
 
 Serving the application
 -----------------------
 
 This part is pretty straightforward: you create a server that will serve your
-application at port ``3003`` and since ``using VSGI.Soup`` was specified,
-``Server`` refers to :doc:`vsgi/server/soup`.
+application at port ``3003`` and since ``using VSGI.HTTP`` was specified,
+``Server`` refers to :doc:`vsgi/server/http`.
 
 .. code:: vala
 

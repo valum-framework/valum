@@ -8,7 +8,7 @@ host environment.
 .. toctree::
     :caption: Table of Contents
 
-    soup
+    http
     cgi
     fastcgi
     scgi

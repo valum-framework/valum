@@ -30,7 +30,7 @@ maintained in nemequ/vala-extra-vapis GitHub repository.
 .. code:: vala
 
     using Valum;
-    using VSGI.Soup;
+    using VSGI.HTTP;
 
     var app       = new Router ();
     var memcached = new Memcached.Context ();

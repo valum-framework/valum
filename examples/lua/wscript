@@ -1,0 +1,12 @@
+#!/usr/bin/env python
+
+def configure(cfg):
+    cfg.check_cfg(package='luajit', uselib_store='LUA', args='--cflags --libs')
+
+def build(bld):
+    bld.program(
+        packages     = 'lua',
+        target       = 'app',
+        source       = 'app.vala',
+        use          = 'valum LUA',
+        install_path = None)

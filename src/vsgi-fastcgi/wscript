@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+
+def configure(cfg):
+    cfg.check_cfg(package='gthread-2.0', atleast_version='2.32', uselib_store='GTHREAD', args='--cflags --libs')
+    cfg.check(lib='fcgi', uselib_store='FCGI', args='--cflags --libs')
+
+def build(bld):
+    from waflib import Context
+    bld.shlib(
+        packages_private = 'fcgi',
+        target           = 'vsgi-fastcgi',
+        gir              = 'VSGI.FastCGI-{}'.format(Context.g_module.API_VERSION),
+        source           = 'vsgi-fastcgi.vala',
+        use              = 'vsgi vsgi-cgi GTHREAD FCGI',
+        vala_defines     = ['INCLUDE_TYPE_MODULE'],
+        vapi_dirs        = '.',
+        header_path      = '${INCLUDEDIR}/vsgi',
+        install_path     = '${LIBDIR}')
+
+    bld(
+        features     = 'subst',
+        target       = 'vsgi-fastcgi.pc',
+        source       = 'vsgi-fastcgi.pc.in',
+        install_path = '${LIBDIR}/pkgconfig',
+        VERSION      = Context.g_module.VERSION,
+        API_VERSION  = Context.g_module.API_VERSION)
+
+    bld.install_files('${DATADIR}/vala/vapi', 'fcgi.deps fcgi.vapi')

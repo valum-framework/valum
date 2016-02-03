@@ -4,13 +4,14 @@ def options(opt):
     opt.load('waf_unit_test')
 
 def configure(cfg):
-    cfg.load('waf_unit_test')
+    cfg.load('glib2 waf_unit_test')
 
 def build(bld):
+    bld.load('glib2')
     bld.program(
         features     = 'test',
         target       = 'tests',
-        source       = ['tests.vala'] + bld.path.ant_glob('*-test.vala'),
+        source       = bld.path.ant_glob('*.vala') + ['tests.gresource.xml'],
         use          = 'valum',
-        vapi_dirs    = '../vapi',
+        vapi_dirs    = '../src/vsgi-fastcgi',
         install_path = None)

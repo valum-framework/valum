@@ -22,7 +22,7 @@ require the status to be part of the response headers.
 
 .. code::
 
-    using VSGI.Soup;
+    using VSGI.HTTP;
 
     new Server ("org.vsgi.App", (req, res) => {
         var message = req.connection.output_stream;

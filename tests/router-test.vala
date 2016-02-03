@@ -16,7 +16,7 @@
  */
 
 using Valum;
-using VSGI.Test;
+using VSGI.Mock;
 
 /**
  * @since 0.1
@@ -24,11 +24,13 @@ using VSGI.Test;
 public static void test_router () {
 	var router = new Router ();
 
-	assert (router.types != null);
-	assert (router.types.contains ("int"));
-	assert (router.types.contains ("string"));
-	assert (router.types.contains ("path"));
-	assert (router.types.contains ("any"));
+	try {
+		router.get ("<int:i>", (req, res) => {});
+		router.get ("<string:i>", (req, res) => {});
+		router.get ("<path:i>", (req, res) => {});
+	} catch (RegexError err) {
+		assert_not_reached ();
+	}
 }
 
 /**
@@ -48,10 +50,7 @@ public static void test_router_handle () {
 
 	HashTable<string, string>? @params;
 	assert (418 == response.status);
-	assert ("text/html" == response.headers.get_content_type (out @params));
-	assert (null != @params);
-	assert ("charset" in @params);
-	assert ("utf-8" == @params["charset"]);
+	assert (null == response.headers.get_content_type (out @params));
 }
 
 /**
@@ -73,6 +72,42 @@ public static void test_router_get () {
 }
 
 /**
+ * @since 0.3
+ */
+public void test_router_get_default_head () {
+	var router = new Router ();
+
+	router.get ("", (req, res) => {
+		res.status = 418;
+	});
+
+	var request  = new Request.with_method ("HEAD", new Soup.URI ("http://localhost/"));
+	var response = new Response (request);
+
+	router.handle (request, response);
+
+	assert (418 == response.status);
+}
+
+/**
+ * @since 0.3
+ */
+public void test_router_only_get () {
+	var router = new Router ();
+
+	router.rule (Method.ONLY_GET, "", (req, res) => {
+		res.status = 418;
+	});
+
+	var request  = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
+	var response = new Response (request);
+
+	router.handle (request, response);
+
+	assert (418 == response.status);
+}
+
+/**
  * @since 0.1
  */
 public static void test_router_post () {
@@ -82,7 +117,7 @@ public static void test_router_post () {
 		res.status = 418;
 	});
 
-	var request  = new Request.with_method (VSGI.Request.POST, new Soup.URI ("http://localhost/"));
+	var request  = new Request.with_method ("POST", new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
 	router.handle (request, response);
@@ -218,51 +253,73 @@ public static void test_router_patch () {
 /**
  * @since 0.1
  */
-public static void test_router_methods () {
-	var router       = new Router ();
-	string[] methods = {VSGI.Request.GET, VSGI.Request.POST};
+public void test_router_rule_null () {
+	var router  = new Router ();
 
-	var routes = router.methods (methods, "", (req, res) => {
+	router.get (null, (req, res, next, context) => {
 		res.status = 418;
 	});
 
-	assert (2 == routes.length);
-	assert (methods[0] == routes[0].method);
-	assert (methods[1] == routes[1].method);
+	var req = new Request.with_uri (new Soup.URI ("http://localhost/5"));
+	var res = new Response (req);
 
-	foreach (var method in methods) {
-		var request  = new Request.with_method (method, new Soup.URI ("http://localhost/"));
-		var response = new Response (request);
+	router.handle (req, res);
 
-		router.handle (request, response);
+	assert (418 == res.status);
+}
 
-		assert (418 == response.status);
+/**
+ * @since 0.1
+ */
+public void test_router_rule_null_matches_empty_path () {
+	var router  = new Router ();
+
+	router.get (null, (req, res, next, context) => {
+		res.status = 418;
+	});
+
+	var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
+	var res = new Response (req);
+
+	router.handle (req, res);
+
+	assert (418 == res.status);
+}
+
+/**
+ * @since 0.3
+ */
+public void test_router_rule_path () {
+	var router  = new Router ();
+
+	router.get ("<path:path>", (req, res, next, context) => {
+		assert_not_reached ();
+	});
+
+	string[] bad_paths = {"..", "."};
+
+	foreach (var bad_path in bad_paths) {
+		var req = new Request.with_uri (new Soup.URI ("http://localhost/%s".printf (bad_path)));
+		var res = new Response (req);
+
+		router.handle (req, res);
 	}
 }
 
 /**
  * @since 0.1
  */
-public static void test_router_all () {
-	var router = new Router ();
+public void test_router_rule_any () {
+	var router  = new Router ();
 
-	var routes = router.all ("", (req, res) => {
+	router.get ("*", (req, res, next, context) => {
 		res.status = 418;
 	});
 
-	assert (VSGI.Request.METHODS.length == routes.length);
+	var req = new Request.with_uri (new Soup.URI ("http://localhost/5"));
+	var res = new Response (req);
 
-	for (int i = 0; i < routes.length; i++)
-		assert (VSGI.Request.METHODS[i] == routes[i].method);
-
-	foreach (var method in VSGI.Request.METHODS) {
-		var request  = new Request.with_method (method, new Soup.URI ("http://localhost/"));
-		var response = new Response (request);
-
-		router.handle (request, response);
-
-		assert (418 == response.status);
-	}
+	router.handle (req, res);
 }
 
 /**
@@ -271,9 +328,12 @@ public static void test_router_all () {
 public static void test_router_regex () {
 	var router = new Router ();
 
-	router.regex (VSGI.Request.GET, /home/, (req, res) => {
+	var route = router.regex (Method.GET, /home/, (req, res) => {
 		res.status = 418;
-	});
+	}) as RegexRoute;
+
+	assert ("^/home$" == route.regex.get_pattern ());
+	assert (RegexCompileFlags.OPTIMIZE in route.regex.get_compile_flags ());
 
 	var request  = new Request.with_uri (new Soup.URI ("http://localhost/home"));
 	var response = new Response (request);
@@ -289,7 +349,7 @@ public static void test_router_regex () {
 public static void test_router_matcher () {
 	var router = new Router ();
 
-	router.matcher (VSGI.Request.GET, (req) => { return req.uri.get_path () == "/"; }, (req, res) => {
+	router.matcher (Method.GET, (req) => { return req.uri.get_path () == "/"; }, (req, res) => {
 		res.status = 418;
 	});
 
@@ -324,10 +384,30 @@ public static void test_router_scope () {
 /**
  * @since 0.1
  */
+public void test_router_scope_regex () {
+	var router = new Router ();
+
+	Route? route = null;
+	router.scope ("test", (test) => {
+		route = test.regex (Method.GET, /(?<id>\d+)/, (req, res) => {});
+	});
+
+	var req     = new Request.with_uri (new Soup.URI ("http://localhost/test/5"));
+	var context = new Context ();
+
+	assert (route != null);
+	assert (route.match (req, context));
+
+	assert ("5" == context["id"].get_string ());
+}
+
+/**
+ * @since 0.1
+ */
 public static void test_router_informational_switching_protocols () {
 	var router = new Router ();
 
-	router.all ("", (req, res) => {
+	router.use ((req, res) => {
 		throw new Informational.SWITCHING_PROTOCOLS ("HTTP/1.1");
 	});
 
@@ -409,7 +489,7 @@ public static void test_router_client_error_method_not_allowed () {
 
 	});
 
-	router.all ("", (req, res) => {
+	router.use ((req, res) => {
 		throw new ClientError.METHOD_NOT_ALLOWED ("POST");
 	});
 
@@ -429,7 +509,7 @@ public static void test_router_client_error_method_not_allowed () {
 public static void test_router_client_error_upgrade_required () {
 	var router = new Router ();
 
-	router.all ("", (req, res) => {
+	router.use ((req, res) => {
 		throw new ClientError.UPGRADE_REQUIRED ("HTTP/1.1");
 	});
 
@@ -476,7 +556,7 @@ public static void test_router_server_error () {
 public static void test_router_custom_method () {
 	var router = new Router ();
 
-	router.method ("TEST", "", (req, res) => {
+	router.rule (Method.OTHER, "", (req, res) => {
 		res.status = 418;
 	});
 
@@ -508,7 +588,8 @@ public static void test_router_method_not_allowed () {
 	router.handle (request, response);
 
 	assert (response.status == 405);
-	assert ("GET, PUT" == response.headers.get_one ("Allow"));
+	message (response.headers.get_one ("Allow"));
+	assert ("GET, HEAD, PUT" == response.headers.get_one ("Allow"));
 	assert (response.head_written);
 }
 
@@ -522,12 +603,12 @@ public static void test_router_method_not_allowed_excludes_request_method () {
 	var post_matched = 0;
 
 	// matching, but not the same HTTP method
-	router.matcher (VSGI.Request.GET, () => { get_matched++; return true; }, (req, res) => {
+	router.matcher (Method.GET, () => { get_matched++; return true; }, (req, res) => {
 
 	});
 
 	// not matching, but same HTTP method
-	router.matcher (VSGI.Request.POST, () => { post_matched++; return false; }, (req, res) => {
+	router.matcher (Method.POST, () => { post_matched++; return false; }, (req, res) => {
 
 	});
 
@@ -536,11 +617,8 @@ public static void test_router_method_not_allowed_excludes_request_method () {
 
 	router.handle (request, response);
 
-	assert (post_matched == 1); // matched only once during initial lookup
-	assert (get_matched == 1);
-
 	assert (response.status == 405);
-	assert ("GET" == response.headers.get_one ("Allow"));
+	assert ("GET, HEAD" == response.headers.get_one ("Allow"));
 	assert (response.head_written);
 }
 
@@ -663,8 +741,8 @@ public static void test_router_next_propagate_state () {
 	var router = new Router ();
 	var state  = new Object ();
 
-	router.get ("", (req, res, next, stack) => {
-		stack.push_tail (state);
+	router.get ("", (req, res, next, context) => {
+		context["state"] = state;
 		next (req, res);
 	});
 
@@ -672,9 +750,9 @@ public static void test_router_next_propagate_state () {
 		next (req, res);
 	});
 
-	router.get ("", (req, res, next, st) => {
+	router.get ("", (req, res, next, context) => {
 		res.status = 413;
-		assert (st.pop_tail () == state);
+		assert (state == context["state"]);
 	});
 
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
@@ -692,19 +770,22 @@ public static void test_router_next_replace_propagated_state () {
 	var router = new Router ();
 	var state  = new Object ();
 
-	router.get ("", (req, res, next, stack) => {
-		stack.push_tail (state);
+	router.get ("", (req, res, next, context) => {
+		context["state"] = state;
 		next (req, res);
 	});
 
-	router.get ("", (req, res, next, stack) => {
-		assert (state == stack.pop_tail ());
+	router.get ("", (req, res, next, context) => {
+		assert (state == context["state"]);
+		context["state"] = "something really different";
 		next (req, res);
 	});
 
-	router.get ("", (req, res, next, stack) => {
+	router.get ("", (req, res, next, context) => {
 		res.status = 413;
-		assert (stack.is_empty ());
+		assert (context["state"].holds (typeof (string)));
+		assert (context.parent["state"].holds (typeof (string)));
+		assert (context.parent.parent["state"].holds (typeof (Object)));
 	});
 
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
@@ -718,10 +799,10 @@ public static void test_router_next_replace_propagated_state () {
 public static void test_router_status_propagates_error_message () {
 	var router = new Router ();
 
-	router.status (404, (req, res, next, stack) => {
-		var message = stack.pop_tail ();
+	router.status (404, (req, res, next, context) => {
+		var message = context["message"];
 		res.status = 418;
-		assert ("The request URI http://localhost/ was not found." == message.get_string ());
+		assert ("The request URI / was not found." == message.get_string ());
 	});
 
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
@@ -783,13 +864,13 @@ public static void test_router_invoke_propagate_state () {
 	var router  = new Router ();
 	var message = "test";
 
-	router.get ("", (req, res, next, stack) => {
-		stack.push_tail (message);
+	router.get ("", (req, res, next, context) => {
+		context["message"] = message;
 		router.invoke (req, res, next);
 	});
 
-	router.get ("", (req, res, next, stack) => {
-		assert (message == stack.pop_tail ().get_string ());
+	router.get ("", (req, res, next, context) => {
+		assert (message == context["message"].get_string ());
 		throw new ClientError.IM_A_TEAPOT ("this is insane!");
 	});
 
@@ -830,18 +911,18 @@ public void test_router_then () {
 /**
   * @since 0.2.2
   */
-public void test_router_then_preserve_matching_stack () {
+public void test_router_then_preserve_matching_context () {
 	var router = new Router ();
 
 	var reached = false;
 
-	router.get ("<int:id>", (req, res, next, stack) => {
-		stack.push_tail ("test");
+	router.get ("<int:id>", (req, res, next, context) => {
+		context["test"] = "test";
 		next (req, res);
-	}).then ((req, res, next, stack) => {
+	}).then ((req, res, next, context) => {
 		reached = true;
-		assert ("test" == stack.pop_tail ().get_string ());
-		assert ("5" == stack.pop_tail ().get_string ());
+		assert ("test" == context["test"].get_string ());
+		assert ("5" == context["id"].get_string ());
 	});
 
 	var req = new Request.with_uri (new Soup.URI ("http://localhost/5"));

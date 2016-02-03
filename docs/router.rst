@@ -5,55 +5,44 @@ Router is the core component of Valum. It dispatches request to the right
 handler and processes certain error conditions described in
 :doc:`redirection-and-error`.
 
-It initializes the :doc:`vsgi/response` with sane defaults:
+It initializes the :doc:`vsgi/response` with chunked encoding if the requester
+uses HTTP/1.1 before dispatching it through the attached routes.
 
- - status code to ``200 OK``
- - ``Content-Type: text/html; charset=utf-8``
- - ``Transfer-Encoding: chunked`` if the requester uses HTTP/1.1
-
-.. warning::
-
-    If you intend to serve a different content type or use a different
-    charset, you must override the ``Content-Type`` header using
-    `Soup.MessageHeaders.set_content_type`_.
-
-It can be set appropriately in a catch-all handling middleware. They are
-described later in this document.
+The ``Content-Type`` header should be set explicitly with
+`Soup.MessageHeaders.set_content_type`_ based on the content transmitted to the
+user agent.
 
 .. _Soup.MessageHeaders.set_content_type: http://valadoc.org/#!api=libsoup-2.4/Soup.MessageHeaders.set_content_type
 
+It can be performed automatically with ``Router.use``:
+
 .. code:: vala
 
-    app.get (null, (req, res, next) => {
+    app.use ((req, res, next) => {
         var @params = new HashTable<string, string> (str_hash, str_equal);
         @params["charset"] = "iso-8859-1";
         res.headers.set_content_type ("text/xhtml+xml", @params);
         next (req, res);
     });
 
-Routing stack
--------------
+Routing context
+---------------
 
 During the routing, states can obtained from a previous handler or passed to
-the next one using the routing stack. The stack is a simple `GLib.Queue`_ that
-can be accessed from its head or tail.
+the next one using the routing context.
 
-.. warning::
-
-    The queue tail is used to perform stack operations with ``push_tail`` and
-    ``pop_tail``.
-
-.. _GLib.Queue: http://valadoc.org/#!api=glib-2.0/GLib.Queue
+Keys are resolved recursively in the tree of context by looking at the parent
+context if it's missing.
 
 .. code:: vala
 
-    app.get ("", (req, res, next, stack) => {
-        stack.push_tail ("some value");
+    app.get ("", (req, res, next, context) => {
+        context["some key"] = "some value";
         next (req, res);
     });
 
-    app.get ("", (req, res, next, stack) => {
-        var some_value = stack.pop_tail ().get_string ();
+    app.get ("", (req, res, next, context) => {
+        var some_value = context["some key"]; // or context.parent["some key"]
     });
 
 HTTP methods
@@ -115,13 +104,9 @@ convenience.
 
     app.method (Request.GET, "rule", (req, res) => {});
 
-Multiple methods can be captured with ``methods`` and ``all``.
+Multiple methods can be captured with ``methods``:
 
 .. code:: vala
-
-    app.all ("", (req, res) => {
-        // matches all methods registered in VSGI.Request.METHODS
-    });
 
     app.methods (Request.GET, Request.POST, "", (req, res) => {
         // matches GET and POST
@@ -161,14 +146,14 @@ Thrown status code can be handled by a ``HandlerCallback`` pretty much like how
 typically matched requests are being handled.
 
 The received :doc:`vsgi/request` and :doc:`vsgi/response` object are in the
-same state they were when the status was thrown. The error message is stacked
-and available in the ``HandlerCallback`` last parameter.
+same state they were when the status was thrown. The error message is bound to
+the key ``message`` in the routing context.
 
 .. code:: vala
 
-    app.status (Soup.Status.NOT_FOUND, (req, res, next, stack) => {
+    app.status (Soup.Status.NOT_FOUND, (req, res, next, context) => {
         // produce a 404 page...
-        var message = stack.pop_tail ().get_string ();
+        var message = context["message"].get_string ();
     });
 
 Similarly to conventional request handling, the ``next`` continuation can be
@@ -267,7 +252,7 @@ application.
     a maximum inter-operability with other frameworks based on VSGI.
 
 The following example delegates all ``GET`` requests to another router which
-will process in isolation with its own routing stack.
+will process in isolation with its own routing context.
 
 .. code:: vala
 
@@ -310,25 +295,6 @@ Filters
     app.get ("", (req, res) => {
         // res is transparently gzipped
     })
-
-Stacked states
-~~~~~~~~~~~~~~
-
-Additionally, states can be passed to the next handler in the queue by pushing
-them in a stack.
-
-.. code:: vala
-
-    app.get ("", (req, res, next, stack) => {
-        message ("pre");
-        stack.push_tail (new Object ()); // propagate the state
-        next (req, res);
-    });
-
-    app.get ("", (req, res, next, stack) => {
-        // perform an operation with the provided state
-        var obj = stack.pop_tail ();
-    });
 
 Sequence
 --------
@@ -396,8 +362,8 @@ responses designed for non-human client.
         });
     });
 
-    app.status (Status.NOT_ACCEPTABLE, (req, res, next, stack) => {
-        res.body.write_all ("<p>%s</p>".printf (stack.pop_tail ().get_string ()).data, null);
+    app.status (Status.NOT_ACCEPTABLE, (req, res, next, context) => {
+        res.body.write_all ("<p>%s</p>".printf (context["message"].get_string ()).data, null);
     });
 
 Middleware
@@ -447,12 +413,22 @@ processing the :doc:`vsgi/request` or :doc:`vsgi/response`.
 A handling middleware can also pass a filtered :doc:`vsgi/request` or
 :doc:`vsgi/response` objects using :doc:`vsgi/filters`,
 
+These middlewares can be mounted on the routing queue with ``Router.use`` or
+conditionally to a matching middleware.
+
+.. code:: vala
+
+    app.use ((req, res, next) => {
+        // executed on every request
+        next (req, res);
+    });
+
 The following example shows a middleware that provide a compressed stream over
 the :doc:`vsgi/response` body.
 
 .. code:: vala
 
-    app.get (null, (req, res, next) => {
+    app.use ((req, res, next) => {
         res.headers.replace ("Content-Encoding", "gzip");
         next (req, new ConvertedResponse (res, new ZLibCompressor (ZlibCompressorFormat.GZIP)));
     });
@@ -482,8 +458,8 @@ attached to a :doc:`route`, the processing will happen in a ``NextCallback``.
 
 .. code:: vala
 
-    app.get ("home", (req, res, next, stack) => {
+    app.get ("home", (req, res, next, context) => {
         compress (req, res, (req, res) => {
             res.body.write_all ("Hello world!".data, null);
-        }, stack);
+        }, new Context.with_parent (context));
     });

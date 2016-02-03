@@ -15,7 +15,7 @@
  * along with Valum.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using VSGI.Test;
+using VSGI.Mock;
 
 /**
  * @since 0.1

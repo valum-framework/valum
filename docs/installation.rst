@@ -64,10 +64,6 @@ The following dependencies are minimal to build the framework under Ubuntu
 +--------------+----------+
 | libsoup-2.4  | >=2.38   |
 +--------------+----------+
-| libgee-0.8   | >=0.6.4  |
-+--------------+----------+
-| ctpl         | >=3.3    |
-+--------------+----------+
 
 Recent dependencies will enable more advanced features:
 

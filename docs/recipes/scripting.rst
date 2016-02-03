@@ -5,9 +5,6 @@ Through `Vala VAPI bindings <https://wiki.gnome.org/Projects/Vala/Bindings>`__,
 application written with Valum can embed multiple interpreters and JIT to
 provide facilities for computation and templating.
 
-:doc:`ctpl` integration is provided, but if you need something more powerful,
-this document will cover exactly what you need.
-
 Lua
 ---
 
@@ -23,7 +20,7 @@ Lua
 .. code:: vala
 
     using Valum;
-    using VSGI.Soup;
+    using VSGI.HTTP;
     using Lua;
 
     var app = new Router ();
@@ -44,7 +41,7 @@ Lua
         writer.put_string (lua.do_file ("scripts/hello.lua"));
     });
 
-    new Soup (app).run ();
+    new Server ("org.valum.example.Lua", app).run ();
 
 The sample Lua script contains:
 

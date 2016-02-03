@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+def configure(cfg):
+    pass
+
+def build(bld):
+    from waflib import Context
+    bld.shlib(
+        target       = 'vsgi-http',
+        gir          = 'VSGI.HTTP-{}'.format(Context.g_module.API_VERSION),
+        source       = 'vsgi-http.vala',
+        use          = 'vsgi',
+        vala_defines = ['INCLUDE_TYPE_MODULE'],
+        header_path  = '${INCLUDEDIR}/vsgi',
+        install_path = '${LIBDIR}')
+
+    bld(
+        features     = 'subst',
+        target       = 'vsgi-http.pc',
+        source       = 'vsgi-http.pc.in',
+        install_path = '${LIBDIR}/pkgconfig',
+        VERSION      = Context.g_module.VERSION,
+        API_VERSION  = Context.g_module.API_VERSION)
+

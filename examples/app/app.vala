@@ -16,12 +16,16 @@
  */
 
 using Valum;
-using VSGI.Soup;
+using Valum.ServerSentEvents;
+using VSGI.HTTP;
 
 var app = new Router ();
 
-app.all (null, (req, res, next) => {
+app.use ((req, res, next) => {
 	res.headers.append ("Server", "Valum/1.0");
+	HashTable<string, string>? @params = new HashTable<string, string> (str_hash, str_equal);
+	@params["charset"] = "utf-8";
+	res.headers.set_content_type ("text/html", @params);
 	next (req, res);
 });
 
@@ -39,7 +43,7 @@ app.get ("gzip", (req, res, next) => {
 });
 
 // replace 'Content-Type' for 'text/plain'
-app.get (null, (req, res, next) => {
+app.use ((req, res, next) => {
 	HashTable<string, string>? @params;
 	res.headers.get_content_type (out @params);
 	res.headers.set_content_type ("text/plain", @params);
@@ -78,14 +82,14 @@ app.get ("cookies", (req, res) => {
 });
 
 app.scope ("cookie", (inner) => {
-	inner.get ("<name>", (req, res) => {
+	inner.get ("<name>", (req, res, next, context) => {
 		foreach (var cookie in VSGI.Cookies.from_request (req))
-			if (cookie.name == req.params["name"])
+			if (cookie.name == context["name"].get_string ())
 				res.body.write_all ("%s\n".printf (cookie.value).data, null);
 	});
 
-	inner.post ("<name>", (req, res) => {
-		var cookie = new Soup.Cookie (req.params["name"], req.flatten_utf8 (), "0.0.0.0", "/", 60);
+	inner.post ("<name>", (req, res, next, context) => {
+		var cookie = new Soup.Cookie (context["name"].get_string (), req.flatten_utf8 (), "0.0.0.0", "/", 60);
 		res.headers.append ("Set-Cookie", cookie.to_set_cookie_header ());
 	});
 });
@@ -128,42 +132,46 @@ app.get ("hello/", (req, res) => {
 	res.body.write_all ("Hello world!".data, null);
 });
 
-app.all ("all", (req, res) => {
-	res.body.write_all ("Matches all HTTP methods".data, null);
-});
-
-app.methods ({VSGI.Request.GET, VSGI.Request.POST}, "get-and-post", (req, res) => {
+app.rule (Method.GET | Method.POST, "get-and-post", (req, res) => {
 	res.body.write_all ("Matches GET and POST".data, null);
 });
 
-app.method (VSGI.Request.GET, "custom-method", (req, res) => {
+app.rule (Method.GET, "custom-method", (req, res) => {
 	res.body.write_all (req.method.data, null);
 });
 
-app.get ("hello/<id>", (req, res) => {
-	res.body.write_all ("hello %s!".printf (req.params["id"]).data, null);
+app.get ("hello/<id>", (req, res, next, context) => {
+	res.body.write_all ("hello %s!".printf (context["id"].get_string ()).data, null);
 });
 
-app.get ("users/<int:id>/<action>", (req, res) => {
-	var id     = req.params["id"];
-	var test   = req.params["action"];
+app.get ("users/<int:id>(/<action>)?", (req, res, next, context) => {
+	var id     = context["id"].get_string ();
+	var test   = "action" in context ? context["action"].get_string () : "index";
 	var writer = new DataOutputStream (res.body);
 
 	writer.put_string (@"id\t=> $id\n");
 	writer.put_string (@"action\t=> $test");
 });
 
-app.types["permutations"] = /abc|acb|bac|bca|cab|cba/;
+app.register_type ("permutations", /abc|acb|bac|bca|cab|cba/);
 
-app.get ("custom-route-type/<permutations:p>", (req, res) => {
-	res.body.write_all (req.params["p"].data, null);
+app.get ("custom-route-type/<permutations:p>", (req, res, next, context) => {
+	res.body.write_all (context["p"].get_string ().data, null);
 });
 
-app.regex (VSGI.Request.GET, /custom-regular-expression/, (req, res) => {
+app.get ("trailing-slash/?", (req, res) => {
+	if (req.uri.get_path ().has_suffix ("/")) {
+		res.body.write_all ("It has it!".data, null);
+	} else {
+		res.body.write_all ("It does not!".data, null);
+	}
+});
+
+app.regex (Method.GET, /custom-regular-expression/, (req, res) => {
 	res.body.write_all ("This route was matched using a custom regular expression.".data, null);
 });
 
-app.matcher (VSGI.Request.GET, (req) => { return req.uri.get_path () == "/custom-matcher"; }, (req, res) => {
+app.matcher (Method.GET, (req) => { return req.uri.get_path () == "/custom-matcher"; }, (req, res) => {
 	res.body.write_all ("This route was matched using a custom matcher.".data, null);
 });
 
@@ -193,13 +201,15 @@ app.get ("not-found", (req, res) => {
 
 var api = new Router ();
 
-api.get ("repository/<name>", (req, res) => {
-	var name = req.params["name"];
+app.use (subdomain ("api", api.handle));
+
+api.get ("repository/<name>", (req, res, next, context) => {
+	var name = context["name"].get_string ();
 	res.body.write_all (name.data, null);
 });
 
 // delegate all other GET requests to a subrouter
-app.get ("repository/<any:path>", api.handle);
+app.get ("repository/*", api.handle);
 
 app.get ("next", (req, res, next) => {
 	next (req, res);
@@ -209,17 +219,17 @@ app.get ("next", (req, res) => {
 	res.body.write_all ("Matched by the next route in the queue.".data, null);
 });
 
-app.get ("state", (req, res, next, stack) => {
-	stack.push_tail ("I have been passed!");
+app.get ("state", (req, res, next, context) => {
+	context["state"] = "I have been passed!";
 	next (req, res);
 });
 
-app.get ("state", (req, res, next, stack) => {
-	res.body.write_all (stack.pop_tail ().get_string ().data, null);
+app.get ("state", (req, res, next, context) => {
+	res.body.write_all (context["state"].get_string ().data, null);
 });
 
 // Ctpl template rendering
-app.get ("ctpl/<foo>/<bar>", (req, res) => {
+app.get ("ctpl/<foo>/<bar>", (req, res, next, context) => {
 	var tpl = new View.from_string ("""
 	   <p>hello {foo}</p>
 	   <p>hello {bar}</p>
@@ -230,8 +240,8 @@ app.get ("ctpl/<foo>/<bar>", (req, res) => {
 	   </ul>
 	""");
 
-	tpl.push_string ("foo", req.params["foo"]);
-	tpl.push_string ("bar", req.params["bar"]);
+	tpl.push_string ("foo", context["foo"].get_string ());
+	tpl.push_string ("bar", context["bar"].get_string ());
 	tpl.push_strings ("strings", {"a", "b", "c"});
 	tpl.push_int ("int", 1);
 
@@ -240,10 +250,8 @@ app.get ("ctpl/<foo>/<bar>", (req, res) => {
 });
 
 // serve static resource using a path route parameter
-app.get ("static/<path:resource>.<any:type>", (req, res) => {
-	var resource = req.params["resource"];
-	var type     = req.params["type"];
-	var path     = "/static/%s.%s".printf (resource, type);
+app.get ("static/<path:path>", (req, res, next, context) => {
+	var path = "/static/%s".printf (context["path"].get_string ());
 	bool uncertain;
 
 	try {
@@ -253,7 +261,7 @@ app.get ("static/<path:resource>.<any:type>", (req, res) => {
 		res.headers.set_content_type (ContentType.guess (path, lookup.get_data (), out uncertain), null);
 
 		if (uncertain)
-			warning ("could not infer content type of file %s.%s with certainty".printf (resource, type));
+			warning ("could not infer content type of file '%s' with certainty".printf (path));
 
 		var file = resources_open_stream (path, ResourceLookupFlags.NONE);
 
@@ -271,9 +279,28 @@ app.get ("static/<path:resource>.<any:type>", (req, res) => {
 	}
 });
 
-app.status (Soup.Status.NOT_FOUND, (req, res, next, stack) => {
+app.get ("server-sent-events", stream_events ((req, send) => {
+	send (null, "now!");
+	GLib.Timeout.add_seconds (5, () => {
+		send (null, "later!");
+		return false;
+	});
+}));
+
+app.get ("negociate", accept ("application/json", (req, res) => {
+	res.headers.set_content_type ("application/json", null);
+	res.body.write_all ("{\"a\":\"b\"}".data, null);
+})).then (accept ("text/xml", (req, res) => {
+	res.headers.set_content_type ("text/xml", null);
+	res.body.write_all ("<a>b</a>".data, null);
+})).then ((req, res) => {
+	res.status = global::Soup.Status.NOT_ACCEPTABLE;
+	res.body.write_all ("Supply the 'Accept' header with either 'application/json' or 'text/xml'.".data, null);
+});
+
+app.status (Soup.Status.NOT_FOUND, (req, res, next, context) => {
 	var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));
-	template.environment.push_string ("message", stack.pop_tail ().get_string ());
+	template.environment.push_string ("message", context["message"].get_string ());
 	res.status = Soup.Status.NOT_FOUND;
 	HashTable<string, string> @params;
 	res.headers.get_content_type (out @params);

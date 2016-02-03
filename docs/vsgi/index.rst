@@ -30,7 +30,7 @@ a :doc:`request` and a :doc:`response`.
 
 .. code:: vala
 
-    using VSGI.Soup;
+    using VSGI.HTTP;
 
     new Server ("org.vsgi.App", (req, res) => {
         // process the request and produce the response...
