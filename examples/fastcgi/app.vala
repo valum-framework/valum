@@ -36,12 +36,5 @@ public static int main (string[] args) {
 		}
 	});
 
-	app.get ("<any:path>", (req, res) => {
-		res.status = 404;
-
-		var writer = new DataOutputStream (res.body);
-		writer.put_string ("404 - Not found");
-	});
-
 	return new Server ("org.valum.example.FastCGI", app.handle).run (args);
 }

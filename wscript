@@ -18,7 +18,10 @@ def configure(conf):
     conf.check_cfg(package='glib-2.0', atleast_version='2.32', uselib_store='GLIB', args='--cflags --libs')
     conf.check_cfg(package='gio-2.0', atleast_version='2.32', uselib_store='GIO', args='--cflags --libs')
     conf.check_cfg(package='gio-unix-2.0', atleast_version='2.32', uselib_store='GIOUNIX', args='--cflags --libs')
+    conf.check_cfg(package='gthread-2.0', atleast_version='2.32', uselib_store='GTHREAD', args='--cflags --libs')
     conf.check_cfg(package='libsoup-2.4', atleast_version='2.38',uselib_store='SOUP', args='--cflags --libs')
+
+    conf.env.append_unique('VALAFLAGS', ['--define=GLIB_2_32'])
 
     # glib (>=2.38) to enable subprocess in tests
     if conf.check_cfg(package='glib-2.0', atleast_version='2.38', mandatory=False, uselib_store='GLIB', args='--cflags --libs'):
@@ -68,7 +71,7 @@ def build(bld):
         target       = 'vsgi',
         gir          = 'VSGI-{}'.format(API_VERSION),
         source       = ['src/vsgi.vala'] + bld.path.ant_glob('src/vsgi-*.vala'),
-        use          = ['GLIB', 'GIO', 'GIOUNIX', 'SOUP', 'FCGI'],
+        use          = ['GLIB', 'GIO', 'GIOUNIX', 'GTHREAD', 'SOUP', 'FCGI'],
         vapi_dirs    = ['vapi'],
         header_path  = '${INCLUDEDIR}/vsgi',
         install_path = '${LIBDIR}')

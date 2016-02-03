@@ -209,6 +209,13 @@ namespace VSGI.FastCGI {
 	}
 
 	/**
+	 * @since 0.3
+	 */
+	public errordomain RequestError {
+		FAILED
+	}
+
+	/**
 	 * FastCGI Server using GLib.MainLoop.
 	 *
 	 * @since 0.1
@@ -311,52 +318,42 @@ namespace VSGI.FastCGI {
 				return 1;
 			}
 
-			var source = socket.create_source (IOCondition.IN);
+			new Thread<int> (null, () => {
+				do {
+					var connection = new Connection (this);
 
-			source.set_callback (() => {
-				global::FastCGI.request request;
+					try {
+						if (!connection.init ())
+							break;
+					} catch (Error err) {
+						command_line.printerr (err.message);
+						break;
+					}
 
-				// accept a request
-				var request_status = global::FastCGI.request.init (out request, socket.fd);
+					var environment = new HashTable<string, string> (str_hash, str_equal);
 
-				if (request_status != 0) {
-					command_line.printerr ("code %u: could not initialize FCGX request\n", request_status);
-					return false;
-				}
+					foreach (var e in connection.request.environment.get_all ()) {
+						var parts = e.split ("=", 2);
+						environment[parts[0]] = parts.length == 2 ? parts[1] : "";
+					}
 
-				var status = request.accept ();
+					var req = new Request (connection, environment);
+					var res = new Response (req);
 
-				if (status < 0) {
-					request.close ();
-					command_line.printerr ("request %u: cannot not accept anymore request (status %u)\n",
-					                       request.request_id,
-					                       status);
-					return false;
-				}
+					// dispatch the app in the main loop
+					MainContext.@default ().invoke (() => {
+						handle (req, res);
+						return Source.REMOVE;
+					});
+				} while (true);
 
-				var environment = new HashTable<string, string> (str_hash, str_equal);
+				release ();
 
-				foreach (var e in request.environment.get_all ()) {
-					var parts = e.split ("=", 2);
-					environment[parts[0]] = parts.length == 2 ? parts[1] : "";
-				}
-
-				var connection = new Connection (this, request);
-
-				var req = new Request (connection, environment);
-				var res = new Response (req);
-
-				this.handle (req, res);
-
-				debug ("%s: %u %s %s", this.get_application_id (), res.status, req.method, req.uri.get_path ());
-
-				return true;
+				return 1;
 			});
 
-			source.attach (MainContext.default ());
-
 			// keep the process alive
-			this.hold ();
+			hold ();
 
 			return 0;
 		}
@@ -364,11 +361,18 @@ namespace VSGI.FastCGI {
 		/**
 		 * {@inheritDoc}
 		 */
-		private class Connection : IOStream {
+		private class Connection : IOStream, Initable {
 
+			/**
+			 * @since 0.2
+			 */
 			public Server server { construct; get; }
 
-			private unowned global::FastCGI.request request;
+			/**
+			 * @since 0.3
+			 */
+			public global::FastCGI.request request;
+
 			private StreamInputStream _input_stream;
 			private StreamOutputStream _output_stream;
 
@@ -384,11 +388,33 @@ namespace VSGI.FastCGI {
 				}
 			}
 
-			public Connection (Server server, global::FastCGI.request request) {
+			/**
+			 * @since 0.2
+			 */
+			public Connection (Server server) {
 				Object (server: server);
-				this.request        = request;
+			}
+
+			/**
+			 * @since 0.3
+			 */
+			public bool init (Cancellable? cancellable = null) throws Error {
+				// accept a request
+				var request_status = global::FastCGI.request.init (out request,
+				                                                   server.socket.fd);
+
+				if (request_status != 0) {
+					throw new RequestError.FAILED ("could not initialize FCGX request (code %d)",
+					                               request_status);
+				}
+
+				// accept loop
+				while (request.accept () < 0);
+
 				this._input_stream  = new StreamInputStream (server.socket, request.in);
 				this._output_stream = new StreamOutputStream (server.socket, request.out, request.err);
+
+				return true;
 			}
 
 			~Connection () {
