@@ -6,5 +6,6 @@ includedir=@includedir@
 Name: VSGI.HTTP
 Description: Implementation of VSGI based on libsoup-2.4
 Requires: vsgi
+Version: @VERSION@
 Libs: -L${libdir} -lvsgi-http
 Cflags: -I${includedir}/vsgi
