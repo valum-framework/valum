@@ -6,13 +6,14 @@ def configure(cfg):
 def build(bld):
     from waflib import Context
     bld.shlib(
-        packages     = 'gio-unix-2.0',
-        target       = 'vsgi-cgi',
-        gir          = 'VSGI.CGI-{}'.format(Context.g_module.API_VERSION),
-        source       = 'vsgi-cgi.vala',
-        use          = 'vsgi GIOUNIX',
-        header_path  = '${INCLUDEDIR}/vsgi',
-        install_path = '${LIBDIR}')
+        packages_private = 'gio-unix-2.0',
+        target           = 'vsgi-cgi',
+        gir              = 'VSGI.CGI-{}'.format(Context.g_module.API_VERSION),
+        source           = 'vsgi-cgi.vala',
+        use              = 'vsgi',
+        uselib           = 'GIOUNIX',
+        header_path      = '${INCLUDEDIR}/vsgi',
+        install_path     = '${LIBDIR}')
 
     bld(
         features     = 'subst',

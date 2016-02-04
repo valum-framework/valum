@@ -5,7 +5,7 @@ includedir=@includedir@
 
 Name: VSGI.SCGI
 Description: SCGI implementation of VSGI
-Requires: vsgi
 Version: @VERSION@
+Requires: vsgi-cgi
 Libs: -L${libdir} -lvsgi-scgi
 Cflags: -I${includedir}/vsgi

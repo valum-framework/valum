@@ -7,5 +7,6 @@ Name: VSGI.Mock
 Description: Mocked implementation of VSGI for testing purposes
 URL: https://github.com/valum-framework/valum
 Version: @VERSION@
+Requires: vsgi
 Libs: -L${libdir} -lvsgi-mock
 Cflags: -I${includedir}/vsgi

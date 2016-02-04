@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 
 def configure(cfg):
+    cfg.check_cfg(package='gio-unix-2.0', atleast_version='2.32', uselib_store='GIOUNIX', args='--cflags --libs')
     cfg.check_cfg(package='gthread-2.0', atleast_version='2.32', uselib_store='GTHREAD', args='--cflags --libs')
     cfg.check(lib='fcgi', uselib_store='FCGI', args='--cflags --libs')
 
 def build(bld):
     from waflib import Context
     bld.shlib(
-        packages_private = 'fcgi',
+        packages_private = 'gio-unix-2.0 fcgi',
         target           = 'vsgi-fastcgi',
         gir              = 'VSGI.FastCGI-{}'.format(Context.g_module.API_VERSION),
         source           = 'vsgi-fastcgi.vala',
-        use              = 'vsgi vsgi-cgi GTHREAD FCGI',
+        use              = 'vsgi-cgi',
+        uselib           = 'GIOUNIX GTHREAD FCGI',
         vala_defines     = 'INCLUDE_TYPE_MODULE',
         vapi_dirs        = '.',
         header_path      = '${INCLUDEDIR}/vsgi',
