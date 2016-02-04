@@ -30,11 +30,6 @@ public class Valum.Context : Object {
 	private HashTable<string, Value?> states = new HashTable<string, Value?> (str_hash, str_equal);
 
 	/**
-	 * Internal mapping of services.
-	 */
-	private HashTable<string, Object> services = new HashTable<string, Object> (str_hash, str_equal);
-
-	/**
 	 * Parent's context from which missing keys are resolved.
 	 *
 	 * @since 0.3
@@ -84,27 +79,5 @@ public class Valum.Context : Object {
 	 */
 	public bool contains (string key) {
 		return states.contains (key) || (parent != null && parent.contains (key));
-	}
-
-	/**
-	 * Register a service.
-	 *
-	 * @see GLib.Application.id_is_valid
-	 *
-	 * @since 0.3
-	 */
-	public void register (string identifier, Object service) requires (Application.id_is_valid (identifier)) {
-		services[identifier] = service;
-	}
-
-	/**
-	 * Resolve a service in the context stack.
-	 *
-	 * @since 0.3
-	 *
-	 * @return the requested service or 'null' if not resolved
-	 */
-	public Object? resolve (string identifier) requires (Application.id_is_valid (identifier) ){
-		return services[identifier] ?? parent.resolve (identifier);
 	}
 }
