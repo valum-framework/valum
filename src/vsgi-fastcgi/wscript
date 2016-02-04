@@ -22,7 +22,6 @@ def build(bld):
         target       = 'vsgi-fastcgi.pc',
         source       = 'vsgi-fastcgi.pc.in',
         install_path = '${LIBDIR}/pkgconfig',
-        VERSION      = Context.g_module.VERSION,
-        API_VERSION  = Context.g_module.API_VERSION)
+        VERSION      = Context.g_module.VERSION)
 
     bld.install_files('${DATADIR}/vala/vapi', 'fcgi.deps fcgi.vapi')

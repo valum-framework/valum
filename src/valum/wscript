@@ -13,3 +13,9 @@ def build(bld):
         header_path  = '${INCLUDEDIR}/valum',
         install_path = '${LIBDIR}')
 
+    bld(
+        features     = 'subst',
+        target       = 'valum.pc',
+        source       = 'valum.pc.in',
+        install_path = '${LIBDIR}/pkgconfig',
+        VERSION      = Context.g_module.VERSION)

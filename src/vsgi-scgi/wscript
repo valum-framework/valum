@@ -19,5 +19,4 @@ def build(bld):
         target       = 'vsgi-scgi.pc',
         source       = 'vsgi-scgi.pc.in',
         install_path = '${LIBDIR}/pkgconfig',
-        VERSION      = Context.g_module.VERSION,
-        API_VERSION  = Context.g_module.API_VERSION)
+        VERSION      = Context.g_module.VERSION)
