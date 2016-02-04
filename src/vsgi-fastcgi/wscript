@@ -14,7 +14,6 @@ def build(bld):
         source           = 'vsgi-fastcgi.vala',
         use              = 'vsgi-cgi',
         uselib           = 'GIOUNIX GTHREAD FCGI',
-        vala_defines     = 'INCLUDE_TYPE_MODULE',
         vapi_dirs        = '.',
         header_path      = '${INCLUDEDIR}/vsgi',
         install_path     = '${LIBDIR}')
