@@ -2,14 +2,25 @@ CGI
 ===
 
 CGI is a very simple process-based protocol that uses commonly available
-operations:
+process resources:
 
 -   environment variables
 -   standard input stream for the :doc:`../request`
 -   standard output stream for the :doc:`../response`
 
-The ``VSGI.CGI`` implementation provides a basis for CGI-like protocols such as
-:doc:`fastcgi` and SCGI and can be used along with any HTTP server.
+.. warning::
+
+    The CGI protocol expects the response to be written in the standard output:
+    writting there will most surely corrupt the response.
+
+The ``VSGI.CGI`` implementation provides a basis for its derivatives protocols
+such as :doc:`fastcgi` and :doc:`scgi` and can be used along with any HTTP
+server.
+
+The interpretation of the environment prioritize the `CGI/1.1`_ specification
+while providing fallbacks with values we typically found like ``REQUEST_URI``.
+
+.. _CGI/1.1: http://tools.ietf.org/html/draft-robinson-www-interface-00
 
 Since a process is spawned per request and exits when the latter finishes,
 scheduled asynchronous tasks might not be processed. To overcome this issue,
@@ -23,18 +34,25 @@ callback, the connection will be kept alive until both are freed.
 
     using VSGI.CGI;
 
-    new Server ("org.vsgi.CGI", (req, res) => {
-        var source = new IdleSource ();
+    Server? server = null;
 
-        source.set_callback (() => {
+    ApplicationCallback app = (req, res) => {
+        Idle.add (() => {
             message ("Hello world!");
             server.release ();
         });
-
-        source.attach (MainContext.default ());
-
         server.hold ();
-    });
+
+        // no need to hold & release here, the reference on the request ensures
+        // it already
+        Idle.add (() => {
+            req.body.write_all ("Hello world!".data, null);
+        });
+    };
+
+    server = new Server ("org.vsgi.CGI", app);
+
+    server.run ();
 
 lighttpd
 --------
