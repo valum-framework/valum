@@ -1,21 +1,17 @@
 FastCGI
 =======
 
-A FastCGI application is a simple process that communicate using a specified
-binary protocol over a socket or file descriptor.
+FastCGI is a binary protocol that multiplexes requests over a single
+connection.
 
-VSGI uses `Vala fcgi bindings`_ to provide a compliant FastCGI implementation.
-See :doc:`../../installation` for more information about the framework
-dependencies.
+VSGI uses `FastCGI bindings`_ under the hood to provide a compliant
+implementation. See :doc:`../../installation` for more information about the
+framework dependencies.
 
-.. warning::
+.. _FastCGI bindings: http://valadoc.org/#!api=fcgi/FastCGI
 
-    Due to ``FastCGI.request.accept`` being a blocking operation, it is not
-    possible to perform asynchronous processing without resulting in a dead
-    lock. See `issue #119`_ for more details.
-
-.. _Vala fcgi bindings: http://www.masella.name/~andre/vapis/fcgi/index.htm
-.. _issue #119: https://github.com/valum-framework/valum/issues/119
+The whole request cycle is processed in a thread and dispatched in the main
+context, so it's absolutely safe to use shared states.
 
 Options
 -------
@@ -51,12 +47,7 @@ You can run the FastCGI example with lighttpd:
 
 .. code-block:: bash
 
-    ./waf configure
-    ./waf build
-    sudo ./waf install
-
-    export LD_LIBRARY_PATH=/usr/local/lib64
-
+    ./waf configure --enable-examples && ./waf build
     lighttpd -D -f examples/fastcgi/lighttpd.conf
 
 Apache
