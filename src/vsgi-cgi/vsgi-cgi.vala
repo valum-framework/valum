@@ -105,13 +105,18 @@ namespace VSGI.CGI {
 			else
 				this._uri.set_path ("/");
 
-			// raw HTTP query
-			this._uri.set_query (Environ.get_variable (environment, "QUERY_STRING"));
-
-			// parsed HTTP query
+			// raw & parsed HTTP query
 			var query_string = Environ.get_variable (environment, "QUERY_STRING");
-			if (query_string != null)
+			if (query_string != null && query_string.length > 0) {
+				this._uri.set_query (query_string);
 				this._query = Form.decode (query_string);
+			} else if (path_translated != null && "?" in path_translated) {
+				this._uri.set_query (path_translated.split ("?", 2)[1]);
+				this._query = Form.decode (path_translated.split ("?", 2)[1]);
+			} else if (request_uri != null && "?" in request_uri) {
+				this._uri.set_query (request_uri.split ("?", 2)[1]);
+				this._query = Form.decode (request_uri.split ("?", 2)[1]);
+			}
 
 			// extract HTTP headers, they are prefixed by 'HTTP_' in environment variables
 			foreach (var variable in environment) {
