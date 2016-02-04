@@ -40,6 +40,22 @@ public Type plugin_init (TypeModule type_module) {
 namespace VSGI.SCGI {
 
 	/**
+	 * @since 0.3
+	 */
+	public errordomain SCGIError {
+		/**
+		 *
+		 */
+		FAILED,
+		/**
+		 * The submitted netstring is not well formed.
+		 *
+		 * @since 0.3
+		 */
+		MALFORMED_NETSTRING
+	}
+
+	/**
 	 * Filter a SCGI request stream to provide the end-of-file behaviour of a
 	 * typical {@link GLib.InputStream}.
 	 *
@@ -235,91 +251,14 @@ namespace VSGI.SCGI {
 			}
 
 			listener.incoming.connect ((connection) => {
-				// consume the environment from the stream
-				string[] environment = {};
-				var reader           = new DataInputStream (connection.input_stream);
-
-				try {
-					// buffer approximately the netstring (~460B)
-					reader.set_buffer_size (512);
-					reader.fill (-1);
-
-					size_t length;
-					var size = int.parse (reader.read_upto (":", 1, out length));
-
-					// prefill based on the size knowledge if appliable
-					if (size > 1 + 512) {
-						reader.set_buffer_size (1 + size);
-						reader.fill (-1);
+				process_connection.begin (connection, Priority.DEFAULT, null, (obj, result) => {
+					try {
+						process_connection.end (result);
+					} catch (Error err) {
+						command_line.printerr ("%s\n", err.message);
+						return;
 					}
-
-					// consume the semi-colon
-					if (reader.read_byte () != ':') {
-						command_line.printerr ("malformed netstring, missing ':'\n");
-						return true;
-					}
-
-					// consume and extract the environment
-					size_t read = 0;
-					while (read < size) {
-						size_t key_length;
-						var key = reader.read_upto ("", 1, out key_length);
-						if (reader.read_byte () != '\0') {
-							command_line.printerr ("malformed netstring, missing EOF\n");
-							return true;
-						}
-
-						size_t value_length;
-						var @value = reader.read_upto ("", 1, out value_length);
-						if (reader.read_byte () != '\0') {
-							command_line.printerr ("malformed netstring, missing EOF\n");
-							return true;
-						}
-
-						read += key_length + 1 + value_length + 1;
-
-						environment = Environ.set_variable (environment, key, @value);
-					}
-
-					assert (read == size);
-
-					// consume the comma following a chunk
-					if (reader.read_byte () != ',') {
-						command_line.printerr ("malformed netstring, missing ','\n");
-						return true;
-					}
-
-					var content_length = int64.parse (Environ.get_variable (environment, "CONTENT_LENGTH"));
-
-					// buffer the rest of the body
-					if (content_length > 0) {
-						if (sizeof (size_t) < sizeof (int64) && content_length > size_t.MAX) {
-							command_line.printerr ("request body is too big (%sB) to be held in a buffer",
-							                       content_length.to_string ());
-							return true;
-						}
-
-						// fill the buffer
-						reader.set_buffer_size ((size_t) content_length);
-						reader.fill (-1);
-
-						if (content_length < reader.get_available ()) {
-							command_line.printerr ("request body (%sB) could not be buffered",
-												   content_length.to_string ());
-							return true;
-						}
-					}
-
-					var req = new Request (new Connection (connection), new SCGIInputStream (reader, content_length), environment);
-					var res = new Response (req);
-
-					dispatch (req, res);
-
-				} catch (Error err) {
-					command_line.printerr (err.message);
-					return true;
-				}
-
+				});
 				return false;
 			});
 
@@ -328,9 +267,86 @@ namespace VSGI.SCGI {
 			// gracefully stop accepting new connections
 			shutdown.connect (listener.stop);
 
-			this.hold ();
+			hold ();
 
 			return 0;
+		}
+
+		private async void process_connection (SocketConnection connection,
+		                                       int priority = GLib.Priority.DEFAULT,
+		                                       Cancellable? cancellable = null) throws Error {
+			// consume the environment from the stream
+			string[] environment = {};
+			var reader           = new DataInputStream (connection.input_stream);
+
+			// buffer approximately the netstring (~460B)
+			reader.set_buffer_size (512);
+			yield reader.fill_async (-1, priority, cancellable);
+
+			size_t length;
+			var size = int.parse (reader.read_upto (":", 1, out length));
+
+			// prefill based on the size knowledge if appliable
+			if (size > 1 + 512) {
+				reader.set_buffer_size (1 + size);
+				yield reader.fill_async (-1, priority, cancellable);
+			}
+
+			// consume the semi-colon
+			if (reader.read_byte () != ':') {
+				throw new SCGIError.MALFORMED_NETSTRING ("missing ':'");
+			}
+
+			// consume and extract the environment
+			size_t read = 0;
+			while (read < size) {
+				size_t key_length;
+				var key = yield reader.read_upto_async ("", 1, priority, null, out key_length);
+				if (reader.read_byte () != '\0') {
+					throw new SCGIError.MALFORMED_NETSTRING ("missing EOF");
+				}
+
+				size_t value_length;
+				var @value = yield reader.read_upto_async ("", 1, priority, null, out value_length);
+				if (reader.read_byte () != '\0') {
+					throw new SCGIError.MALFORMED_NETSTRING ("missing EOF");
+				}
+
+				read += key_length + 1 + value_length + 1;
+
+				environment = Environ.set_variable (environment, key, @value);
+			}
+
+			assert (read == size);
+
+			// consume the comma following a chunk
+			if (reader.read_byte () != ',') {
+				throw new SCGIError.MALFORMED_NETSTRING ("missing ','");
+			}
+
+			var content_length = int64.parse (Environ.get_variable (environment, "CONTENT_LENGTH"));
+
+			// buffer the rest of the body
+			if (content_length > 0) {
+				if (sizeof (size_t) < sizeof (int64) && content_length > size_t.MAX) {
+					throw new SCGIError.FAILED ("request body is too big (%sB) to be held in a buffer",
+					                            content_length.to_string ());
+				}
+
+				// fill the buffer
+				reader.set_buffer_size ((size_t) content_length);
+				yield reader.fill_async (-1, priority, cancellable);
+
+				if (content_length < reader.get_available ()) {
+					throw new SCGIError.FAILED ("request body (%sB) could not be buffered",
+					                            content_length.to_string ());
+				}
+			}
+
+			var req = new Request (new Connection (connection), new SCGIInputStream (reader, content_length), environment);
+			var res = new Response (req);
+
+			dispatch (req, res);
 		}
 	}
 }
