@@ -210,7 +210,7 @@ namespace VSGI.FastCGI {
 				return 1;
 			}
 
-			var backlog = options.contains ("backlog") ? options.lookup_value ("backlog", VariantType.INT32).get_int32 () : 0;
+			var backlog = options.contains ("backlog") ? options.lookup_value ("backlog", VariantType.INT32).get_int32 () : 10;
 #endif
 
 			var fd = global::FastCGI.LISTENSOCK_FILENO;
