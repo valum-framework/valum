@@ -314,7 +314,8 @@ namespace VSGI.SCGI {
 
 				read += key_length + 1 + value_length + 1;
 
-				environment = Environ.set_variable (environment, key, @value);
+				// 'read_upto_async' return 'null' instead of an empty string
+				environment = Environ.set_variable (environment, key, @value ?? "");
 			}
 
 			assert (read == size);
