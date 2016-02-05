@@ -86,7 +86,7 @@ namespace Valum.ContentNegotiation {
 	 */
 	public HandlerCallback negotiate (string                header_name,
 	                                  string[]              expectations,
-	                                  owned ForwardCallback forward = forward,
+	                                  owned ForwardCallback forward = ContentNegotiation.forward,
 	                                  NegotiateFlags        flags   = NegotiateFlags.NONE,
 	                                  CompareFunc<string>   match   = GLib.strcmp) {
 		var _expectations = expectations;
@@ -125,7 +125,7 @@ namespace Valum.ContentNegotiation {
 	 * @since 0.3
 	 */
 	public HandlerCallback accept (string[]              content_types,
-	                               owned ForwardCallback forward = forward,
+	                               owned ForwardCallback forward = ContentNegotiation.forward,
 	                               NegotiateFlags        flags   = NegotiateFlags.NONE) {
 		return negotiate ("Accept", content_types, (req, res, next, stack, content_type) => {
 			HashTable<string, string>? @params;
@@ -158,7 +158,7 @@ namespace Valum.ContentNegotiation {
 	 * @since 0.3
 	 */
 	public HandlerCallback accept_charset (string[]              charsets,
-	                                       owned ForwardCallback forward = forward,
+	                                       owned ForwardCallback forward = ContentNegotiation.forward,
 	                                       NegotiateFlags        flags   = NegotiateFlags.NONE) {
 		return negotiate ("Accept-Charset", charsets, (req, res, next, stack, charset) => {
 			HashTable<string, string> @params;
@@ -226,7 +226,7 @@ namespace Valum.ContentNegotiation {
 	 * @since 0.3
 	 */
 	public HandlerCallback accept_language (string[]              languages,
-	                                        owned ForwardCallback forward = forward,
+	                                        owned ForwardCallback forward = ContentNegotiation.forward,
 	                                        NegotiateFlags        flags   = NegotiateFlags.NONE) {
 		return negotiate ("Accept-Language", languages, (req, res, next, stack, language) => {
 			res.headers.replace ("Content-Language", language);
@@ -249,7 +249,7 @@ namespace Valum.ContentNegotiation {
 	 * @since 0.3
 	 */
 	public HandlerCallback accept_ranges (string[]              ranges,
-	                                      owned ForwardCallback forward = forward,
+	                                      owned ForwardCallback forward = ContentNegotiation.forward,
 	                                      NegotiateFlags        flags   = NegotiateFlags.NONE) {
 		return negotiate ("Accept-Ranges", ranges, (owned) forward, flags);
 	}

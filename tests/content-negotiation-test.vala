@@ -12,6 +12,12 @@ public void test_content_negotiation_negotiate () {
 
 	req.headers.append ("Accept", "text/html; q=0.9, text/xml; q=0");
 
+	var reached = false;
+	negotiate ("Accept", {"text/html"}) (req, res, (req, res) => {
+		reached = true;
+	}, stack);
+	assert (reached);
+
 	try {
 		negotiate ("Accept", {"text/html"}, (req, res, next, stack, content_type) => {
 			assert ("text/html" == content_type);
@@ -23,8 +29,7 @@ public void test_content_negotiation_negotiate () {
 	}
 
 	// explicitly refuse the content type with 'q=0'
-	var reached = false;
-
+	reached = false;
 	try {
 		negotiate ("Accept", {"text/xml"}, () => {
 			assert_not_reached ();
@@ -39,6 +44,19 @@ public void test_content_negotiation_negotiate () {
 	reached = false;
 	try {
 		negotiate ("Accept", {"application/octet-stream"}, () => {
+			assert_not_reached ();
+		}) (req, res, () => {
+			assert_not_reached ();
+		}, stack);
+	} catch (ClientError.NOT_ACCEPTABLE err) {
+		reached = true;
+	}
+	assert (reached);
+
+	// no expectations always refuse
+	reached = false;
+	try {
+		negotiate ("Accept", {}, () => {
 			assert_not_reached ();
 		}) (req, res, () => {
 			assert_not_reached ();
@@ -108,6 +126,54 @@ public void test_content_negotiation_accept () {
 	var res   = new Response (req);
 	var stack = new Queue<Value?> ();
 
+	req.headers.append ("Accept", "text/html");
+
+	accept ({"text/html"}, (req, res, next, stack, content_type) => {
+		assert ("text/html" == content_type);
+	}) (req, res, () => {
+		assert_not_reached ();
+	}, stack);
+	assert ("text/html" == res.headers.get_content_type (null));
+
+	var reached = false;
+	try {
+		accept ({"text/xml"}, (req, res, next, stack, content_type) => {
+			assert_not_reached ();
+		}) (req, res, () => {
+			assert_not_reached ();
+		}, stack);
+	} catch (ClientError.NOT_ACCEPTABLE err) {
+		reached = true;
+	}
+	assert (reached);
+}
+
+/**
+ * @since 0.3
+ */
+public void test_content_negotiation_accept_any () {
+	var req   = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+	var res   = new Response (req);
+	var stack = new Queue<Value?> ();
+
+	req.headers.append ("Accept", "*/*");
+
+	accept ({"text/html"}, (req, res, next, stack, content_type) => {
+		assert ("text/html" == content_type);
+	}) (req, res, () => {
+		assert_not_reached ();
+	}, stack);
+	assert ("text/html" == res.headers.get_content_type (null));
+}
+
+/**
+ * @since 0.3
+ */
+public void test_content_negotiation_accept_any_subtype () {
+	var req   = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+	var res   = new Response (req);
+	var stack = new Queue<Value?> ();
+
 	req.headers.append ("Accept", "text/*");
 	req.headers.append ("Accept-Encoding", "*");
 
@@ -133,5 +199,3 @@ public void test_content_negotiation_accept () {
 		 }, stack);
 	} catch (ClientError.NOT_ACCEPTABLE err) {}
 }
-
-

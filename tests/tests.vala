@@ -28,6 +28,8 @@ public int main (string[] args) {
 	Test.add_func ("/content_negotiation/negotiate/multiple", test_content_negotiation_negotiate_multiple);
 	Test.add_func ("/content_negotiation/negotiate/next", test_content_negotiation_negotiate_next);
 	Test.add_func ("/content_negotiation/negotiate/accept", test_content_negotiation_accept);
+	Test.add_func ("/content_negotiation/negotiate/accept/any", test_content_negotiation_accept_any);
+	Test.add_func ("/content_negotiation/negotiate/accept/any_subtype", test_content_negotiation_accept_any_subtype);
 
 	Test.add_func ("/router", test_router);
 	Test.add_func ("/router/handle", test_router_handle);
