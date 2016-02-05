@@ -17,6 +17,7 @@
 
 using GLib;
 using Soup;
+using VSGI;
 
 /**
  * Content negociation for various headers.
@@ -153,7 +154,24 @@ namespace Valum.ContentNegotiation {
 	                                        NegotiateFlags flags = NegotiateFlags.NONE) {
 		return negotiate ("Accept-Encoding", encoding, (req, res, next, stack) => {
 			res.headers.append ("Content-Encoding", encoding);
-			forward (req, res, next, stack);
+			switch (encoding) {
+				case "gzip":
+					forward (req,
+					         new ConvertedResponse (res, new ZlibCompressor (ZlibCompressorFormat.GZIP)),
+					         next,
+					         stack);
+					break;
+				case "deflate":
+					forward (req,
+					         new ConvertedResponse (res, new ZlibCompressor (ZlibCompressorFormat.ZLIB)),
+					         next,
+					         stack);
+					break;
+				default: // warn?
+				case "identity":
+					forward (req, res, next, stack);
+					break;
+			}
 		}, flags, (a, b) => { return a == "*" ? 0 : strcmp (a, b); });
 	}
 

@@ -293,6 +293,14 @@ app.get ("negociate", accept ("application/json", (req, res) => {
 	res.body.write_all ("Supply the 'Accept' header with either 'application/json' or 'text/xml'.".data, null);
 });
 
+app.get ("negotiate-encoding-gzip", accept_encoding ("gzip", (req, res) => {
+	res.body.write_all ("Hello world! (compressed with gzip)".data, null);
+}));
+
+app.get ("negotiate-encoding-deflate", accept_encoding ("deflate", (req, res) => {
+	res.body.write_all ("Hello world! (compressed with deflate)".data, null);
+}));
+
 app.status (Soup.Status.NOT_FOUND, (req, res, next, stack) => {
 	var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));
 	template.environment.push_string ("message", stack.pop_tail ().get_string ());
