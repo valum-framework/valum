@@ -37,6 +37,24 @@ public void test_content_negotiation_negotiate () {
 /**
  * @since 0.3
  */
+public void test_content_negotiation_negotiate_multiple () {
+	var req   = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+	var res   = new Response (req);
+	var stack = new Queue<Value?> ();
+
+	req.headers.append ("Accept", "text/html; q=0.9, text/xml; q=0.2");
+
+	negotiate ("Accept", {"text/xml", "text/html"}, (req, res, next, stack, content_type) => {
+			message (content_type);
+		assert ("text/html" == content_type);
+	}) (req, res, () => {
+		assert_not_reached ();
+	}, stack);
+}
+
+/**
+ * @since 0.3
+ */
 public void test_content_negotiation_negotiate_final () {
 	var req   = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
 	var res   = new Response (req);

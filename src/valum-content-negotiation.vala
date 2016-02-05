@@ -76,9 +76,14 @@ namespace Valum.ContentNegotiation {
 	                                  CompareFunc<string>   match = GLib.strcmp) {
 		return (req, res, next, stack) => {
 			var header = req.headers.get_list (header_name);
-			foreach (var expectation in expectations) {
-				if (header != null && Soup.header_parse_quality_list (header, null).find_custom (expectation, match) != null) {
-					forward (req, res, next, stack, expectation); return;
+			if (header != null) {
+				foreach (var accepted in Soup.header_parse_quality_list (header, null)) {
+					foreach (var expectation in expectations) {
+						if (match (accepted, expectation) == 0) {
+							forward (req, res, next, stack, expectation);
+							return;
+						}
+					}
 				}
 			}
 			if (NegotiateFlags.FINAL in flags) {

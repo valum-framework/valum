@@ -25,6 +25,7 @@ public int main (string[] args) {
 	Test.bug_base ("https://github.com/valum-framework/valum/issues/%s");
 
 	Test.add_func ("/content_negotiation/negotiate", test_content_negotiation_negotiate);
+	Test.add_func ("/content_negotiation/negotiate/multiple", test_content_negotiation_negotiate_multiple);
 	Test.add_func ("/content_negotiation/negotiate/final", test_content_negotiation_negotiate_final);
 	Test.add_func ("/content_negotiation/negotiate/accept", test_content_negotiation_accept);
 
