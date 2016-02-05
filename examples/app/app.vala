@@ -293,6 +293,10 @@ app.get ("negociate", accept ("application/json", (req, res) => {
 	res.body.write_all ("Supply the 'Accept' header with either 'application/json' or 'text/xml'.".data, null);
 });
 
+app.get ("negotiate-charset", accept_charset ("iso-8859-1", (req, res) => {
+	res.body.write_all ("Héllo world!".data, null);
+}));
+
 app.get ("negotiate-encoding-gzip", accept_encoding ("gzip", (req, res) => {
 	res.body.write_all ("Hello world! (compressed with gzip)".data, null);
 }));

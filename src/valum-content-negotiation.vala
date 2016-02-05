@@ -124,6 +124,10 @@ namespace Valum.ContentNegotiation {
 	 * If no content type is set when forwarding, default to
 	 * 'application/octet-stream'.
 	 *
+	 * It is assumed that the content is produced according to the unicode
+	 * 'utf-8' charset and converted to the accepted one using a
+	 * {@link GLib.CharsetConverter}.
+	 *
 	 * @since 0.3
 	 */
 	public HandlerCallback accept_charset (string charset,
@@ -138,7 +142,10 @@ namespace Valum.ContentNegotiation {
 			}
 			@params["charset"] = charset;
 			res.headers.set_content_type (content_type, @params);
-			forward (req, res, next, stack);
+			forward (req,
+			         new ConvertedResponse (res, new CharsetConverter ("utf-8", charset)),
+			         next,
+			         stack);
 		}, flags, (a, b) => { return a == "*" ? 0 : strcmp (a, b); });
 	}
 
