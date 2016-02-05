@@ -12,26 +12,55 @@ public void test_content_negotiation_negotiate () {
 
 	req.headers.append ("Accept", "text/html; q=0.9, text/xml; q=0");
 
-	negotiate ("Accept", {"text/html"}, (req, res, next, stack, content_type) => {
-		assert ("text/html" == content_type);
-	}) (req, res, () => {
+	try {
+		negotiate ("Accept", {"text/html"}, (req, res, next, stack, content_type) => {
+			assert ("text/html" == content_type);
+		}) (req, res, () => {
+			assert_not_reached ();
+		}, stack);
+	} catch (ClientError.NOT_ACCEPTABLE err) {
 		assert_not_reached ();
-	}, stack);
+	}
 
 	// explicitly refuse the content type with 'q=0'
-	negotiate ("Accept", {"text/xml"}, () => {
-		assert_not_reached ();
-	}) (req, res, () => {}, stack);
+	var reached = false;
 
-	negotiate ("Accept", {"application/octet-stream"}, () => {
-		assert_not_reached ();
-	}) (req, res, () => {}, stack);
+	try {
+		negotiate ("Accept", {"text/xml"}, () => {
+			assert_not_reached ();
+		}) (req, res, () => {
+			assert_not_reached ();
+		}, stack);
+	} catch (ClientError.NOT_ACCEPTABLE err) {
+		reached = true;
+	}
+	assert (reached);
+
+	reached = false;
+	try {
+		negotiate ("Accept", {"application/octet-stream"}, () => {
+			assert_not_reached ();
+		}) (req, res, () => {
+			assert_not_reached ();
+		}, stack);
+	} catch (ClientError.NOT_ACCEPTABLE err) {
+		reached = true;
+	}
+	assert (reached);
 
 	// header is missing, so forward unconditionnaly
 	assert (null == req.headers.get_one ("Accept-Encoding"));
-	negotiate ("Accept-Encoding", {"utf-8"}, () => {
-		assert_not_reached ();
-	}) (req, res, () => {}, stack);
+	reached = false;
+	try {
+		negotiate ("Accept-Encoding", {"utf-8"}, () => {
+			assert_not_reached ();
+		}) (req, res, () => {
+			assert_not_reached ();
+		}, stack);
+	} catch (ClientError err) {
+		reached = true;
+	}
+	assert (reached);
 }
 
 /**
@@ -55,7 +84,7 @@ public void test_content_negotiation_negotiate_multiple () {
 /**
  * @since 0.3
  */
-public void test_content_negotiation_negotiate_final () {
+public void test_content_negotiation_negotiate_next () {
 	var req   = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
 	var res   = new Response (req);
 	var stack = new Queue<Value?> ();
@@ -63,13 +92,11 @@ public void test_content_negotiation_negotiate_final () {
 	req.headers.append ("Accept", "text/html; q=0.9, text/xml; q=0");
 
 	var reached = false;
-	try {
-		negotiate ("Accept", {"application/octet-stream"}, () => {
-			assert_not_reached ();
-		}, NegotiateFlags.FINAL) (req, res, () => {}, stack);
-	} catch (ClientError.NOT_ACCEPTABLE err) {
+	negotiate ("Accept", {"application/octet-stream"}, () => {
+		assert_not_reached ();
+	}, NegotiateFlags.NEXT) (req, res, () => {
 		reached = true;
-	}
+	}, stack);
 	assert (reached);
 }
 
@@ -98,9 +125,13 @@ public void test_content_negotiation_accept () {
 	}, stack);
 	assert ("text/xml" == res.headers.get_content_type (null));
 
-	accept ({"application/json"}, () => {
-		 assert_not_reached () ;
-	}) (req, res, () => {}, stack);
+	try {
+		accept ({"application/json"}, () => {
+			 assert_not_reached () ;
+		 }) (req, res, () => {
+			 assert_not_reached () ;
+		 }, stack);
+	} catch (ClientError.NOT_ACCEPTABLE err) {}
 }
 
 

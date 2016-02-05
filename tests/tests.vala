@@ -26,7 +26,7 @@ public int main (string[] args) {
 
 	Test.add_func ("/content_negotiation/negotiate", test_content_negotiation_negotiate);
 	Test.add_func ("/content_negotiation/negotiate/multiple", test_content_negotiation_negotiate_multiple);
-	Test.add_func ("/content_negotiation/negotiate/final", test_content_negotiation_negotiate_final);
+	Test.add_func ("/content_negotiation/negotiate/next", test_content_negotiation_negotiate_next);
 	Test.add_func ("/content_negotiation/negotiate/accept", test_content_negotiation_accept);
 
 	Test.add_func ("/router", test_router);
