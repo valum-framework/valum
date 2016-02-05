@@ -282,10 +282,10 @@ app.get ("server-sent-events", stream_events ((req, send) => {
 	});
 }));
 
-app.get ("negociate", accept ("application/json", (req, res) => {
+app.get ("negociate", accept ({"application/json"}, (req, res) => {
 	res.headers.set_content_type ("application/json", null);
 	res.body.write_all ("{\"a\":\"b\"}".data, null);
-})).then (accept ("text/xml", (req, res) => {
+})).then (accept ({"text/xml"}, (req, res) => {
 	res.headers.set_content_type ("text/xml", null);
 	res.body.write_all ("<a>b</a>".data, null);
 })).then ((req, res) => {
@@ -293,16 +293,12 @@ app.get ("negociate", accept ("application/json", (req, res) => {
 	res.body.write_all ("Supply the 'Accept' header with either 'application/json' or 'text/xml'.".data, null);
 });
 
-app.get ("negotiate-charset", accept_charset ("iso-8859-1", (req, res) => {
+app.get ("negotiate-charset", accept_charset ({"iso-8859-1"}, (req, res) => {
 	res.body.write_all ("Héllo world!".data, null);
 }));
 
-app.get ("negotiate-encoding-gzip", accept_encoding ("gzip", (req, res) => {
-	res.body.write_all ("Hello world! (compressed with gzip)".data, null);
-}));
-
-app.get ("negotiate-encoding-deflate", accept_encoding ("deflate", (req, res) => {
-	res.body.write_all ("Hello world! (compressed with deflate)".data, null);
+app.get ("negotiate-encoding", accept_encoding ({"gzip", "deflate"}, (req, res, next, stack, encoding) => {
+	res.body.write_all ("Hello world! (compressed with %s)".printf (encoding).data, null);
 }));
 
 app.status (Soup.Status.NOT_FOUND, (req, res, next, stack) => {
