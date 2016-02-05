@@ -301,21 +301,20 @@ namespace VSGI.SCGI {
 			size_t read = 0;
 			while (read < size) {
 				size_t key_length;
-				var key = yield reader.read_upto_async ("", 1, priority, null, out key_length);
+				var key = reader.read_upto ("", 1, out key_length);
 				if (reader.read_byte () != '\0') {
 					throw new SCGIError.MALFORMED_NETSTRING ("missing EOF");
 				}
 
 				size_t value_length;
-				var @value = yield reader.read_upto_async ("", 1, priority, null, out value_length);
+				var @value = reader.read_upto ("", 1, out value_length);
 				if (reader.read_byte () != '\0') {
 					throw new SCGIError.MALFORMED_NETSTRING ("missing EOF");
 				}
 
 				read += key_length + 1 + value_length + 1;
 
-				// 'read_upto_async' return 'null' instead of an empty string
-				environment = Environ.set_variable (environment, key, @value ?? "");
+				environment = Environ.set_variable (environment, key, @value);
 			}
 
 			assert (read == size);
@@ -334,9 +333,12 @@ namespace VSGI.SCGI {
 					                            content_length.to_string ());
 				}
 
-				// fill the buffer
 				reader.set_buffer_size ((size_t) content_length);
-				yield reader.fill_async (-1, priority, cancellable);
+
+				// fill the buffer (on need)
+				if (reader.get_available () < content_length) {
+					yield reader.fill_async (-1, priority, cancellable);
+				}
 
 				if (content_length < reader.get_available ()) {
 					throw new SCGIError.FAILED ("request body (%sB) could not be buffered",
