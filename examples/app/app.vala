@@ -282,16 +282,13 @@ app.get ("server-sent-events", stream_events ((req, send) => {
 	});
 }));
 
-app.get ("negociate", accept ({"application/json"}, (req, res) => {
+app.get ("negotiate", accept ({"application/json"}, (req, res) => {
 	res.headers.set_content_type ("application/json", null);
 	res.body.write_all ("{\"a\":\"b\"}".data, null);
-})).then (accept ({"text/xml"}, (req, res) => {
+}, NegotiateFlags.NEXT)).then (accept ({"text/xml"}, (req, res) => {
 	res.headers.set_content_type ("text/xml", null);
 	res.body.write_all ("<a>b</a>".data, null);
-})).then ((req, res) => {
-	res.status = global::Soup.Status.NOT_ACCEPTABLE;
-	res.body.write_all ("Supply the 'Accept' header with either 'application/json' or 'text/xml'.".data, null);
-});
+}));
 
 app.get ("negotiate-charset", accept_charset ({"iso-8859-1"}, (req, res) => {
 	res.body.write_all ("Héllo world!".data, null);

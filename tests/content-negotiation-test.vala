@@ -53,12 +53,12 @@ public void test_content_negotiation_negotiate () {
 	reached = false;
 	try {
 		negotiate ("Accept-Encoding", {"utf-8"}, () => {
-			assert_not_reached ();
+			reached = true;
 		}) (req, res, () => {
 			assert_not_reached ();
 		}, stack);
 	} catch (ClientError err) {
-		reached = true;
+		assert_not_reached ();
 	}
 	assert (reached);
 }

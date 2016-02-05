@@ -73,7 +73,8 @@ namespace Valum.ContentNegotiation {
 	 * see if the expected value is accepted by the user agent.
 	 *
 	 * If the header is not provided in the request, it is assumed that the user
-	 * agent consider any response as acceptable.
+	 * agent consider any response as acceptable: the first expectation will be
+	 * forwarded.
 	 *
 	 * @since 0.3
 	 *
@@ -83,20 +84,25 @@ namespace Valum.ContentNegotiation {
 	 * @param flags        flags for negociating the header
 	 * @param match        compare the user agent string against an expectation
 	 */
-	public HandlerCallback negotiate (string header_name,
-	                                  string[] expectations,
+	public HandlerCallback negotiate (string                header_name,
+	                                  string[]              expectations,
 	                                  owned ForwardCallback forward = forward,
 	                                  NegotiateFlags        flags   = NegotiateFlags.NONE,
 	                                  CompareFunc<string>   match   = GLib.strcmp) {
+		var _expectations = expectations;
 		return (req, res, next, stack) => {
 			var header = req.headers.get_list (header_name);
-			if (header != null) {
-				foreach (var accepted in Soup.header_parse_quality_list (header, null)) {
-					foreach (var expectation in expectations) {
-						if (match (accepted, expectation) == 0) {
-							forward (req, res, next, stack, expectation);
-							return;
-						}
+			if (_expectations.length == 0)
+				throw new ClientError.NOT_ACCEPTABLE ("'%s' cannot be satisfied: nothing is expected", header_name);
+			if (header == null) {
+				forward (req, res, next, stack, _expectations[0]);
+				return;
+			}
+			foreach (var accepted in Soup.header_parse_quality_list (header, null)) {
+				foreach (var expectation in _expectations) {
+					if (match (accepted, expectation) == 0) {
+						forward (req, res, next, stack, expectation);
+						return;
 					}
 				}
 			}
@@ -105,7 +111,7 @@ namespace Valum.ContentNegotiation {
 			} else {
 				throw new ClientError.NOT_ACCEPTABLE ("'%s' is not satisfiable by any of '%s'.",
 													  header_name,
-													  string.joinv (", ", expectations));
+													  string.joinv (", ", _expectations));
 			}
 		};
 	}
