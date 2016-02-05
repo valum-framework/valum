@@ -88,7 +88,7 @@ namespace Valum.ContentNegotiation {
 	                                  string[]              expectations,
 	                                  owned ForwardCallback forward = ContentNegotiation.forward,
 	                                  NegotiateFlags        flags   = NegotiateFlags.NONE,
-	                                  CompareFunc<string>   match   = GLib.strcmp) {
+	                                  EqualFunc<string>     match   = (EqualFunc<string>) Soup.str_case_equal) {
 		var _expectations = expectations;
 		return (req, res, next, stack) => {
 			var header = req.headers.get_list (header_name);
@@ -100,7 +100,7 @@ namespace Valum.ContentNegotiation {
 			}
 			foreach (var accepted in Soup.header_parse_quality_list (header, null)) {
 				foreach (var expectation in _expectations) {
-					if (match (accepted, expectation) == 0) {
+					if (match (accepted, expectation)) {
 						forward (req, res, next, stack, expectation);
 						return;
 					}
@@ -134,12 +134,12 @@ namespace Valum.ContentNegotiation {
 			forward (req, res, next, stack, content_type);
 		}, flags, (pattern, @value) => {
 			if (pattern == "*/*")
-				return 0;
+				return true;
 			// any subtype
 			if (pattern.has_suffix ("/*")) {
-				return strcmp (pattern[0:-2], @value.split ("/", 2)[0]);
+				return Soup.str_case_equal (pattern[0:-2], @value.split ("/", 2)[0]);
 			}
-			return strcmp (pattern, @value);
+			return Soup.str_case_equal (pattern, @value);
 		});
 	}
 
@@ -176,7 +176,7 @@ namespace Valum.ContentNegotiation {
 			         next,
 			         stack,
 			         charset);
-		}, flags, (a, b) => { return a == "*" ? 0 : strcmp (a, b); });
+		}, flags, (a, b) => { return a == "*" || Soup.str_case_equal (a, b); });
 	}
 
 	/**
@@ -194,7 +194,7 @@ namespace Valum.ContentNegotiation {
 	                                        NegotiateFlags        flags   = NegotiateFlags.NONE) {
 		return negotiate ("Accept-Encoding", encodings, (req, res, next, stack, encoding) => {
 			res.headers.append ("Content-Encoding", encoding);
-			switch (encoding) {
+			switch (encoding.down ()) {
 				case "gzip":
 					forward (req,
 					         new ConvertedResponse (res, new ZlibCompressor (ZlibCompressorFormat.GZIP)),
@@ -214,7 +214,7 @@ namespace Valum.ContentNegotiation {
 					forward (req, res, next, stack, encoding);
 					break;
 			}
-		}, flags, (a, b) => { return a == "*" ? 0 : strcmp (a, b); });
+		}, flags, (a, b) => { return a == "*" || Soup.str_case_equal (a, b); });
 	}
 
 	/**
@@ -233,11 +233,11 @@ namespace Valum.ContentNegotiation {
 			forward (req, res, next, stack, language);
 		}, flags, (a, b) => {
 			if (a == "*")
-				return 0;
+				return true;
 			// exclude the regional part
 			if (!a.contains ("-"))
-				return strcmp (a, b.split ("-", 2)[0]);
-			return a == "*" ? 0 : strcmp (a, b);
+				return Soup.str_case_equal (a, b.split ("-", 2)[0]);
+			return a == "*" || Soup.str_case_equal (a, b);
 		});
 	}
 
