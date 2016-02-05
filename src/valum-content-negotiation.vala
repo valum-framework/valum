@@ -103,7 +103,9 @@ namespace Valum.ContentNegotiation {
 	                               owned ForwardCallback forward,
 	                               NegotiateFlags flags = NegotiateFlags.NONE) {
 		return negotiate ("Accept", content_types, (req, res, next, stack, content_type) => {
-			res.headers.set_content_type (content_type, null);
+			HashTable<string, string>? @params;
+			res.headers.get_content_type (out @params);
+			res.headers.set_content_type (content_type, @params);
 			forward (req, res, next, stack, content_type);
 		}, flags, (pattern, @value) => {
 			if (pattern == "*/*")
