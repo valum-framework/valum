@@ -172,7 +172,7 @@ namespace Valum.ContentNegotiation {
 			res.headers.set_content_type (content_type, @params);
 			forward (req,
 			         old_charset == charset ? res :
-			                                  new ConvertedResponse (res, new CharsetConverter (old_charset, charset)),
+			                                  new ConvertedResponse (res, new CharsetConverter (charset, old_charset)),
 			         next,
 			         stack,
 			         charset);
