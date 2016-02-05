@@ -151,9 +151,9 @@ namespace Valum.ContentNegotiation {
 	 * If no content type is set when forwarding, default to
 	 * 'application/octet-stream'.
 	 *
-	 * It is assumed that the content is produced according to the unicode
-	 * 'utf-8' charset and converted to the accepted one using a
-	 * {@link GLib.CharsetConverter}.
+	 * If the expected charset is different from the current, it is
+	 * automatically converted using a {@link GLib.CharsetConverter}. If no
+	 * charset is defined, it is assumed to be 'utf-8'.
 	 *
 	 * @since 0.3
 	 */
@@ -163,6 +163,7 @@ namespace Valum.ContentNegotiation {
 		return negotiate ("Accept-Charset", charsets, (req, res, next, stack, charset) => {
 			HashTable<string, string> @params;
 			var content_type = res.headers.get_content_type (out @params);
+			var old_charset  = @params["charset"] ?? "utf-8";
 			if (content_type == null) {
 				content_type = "application/octet-stream";
 				@params      = new HashTable<string, string> (str_hash, str_equal);
@@ -170,7 +171,8 @@ namespace Valum.ContentNegotiation {
 			@params["charset"] = charset;
 			res.headers.set_content_type (content_type, @params);
 			forward (req,
-			         new ConvertedResponse (res, new CharsetConverter ("utf-8", charset)),
+			         old_charset == charset ? res :
+			                                  new ConvertedResponse (res, new CharsetConverter (old_charset, charset)),
 			         next,
 			         stack,
 			         charset);
