@@ -20,9 +20,14 @@ def configure(conf):
 
     conf.recurse(['src', 'docs', 'tests'])
 
+    conf.env.append_unique('CFLAGS', ['-Wall',
+                                      '-Wno-deprecated-declarations',
+                                      '-Wno-unused-variable',
+                                      '-Wno-unused-but-set-variable',
+                                      '-Wno-unused-function'])
+
     if conf.options.enable_gcov:
         conf.env.append_unique('CFLAGS', ['-fprofile-arcs', '-ftest-coverage'])
-        conf.env.append_unique('VALAFLAGS', ['--debug'])
 
     # configure examples
     if conf.options.enable_examples:
