@@ -56,10 +56,9 @@ namespace VSGI.Cookies {
 	 *                      verification succeeds, null otherwise
 	 * @return              true if the cookie is signed by the secret
 	 */
-	public bool verify (Cookie cookie, ChecksumType checksum_type, uint8[] key, out string? @value = null) {
+	public bool verify (Cookie cookie, ChecksumType checksum_type, uint8[] key, out string? @value) {
 		var checksum_length = Hmac.compute_for_string (checksum_type, key, "").length;
-
-		@value = null;
+		@value              = null;
 
 		if (cookie.@value.length < checksum_length)
 			return false;

@@ -159,6 +159,31 @@ namespace VSGI {
 		}
 
 		/**
+		 * Lookup a signed cookie using its name.
+		 *
+		 * The returned cookie has its value signed, the 'value' parameter can
+		 * be used to obtain its original value.
+		 *
+		 * @see Cookies.verify
+		 *
+		 * @since 0.3
+		 * @return the signed cookie if found, otherwise 'null'
+		 */
+		public Cookie? lookup_signed_cookie (string       name,
+		                                     ChecksumType checksum_type,
+		                                     uint8[]      key,
+		                                     out string?  @value) {
+			Cookie? found = null;
+			@value        = null;
+
+			foreach (var cookie in cookies)
+				if (cookie.name == name && Cookies.verify (cookie, checksum_type, key, out @value))
+					found = cookie;
+
+			return found;
+		}
+
+		/**
 		 * Request body.
 		 *
 		 * The provided stream is filtered by the implementation according to

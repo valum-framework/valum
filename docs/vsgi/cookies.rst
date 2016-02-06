@@ -69,9 +69,13 @@ You can lookup a cookie by its name from a :doc:`request` using
     Although this is not formally specified, cookies name are considered as
     being case-sensitive by ``Cookies`` utilities.
 
+If it's signed (recommended for sessions), the equivalent
+``lookup_signed_cookie`` exists.
+
 .. code:: vala
 
-    var session = req.lookup_cookie ("session");
+    string? session_id;
+    var session = req.lookup_signed_cookie ("session", ChecksumType.SHA512, "secret".data, out session_id);
 
 Marshall a cookie
 -----------------
