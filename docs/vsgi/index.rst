@@ -28,7 +28,7 @@ The entry point of a VSGI application is type-compatible with the
 ``ApplicationCallback`` delegate. It is a function of two arguments:
 a :doc:`request` and a :doc:`response`.
 
-.. code:: vala
+::
 
     using VSGI.HTTP;
 
@@ -51,7 +51,7 @@ Some VSGI implementations rely on stream filtering to produce proper responses
 (chunked or gzipped ones) and these are applied when the body is accessed for
 the first time.
 
-.. code:: vala
+::
 
     new Server ("org.vsgi.App", (req, res) => {
         res.status = 200;
@@ -85,7 +85,7 @@ sufficient to keep the streams usable.
 It is important that the connection persist until all streams operations are
 done as the following example demonstrates:
 
-.. code:: vala
+::
 
     res.body.write_async.begin ("Hello world!",
                                 Priority.DEFAULT,

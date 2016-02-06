@@ -19,7 +19,7 @@ You can use any :doc:`converters` provided by GLib or VSGI with ease.
 .. _GLib.FilterInputStream: http://valadoc.org/#!api=gio-2.0/GLib.FilterInputStream
 .. _GLib.FilterOutputStream: http://valadoc.org/#!api=gio-2.0/GLib.FilterOutputStream
 
-.. code:: vala
+::
 
     using VSGI;
 

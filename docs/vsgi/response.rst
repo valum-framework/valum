@@ -21,7 +21,7 @@ The status code will be written in the response with ``write_head`` or
 
 .. _Soup.Status: http://valadoc.org/#!api=libsoup-2.4/Soup.Status
 
-.. code:: vala
+::
 
     new Server ("org.vsgi.App", (req, res) => {
         res.status = Soup.Status.MALFORMED;
@@ -35,7 +35,7 @@ The response headers can be accessed as a `Soup.MessageHeaders`_ from the
 
 .. _Soup.MessageHeaders: http://valadoc.org/#!api=libsoup-2.4/Soup.MessageHeaders
 
-.. code:: vala
+::
 
     new Server ("org.vsgi.App", (req, res) => {
         res.status = Soup.Status.OK;
@@ -46,7 +46,7 @@ Headers can be written in the response by invoking ``write_head`` or its
 asynchronous version ``write_head_async``. The synchronous version is called
 automatically when the body is accessed for the first time.
 
-.. code:: vala
+::
 
     res.write_head_async.begin (Priority.DEFAULT, null, () => {
         // produce the body...
@@ -59,7 +59,7 @@ automatically when the body is accessed for the first time.
 The ``head_written`` property can be tested to see if it's already the case,
 even though a well written application should assume that already.
 
-.. code:: vala
+::
 
     if (!res.head_written) {
         res.headers.set_content_type ("text/html", null);
@@ -87,7 +87,7 @@ can be used for:
 VSGI also provides its own set of :doc:`converters` which cover parts of the
 HTTP/1.1 specifications such as chunked encoding.
 
-.. code:: vala
+::
 
     var body = new ConverterOutputStream (res.body,
                                           new CharsetConverter (res.body, "iso-8859-1", "utf-8"));
@@ -102,7 +102,7 @@ so that the application can transparently produce its output.
 .. _GLib.FilterOutputStream: http://valadoc.org/#!api=gio-2.0/GLib.FilterOutputStream
 .. _GLib.ConverterOutputStream: http://valadoc.org/#!api=gio-2.0/GLib.ConverterOutputStream
 
-.. code:: vala
+::
 
     res.headers.append ("Transfer-Encoding", "chunked");
     res.body.write_all ("Hello world!".data, null);
@@ -118,7 +118,7 @@ preserved until the operation ends.
 The simplest thing to overcome this limitation is to reference the
 :doc:`request` or response object in the asynchronous callback.
 
-.. code:: vala
+::
 
     new Server ("org.vsgi.App", (req, res) => {
         res.status = Soup.Status.OK;
@@ -150,7 +150,7 @@ The typical example where closing the response manually can have a great
 incidence on its throughput is when blocking operations are performed between
 the last ``write`` operation and the end of the processing.
 
-.. code:: vala
+::
 
     new Server ("org.vsgi.App", (req, res) => {
         res.status = Soup.Status.OK;

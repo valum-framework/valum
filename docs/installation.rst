@@ -161,7 +161,7 @@ Run the sample application
 
 You can run the sample application from the ``build`` folder if you called
 ``./waf configure`` with the ``--enable-examples`` flag, it uses the
-:doc:`vsgi/server/soup`.
+:doc:`vsgi/server/http`.
 
 .. code-block:: bash
 

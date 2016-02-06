@@ -7,6 +7,6 @@ def build(bld):
     if bld.env.SPHINXBUILD:
         bld.load('gnu_dirs')
         bld(
-            rule         = '${SPHINXBUILD} -b html ../docs ${TGT}',
-            target       = '.',
-            source       = bld.path.ant_glob('*.rst') + bld.path.ant_glob('**/*.rst'))
+            rule   = '${SPHINXBUILD} -W -b html ../docs ${TGT}',
+            target = '.',
+            source = bld.path.ant_glob('*.rst') + bld.path.ant_glob('**/*.rst'))

@@ -17,7 +17,7 @@ output stream of the used technology.
 .. _GLib.IOStream: http://valadoc.org/#!api=gio-2.0/GLib.IOStream
 
 The following example shows how to bypass processing with higher-level
-abstractions. It will only work on :doc:`server/soup`, as CGI-like protocols
+abstractions. It will only work on :doc:`server/http`, as CGI-like protocols
 require the status to be part of the response headers.
 
 .. code::

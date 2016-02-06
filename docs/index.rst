@@ -1,11 +1,15 @@
 Valum web micro-framework
 =========================
 
-.. image:: https://travis-ci.org/valum-framework/valum.svg?branch=master
-    :target: https://travis-ci.org/valum-framework/valum
+.. raw:: html
 
-.. image:: https://coveralls.io/repos/valum-framework/valum/badge.svg?branch=master
-    :target: https://coveralls.io/r/valum-framework/valum?branch=master
+    <a href="https://travis-ci.org/valum-framework/valum">
+        <img src="https://travis-ci.org/valum-framework/valum.svg?branch=master">
+    </a>
+
+    <a href="https://coveralls.io/repos/valum-framework/valum/badge.svg?branch=master">
+        <img src="https://coveralls.io/r/valum-framework/valum?branch=master">
+    </a>
 
 Valum is a web micro-framework written in Vala and licensed under the LGPLv3.
 Its source code and releases are available on GitHub: `valum-framework/valum`_.

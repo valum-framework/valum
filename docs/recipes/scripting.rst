@@ -13,11 +13,16 @@ Lua
 
 .. _luajit: http://luajit.org/
 
-.. code:: bash
+.. code-block:: bash
 
     valac --pkg valum-0.1 --pkg lua app.vala
 
-.. code:: vala
+.. code-block:: lua
+
+    require 'markdown'
+    return markdown('## Hello from lua.eval!')
+
+::
 
     using Valum;
     using VSGI.HTTP;
@@ -28,20 +33,14 @@ Lua
 
     // GET /lua
     app.get ("lua", (req, res) => {
-        var writer = new DataOutputStream (res.body);
-
         // evaluate a string containing Lua code
-        writer.put_string (lua.do_string (
-        """
-        require "markdown"
-        return markdown('## Hello from lua.eval!')
-        """));
+        res.body.write_all (some_lua_code.data, null);
 
         // evaluate a file containing Lua code
-        writer.put_string (lua.do_file ("scripts/hello.lua"));
+        res.body.write_all (lua.do_file ("scripts/hello.lua").data, null);
     });
 
-    new Server ("org.valum.example.Lua", app).run ();
+    new Server ("org.valum.example.Lua", app.handle).run ();
 
 The sample Lua script contains:
 
@@ -62,7 +61,7 @@ Scheme (TODO)
 
 Scheme can be used to produce template or facilitate computation.
 
-.. code:: vala
+::
 
     app.get ("hello.scm", (req, res) => {
         var writer = new DataOutputStream (res.body);

@@ -27,7 +27,7 @@ maintained in nemequ/vala-extra-vapis GitHub repository.
 
 .. _libmemcached.vapi: https://github.com/nemequ/vala-extra-vapis/blob/master/libmemcached.vapi
 
-.. code:: vala
+::
 
     using Valum;
     using VSGI.HTTP;

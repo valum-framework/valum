@@ -23,7 +23,7 @@ The ``Request.cookies`` property will extract cookies from the ``Cookie``
 headers. Only the ``name`` and ``value`` fields will be filled as it is the
 sole information sent by the client.
 
-.. code:: vala
+::
 
     var cookies = req.cookies;
 
@@ -31,7 +31,7 @@ The equivalent property exist for :doc:`response` and will extract the
 ``Set-Cookie`` headers instead. The corresponding :doc:`request` URI will be
 used for the cookies origin.
 
-.. code:: vala
+::
 
     var cookies = res.cookies;
 
@@ -46,7 +46,7 @@ be effective.
     Cookies will be in their order of appearance and `SList.reverse`_ should be
     used prior to perform a lookup that respects precedence.
 
-.. code:: vala
+::
 
     cookies.reverse ();
 
@@ -72,7 +72,7 @@ You can lookup a cookie by its name from a :doc:`request` using
 If it's signed (recommended for sessions), the equivalent
 ``lookup_signed_cookie`` exists.
 
-.. code:: vala
+::
 
     string? session_id;
     var session = req.lookup_signed_cookie ("session", ChecksumType.SHA512, "secret".data, out session_id);
@@ -88,7 +88,7 @@ The newly created cookie can be sent by adding a ``Set-Cookie`` header in the
 
 .. _Soup.Cookie: http://valadoc.org/#!api=libsoup-2.4/Soup.Cookie
 
-.. code:: vala
+::
 
     var cookie = new Cookie ("name", "value", "0.0.0.0", "/", 60);
     res.headers.append ("Set-Cookie", cookie.to_set_cookie_header ());
@@ -109,15 +109,15 @@ are provided for the purposes of signing and verifying cookies.
 It's up to you to choose what hashing algorithm and secret: ``SHA512`` is
 generally recommended.
 
-.. code:: vala
+::
 
-    var @value = Cookies.sign (cookie, ChecksumType.SHA512, "secret".data);
+    var value = Cookies.sign (cookie, ChecksumType.SHA512, "secret".data);
 
-    cookie.@value = @value;
+    cookie.value = value;
 
-    string @value;
-    if (Cookies.verify (cookie, ChecksumType.SHA512, "secret.data", out @value)) {
-        // cookie's okay and the original value is stored in @value
+    string value;
+    if (Cookies.verify (cookie, ChecksumType.SHA512, "secret.data", out value)) {
+        // cookie's okay and the original value is stored in value
     }
 
 The signature is computed in a way it guarantees that:

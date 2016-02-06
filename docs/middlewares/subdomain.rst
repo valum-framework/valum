@@ -12,7 +12,7 @@ expectations.
 The pattern is specified as the first argument. It may contain asterisk ``*``
 which specify that any supplied label satisfy that position.
 
-.. code:: vala
+::
 
     app.use (subdomain ("api", (req, res) => {
         // match domains like 'api.example.com' and 'v1.api.example.com'
@@ -26,7 +26,7 @@ which specify that any supplied label satisfy that position.
 This middleware can be used along with subrouting to mount any :doc:`../router`
 on a specific domain pattern.
 
-.. code:: vala
+::
 
     var app = new Router ();
     var api = new Router ();
@@ -44,7 +44,7 @@ To prevent this and perform a _strict_ match, simply specify the second
 argument. The domain of the request will have to supply exactly the same amount
 of labels matching the expectations.
 
-.. code:: vala
+::
 
     // match every request exactly from 'api.*.*'
     app.use (subdomain ("api", api.handle, SubdomainFlags.STRICT));
@@ -56,7 +56,7 @@ By default, the two first labels are ignored since web applications are
 typically served under two domain levels (eg. example.com). If it's not the
 case, the number of skipped labels can be set to any desirable value.
 
-.. code:: vala
+::
 
     // match exactly 'api.example.com'
     app.use (subdomain ("api.example.com", api.handle, SubdomainFlags.STRICT, 0));

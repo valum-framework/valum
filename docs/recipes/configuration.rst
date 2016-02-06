@@ -14,7 +14,7 @@ GSettings is a good approach to store configuration.
  - declare available settings in a XML schema
  - monitor changes
 
-.. code:: vala
+::
 
     var configuration = new Settings ("org.valum.example.App");
 

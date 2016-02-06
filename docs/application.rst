@@ -11,7 +11,7 @@ VSGI (Vala Server Gateway Interface) offers abstractions for different web
 server technologies. You can choose which implementation you want with
 a ``using`` statement as they all respect a common interface.
 
-.. code:: vala
+::
 
     using Valum;
     using VSGI.HTTP; // or VSGI.FastCGI
@@ -25,7 +25,7 @@ An application is defined by a function that respects the ``VSGI.ApplicationCall
 delegate. The :doc:`router` provides ``handle`` for that purpose along with
 powerful routing facilities for client requests.
 
-.. code:: vala
+::
 
     var app = new Router ();
 
@@ -36,7 +36,7 @@ An application constitute of a list of routes matching and handling user
 requests. The router provides helpers to declare routes which internally use
 a :doc:`route` instance.
 
-.. code:: vala
+::
 
     app.get ("", (req, res, next, context) => {
         res.body.write_all ("Hello world!".data, null);
@@ -58,7 +58,7 @@ This part is pretty straightforward: you create a server that will serve your
 application at port ``3003`` and since ``using VSGI.HTTP`` was specified,
 ``Server`` refers to :doc:`vsgi/server/http`.
 
-.. code:: vala
+::
 
     new Server ("org.valum.example.App", app.handle).run ({"app", "--port", "3003"});
 
@@ -68,7 +68,7 @@ application at port ``3003`` and since ``using VSGI.HTTP`` was specified,
 Minimal application can be defined using a simple lambda function taking
 a :doc:`vsgi/request` and :doc:`vsgi/response`.
 
-.. code:: vala
+::
 
     new Server ("org.valum.example.App", (req, res) => {
         res.status = 200;
@@ -79,7 +79,7 @@ Usually, you would only pass the CLI arguments to ``run``, so that your runtime
 can be parametrized easily, but in this case we just want our application to
 run with fixed parameters. Options are documented per implementation.
 
-.. code:: vala
+::
 
     public static void main (string[] args) {
         var app = new Router ();

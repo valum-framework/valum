@@ -23,7 +23,7 @@ stream synchronously it in the :doc:`../vsgi/response` body.
 
 .. _Json.Generator: http://www.valadoc.org/#!api=json-glib-1.0/Json.Generator
 
-.. code:: vala
+::
 
     app.get ("user/<username>", (req, res) => {
         var user      = new Json.Builder ();
@@ -47,7 +47,7 @@ a JSON object from the encountered properties.
 
 .. _Json.gobject_serialize: http://www.valadoc.org/#!api=json-glib-1.0/Json.gobject_serialize
 
-.. code:: vala
+::
 
     public class User : Object {
         public string username { construct; get; }
@@ -61,7 +61,7 @@ a JSON object from the encountered properties.
         }
     }
 
-.. code:: vala
+::
 
     app.get ("user/<username>", (req, res) => {
         var user      = new User.from_username (req.params["username"]);
@@ -83,7 +83,7 @@ code duplication. They are described in the :doc:`../router` document.
 .. _Json.Parser: http://www.valadoc.org/#!api=json-glib-1.0/Json.Parser
 .. _Json.gobject_serialize: http://www.valadoc.org/#!api=json-glib-1.0/Json.gobject_serialize
 
-.. code:: vala
+::
 
     app.scope ("user", (user) => {
         // fetch the user
@@ -143,7 +143,7 @@ expecting a considerable user input.
 
 .. _Json.Parser.load_from_stream_async: http://www.valadoc.org/#!api=json-glib-1.0/Json.Parser.load_from_stream_async
 
-.. code:: vala
+::
 
     parser.load_from_stream_async.begin (req.body, null, (obj, result) => {
         var success = parser.load_from_stream_async.end (result);

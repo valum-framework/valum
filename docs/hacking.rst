@@ -43,7 +43,7 @@ byte will count.
 Since ``GET`` handle ``HEAD`` as well, verifying the request method to prevent
 spending time on producing a body that won't be considered is important.
 
-.. code:: vala
+::
 
     res.headers.set_content_type ("text/html", null);
 
@@ -52,7 +52,7 @@ spending time on producing a body that won't be considered is important.
         return;
     }
 
-    res.body.write_all ("<!DOCTYPE html><html>...</html>");
+    res.body.write_all ("<!DOCTYPE html><html></html>");
 
 Use the ``construct`` block to perform post-initialization work. It will be
 called independently of how the object is constructed.
@@ -85,7 +85,8 @@ inspected with the ``gcov`` utility.
     cd build
     gcov src/router.c.1.gcda
 
-::
+
+Would output something like:
 
     File 'src/router.c'
     Executed lines: 57.83% of 792
@@ -121,7 +122,7 @@ and guarantee its backward compatibility.
 You can refer an issue from GitHub by calling ``Test.bug`` with the issue
 number.
 
-.. code:: vala
+::
 
     Test.bug ("123");
 

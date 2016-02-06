@@ -24,7 +24,7 @@ the latest changes in the framework.
 
 .. _valum-framework/example: https://github.com/valum-framework/example
 
-.. code:: vala
+::
 
     using Valum;
     using VSGI.HTTP;
@@ -108,7 +108,7 @@ Running the example
 VSGI produces process-based applications that are either self-hosted or able to
 communicate with a HTTP server according to a standardized protocol.
 
-The :doc:`vsgi/http/soup` implementation is self-hosting, so you just have to
+The :doc:`vsgi/server/http` implementation is self-hosting, so you just have to
 run it and point your browser at http://127.0.0.1:3003 to see the result.
 
 .. code-block:: bash

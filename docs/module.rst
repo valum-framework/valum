@@ -8,7 +8,7 @@ takes a :doc:`router` as input and register some routes on it.
 
 Let's say you need an administration section:
 
-.. code:: vala
+::
 
     using Valum;
 
@@ -20,7 +20,7 @@ Let's say you need an administration section:
 
 Then you can easily load your module into a concrete one:
 
-.. code:: vala
+::
 
     using Valum;
 
@@ -32,7 +32,7 @@ Since the ``Router.scope`` method takes a ``LoaderCallback`` argument, you can
 simply scope your module route definitions. This way, all registered routes
 will be prefixed with ``admin/``.
 
-.. code:: vala
+::
 
     using Valum;
 
@@ -42,7 +42,7 @@ will be prefixed with ``admin/``.
 
 Distributed code should be namespaced to avoid conflicts:
 
-.. code:: vala
+::
 
     using Valum;
 
