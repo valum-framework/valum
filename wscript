@@ -54,6 +54,12 @@ def configure(conf):
     # other dependencies
     conf.check(lib='fcgi', uselib_store='FCGI', args='--cflags --libs')
 
+    conf.env.append_unique('CFLAGS', ['-Wall',
+                                      '-Wno-deprecated-declarations',
+                                      '-Wno-unused-variable',
+                                      '-Wno-unused-but-set-variable',
+                                      '-Wno-unused-function'])
+
     if conf.options.enable_gcov:
         conf.check(lib='gcov', uselib_store='GCOV', args='--cflags --libs')
         conf.env.append_unique('CFLAGS', ['-fprofile-arcs', '-ftest-coverage'])
