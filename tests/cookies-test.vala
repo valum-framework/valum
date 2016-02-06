@@ -73,11 +73,9 @@ public void test_vsgi_cookies_lookup () {
 	req.headers.append ("Cookie", "a=b");
 	req.headers.append ("Cookie", "a=c"); // override
 
-	var cookies = req.cookies;
+	assert (null == req.lookup_cookie ("b"));
 
-	assert (null == VSGI.Cookies.lookup (cookies, "b"));
-
-	var cookie = VSGI.Cookies.lookup (cookies, "a");
+	var cookie = req.lookup_cookie ("a");
 
 	assert ("a" == cookie.name);
 	assert ("c" == cookie.value);

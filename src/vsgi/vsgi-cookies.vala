@@ -20,27 +20,6 @@ using Soup;
 namespace VSGI.Cookies {
 
 	/**
-	 * Lookup a cookie by its name.
-	 *
-	 * The last occurence is returned using a case-sensitive match.
-	 *
-	 * @since 0.2
-	 *
-	 * @param cookies cookies typically extracted from {@link VSGI.Request.cookies}
-	 * @param name    name of the cookie to lookup
-	 * @return the cookie if found, otherwise null
-	 */
-	public Cookie? lookup (SList<Cookie> cookies, string name) {
-		Cookie? found = null;
-
-		foreach (var cookie in cookies)
-			if (cookie.name == name)
-				found = cookie;
-
-		return found;
-	}
-
-	/**
 	 * Sign the provided cookie name and value using HMAC.
 	 *
 	 * The returned value will be 'HMAC(checksum_type, name + HMAC(checksum_type, value)) + value'

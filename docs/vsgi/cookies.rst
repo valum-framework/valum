@@ -61,8 +61,8 @@ be effective.
 Lookup a cookie
 ---------------
 
-You can lookup a cookie by its name from a ``SList<Cookie>`` using
-``Cookies.lookup``, ``null`` is returned if no such cookies can be found.
+You can lookup a cookie by its name from a :doc:`request` using
+``lookup_cookie``, ``null`` is returned if no such cookies can be found.
 
 .. warning::
 
@@ -71,7 +71,7 @@ You can lookup a cookie by its name from a ``SList<Cookie>`` using
 
 .. code:: vala
 
-    var session = Cookies.lookup (cookies, "session");
+    var session = req.lookup_cookie ("session");
 
 Marshall a cookie
 -----------------

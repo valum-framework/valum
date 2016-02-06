@@ -139,6 +139,26 @@ namespace VSGI {
 		}
 
 		/**
+		 * Lookup a cookie using its name.
+		 *
+		 * The last occurence is returned using a case-sensitive match.
+		 *
+		 * @since 0.3
+		 *
+		 * @param name name of the cookie to lookup
+		 * @return the cookie if found, otherwise 'null'
+		 */
+		public Cookie? lookup_cookie (string name) {
+			Cookie? found = null;
+
+			foreach (var cookie in cookies)
+				if (cookie.name == name)
+					found = cookie;
+
+			return found;
+		}
+
+		/**
 		 * Request body.
 		 *
 		 * The provided stream is filtered by the implementation according to
