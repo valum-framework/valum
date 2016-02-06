@@ -26,7 +26,7 @@ public void test_vsgi_cookies_from_request () {
 	req.headers.append ("Cookie", "a=b, c=d");
 	req.headers.append ("Cookie", "e=f");
 
-	var cookies = VSGI.Cookies.from_request (req);
+	var cookies = req.cookies;
 
 	assert (3 == cookies.length ());
 
@@ -50,7 +50,7 @@ public void test_vsgi_cookies_from_response () {
 	res.headers.append ("Set-Cookie", "a=b, c=d");
 	res.headers.append ("Set-Cookie", "e=f");
 
-	var cookies = VSGI.Cookies.from_response (res);
+	var cookies = res.cookies;
 
 	assert (3 == cookies.length ());
 
@@ -73,7 +73,7 @@ public void test_vsgi_cookies_lookup () {
 	req.headers.append ("Cookie", "a=b");
 	req.headers.append ("Cookie", "a=c"); // override
 
-	var cookies = VSGI.Cookies.from_request (req);
+	var cookies = req.cookies;
 
 	assert (null == VSGI.Cookies.lookup (cookies, "b"));
 

@@ -55,6 +55,29 @@ namespace VSGI {
 		public abstract MessageHeaders headers { get; }
 
 		/**
+		 * Response cookies extracted from the 'Set-Cookie' header.
+		 *
+		 * @since 0.3
+		 */
+		public virtual SList<Cookie> cookies {
+			owned get {
+				var cookies     = new SList<Cookie> ();
+				var cookie_list = headers.get_list ("Set-Cookie");
+
+				if (cookie_list == null)
+					return cookies;
+
+				foreach (var cookie in cookie_list.split (","))
+					if (cookie != null)
+						cookies.prepend (Cookie.parse (cookie, request.uri));
+
+				cookies.reverse ();
+
+				return cookies;
+			}
+		}
+
+		/**
 		 * Tells if the head has been written in the connection
 		 * {@link GLib.OutputStream}.
 		 *

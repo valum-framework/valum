@@ -116,6 +116,29 @@ namespace VSGI {
 		public abstract MessageHeaders headers { get; }
 
 		/**
+		 * Request cookies extracted from the 'Cookie' header.
+		 *
+		 * @since 0.3
+		 */
+		public virtual SList<Cookie> cookies {
+			owned get {
+				var cookies     = new SList<Cookie> ();
+				var cookie_list = headers.get_list ("Cookie");
+
+				if (cookie_list == null)
+					return cookies;
+
+				foreach (var cookie in cookie_list.split (","))
+					if (cookie != null)
+						cookies.prepend (Cookie.parse (cookie, uri));
+
+				cookies.reverse ();
+
+				return cookies;
+			}
+		}
+
+		/**
 		 * Request body.
 		 *
 		 * The provided stream is filtered by the implementation according to

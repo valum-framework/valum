@@ -19,23 +19,25 @@ Cookies can be extracted as a singly-linked list from a :doc:`request` or
 :doc:`response` their order of appearance (see `Soup.MessageHeaders.get_list`_
 for more details).
 
-``Cookies.from_request`` will extract cookies from the ``Cookie`` headers. Only
-the ``name`` and ``value`` fields will be filled as it is the sole information
-sent by the client.
+The ``Request.cookies`` property will extract cookies from the ``Cookie``
+headers. Only the ``name`` and ``value`` fields will be filled as it is the
+sole information sent by the client.
 
 .. code:: vala
 
-    var cookies = Cookies.from_request (req);
+    var cookies = req.cookies;
 
-The equivalent utility exist for :doc:`response` and will extract the
+The equivalent property exist for :doc:`response` and will extract the
 ``Set-Cookie`` headers instead. The corresponding :doc:`request` URI will be
 used for the cookies origin.
 
 .. code:: vala
 
-    var cookies = Cookies.from_response (res);
+    var cookies = res.cookies;
 
 The extracted cookies can be manipulated with common `SList`_ operations.
+However, they must be written back into the :doc:`response` for the changes to
+be effective.
 
 .. _SList: http://valadoc.org/#!api=glib-2.0/GLib.SList
 

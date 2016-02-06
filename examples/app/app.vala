@@ -71,11 +71,10 @@ app.get ("query", (req, res) => {
 });
 
 app.get ("cookies", (req, res) => {
-	var cookies = VSGI.Cookies.from_request (req);
-	if (cookies == null) {
+	if (req.cookies == null) {
 		res.body.write_all ("null".data, null);
 	} else {
-		foreach (var cookie in cookies) {
+		foreach (var cookie in req.cookies) {
 			res.body.write_all ("%s: %s\n".printf (cookie.name, cookie.value).data, null);
 		}
 	}
@@ -83,7 +82,7 @@ app.get ("cookies", (req, res) => {
 
 app.scope ("cookie", (inner) => {
 	inner.get ("<name>", (req, res, next, context) => {
-		foreach (var cookie in VSGI.Cookies.from_request (req))
+		foreach (var cookie in req.cookies)
 			if (cookie.name == context["name"].get_string ())
 				res.body.write_all ("%s\n".printf (cookie.value).data, null);
 	});
