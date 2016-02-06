@@ -33,6 +33,7 @@ namespace VSGI.FastCGI {
 	private inline void process_error (global::FastCGI.Stream stream) throws IOError {
 		var error = new GLib.Error (IOError.quark (),
 		                            FileUtils.error_from_errno (stream.get_error ()), // TODO: fix and use IOError.from_errno
+		                            "%s",
 		                            strerror (stream.get_error ()));
 
 		// FastCGI error

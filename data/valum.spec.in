@@ -34,7 +34,7 @@ meta-data.
 %setup -q
 
 %build
-./waf configure --prefix=%{_prefix}
+./waf configure --prefix=%{_prefix} CFLAGS="%{optflags}" VALAFLAGS='--debug'
 ./waf build
 
 %install
