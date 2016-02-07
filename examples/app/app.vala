@@ -33,6 +33,8 @@ public async void respond_async (VSGI.Request req, VSGI.Response res) throws Err
 
 var app = new Router ();
 
+app.use (decode ());
+
 app.use ((req, res, next) => {
 	res.headers.append ("Server", "Valum/1.0");
 	HashTable<string, string>? @params = new HashTable<string, string> (str_hash, str_equal);

@@ -103,6 +103,12 @@ public int main (string[] args) {
 	Test.add_func ("/route/match/not_matching", test_route_match_not_matching);
 	Test.add_func ("/route/fire", test_route_match_not_matching);
 
+	Test.add_func ("/decode/gzip", test_decode_gzip);
+	Test.add_func ("/decode/xgzip", test_decode_xgzip);
+	Test.add_func ("/decode/deflate", test_decode_deflate);
+	Test.add_func ("/decode/unknown_encoding", test_decode_unknown_encoding);
+	Test.add_func ("/decode/forward_remaining_encodings", test_decode_forward_remaining_encodings);
+
 	Test.add_func ("/subdomain", test_subdomain);
 	Test.add_func ("/subdomain/joker", test_subdomain_joker);
 	Test.add_func ("/subdomain/strict", test_subdomain_strict);
