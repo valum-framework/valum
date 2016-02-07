@@ -125,6 +125,11 @@ namespace Valum {
 		public string rule { construct; get; }
 
 		/**
+		 * @since 0.3
+		 */
+		public HashTable<string, Regex> types { construct; get; }
+
+		/**
 		 * Create a Route for a given callback from a rule.
 		 *
 		 * @since 0.0.1
@@ -174,8 +179,29 @@ namespace Valum {
 
 			pattern.append_c ('$');
 
-			Object (method: method, rule: rule, regex: new Regex (pattern.str, RegexCompileFlags.OPTIMIZE));
+			Object (method: method, rule: rule, types: types, regex: new Regex (pattern.str, RegexCompileFlags.OPTIMIZE));
 			set_handler_callback ((owned) handler);
+		}
+
+		/**
+		 * Generate a path for the given parameters.
+		 *
+		 * @since 0.3
+		 */
+		public string get_path (HashTable<string, Value?> @params) throws RegexError {
+			var path = new StringBuilder ();
+			foreach (var token in tokenize_rule (rule)) {
+				switch (token.type) {
+					case RuleTokenType.PARAMETER:
+						var p = parse_parameter (token.segment);
+						path.append (@params[p.name].get_string ());
+						break;
+					case RuleTokenType.PIECE:
+						path.append (token.segment);
+						break;
+				}
+			}
+			return path.str;
 		}
 	}
 }
