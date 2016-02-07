@@ -4,13 +4,14 @@ Quickstart
 Assuming that Valum is built and installed correctly (view :doc:`installation`
 for more details), you are ready to create your first application!
 
-Unless you installed Valum with ``--prefix=/usr``, you might have to export
-``PKG_CONFIG_PATH`` and ``LD_LIBRARY_PATH``.
+Unless you have installed Valum with ``--prefix=/usr`` or obtained it from your
+distribution, you might have to export both ``PKG_CONFIG_PATH`` and
+``LD_LIBRARY_PATH`` environment variables:
 
 .. code-block:: bash
 
-    export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
     export LD_LIBRARY_PATH=/usr/local/lib
+    export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 
 Some distributions store 64-bit libraries in a separate folder, typically
 ``lib64``.
@@ -31,7 +32,7 @@ the latest changes in the framework.
 
     var app = new Router ();
 
-    app.get("", (req, res) => {
+    app.get ("", (req, res) => {
         res.body.write_all ("Hello world!".data, null);
     });
 
@@ -49,22 +50,21 @@ pretty much what you think is the best for your needs.
     src/
         app.vala
 
-Building manually
------------------
+Building with valac
+-------------------
 
-Building manually by invoking ``valac`` requires that you specifically link
-against the shared library. Eventually, Valum will be distributed in standard
-locations, so this wont be necessary.
+Simple applications can be built directly with ``valac``:
 
 .. code-block:: bash
 
-    valac --pkg=valum --pkg=vsgi-http --vapidir=vapi
-          -X -I/usr/local/include/valum -X -lvalum # compiler options
-          src/app.vala
-          -o build/app
+    valac --pkg=valum --pkg=vsgi-http -o build/app src/app.vala
 
-    # if installed in default location /usr
-    valac --pkg=valum --pkg=vsgi-http --vapidir=vapi src/app.vala -o build/app
+The ``vala`` program will build and run the produced binary, which is
+convenient for testing:
+
+.. code-block:: bash
+
+    vala --pkg=valum --pkg=vsgi-http src/app.vala
 
 Building with waf
 -----------------
@@ -77,8 +77,6 @@ at the root of your project.
 
 .. code-block:: python
 
-    #!/usr/bin/env python
-
     def options(cfg):
         cfg.load('compiler_c')
 
@@ -88,12 +86,12 @@ at the root of your project.
         cfg.check_cfg(package='vsgi-http', uselib_store='VSGI_HTTP', args='--libs --cflags')
 
     def build(bld):
-        bld.load('vala')
+        bld.load('compiler_c vala')
         bld.program(
-            packages = ['valum', 'vsgi-http'],
-            target    = 'app',
-            source    = 'src/app.vala',
-            use       = 'VALUM VSGI_HTTP')
+            packages = 'valum vsgi-http',
+            target   = 'app',
+            source   = 'src/app.vala',
+            use      = 'VALUM VSGI_HTTP')
 
 You should now be able to build by issuing the following commands:
 
