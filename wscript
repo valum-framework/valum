@@ -28,6 +28,7 @@ def configure(conf):
 
     if conf.options.enable_gcov:
         conf.env.append_unique('CFLAGS', ['-fprofile-arcs', '-ftest-coverage'])
+        conf.env.append_unique('VALAFLAGS', ['--debug'])
 
     # configure examples
     if conf.options.enable_examples:
