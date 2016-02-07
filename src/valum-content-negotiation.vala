@@ -166,7 +166,8 @@ namespace Valum.ContentNegotiation {
 			var old_charset  = @params["charset"] ?? "utf-8";
 			if (content_type == null) {
 				content_type = "application/octet-stream";
-				@params      = new HashTable<string, string> (str_hash, str_equal);
+				@params      = new HashTable<string, string> ((HashFunc<string>) Soup.str_case_hash,
+				                                              (EqualFunc<string>) Soup.str_case_equal);
 			}
 			@params["charset"] = charset;
 			res.headers.set_content_type (content_type, @params);
