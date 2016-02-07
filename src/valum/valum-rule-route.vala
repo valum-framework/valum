@@ -21,6 +21,79 @@ using VSGI;
 namespace Valum {
 
 	/**
+	 * @since 0.3
+	 */
+	public enum RuleTokenType {
+		OPENING_PARENTHESIS,
+		CLOSING_PARENTHESIS,
+		OPTIONAL,
+		WILDCARD,
+		PARAMETER,
+		PIECE
+	}
+
+	/**
+	 * @since 0.3
+	 */
+	public struct RuleToken {
+		RuleTokenType type;
+		string        segment;
+	}
+
+	/**
+	 *
+	 */
+	public struct RuleParameter {
+		string? type;
+		string  name;
+	}
+
+	/**
+	 * Tokenize a rule into a sequence of {@link Valum.RuleToken}.
+	 *
+	 * @since 0.3
+	 */
+	public RuleToken[] tokenize_rule (string rule) throws RegexError {
+		var parts = /([\*\?\(\)]|<(?:\w+:)?\w+>)/.split_full (rule);
+		var segments = new RuleToken[parts.length];
+		for (int i = 0; i < parts.length; i++) {
+			RuleTokenType type;
+			switch (parts[i][0]) {
+				case '*':
+					type = RuleTokenType.WILDCARD;
+					break;
+				case '?':
+					type = RuleTokenType.OPTIONAL;
+					break;
+				case '(':
+					type = RuleTokenType.OPENING_PARENTHESIS;
+					break;
+				case ')':
+					type = RuleTokenType.CLOSING_PARENTHESIS;
+					break;
+				case '<':
+					type = RuleTokenType.PARAMETER;
+					break;
+				default:
+					type = RuleTokenType.PIECE;
+					break;
+			}
+			segments[i] = {type, parts[i]};
+		}
+		return segments;
+	}
+
+	/**
+	 * Parse a string containing a {@link Valum.RuleTokenType.PARAMETER}.
+	 *
+	 * @since 0.3
+	 */
+	public RuleParameter parse_parameter (string parameter) {
+		var cap = parameter.slice (1, parameter.length - 1).split (":", 2);
+		return {cap.length == 1 ? null : cap[0], cap.length == 1 ? cap[0] : cap[1]};
+	}
+
+	/**
 	 * Route based on the rule system.
 	 *
 	 * The rule pattern is composed of a few elements:
@@ -67,34 +140,35 @@ namespace Valum {
 		                  owned HandlerCallback     handler) throws RegexError {
 			var pattern = new StringBuilder ();
 
-			var @params = /([\*\?\(\)]|<(?:\w+:)?\w+>)/.split_full (rule);
-
 			pattern.append_c ('^');
 
-			foreach (var p in @params) {
-				if (p == "*") {
-					pattern.append (".*");
-				} else if (p == "?" || p == ")") {
-					pattern.append (p);
-				} else if (p == "(") {
-					pattern.append ("(?:");
-				} else if (p[0] != '<') {
-					// regular piece of route
-					pattern.append (Regex.escape_string (p));
-				} else {
-					// extract parameter
-					var cap  = p.slice (1, p.length - 1).split (":", 2);
-					var type = cap.length == 1 ? "string" : cap[0];
-					var key  = cap.length == 1 ? cap[0] : cap[1];
+			foreach (var p in tokenize_rule (rule)) {
+				switch (p.type) {
+					case RuleTokenType.WILDCARD:
+						pattern.append (".*");
+						break;
+					case RuleTokenType.OPTIONAL:
+					case RuleTokenType.OPENING_PARENTHESIS:
+						pattern.append ("(?:");
+						break;
+					case RuleTokenType.CLOSING_PARENTHESIS:
+						pattern.append (p.segment);
+						break;
+					case RuleTokenType.PARAMETER:
+						var parameter = parse_parameter (p.segment);
 
-					if (types == null) {
-						pattern.append_printf ("(?<%s>\\w+)", key);
-					} else {
-						if (!types.contains (type))
-							throw new RegexError.COMPILE ("using an undefined type %s", type);
-
-						pattern.append_printf ("(?<%s>%s)", key, types[type].get_pattern ());
-					}
+						if (types == null) {
+							pattern.append_printf ("(?<%s>\\w+)", parameter.name);
+						} else if (!types.contains (parameter.type ?? "string")) {
+							throw new RegexError.COMPILE ("using an undefined type '%s'", parameter.type ?? "string");
+						} else {
+							pattern.append_printf ("(?<%s>%s)", parameter.name, types[parameter.type ?? "string"].get_pattern ());
+						}
+						break;
+					default:
+						// regular piece of route
+						pattern.append (Regex.escape_string (p.segment));
+						break;
 				}
 			}
 
