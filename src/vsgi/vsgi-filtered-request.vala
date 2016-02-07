@@ -32,6 +32,10 @@ namespace VSGI {
 		 */
 		public Request base_request { construct; get; }
 
+		public override HTTPVersion http_version {
+			get { return base_request.http_version; }
+		}
+
 		public override string method {
 			owned get { return base_request.method; }
 		}
@@ -42,10 +46,6 @@ namespace VSGI {
 
 		public override HashTable<string, string>? query {
 			get { return base_request.query; }
-		}
-
-		public override HTTPVersion http_version {
-			get { return base_request.http_version; }
 		}
 
 		public override MessageHeaders headers {

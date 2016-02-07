@@ -37,6 +37,11 @@ namespace VSGI {
 			set { base_response.status = value; }
 		}
 
+		public override string? reason_phrase {
+			owned get { return base_response.reason_phrase; }
+			set { base_response.reason_phrase = value; }
+		}
+
 		public override MessageHeaders headers {
 			get { return base_response.headers; }
 		}
