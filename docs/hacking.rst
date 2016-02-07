@@ -73,6 +73,9 @@ framework is semantically correct. In particular, the following points:
 -  URI and query are automatically decoded by `Soup.URI`_
 -  headers and their parameters are case-insensitive
 -  ``\r\n`` are used as newlines
+-  do not handle ``Transfer-Encoding``, except for the libsoup-2.4
+   implementation with ``steal_connection``: at this level, it's up to the HTTP
+   server to perform the transformation
 
 .. _Soup.URI: http://valadoc.org/#!api=libsoup-2.4/Soup.URI
 
