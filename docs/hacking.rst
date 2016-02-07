@@ -34,7 +34,7 @@ highlighted:
 
 .. _Vala compiler coding style: https://wiki.gnome.org/Projects/Vala/Hacking#Coding_Style
 
-General Strategies
+General strategies
 ------------------
 
 Produce minimal headers, especially if the response has an empty body as every
@@ -56,6 +56,28 @@ spending time on producing a body that won't be considered is important.
 
 Use the ``construct`` block to perform post-initialization work. It will be
 called independently of how the object is constructed.
+
+Tricky stuff
+------------
+
+Many parts of the HTTP/1.1 specification is case-insensitive, in these cases,
+`Soup.str_case_equal`_ must be used to perform comparisons.
+
+.. _Soup.str_case_equal: http://valadoc.org/#!api=libsoup-2.4/Soup.str_case_equal
+
+Try to stay by the book and read carefully the specification to ensure that the
+framework is semantically correct. In particular, the following points:
+
+-  choice of a status code
+-  method is case-sensitive
+-  URI and query are automatically decoded by `Soup.URI`_
+-  headers and their parameters are case-insensitive
+-  ``\r\n`` are used as newlines
+
+.. _Soup.URI: http://valadoc.org/#!api=libsoup-2.4/Soup.URI
+
+The framework should rely as much as possible upon libsoup-2.4 to ensure
+consistent and correct behaviours.
 
 Coverage
 --------
