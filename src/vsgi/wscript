@@ -3,7 +3,7 @@
 def configure(cfg):
     cfg.check_cfg(package='glib-2.0', atleast_version='2.32', uselib_store='GLIB', args='--cflags --libs')
     cfg.check_cfg(package='gio-2.0', atleast_version='2.32', uselib_store='GIO', args='--cflags --libs')
-    cfg.check_cfg(package='libsoup-2.4', atleast_version='2.38',uselib_store='SOUP', args='--cflags --libs')
+    cfg.check_cfg(package='libsoup-2.4', atleast_version='2.38', uselib_store='SOUP', args='--cflags --libs')
 
     # enable goodies in 'glib-2.0.vapi'
     cfg.env.append_unique('VALAFLAGS', ['--define=GLIB_2_30', '--define=GLIB_2_32'])
@@ -23,18 +23,6 @@ def configure(cfg):
     # gio (>=2.44) is necessary for 'write_all_async' and 'strv_contains'
     if cfg.check_cfg(package='gio-2.0', atleast_version='2.44', mandatory=False, uselib_store='GIO', args='--cflags --libs'):
         cfg.env.append_unique('VALAFLAGS', ['--define=GIO_2_44'])
-
-    # libsoup (>=2.38) to support TLS certificate
-    if cfg.check_cfg(package='libsoup-2.4', atleast_version='2.38', mandatory=False, uselib_store='SOUP', args='--cflags --libs'):
-        cfg.env.append_unique('VALAFLAGS', ['--define=SOUP_2_38'])
-
-    # libsoup (>=2.48) is necessary for the new server API
-    if cfg.check_cfg(package='libsoup-2.4', atleast_version='2.48', mandatory=False, uselib_store='SOUP', args='--cflags --libs'):
-        cfg.env.append_unique('VALAFLAGS', ['--define=SOUP_2_48'])
-
-    # libsoup (>=2.50) for steal_connection
-    if cfg.check_cfg(package='libsoup-2.4', atleast_version='2.50', mandatory=False, uselib_store='SOUP', args='--cflags --libs'):
-        cfg.env.append_unique('VALAFLAGS', ['--define=SOUP_2_50'])
 
 def build(bld):
     from waflib import Context

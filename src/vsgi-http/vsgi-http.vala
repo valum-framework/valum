@@ -271,7 +271,6 @@ namespace VSGI.HTTP {
 				options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 () : 0;
 #else
 			var port            = 3003;
-			var file_descriptor = 0;
 #endif
 
 #if GIO_2_40
