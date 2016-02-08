@@ -15,6 +15,7 @@ def options(opt):
 def configure(conf):
     conf.load('compiler_c vala')
 
+    conf.check_vala(min_version=(0,26,0))
     conf.check(lib='gcov', mandatory=False, uselib_store='GCOV', args='--cflags --libs')
     conf.find_program('valadoc', mandatory=False)
 
@@ -25,7 +26,7 @@ def configure(conf):
                                       '-Wno-unused-variable',
                                       '-Wno-unused-but-set-variable',
                                       '-Wno-unused-function'])
-    conf.env.append_unique('VALAFLAGS', ['--fatal-warnings'])
+    conf.env.append_unique('VALAFLAGS', ['--enable-experimental', '--enable-deprecated', '--fatal-warnings'])
 
     if conf.options.enable_gcov:
         conf.env.append_unique('CFLAGS', ['-fprofile-arcs', '-ftest-coverage'])
