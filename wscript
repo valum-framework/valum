@@ -25,6 +25,7 @@ def configure(conf):
                                       '-Wno-unused-variable',
                                       '-Wno-unused-but-set-variable',
                                       '-Wno-unused-function'])
+    conf.env.append_unique('VALAFLAGS', ['--fatal-warnings'])
 
     if conf.options.enable_gcov:
         conf.env.append_unique('CFLAGS', ['-fprofile-arcs', '-ftest-coverage'])

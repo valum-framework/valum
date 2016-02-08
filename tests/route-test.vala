@@ -33,30 +33,38 @@ public void test_route () {
  * @since 0.1
  */
 public void test_route_from_rule () {
-	var route   = new RuleRoute (Method.GET, "/<int:id>", null, (req, res) => {});
-	var request = new Request.with_uri (new Soup.URI ("http://localhost/5"));
-	var context = new Context ();
+	try {
+		var route   = new RuleRoute (Method.GET, "/<int:id>", null, (req, res) => {});
+		var request = new Request.with_uri (new Soup.URI ("http://localhost/5"));
+		var context = new Context ();
 
-	message (route.rule);
-	assert ("/<int:id>" == route.rule);
-	assert ("^/(?<id>\\w+)$" == route.regex.get_pattern ());
-	assert (RegexCompileFlags.OPTIMIZE in route.regex.get_compile_flags ());
-	assert (route.match (request, context));
-	assert ("5" == context["id"].get_string ());
+		message (route.rule);
+		assert ("/<int:id>" == route.rule);
+		assert ("^/(?<id>\\w+)$" == route.regex.get_pattern ());
+		assert (RegexCompileFlags.OPTIMIZE in route.regex.get_compile_flags ());
+		assert (route.match (request, context));
+		assert ("5" == context["id"].get_string ());
+	} catch (RegexError err) {
+		assert_not_reached ();
+	}
 }
 
 /**
  * @since 0.1
  */
 public void test_route_from_rule_without_captures () {
-	var route   = new RuleRoute (Method.GET, "/", null, (req, res) => {});
-	var req     = new Request.with_uri (new Soup.URI ("http://localhost/"));
-	var context = new Context ();
+	try {
+		var route   = new RuleRoute (Method.GET, "/", null, (req, res) => {});
+		var req     = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var context = new Context ();
 
-	var matches = route.match (req, context);
+		var matches = route.match (req, context);
 
-	// ensure params are still null if there is no captures
-	assert (matches);
+		// ensure params are still null if there is no captures
+		assert (matches);
+	} catch (RegexError err) {
+		assert_not_reached ();
+	}
 }
 
 /**
@@ -64,12 +72,14 @@ public void test_route_from_rule_without_captures () {
  */
 public void test_route_from_rule_undefined_type () {
 	try {
-		var route  = new RuleRoute (Method.GET, "/<uint:unknown_type>", new HashTable<string, Regex> (str_hash,
-					str_equal), (req, res) => {});
+		new RuleRoute (Method.GET,
+		               "/<uint:unknown_type>",
+		               new HashTable<string, Regex> (str_hash, str_equal),
+		               (req, res) => {});
+		assert_not_reached ();
 	} catch (RegexError err) {
-		return;
+		assert (err is RegexError.COMPILE);
 	}
-	assert_not_reached ();
 }
 
 /**
@@ -113,7 +123,7 @@ public void test_route_from_regex_without_captures () {
 	var req     = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var context = new Context ();
 
-	var matches = route.match (req, context);
+	assert (route.match (req, context));
 
 	// ensure params are still null if there is no captures
 	assert (route.match (req, context));
@@ -123,47 +133,63 @@ public void test_route_from_regex_without_captures () {
  * @since 0.1
  */
 public void test_route_match () {
-	var route   = new RuleRoute (Method.GET, "/<int:id>", null, (req, res) => {});
-	var req     = new Request.with_uri (new Soup.URI ("http://localhost/5"));
-	var context = new Context ();
+	try {
+		var route   = new RuleRoute (Method.GET, "/<int:id>", null, (req, res) => {});
+		var req     = new Request.with_uri (new Soup.URI ("http://localhost/5"));
+		var context = new Context ();
 
-	var matches = route.match (req, context);
+		var matches = route.match (req, context);
 
-	assert (matches);
-	assert (context.contains ("id"));
-	assert ("5" == context["id"].get_string ());
+		assert (matches);
+		assert (context.contains ("id"));
+		assert ("5" == context["id"].get_string ());
+	} catch (RegexError err) {
+		assert_not_reached ();
+	}
 }
 
 /**
  * @since 0.1
  */
 public void test_route_match_not_matching () {
-	var types   = new HashTable<string, Regex> (str_hash, str_equal);
-	types["int"] = /\d+/;
-	var route   = new RuleRoute (Method.GET, "/<int:id>", types, (req, res) => {});
-	var req     = new Request.with_uri (new Soup.URI ("http://localhost/home"));
-	var context = new Context ();
+	try {
+		var types   = new HashTable<string, Regex> (str_hash, str_equal);
+		types["int"] = /\d+/;
+		var route   = new RuleRoute (Method.GET, "/<int:id>", types, (req, res) => {});
+		var req     = new Request.with_uri (new Soup.URI ("http://localhost/home"));
+		var context = new Context ();
 
-	// no match and params remains null
-	assert (route.match (req, context) == false);
+		// no match and params remains null
+		assert (route.match (req, context) == false);
+	} catch (RegexError err) {
+		assert_not_reached ();
+	}
 }
 
 /**
  * @since 0.1
  */
 public void test_route_fire () {
-	var setted = false;
-	var route = new RuleRoute (Method.GET, "/<int:id>", null, (req, res) => {
-		setted = true;
-	});
+	try {
+		var setted = false;
+		var route = new RuleRoute (Method.GET, "/<int:id>", null, (req, res) => {
+			setted = true;
+		});
 
-	var req     = new Request.with_uri (new Soup.URI ("http://localhost/home"));
-	var res     = new Response (req);
-	var context = new Context ();
+		var req     = new Request.with_uri (new Soup.URI ("http://localhost/home"));
+		var res     = new Response (req);
+		var context = new Context ();
 
-	assert (setted == false);
+		assert (setted == false);
 
-	route.fire (req, res, () => {}, null);
+		try {
+			route.fire (req, res, () => {}, context);
+		} catch (Error err) {
+			assert_not_reached ();
+		}
 
-	assert (setted);
+		assert (setted);
+	} catch (RegexError err) {
+		assert_not_reached ();
+	}
 }

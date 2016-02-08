@@ -23,14 +23,9 @@ using VSGI.Mock;
  */
 public static void test_router () {
 	var router = new Router ();
-
-	try {
-		router.get ("<int:i>", (req, res) => {});
-		router.get ("<string:i>", (req, res) => {});
-		router.get ("<path:i>", (req, res) => {});
-	} catch (RegexError err) {
-		assert_not_reached ();
-	}
+	router.get ("<int:i>", (req, res) => {});
+	router.get ("<string:i>", (req, res) => {});
+	router.get ("<path:i>", (req, res) => {});
 }
 
 /**

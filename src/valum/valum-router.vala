@@ -344,7 +344,7 @@ namespace Valum {
 		 * @param res   response for the context
 		 * @param next  callback to be invoked in the routing context
 		 */
-		public void invoke (Request req, Response res, owned NextCallback next) {
+		public void invoke (Request req, Response res, NextCallback next) {
 			try {
 				next (req, res);
 			} catch (Error err) {
