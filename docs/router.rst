@@ -56,8 +56,7 @@ Callback can be connected to HTTP methods via a list of helpers having the
     app.get ("rule", (req, res, next) => {});
 
 The rule has to respect the rule syntax described in :doc:`route`. It will be
-compiled down to a regex which named groups are made accessible through
-:doc:`vsgi/request` parameters.
+compiled down to a regex which named groups are made accessible in the context.
 
 Helpers for the HTTP/1.1 protocol and the extra ``TRACE`` methods are included.
 
@@ -373,7 +372,7 @@ with custom and default status code handlers. It constitute an entry point for
         });
     });
 
-    app.all (null, (req, res) => {
+    app.use ((req, res) => {
         throw new ClientError.NOT_FOUND ("the requested resource was not found");
     });
 

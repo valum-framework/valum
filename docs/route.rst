@@ -7,9 +7,6 @@ Route is a structure that pairs a matcher and a handler.
    its parameters
 -  the handler processes the :doc:`vsgi/request` and produce a :doc:`vsgi/response`.
 
-Matcher
--------
-
 There are three ways of matching user requests:
 
 -  using the rule system
@@ -17,10 +14,10 @@ There are three ways of matching user requests:
 -  with a matching callback
 
 Matching using a rule
-~~~~~~~~~~~~~~~~~~~~~
+---------------------
 
-Rules are used by the HTTP methods alias (``get``, ``post``, ...) and
-``method`` function in :doc:`router`.
+Rules are used by the HTTP methods alias (``get``, ``post``, ...) and ``rule``
+functions in :doc:`router`.
 
 ::
 
@@ -30,66 +27,42 @@ Rules are used by the HTTP methods alias (``get``, ``post``, ...) and
     });
 
     // using a method
-    app.method (Request.GET, "your-rule/<int:id>", (req, res) => {
+    app.rule (Request.GET, "your-rule/<int:id>", (req, res) => {
 
     });
 
 Rule syntax
 ~~~~~~~~~~~
 
-This class implements the rule system designed to simplify regular expression.
+The ``RuleRoute`` class implements the rule system designed to simplify regular
+expression.
 
-A rule is a simple path with parameters delimited with ``<`` and ``>``
-characters. Formally, a parameter is defined by the following EBNF:
+The syntax for rules is given by the following EBNF grammar:
 
-.. code-block:: ebnf
+.. literalinclude:: rule.ebnf
+    :language: ebnf
 
-    parameter = '<', [ type, ':' ], name, '>';
-    type      = word, { word_or_number };
-    name      = word, { word_or_number };
-    word      = ? any word character ?;
+Remarks
+~~~~~~~
 
-The following items are valid rules:
+-  a piece is a single character, so ``/users/?`` only indicates that the ``/``
+   is optional
+-  the wildcard ``*`` matches anything, just like the ``.*`` regular expression
 
--  ``/user``
--  ``/user/<id>``
--  ``/user/<int:id>``
+The following table show valid rules and their corresponding regular
+expressions. Note that rules are matching the whole path as they are
+automatically anchored.
 
-They will respectively compile down to the following regular expressions. Note
-that rules are matching the whole path as they are automatically anchored and
-the leading ``/`` must be omitted.
+===================== ===========================
+Rule                  Regular expression
+===================== ===========================
+``/user``             ``^/user$``
+``/user/<id>``        ``^/user/(?<id>\w+)$``
+``/user/<int:id>``    ``^/user/(?<id>\d+)$``
+``/user(/<int:id>)?`` ``^/user(?:/(?<id>\d+))?$``
+===================== ===========================
 
--  ``^/user$``
--  ``^/user/(?<id>\w+)$``
--  ``^/user/(?<id>\d+)$``
-
-Null rule
-~~~~~~~~~
-
-The ``null`` rule can be used to match all possible request paths. It can be
-used to perform setup operations.
-
-The matched path will be made available in the ``path`` parameter.
-
-::
-
-    app.get (null, (req, res, next) => {
-        // always invoked!
-
-        var path = req.params["path"]; // matched path
-
-        next (req, res);
-    });
-
-    app.get ("", (req, res) => {
-        res.write_all ("Hello world!".data, null);
-    });
-
-Scope
-~~~~~
-
-Rules and regular expressions are scoped by prefixing the scope stack from the
-:doc:`router` in the generated regular expression.
+The :doc:`router` handles leading slash implicitly, so they must be omitted.
 
 Types
 ~~~~~
@@ -97,26 +70,19 @@ Types
 Valum provides built-in types initialized in the :doc:`router` constructor. The
 following table details these types and what they match.
 
-+------------+------------+-----------------------------------------------+
-| Type       | Regex      | Description                                   |
-+============+============+===============================================+
-| ``int``    | ``\d+``    | matches non-negative integers like a database |
-|            |            | primary key                                   |
-+------------+------------+-----------------------------------------------+
-| ``string`` | ``\w+``    | matches any word character                    |
-+------------+------------+-----------------------------------------------+
-| ``path``   | ``[\w/]+`` | matches a piece of route including slashes    |
-+------------+------------+-----------------------------------------------+
-| ``any``    | ``.+``     | matches anything                              |
-+------------+------------+-----------------------------------------------+
++------------+-----------------------+--------------------------------------+
+| Type       | Regex                 | Description                          |
++============+=======================+======================================+
+| ``int``    | ``\d+``               | matches non-negative integers like a |
+|            |                       | database primary key                 |
++------------+-----------------------+--------------------------------------+
+| ``string`` | ``\w+``               | matches any word character           |
++------------+-----------------------+--------------------------------------+
+| ``path``   | ``(?:\.?[\w/-\s/])+`` | matches a piece of route including   |
+|            |                       | slashes, but not ``..``              |
++------------+-----------------------+--------------------------------------+
 
 Undeclared types default to ``string``, which matches any word characters.
-
-::
-
-    app.get("<any:path>", (req, res) => {
-        res.status = 404;
-    });
 
 It is possible to specify or overwrite types using the ``types`` map in
 :doc:`router`. This example will define the ``path`` type matching words and
@@ -144,7 +110,7 @@ Rule parameters are available from the routing context by their name.
     });
 
 Matching using a regular expression
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------------------
 
 If the rule system does not suit your needs, it is always possible to use
 regular expression. Regular expression will be automatically scoped, anchored
@@ -161,12 +127,12 @@ Named captures are registered in the routing context.
 
 ::
 
-    app.regex (new Regex ("(?<word>\w+)", RegexCompileFlags.OPTIMIZE), (req, res, next, context) => {
-        var word = context["word"].get_string ();
+    app.regex (new Regex ("(?<word>\w+)", RegexCompileFlags.OPTIMIZE), (req, res, next, ctx) => {
+        var word = ctx["word"].get_string ();
     });
 
 Matching using a callback
-~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------
 
 In some scenario, you need more than a just matching the request path using
 a regular expression. Internally, Route uses a matcher pattern and it is
@@ -178,7 +144,7 @@ A matcher consist of a callback matching a given ``Request`` object.
 
     MatcherCallback matcher = (req) => { req.path == "/custom-matcher"; };
 
-    app.matcher ("GET", matcher, (req, res) => {
+    app.matcher (Method.GET, matcher, (req, res) => {
         var writer = new DataOutputStream (res.body);
         writer.put_string ("Matched using a custom matcher.");
     });
@@ -188,19 +154,19 @@ fallback to a default route otherwise.
 
 ::
 
-    app.matcher ("GET", (req) => {
+    app.matcher (Method.GET, (req) => {
         var user = new User (req.query["id"]);
         return "admin" in user.roles;
     }, (req, res) => {
         // ...
     });
 
-    app.route ("<any:path>", (req, res) => {
+    app.use ((req, res) => {
         res.status = 404;
     });
 
 Combining custom matcher with existing matcher
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+----------------------------------------------
 
 If all you want is to do some processing and fallback on a Regex or rule
 matching, you can combine instanciate directly a Route.
@@ -211,7 +177,7 @@ accept the request.
 
 ::
 
-    app.matcher ("GET", (req) => {
+    app.matcher (Method.GET, (req) => {
         var route = new Route.from_rule (app, "your-rule");
 
         // database access only if the rule is respected

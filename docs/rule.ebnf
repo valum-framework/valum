@@ -1,0 +1,8 @@
+rule      = piece | parameter | group | optional | wildcard, [ rule ];
+group     = '(', rule, ')';
+optional  = (piece | parameter | group), '?';
+wildcard  = '*';
+parameter = '<', [ type, ':' ], name, '>'; (* considered as a terminal *)
+type      = ? any sequence of word character ?;
+name      = ? any sequence of word character ?;
+piece     = ? any sequence of URL-encoded character ?;
