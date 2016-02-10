@@ -66,8 +66,13 @@ namespace VSGI {
 
 		/**
 		 * Dispatch the request to the application callback.
+		 *
+		 * The application must call {@link Response.write_head} at some point.
+		 *
+		 * Once dispatched, the {@link Response.head_written} property is
+		 * expected to be true unless its reference still held somewhere else.
 		 */
-		protected void dispatch (Request req, Response res) {
+		protected void dispatch (Request req, Response res) ensures (res.ref_count > 1 || res.head_written) {
 			_application (req, res);
 		}
 	}
