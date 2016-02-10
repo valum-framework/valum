@@ -57,8 +57,8 @@ public int main (string[] args) {
 	Test.add_func ("/router/connect", test_router_connect);
 	Test.add_func ("/router/patch", test_router_patch);
 
-	Test.add_func ("/router/rule/null", test_router_rule_null);
-	Test.add_func ("/router/rule/null/matches_empty_path", test_router_rule_null_matches_empty_path);
+	Test.add_func ("/router/rule/wildcard", test_router_rule_wildcard);
+	Test.add_func ("/router/rule/wildcard/matches_empty_path", test_router_rule_wildcard_matches_empty_path);
 	Test.add_func ("/router/rule/path", test_router_rule_path);
 	Test.add_func ("/router/rule/any", test_router_rule_any);
 

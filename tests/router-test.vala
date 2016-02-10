@@ -253,10 +253,10 @@ public static void test_router_patch () {
 /**
  * @since 0.1
  */
-public void test_router_rule_null () {
+public void test_router_rule_wildcard () {
 	var router  = new Router ();
 
-	router.get (null, (req, res, next, context) => {
+	router.get ("*", (req, res, next, context) => {
 		res.status = 418;
 	});
 
@@ -271,10 +271,10 @@ public void test_router_rule_null () {
 /**
  * @since 0.1
  */
-public void test_router_rule_null_matches_empty_path () {
+public void test_router_rule_wildcard_matches_empty_path () {
 	var router  = new Router ();
 
-	router.get (null, (req, res, next, context) => {
+	router.get ("*", (req, res, next, context) => {
 		res.status = 418;
 	});
 
