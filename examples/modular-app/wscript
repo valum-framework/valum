@@ -1,0 +1,10 @@
+#!/usr/bin/env python
+
+def configure(cfg):
+    pass
+
+def build(bld):
+    bld.program(
+        target = 'app',
+        source = 'app.vala admin-router.vala user-router.vala',
+        use    = 'valum')
