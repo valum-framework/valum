@@ -164,7 +164,7 @@ namespace VSGI {
 		 * The returned cookie has its value signed, the 'value' parameter can
 		 * be used to obtain its original value.
 		 *
-		 * @see Cookies.verify
+		 * @see CookieUtils.verify
 		 *
 		 * @since 0.3
 		 * @return the signed cookie if found, otherwise 'null'
@@ -177,7 +177,7 @@ namespace VSGI {
 			@value        = null;
 
 			foreach (var cookie in cookies)
-				if (cookie.name == name && Cookies.verify (cookie, checksum_type, key, out @value))
+				if (cookie.name == name && CookieUtils.verify (cookie, checksum_type, key, out @value))
 					found = cookie;
 
 			return found;

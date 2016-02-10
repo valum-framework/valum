@@ -67,7 +67,7 @@ You can lookup a cookie by its name from a :doc:`request` using
 .. warning::
 
     Although this is not formally specified, cookies name are considered as
-    being case-sensitive by ``Cookies`` utilities.
+    being case-sensitive by ``CookieUtils`` utilities.
 
 If it's signed (recommended for sessions), the equivalent
 ``lookup_signed_cookie`` exists.
@@ -97,8 +97,8 @@ Sign and verify
 ---------------
 
 Considering that cookies are persisted by the user agent, it might be necessary
-to sign to prevent forgery. ``Cookies.sign`` and ``Cookies.verify`` functions
-are provided for the purposes of signing and verifying cookies.
+to sign to prevent forgery. ``CookieUtils.sign`` and ``CookieUtils.verify``
+functions are provided for the purposes of signing and verifying cookies.
 
 .. warning::
 
@@ -109,14 +109,18 @@ are provided for the purposes of signing and verifying cookies.
 It's up to you to choose what hashing algorithm and secret: ``SHA512`` is
 generally recommended.
 
+The ``CookieUtils.sign`` utility will sign the cookie in-place. It can then be
+verified using ``CookieUtils.verify``.
+
+The value will be stored in the output parameter if the verification process is
+successful.
+
 ::
 
-    var value = Cookies.sign (cookie, ChecksumType.SHA512, "secret".data);
-
-    cookie.value = value;
+    CookieUtils.sign (cookie, ChecksumType.SHA512, "secret".data);
 
     string value;
-    if (Cookies.verify (cookie, ChecksumType.SHA512, "secret.data", out value)) {
+    if (CookieUtils.verify (cookie, ChecksumType.SHA512, "secret.data", out value)) {
         // cookie's okay and the original value is stored in value
     }
 

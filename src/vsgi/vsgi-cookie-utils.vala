@@ -17,16 +17,22 @@
 
 using Soup;
 
-namespace VSGI.Cookies {
+/**
+ * Cookie-related utilities.
+ *
+ * @since 0.2
+ */
+[CCode (gir_namespace = "VsgiCookieUtils", gir_version = "0.2")]
+namespace VSGI.CookieUtils {
 
 	/**
-	 * Sign the provided cookie name and value using HMAC.
+	 * Sign the provided cookie name and value in-place using HMAC.
 	 *
 	 * The returned value will be 'HMAC(checksum_type, name + HMAC(checksum_type, value)) + value'
-	 * suitable for a cookie value which can the be verified with {@link VSGI.Cookies.verify}.
+	 * suitable for a cookie value which can the be verified with {@link VSGI.CookieUtils.verify}.
 	 *
 	 * {{{
-	 * cookie.@value = Cookies.sign (cookie, ChecksumType.SHA512, "super-secret".data);
+	 * CookieUtils.sign (cookie, ChecksumType.SHA512, "super-secret".data);
 	 * }}}
 	 *
 	 * @param cookie        cookie to sign
@@ -35,16 +41,16 @@ namespace VSGI.Cookies {
 	 * @return              the signed value for the provided cookie, which can
 	 *                      be reassigned in the cookie
 	 */
-	public string sign (Cookie cookie, ChecksumType checksum_type, uint8[] key) {
+	public void sign (Cookie cookie, ChecksumType checksum_type, uint8[] key) {
 		var checksum = Hmac.compute_for_string (checksum_type,
 		                                        key,
 		                                        Hmac.compute_for_string (checksum_type, key, cookie.@value) + cookie.name);
 
-		return checksum + cookie.@value;
+		cookie.set_value (checksum + cookie.@value);
 	}
 
 	/**
-	 * Verify a signed cookie from {@link VSGI.Cookies.sign}.
+	 * Verify a signed cookie from {@link VSGI.CookieUtils.sign}.
 	 *
 	 * The signature is verified in constant time, more specifically a number
 	 * of comparisons equal to length of the checksum.
