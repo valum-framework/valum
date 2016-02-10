@@ -70,16 +70,12 @@ Recent dependencies will enable more advanced features:
 +-------------+---------+------------------------------------------------------+
 | Package     | Version | Feature                                              |
 +=============+=========+======================================================+
-| glib-2.0    | >=2.38  | subprocess in tests                                  |
-+-------------+---------+------------------------------------------------------+
 | gio-2.0     | >=2.34  | CGI server uses the command line stdin which can be  |
 |             |         | provided by DBus                                     |
 +-------------+---------+------------------------------------------------------+
 | gio-2.0     | >=2.40  | CLI arguments parsing                                |
 +-------------+---------+------------------------------------------------------+
-| gio-2.0     | >=2.44  | ``write_head_async`` in :doc:`vsgi/response` and     |
-|             |         | `GLib.strv_contains`_ to lookup methods when         |
-|             |         | producing an ``Allow`` header                        |
+| gio-2.0     | >=2.44  | ``write_head_async`` in :doc:`vsgi/response`         |
 +-------------+---------+------------------------------------------------------+
 | libsoup-2.4 | >=2.48  | new server API                                       |
 +-------------+---------+------------------------------------------------------+
@@ -94,7 +90,7 @@ have to specify the ``--enable-examples`` flag during the configure step.
 
 +---------------+------------------------------------+
 | Package       | Description                        |
-+---------------+------------------------------------+
++===============+====================================+
 | json-glib-1.0 | JSON library                       |
 +---------------+------------------------------------+
 | libmemcached  | client for memcached cache storage |

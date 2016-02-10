@@ -8,10 +8,6 @@ def configure(cfg):
     # enable goodies in 'glib-2.0.vapi'
     cfg.env.append_unique('VALAFLAGS', ['--define=GLIB_2_30', '--define=GLIB_2_32'])
 
-    # glib (>=2.38) to enable subprocess in tests
-    if cfg.check_cfg(package='glib-2.0', atleast_version='2.38', mandatory=False, uselib_store='GLIB', args='--cflags --libs'):
-        cfg.env.append_unique('VALAFLAGS', ['--define=GIO_2_38'])
-
     # gio (>=2.34) is necessary for ApplicationCommandLine.get_stdin
     if cfg.check_cfg(package='gio-2.0', atleast_version='2.34', mandatory=False, uselib_store='GIO', args='--cflags --libs'):
         cfg.env.append_unique('VALAFLAGS', ['--define=GIO_2_34'])
