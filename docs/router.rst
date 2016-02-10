@@ -265,6 +265,29 @@ will process in isolation with its own routing context.
     // delegate all GET requests to api router
     app.get (null, api.handle);
 
+.. _cleaning-up-route-logic:
+
+Cleaning up route logic
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Performing a lot of route bindings can get messy, particularly if you want to
+set up several :doc:`modules <module>`. Encapsulation can be achieved by
+subclassing ``Router``.
+
+::
+
+    class HelloWorldRouter : Router {
+        construct {
+            get ("", view);
+        }
+
+        public void view (Request req, Response res, NexCallback next, Context ctx) {
+            res.body.write_all ("Hello World".data, null)
+        }
+    }
+
+    var app = new HelloWorldRouter ();
+
 Next
 ----
 

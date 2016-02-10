@@ -51,6 +51,11 @@ processing. The callback, named handler, receives four arguments:
 -  a routing ``context`` to retrieve and store states from previous and for
    following handlers
 
+.. note ::
+
+    For an alternative, more structured approach to route binding, see
+    :ref:`cleaning-up-route-logic`
+
 Serving the application
 -----------------------
 
