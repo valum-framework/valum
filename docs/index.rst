@@ -34,7 +34,6 @@ development. If you think that this document could be improved,
     router
     middlewares/index
     recipes/index
-    module
     hacking
     about/gnu-lgpl-v3.0
 

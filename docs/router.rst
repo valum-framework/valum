@@ -249,6 +249,9 @@ Since ``VSGI.ApplicationCallback`` is type compatible with ``HandlerCallback``,
 it is possible to delegate request handling to another VSGI-compliant
 application.
 
+In particular, it is possible to treat ``Router.handle`` like any handling
+callback.
+
 .. note::
 
     This feature is a key design of the router and is intended to be used for
@@ -263,7 +266,7 @@ will process in isolation with its own routing context.
     var api = new Router ();
 
     // delegate all GET requests to api router
-    app.get (null, api.handle);
+    app.get ("*", api.handle);
 
 .. _cleaning-up-route-logic:
 
@@ -271,22 +274,32 @@ Cleaning up route logic
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 Performing a lot of route bindings can get messy, particularly if you want to
-set up several :doc:`modules <module>`. Encapsulation can be achieved by
-subclassing ``Router``.
+split an application several reusable modules. Encapsulation can be achieved by
+subclassing ``Router`` and performing initialization in a ``construct`` block:
 
 ::
 
-    class HelloWorldRouter : Router {
+    public class AdminRouter : Router {
+
         construct {
             get ("", view);
+            rule (Method.GET | Method.POST, "", edit);
         }
 
-        public void view (Request req, Response res, NexCallback next, Context ctx) {
-            res.body.write_all ("Hello World".data, null)
-        }
+        public void view (Request req, Response res) {}
+
+        public void edit (Request req, Response res) {}
     }
 
-    var app = new HelloWorldRouter ();
+Using subrouting, it can be assembled to a parent router given a rule (or any
+matching process described in :doc:`route`). This way, incoming request having
+the ``/admin/`` path prefix will be delegated to the ``admin`` router.
+
+::
+
+    var app = new Router ();
+
+    app.rule (Method.ALL, "admin/*", new AdminRouter ().handle);
 
 Next
 ----
