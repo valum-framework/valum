@@ -79,6 +79,8 @@ namespace Valum.Static {
 		 * produced in the 'X-Sendfile' header. It must therefore be accessible
 		 * for the HTTP server.
 		 *
+		 * If the file is not locally accessible, it will be spliced instead.
+		 *
 		 * @since 0.3
 		 */
 		PRODUCE_X_SENDFILE
@@ -145,12 +147,12 @@ namespace Valum.Static {
 				file_read_stream.seek (0, SeekType.SET);
 
 				bool uncertain;
-				res.headers.set_content_type (ContentType.guess (file.get_path (), contents, out uncertain), null);
+				res.headers.set_content_type (ContentType.guess (file.get_basename (), contents, out uncertain), null);
 
 				if (uncertain)
-					warning ("could not infer content type of file '%s' with certainty", file.get_path ());
+					warning ("could not infer content type of file '%s' with certainty", file.get_uri ());
 
-				if (ServeFlags.PRODUCE_X_SENDFILE in serve_flags) {
+				if (ServeFlags.PRODUCE_X_SENDFILE in serve_flags && file.get_path () != null) {
 					res.headers.set_encoding (Soup.Encoding.NONE);
 					res.headers.replace ("X-Sendfile", file.get_path ());
 #if GIO_2_44
@@ -160,7 +162,7 @@ namespace Valum.Static {
 								size_t bytes_written;
 								res.write_head_async.end (result, out bytes_written);
 							} catch (Error ioe) {
-								warning ("could not serve file '%s': %s", file.get_path (), ioe.message);
+								warning ("could not serve file '%s': %s", file.get_uri (), ioe.message);
 							}
 						});
 					} else
@@ -178,7 +180,7 @@ namespace Valum.Static {
 						try {
 							res.body.splice_async.end (result);
 						} catch (IOError ioe) {
-							warning ("could not serve file '%s': %s", file.get_path (), ioe.message);
+							warning ("could not serve file '%s': %s", file.get_uri (), ioe.message);
 						}
 					});
 				} else {
