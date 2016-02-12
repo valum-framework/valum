@@ -15,6 +15,7 @@ def build(bld):
         target           = 'valum',
         source           = bld.path.ant_glob('**/*.vala'),
         use              = 'GLIB GIO GIOUNIX SOUP FCGI GCOV',
+        vala_target_glib = '2.32',
         vapi_dirs        = 'vsgi-fastcgi',
         install_binding  = False,
         header_path      = None,
