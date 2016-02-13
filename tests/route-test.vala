@@ -43,6 +43,9 @@ public void test_route_from_rule () {
 	assert (RegexCompileFlags.OPTIMIZE in route.regex.get_compile_flags ());
 	assert (route.match (request, context));
 	assert ("5" == context["id"].get_string ());
+	var @params = new HashTable<string, Value?> (str_hash, str_equal);
+	@params["id"] = "5";
+	assert ("/5" == route.get_path (@params));
 }
 
 /**
