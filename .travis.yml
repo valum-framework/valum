@@ -15,11 +15,12 @@ before_install:
     - sudo pip install cpp-coveralls sphinx PyYAML
 
 before_script:
-    - ./waf configure --enable-gcov
+    - ./waf configure CFLAGS='-fprofile-arcs -ftest-coverage' VALAFLAGS='--debug'
     - ./waf build
 
 script:
     - ./build/tests/tests
+    - valadoc --target=glib-2.32 --directory=$(mktemp -d) src/**/*.vala
 
 after_success:
     - coveralls --repo-token $COVERALLS_TOKEN --build-root build

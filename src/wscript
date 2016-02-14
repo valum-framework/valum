@@ -14,7 +14,7 @@ def build(bld):
         packages_private = 'fcgi',
         target           = 'valum',
         source           = bld.path.ant_glob('**/*.vala'),
-        use              = 'GLIB GIO GIOUNIX SOUP FCGI GCOV',
+        use              = 'GLIB GIO GIOUNIX SOUP FCGI',
         vala_target_glib = '2.32',
         vapi_dirs        = 'vsgi-fastcgi',
         install_binding  = False,
