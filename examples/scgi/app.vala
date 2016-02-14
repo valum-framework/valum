@@ -21,15 +21,17 @@ using VSGI.SCGI;
 var app = new Router ();
 
 app.get ("", (req, res) => {
-	res.body.write_all ("Hello world!".data, null);
+	return res.body.write_all ("Hello world!".data, null);
 });
 
 app.post ("", (req, res) => {
 	res.body.splice (req.body, OutputStreamSpliceFlags.NONE);
+	return true;
 });
 
 app.get ("async", (req, res) => {
 	res.body.write_all_async.begin ("Hello world!".data, Priority.DEFAULT, null);
+	return true;
 });
 
 new Server ("org.valum.example.SCGI", app.handle).run ({"app"});

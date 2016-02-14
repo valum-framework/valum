@@ -40,6 +40,7 @@ namespace VSGI {
 	 *
 	 * @param req a resource being requested
 	 * @param res the response to that request
+	 * @return true if the request was or will eventually be fully handled
 	 */
-	public delegate void ApplicationCallback (Request req, Response res);
+	public delegate bool ApplicationCallback (Request req, Response res);
 }

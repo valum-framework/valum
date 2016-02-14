@@ -15,7 +15,7 @@ using VSGI.HTTP;
 var app = new Router ();
 
 app.get ("", (req, res) => {
-    res.body.write_all ("Hello world!".data, null);
+    return res.body.write_all ("Hello world!".data, null);
 });
 
 new Server ("org.valum.example.App", app.handle).run ();

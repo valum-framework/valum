@@ -70,10 +70,13 @@ namespace VSGI {
 		 * The application must call {@link Response.write_head} at some point.
 		 *
 		 * Once dispatched, the {@link Response.head_written} property is
-		 * expected to be true unless its reference still held somewhere else.
+		 * expected to be true unless its reference still held somewhere else
+		 * and the return value is 'true'.
+		 *
+		 * @return true if the request and response were dispatched
 		 */
-		protected void dispatch (Request req, Response res) ensures (res.ref_count > 1 || res.head_written) {
-			_application (req, res);
+		protected bool dispatch (Request req, Response res) ensures (result && res.ref_count > 1 || res.head_written) {
+			return _application (req, res);
 		}
 	}
 }

@@ -28,12 +28,11 @@ public class AdminRouter : Router {
 	/**
 	 * Verify the user credentials and perform an authentication.
 	 */
-	public void authenticate (Request req, Response res, NextCallback next) throws Error {
+	public bool authenticate (Request req, Response res, NextCallback next) throws Error {
 		string @value;
 		req.lookup_signed_cookie ("session", ChecksumType.SHA256, "impossible to break".data, out @value);
 		if (@value == "admin") {
-			next (req, res);
-			return;
+			return next (req, res);
 		}
 
 		if (req.method == Request.POST) {
@@ -42,13 +41,12 @@ public class AdminRouter : Router {
 				var session_cookie = new Soup.Cookie ("session", "admin", "", "/admin/view", Soup.COOKIE_MAX_AGE_ONE_HOUR);
 				CookieUtils.sign (session_cookie, ChecksumType.SHA256, "impossible to break".data);
 				res.headers.append ("Set-Cookie", session_cookie.to_set_cookie_header ());
-				next (req, res);
-				return;
+				return next (req, res);
 			}
 		}
 
 		res.headers.set_content_type ("text/html", null);
-		res.body.write_all ("""
+		return res.body.write_all ("""
 		<!DOCTYPE html>
 		<html>
 		  <head>
@@ -67,8 +65,8 @@ public class AdminRouter : Router {
 	/**
 	 * Restricted content.
 	 */
-	public void view (Request req, Response res, NextCallback next, Context ctx) throws Error {
+	public bool view (Request req, Response res, NextCallback next, Context ctx) throws Error {
 		res.headers.set_content_type ("text/plain", null);
-		res.body.write ("Hello admin!".data, null);
+		return res.body.write_all ("Hello admin!".data, null);
 	}
 }

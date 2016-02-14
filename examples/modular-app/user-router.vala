@@ -24,8 +24,8 @@ public class UserRouter : Router {
 		get ("user/<int:id>", view);
 	}
 
-	public void view (Request req, Response res, NextCallback next, Context ctx) throws Error {
+	public bool view (Request req, Response res, NextCallback next, Context ctx) throws Error {
 		res.headers.set_content_type ("text/plain", null);
-		res.body.write_all ("Hello, user %s!".printf (ctx["id"].get_string ()).data, null);
+		return res.body.write_all ("Hello, user %s!".printf (ctx["id"].get_string ()).data, null);
 	}
 }

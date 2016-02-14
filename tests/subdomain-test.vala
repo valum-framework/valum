@@ -28,7 +28,7 @@ public void test_subdomain () {
 
 	subdomain ("api", () => {
 		assert_not_reached ();
-	}, SubdomainFlags.NONE) (req, res, () => {}, new Context ());
+	}, SubdomainFlags.NONE) (req, res, () => { return true; }, new Context ());
 }
 
 /**
@@ -39,7 +39,7 @@ public void test_subdomain_joker () {
 		var req   = new Request.with_uri (new Soup.URI ("http://api.example.com/"));
 		var res   = new Response (req);
 
-		subdomain("*", () => {}) (req, res, () => {
+		subdomain("*", () => { return true; }) (req, res, () => {
 			assert_not_reached ();
 		}, new Context ());
 	}
@@ -50,7 +50,7 @@ public void test_subdomain_joker () {
 
 		subdomain("*", () => {
 			assert_not_reached ();
-		}) (req, res, () => {}, new Context ());
+		}) (req, res, () => { return true; }, new Context ());
 	}
 }
 
@@ -61,10 +61,10 @@ public void test_subdomain_strict () {
 	var req   = new Request.with_uri (new Soup.URI ("http://dev.api.example.com/"));
 	var res   = new Response (req);
 
-	subdomain ("api", () => {}) (req, res, () => { assert_not_reached (); }, new Context ());
-	subdomain ("dev.api", () => {}) (req, res, () => { assert_not_reached (); }, new Context ());
-	subdomain ("api", () => { assert_not_reached (); }, SubdomainFlags.STRICT) (req, res, () => {}, new Context ());
-	subdomain ("dev.api.example.com", () => {}, SubdomainFlags.STRICT, 0) (req, res, () => { assert_not_reached (); }, new Context ());
+	subdomain ("api", () => { return true; }) (req, res, () => { assert_not_reached (); }, new Context ());
+	subdomain ("dev.api", () => { return true; }) (req, res, () => { assert_not_reached (); }, new Context ());
+	subdomain ("api", () => { assert_not_reached (); }, SubdomainFlags.STRICT) (req, res, () => { return true; }, new Context ());
+	subdomain ("dev.api.example.com", () => { return true; }, SubdomainFlags.STRICT, 0) (req, res, () => { assert_not_reached (); }, new Context ());
 }
 
 /**

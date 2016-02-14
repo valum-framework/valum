@@ -10,17 +10,17 @@ public void test_negociate () {
 
 	req.headers.append ("Accept", "text/html; q=0.9, text/xml; q=0");
 
-	negociate ("Accept", "text/html", () => {}) (req, res, () => {
+	negociate ("Accept", "text/html", () => { return true; }) (req, res, () => {
 		assert_not_reached ();
 	}, new Context ());
 
 	negociate ("Accept", "text/xml", () => {
 		assert_not_reached ();
-	}) (req, res, () => {}, new Context ());
+	}) (req, res, () => { return true; }, new Context ());
 
 	negociate ("Accept-Encoding", "utf-8", () => {
 		assert_not_reached ();
-	}) (req, res, () => {}, new Context ());
+	}) (req, res, () => { return true; }, new Context ());
 }
 
 

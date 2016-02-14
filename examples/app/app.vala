@@ -26,20 +26,20 @@ app.use ((req, res, next) => {
 	HashTable<string, string>? @params = new HashTable<string, string> (str_hash, str_equal);
 	@params["charset"] = "utf-8";
 	res.headers.set_content_type ("text/html", @params);
-	next (req, res);
+	return next (req, res);
 });
 
 app.get ("", (req, res, next) => {
 	var template = new View.from_resources ("/templates/home.html");
-	template.to_stream (res.body);
+	return template.to_stream (res.body);
 });
 
 app.get ("gzip", (req, res, next) => {
 	res.headers.replace ("Content-Encoding", "gzip");
-	next (req, new VSGI.ConvertedResponse (res, new ZlibCompressor (ZlibCompressorFormat.GZIP)));
+	return next (req, new VSGI.ConvertedResponse (res, new ZlibCompressor (ZlibCompressorFormat.GZIP)));
 }).then ((req, res) => {
 	var template = new View.from_resources ("/templates/home.html");
-	template.to_stream (res.body);
+	return template.to_stream (res.body);
 });
 
 // replace 'Content-Type' for 'text/plain'
@@ -47,7 +47,7 @@ app.use ((req, res, next) => {
 	HashTable<string, string>? @params;
 	res.headers.get_content_type (out @params);
 	res.headers.set_content_type ("text/plain", @params);
-	next (req, res);
+	return next (req, res);
 });
 
 app.get ("headers", (req, res) => {
@@ -55,28 +55,29 @@ app.get ("headers", (req, res) => {
 	req.headers.foreach ((name, header) => {
 		headers.append_printf ("%s: %s\n", name, header);
 	});
-	res.body.write_all (headers.data, null);
+	return res.body.write_all (headers.data, null);
 });
 
 app.get ("query", (req, res) => {
 	if (req.query == null) {
-		res.body.write_all ("null".data, null);
+		return res.body.write_all ("null".data, null);
 	} else {
 		var query = new StringBuilder ();
 		req.query.foreach ((k, v) => {
 			query.append_printf ("%s: %s\n", k, v);
 		});
-		res.body.write_all (query.data, null);
+		return res.body.write_all (query.data, null);
 	}
 });
 
 app.get ("cookies", (req, res) => {
 	if (req.cookies == null) {
-		res.body.write_all ("null".data, null);
+		return res.body.write_all ("null".data, null);
 	} else {
 		foreach (var cookie in req.cookies) {
 			res.body.write_all ("%s: %s\n".printf (cookie.name, cookie.value).data, null);
 		}
+		return true;
 	}
 });
 
@@ -84,19 +85,22 @@ app.scope ("cookie", (inner) => {
 	inner.get ("<name>", (req, res, next, context) => {
 		foreach (var cookie in req.cookies)
 			if (cookie.name == context["name"].get_string ())
-				res.body.write_all ("%s\n".printf (cookie.value).data, null);
+				return res.body.write_all ("%s\n".printf (cookie.value).data, null);
+		return true;
 	});
 
 	inner.post ("<name>", (req, res, next, context) => {
 		var cookie = new Soup.Cookie (context["name"].get_string (), req.flatten_utf8 (), "0.0.0.0", "/", 60);
 		res.headers.append ("Set-Cookie", cookie.to_set_cookie_header ());
+		size_t bytes_written;
+		return res.write_head (out bytes_written);
 	});
 });
 
 app.scope ("urlencoded-data", (inner) => {
 	inner.get ("", (req, res) => {
 		res.headers.set_content_type ("text/html", null);
-		res.body.write_all (
+		return res.body.write_all (
 		"""
 		<!DOCTYPE html>
 		<html>
@@ -118,29 +122,29 @@ app.scope ("urlencoded-data", (inner) => {
 			builder.append_printf ("%s: %s\n", k, v);
 		});
 
-		res.body.write_all (builder.str.data, null);
+		return res.body.write_all (builder.str.data, null);
 	});
 });
 
 // hello world! (compare with Node.js!)
 app.get ("hello", (req, res) => {
-	res.body.write_all ("Hello world!".data, null);
+	return res.body.write_all ("Hello world!".data, null);
 });
 
 app.get ("hello/", (req, res) => {
-	res.body.write_all ("Hello world!".data, null);
+	return res.body.write_all ("Hello world!".data, null);
 });
 
 app.rule (Method.GET | Method.POST, "get-and-post", (req, res) => {
-	res.body.write_all ("Matches GET and POST".data, null);
+	return res.body.write_all ("Matches GET and POST".data, null);
 });
 
 app.rule (Method.GET, "custom-method", (req, res) => {
-	res.body.write_all (req.method.data, null);
+	return res.body.write_all (req.method.data, null);
 });
 
 app.get ("hello/<id>", (req, res, next, context) => {
-	res.body.write_all ("hello %s!".printf (context["id"].get_string ()).data, null);
+	return res.body.write_all ("hello %s!".printf (context["id"].get_string ()).data, null);
 });
 
 app.get ("users/<int:id>(/<action>)?", (req, res, next, context) => {
@@ -150,28 +154,30 @@ app.get ("users/<int:id>(/<action>)?", (req, res, next, context) => {
 
 	writer.put_string (@"id\t=> $id\n");
 	writer.put_string (@"action\t=> $test");
+
+	return true;
 });
 
 app.register_type ("permutations", /abc|acb|bac|bca|cab|cba/);
 
 app.get ("custom-route-type/<permutations:p>", (req, res, next, context) => {
-	res.body.write_all (context["p"].get_string ().data, null);
+	return res.body.write_all (context["p"].get_string ().data, null);
 });
 
 app.get ("trailing-slash/?", (req, res) => {
 	if (req.uri.get_path ().has_suffix ("/")) {
-		res.body.write_all ("It has it!".data, null);
+		return res.body.write_all ("It has it!".data, null);
 	} else {
-		res.body.write_all ("It does not!".data, null);
+		return res.body.write_all ("It does not!".data, null);
 	}
 });
 
 app.regex (Method.GET, /custom-regular-expression/, (req, res) => {
-	res.body.write_all ("This route was matched using a custom regular expression.".data, null);
+	return res.body.write_all ("This route was matched using a custom regular expression.".data, null);
 });
 
 app.matcher (Method.GET, (req) => { return req.uri.get_path () == "/custom-matcher"; }, (req, res) => {
-	res.body.write_all ("This route was matched using a custom matcher.".data, null);
+	return res.body.write_all ("This route was matched using a custom matcher.".data, null);
 });
 
 // scoped routing
@@ -181,11 +187,11 @@ app.scope ("admin", (adm) => {
 		// matches /admin/fun/hack
 		fun.get ("hack", (req, res) => {
 			var time = new DateTime.now_utc ();
-			res.body.write_all ("It's %s around here!\n".printf (time.format ("%H:%M")).data, null);
+			return res.body.write_all ("It's %s around here!\n".printf (time.format ("%H:%M")).data, null);
 		});
 		// matches /admin/fun/heck
 		fun.get ("heck", (req, res) => {
-			res.body.write_all ("Wuzzup!".data, null);
+			return res.body.write_all ("Wuzzup!".data, null);
 		});
 	});
 });
@@ -204,27 +210,27 @@ app.use (subdomain ("api", api.handle));
 
 api.get ("repository/<name>", (req, res, next, context) => {
 	var name = context["name"].get_string ();
-	res.body.write_all (name.data, null);
+	return res.body.write_all (name.data, null);
 });
 
 // delegate all other GET requests to a subrouter
 app.get ("repository/*", api.handle);
 
 app.get ("next", (req, res, next) => {
-	next (req, res);
+	return next (req, res);
 });
 
 app.get ("next", (req, res) => {
-	res.body.write_all ("Matched by the next route in the queue.".data, null);
+	return res.body.write_all ("Matched by the next route in the queue.".data, null);
 });
 
 app.get ("state", (req, res, next, context) => {
 	context["state"] = "I have been passed!";
-	next (req, res);
+	return next (req, res);
 });
 
 app.get ("state", (req, res, next, context) => {
-	res.body.write_all (context["state"].get_string ().data, null);
+	return res.body.write_all (context["state"].get_string ().data, null);
 });
 
 // Ctpl template rendering
@@ -245,7 +251,7 @@ app.get ("ctpl/<foo>/<bar>", (req, res, next, context) => {
 	tpl.push_int ("int", 1);
 
 	res.headers.set_content_type ("text/html", null);
-	tpl.to_stream (res.body);
+	return tpl.to_stream (res.body);
 });
 
 // serve static resource using a path route parameter
@@ -271,8 +277,11 @@ app.get ("static/<path:path>", (req, res, next, context) => {
 			                         null, (obj, result) => {
 			app.invoke (req, res, () => {
 				res.body.splice_async.end (result);
+				return true;
 			});
 		});
+
+		return true;
 	} catch (Error e) {
 		throw new ClientError.NOT_FOUND (e.message);
 	}
@@ -288,13 +297,13 @@ app.get ("server-sent-events", stream_events ((req, send) => {
 
 app.get ("negociate", accept ("application/json", (req, res) => {
 	res.headers.set_content_type ("application/json", null);
-	res.body.write_all ("{\"a\":\"b\"}".data, null);
+	return res.body.write_all ("{\"a\":\"b\"}".data, null);
 })).then (accept ("text/xml", (req, res) => {
 	res.headers.set_content_type ("text/xml", null);
-	res.body.write_all ("<a>b</a>".data, null);
+	return res.body.write_all ("<a>b</a>".data, null);
 })).then ((req, res) => {
 	res.status = global::Soup.Status.NOT_ACCEPTABLE;
-	res.body.write_all ("Supply the 'Accept' header with either 'application/json' or 'text/xml'.".data, null);
+	return res.body.write_all ("Supply the 'Accept' header with either 'application/json' or 'text/xml'.".data, null);
 });
 
 app.status (Soup.Status.NOT_FOUND, (req, res, next, context) => {
@@ -304,7 +313,7 @@ app.status (Soup.Status.NOT_FOUND, (req, res, next, context) => {
 	HashTable<string, string> @params;
 	res.headers.get_content_type (out @params);
 	res.headers.set_content_type ("text/html", @params);
-	template.to_stream (res.body);
+	return template.to_stream (res.body);
 });
 
 new Server ("org.valum.example.App", app.handle).run ({"app", "--all"});

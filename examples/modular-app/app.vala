@@ -21,7 +21,7 @@ using VSGI.HTTP;
 var app = new Router ();
 
 app.get ("", (req, res) => {
-	res.body.write_all (
+	return res.body.write_all (
 	"""
 	<!DOCTYPE html>
 	<html>

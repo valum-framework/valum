@@ -64,7 +64,7 @@ namespace Valum {
 	 *                preceeding 'next' invocation or initialized by the
 	 *                first {@link Valum.MatcherCallback}
 	 */
-	public delegate void HandlerCallback (Request req,
+	public delegate bool HandlerCallback (Request req,
 	                                      Response res,
 	                                      NextCallback next,
 	                                      Context context) throws Informational,
@@ -92,7 +92,7 @@ namespace Valum {
 	 * @param req request for the next handler
 	 * @param res response for the next handler
 	 */
-	public delegate void NextCallback (Request req, Response res) throws Informational,
+	public delegate bool NextCallback (Request req, Response res) throws Informational,
 	                                                                     Success,
 	                                                                     Redirection,
 	                                                                     ClientError,

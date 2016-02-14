@@ -323,7 +323,7 @@ namespace Valum {
 						// keep routing if there are more routes to explore
 						if (!node.next ().is_end ())
 							if (perform_routing (node.next (), req, res, local_context))
-								return;
+								return true;
 						throw new ClientError.NOT_FOUND ("The request URI %s was not found.", req.uri.to_string (true));
 					}, local_context);
 					return true;
@@ -344,9 +344,9 @@ namespace Valum {
 		 * @param res   response for the context
 		 * @param next  callback to be invoked in the routing context
 		 */
-		public void invoke (Request req, Response res, owned NextCallback next) {
+		public bool invoke (Request req, Response res, owned NextCallback next) {
 			try {
-				next (req, res);
+				return next (req, res);
 			} catch (Error err) {
 				// replace any other error by a 500 status
 				var status_code = (err is Informational ||
@@ -365,13 +365,12 @@ namespace Valum {
 					context["message"] = err.message;
 					try {
 						if (this.perform_routing (this.status_handlers[status_code].get_begin_iter (), req, res, context))
-							return; // handled!
+							return true; // handled!
 					} catch (Error err) {
 						// feed the error back in the invocation
-						invoke (req, res, () => {
+						return invoke (req, res, () => {
 							throw err;
 						});
-						return;
 					}
 				}
 
@@ -457,6 +456,8 @@ namespace Valum {
 				} catch (IOError io_err) {
 					warning (io_err.message);
 				}
+
+				return true;
 			}
 		}
 
@@ -472,18 +473,18 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public void handle (Request req, Response res) {
+		public bool handle (Request req, Response res) {
 			// sane initialization
 			if (req.http_version == Soup.HTTPVersion.@1_1)
 				res.headers.set_encoding (Soup.Encoding.CHUNKED);
 
 			// initial invocation
-			this.invoke (req, res, () => {
+			return this.invoke (req, res, () => {
 				var context = new Context ();
 
 				// ensure at least one route has been declared with that method
 				if (this.perform_routing (this.routes.get_begin_iter (), req, res, context))
-					return; // something matched
+					return true; // something matched
 
 				// find routes from other methods matching this request
 				var req_method = Method.from_string (req.method);

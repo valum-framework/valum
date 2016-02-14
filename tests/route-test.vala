@@ -22,7 +22,7 @@ using VSGI.Mock;
  * @since 0.1
  */
 public void test_route () {
-	var route   = new MatcherRoute (Method.GET, (req) => { return true; }, (req, res) => {});
+	var route   = new MatcherRoute (Method.GET, (req) => { return true; }, (req, res) => { return true; });
 	var req     = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var context = new Context ();
 
@@ -33,7 +33,7 @@ public void test_route () {
  * @since 0.1
  */
 public void test_route_from_rule () {
-	var route   = new RuleRoute (Method.GET, "/<int:id>", null, (req, res) => {});
+	var route   = new RuleRoute (Method.GET, "/<int:id>", null, (req, res) => { return true; });
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var context = new Context ();
 
@@ -49,7 +49,7 @@ public void test_route_from_rule () {
  * @since 0.1
  */
 public void test_route_from_rule_without_captures () {
-	var route   = new RuleRoute (Method.GET, "/", null, (req, res) => {});
+	var route   = new RuleRoute (Method.GET, "/", null, (req, res) => { return true; });
 	var req     = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var context = new Context ();
 
@@ -65,7 +65,7 @@ public void test_route_from_rule_without_captures () {
 public void test_route_from_rule_undefined_type () {
 	try {
 		var route  = new RuleRoute (Method.GET, "/<uint:unknown_type>", new HashTable<string, Regex> (str_hash,
-					str_equal), (req, res) => {});
+					str_equal), (req, res) => { return true; });
 	} catch (RegexError err) {
 		return;
 	}
@@ -76,7 +76,7 @@ public void test_route_from_rule_undefined_type () {
  * @since 0.1
  */
 public void test_route_from_regex () {
-	var route   = new RegexRoute (Method.GET, /\/(?<id>\d+)/, (req, res) => {});
+	var route   = new RegexRoute (Method.GET, /\/(?<id>\d+)/, (req, res) => { return true; });
 	var req     = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var context = new Context ();
 
@@ -92,7 +92,7 @@ public void test_route_from_regex () {
  * @since 0.2
  */
 public void test_route_from_regex_multiple_captures () {
-	var route   = new RegexRoute (Method.GET, /\/(?<action>\w+)\/(?<id>\d+)/, (req, res) => {});
+	var route   = new RegexRoute (Method.GET, /\/(?<action>\w+)\/(?<id>\d+)/, (req, res) => { return true; });
 	var req     = new Request.with_uri (new Soup.URI ("http://localhost/user/5"));
 	var context = new Context ();
 
@@ -109,7 +109,7 @@ public void test_route_from_regex_multiple_captures () {
  * @since 0.1
  */
 public void test_route_from_regex_without_captures () {
-	var route   = new RegexRoute (Method.GET, /\/.*/, (req, res) => {});
+	var route   = new RegexRoute (Method.GET, /\/.*/, (req, res) => { return true; });
 	var req     = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var context = new Context ();
 
@@ -123,7 +123,7 @@ public void test_route_from_regex_without_captures () {
  * @since 0.1
  */
 public void test_route_match () {
-	var route   = new RuleRoute (Method.GET, "/<int:id>", null, (req, res) => {});
+	var route   = new RuleRoute (Method.GET, "/<int:id>", null, (req, res) => { return true; });
 	var req     = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var context = new Context ();
 
@@ -140,7 +140,7 @@ public void test_route_match () {
 public void test_route_match_not_matching () {
 	var types   = new HashTable<string, Regex> (str_hash, str_equal);
 	types["int"] = /\d+/;
-	var route   = new RuleRoute (Method.GET, "/<int:id>", types, (req, res) => {});
+	var route   = new RuleRoute (Method.GET, "/<int:id>", types, (req, res) => { return true; });
 	var req     = new Request.with_uri (new Soup.URI ("http://localhost/home"));
 	var context = new Context ();
 
@@ -155,6 +155,7 @@ public void test_route_fire () {
 	var setted = false;
 	var route = new RuleRoute (Method.GET, "/<int:id>", null, (req, res) => {
 		setted = true;
+		return true;
 	});
 
 	var req     = new Request.with_uri (new Soup.URI ("http://localhost/home"));
@@ -163,7 +164,7 @@ public void test_route_fire () {
 
 	assert (setted == false);
 
-	route.fire (req, res, () => {}, null);
+	route.fire (req, res, () => { return true; }, null);
 
 	assert (setted);
 }

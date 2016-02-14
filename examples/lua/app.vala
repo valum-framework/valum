@@ -29,7 +29,7 @@ app.get ("", (req, res) => {
 		require "markdown"
 		return markdown('## Hello from lua.eval!')""");
 
-	res.body.write_all (vm.to_string (-1).data, null);
+	return res.body.write_all (vm.to_string (-1).data, null);
 });
 
 new Server ("org.valum.example.Lua", app.handle).run ({"app", "--all"});

@@ -39,7 +39,7 @@ app.get ("", (req, res) => {
 
 			var main = parser.get_root ().get_object ().get_object_member ("main");
 
-			res.body.write_all ("""
+			return res.body.write_all ("""
 			<h1>Weather in Montreal</h1>
 			<dl>
 			  <dt>Humidity</dt><dd>%s</dd>
@@ -55,6 +55,7 @@ app.get ("", (req, res) => {
 						main.get_string_member ("temp_min")).data, null);
 		});
 	});
+	return true;
 });
 
 new Server ("org.valum.example.WeatherAPI", app.handle).run ({"app", "--all"});
