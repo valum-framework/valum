@@ -117,7 +117,7 @@ namespace VSGI {
 						this.write_head (out bytes_written);
 					}
 				} catch (IOError err) {
-					warning ("could not write the head in the connection stream");
+					warning ("could not write the head in the connection stream: %s", err.message);
 				}
 
 				return this.request.connection.output_stream;
@@ -235,5 +235,21 @@ namespace VSGI {
 			return this.head_written;
 		}
 #endif
+
+		/**
+		 * Write the head before disposing references to other objects.
+		 */
+		public override void dispose () {
+			try {
+				if (!head_written) {
+					size_t bytes_written;
+					write_head (out bytes_written);
+				}
+			} catch (IOError err) {
+				warning ("could not write the head in the connection stream: %s", err.message);
+			} finally {
+				base.dispose ();
+			}
+		}
 	}
 }

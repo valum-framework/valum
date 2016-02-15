@@ -467,16 +467,9 @@ namespace Valum {
 		 * raise a {@link Valum.ClientError.METHOD_NOT_ALLOWED}, otherwise
 		 * raise a {@link Valum.ClientError.NOT_FOUND} exception.
 		 *
-		 * The response is initialized with 'chunked' transfer encoding since
-		 * most processing are generally based on stream.
-		 *
 		 * @since 0.1
 		 */
 		public void handle (Request req, Response res) {
-			// sane initialization
-			if (req.http_version == Soup.HTTPVersion.@1_1)
-				res.headers.set_encoding (Soup.Encoding.CHUNKED);
-
 			// initial invocation
 			this.invoke (req, res, () => {
 				var context = new Context ();

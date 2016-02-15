@@ -42,23 +42,8 @@ line and headers synchronously in the connection stream before returning an
 
 .. _GLib.OutputStream: http://valadoc.org/#!api=gio-2.0/GLib.OutputStream
 
-.. warning::
-
-    The :doc:`response` body must be accessed at least once during the
-    processing to ensure that the headers are written and filters applied.
-
-Some VSGI implementations rely on stream filtering to produce proper responses
-(chunked or gzipped ones) and these are applied when the body is accessed for
-the first time.
-
-::
-
-    new Server ("org.vsgi.App", (req, res) => {
-        res.status = 200;
-        res.headers.append ("Transfer-Encoding", "chunked");
-        // chunked encoding will be applied
-        res.body.write_all ("Hello world!".data, null);
-    });
+In case the body is not accessed, the head is written synchronously on disposal
+of the :doc:`response` object.
 
 Asynchronous processing
 -----------------------

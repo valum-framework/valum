@@ -72,7 +72,7 @@ namespace VSGI {
 		 * Once dispatched, the {@link Response.head_written} property is
 		 * expected to be true unless its reference still held somewhere else.
 		 */
-		protected void dispatch (Request req, Response res) ensures (res.ref_count > 1 || res.head_written) {
+		protected void dispatch (Request req, Response res) {
 			_application (req, res);
 		}
 	}
