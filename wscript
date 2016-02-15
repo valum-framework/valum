@@ -8,7 +8,6 @@ API_VERSION='0.2'
 
 def options(opt):
     opt.load('compiler_c')
-    opt.add_option('--enable-gcov', action='store_true', default=False, help='enable coverage with gcov')
     opt.add_option('--enable-examples', action='store_true', default=False, help='build examples')
     opt.recurse('tests')
 
@@ -16,7 +15,6 @@ def configure(conf):
     conf.load('compiler_c vala')
 
     conf.check_vala(min_version=(0,26,0))
-    conf.check(lib='gcov', mandatory=False, uselib_store='GCOV', args='--cflags --libs')
 
     conf.recurse(['src', 'docs', 'tests'])
 
@@ -26,10 +24,6 @@ def configure(conf):
                                       '-Wno-unused-but-set-variable',
                                       '-Wno-unused-function'])
     conf.env.append_unique('VALAFLAGS', ['--enable-experimental', '--enable-deprecated', '--fatal-warnings'])
-
-    if conf.options.enable_gcov:
-        conf.env.append_unique('CFLAGS', ['-fprofile-arcs', '-ftest-coverage'])
-        conf.env.append_unique('VALAFLAGS', ['--debug'])
 
     # configure examples
     if conf.options.enable_examples:

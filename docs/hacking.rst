@@ -98,7 +98,7 @@ during the configuration.
 
 .. code-block:: bash
 
-    ./waf configure --enable-gcov
+    ./waf configure CFLAGS='-fprovide-arcs -ftest-coverage' VALAFLAGS='--debug'
     ./waf build
     ./build/tests/tests
 
