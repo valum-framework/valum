@@ -19,6 +19,14 @@ using Valum;
 using Valum.ServerSentEvents;
 using VSGI.HTTP;
 
+public async void respond_async (VSGI.Request req, VSGI.Response res) throws Error {
+	size_t bytes_written;
+	var body    = yield res.get_body_async (Priority.DEFAULT, null, out bytes_written);
+	yield body.write_all_async ("Hello world!".data, Priority.DEFAULT, null, out bytes_written);
+	yield body.close_async ();
+}
+
+
 var app = new Router ();
 
 app.use ((req, res, next) => {
@@ -32,6 +40,10 @@ app.use ((req, res, next) => {
 app.get ("", (req, res, next) => {
 	var template = new View.from_resources ("/templates/home.html");
 	template.to_stream (res.body);
+});
+
+app.get ("async", (req, res) => {
+	respond_async (req, res);
 });
 
 app.get ("gzip", (req, res, next) => {

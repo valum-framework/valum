@@ -124,6 +124,28 @@ namespace VSGI {
 			}
 		}
 
+#if GIO_2_44
+		/**
+		 * Obtain the body stream asynchronously.
+		 *
+		 * Unlike the {@link VSGI.Request.body} property, this allow you to
+		 * asynchronously obtain the body when the head has been written in
+		 * a single call.
+		 *
+		 * @since 0.3
+		 */
+		public virtual async OutputStream get_body_async (int          priority    = GLib.Priority.DEFAULT,
+		                                                  Cancellable? cancellable = null,
+		                                                  out size_t   bytes_written) throws Error {
+			if (head_written) {
+				bytes_written = 0;
+			} else {
+				yield write_head_async (priority, cancellable, out bytes_written);
+			}
+			return body;
+		}
+#endif
+
 		/**
 		 * Produce the head of this response including the status line, the
 		 * headers and the newline preceeding the body as it would be written in
