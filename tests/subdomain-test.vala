@@ -26,9 +26,13 @@ public void test_subdomain () {
 	var req   = new Request.with_uri (new Soup.URI ("http://127.0.0.1/"));
 	var res   = new Response (req);
 
-	subdomain ("api", () => {
+	try {
+		subdomain ("api", () => {
+			assert_not_reached ();
+		}, SubdomainFlags.NONE) (req, res, () => {}, new Context ());
+	} catch (Error err) {
 		assert_not_reached ();
-	}, SubdomainFlags.NONE) (req, res, () => {}, new Context ());
+	}
 }
 
 /**
@@ -39,18 +43,26 @@ public void test_subdomain_joker () {
 		var req   = new Request.with_uri (new Soup.URI ("http://api.example.com/"));
 		var res   = new Response (req);
 
-		subdomain("*", () => {}) (req, res, () => {
+		try {
+			subdomain("*", () => {}) (req, res, () => {
+				assert_not_reached ();
+			}, new Context ());
+		} catch (Error err) {
 			assert_not_reached ();
-		}, new Context ());
+		}
 	}
 
 	{
 		var req   = new Request.with_uri (new Soup.URI ("http://example.com/"));
 		var res   = new Response (req);
 
-		subdomain("*", () => {
+		try {
+			subdomain("*", () => {
+				assert_not_reached ();
+			}) (req, res, () => {}, new Context ());
+		} catch (Error err) {
 			assert_not_reached ();
-		}) (req, res, () => {}, new Context ());
+		}
 	}
 }
 
@@ -61,10 +73,14 @@ public void test_subdomain_strict () {
 	var req   = new Request.with_uri (new Soup.URI ("http://dev.api.example.com/"));
 	var res   = new Response (req);
 
-	subdomain ("api", () => {}) (req, res, () => { assert_not_reached (); }, new Context ());
-	subdomain ("dev.api", () => {}) (req, res, () => { assert_not_reached (); }, new Context ());
-	subdomain ("api", () => { assert_not_reached (); }, SubdomainFlags.STRICT) (req, res, () => {}, new Context ());
-	subdomain ("dev.api.example.com", () => {}, SubdomainFlags.STRICT, 0) (req, res, () => { assert_not_reached (); }, new Context ());
+	try {
+		subdomain ("api", () => {}) (req, res, () => { assert_not_reached (); }, new Context ());
+		subdomain ("dev.api", () => {}) (req, res, () => { assert_not_reached (); }, new Context ());
+		subdomain ("api", () => { assert_not_reached (); }, SubdomainFlags.STRICT) (req, res, () => {}, new Context ());
+		subdomain ("dev.api.example.com", () => {}, SubdomainFlags.STRICT, 0) (req, res, () => { assert_not_reached (); }, new Context ());
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 }
 
 /**

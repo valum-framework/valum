@@ -13,5 +13,6 @@ def build(bld):
         target       = 'tests',
         source       = bld.path.ant_glob('*.vala') + ['tests.gresource.xml'],
         use          = 'valum',
-        vapi_dirs    = '../src/vsgi-fastcgi',
         install_path = None)
+    from waflib.Tools import waf_unit_test
+    bld.add_post_fun(waf_unit_test.summary)

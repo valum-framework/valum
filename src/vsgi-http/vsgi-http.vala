@@ -271,7 +271,6 @@ namespace VSGI.HTTP {
 				options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 () : 0;
 #else
 			var port            = 3003;
-			var file_descriptor = 0;
 #endif
 
 #if GIO_2_40
@@ -367,14 +366,14 @@ namespace VSGI.HTTP {
 			foreach (var uri in this.server.get_uris ()) {
 				command_line.print ("listening on %s://%s:%u\n", uri.scheme, uri.host, uri.port);
 			}
+#else
+			this.server.run_async ();
+
+			command_line.print ("listening on http://0.0.0.0:%u\n", this.server.port);
+#endif
 
 			// keep the process alive
 			this.hold ();
-#else
-			command_line.print ("listening on http://0.0.0.0:%u\n", this.server.port);
-
-			this.server.run ();
-#endif
 
 			return 0;
 		}

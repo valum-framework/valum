@@ -278,7 +278,7 @@ namespace VSGI.FastCGI {
 					// dispatch the app in the main loop
 					MainContext.@default ().invoke (() => {
 						dispatch (req, res);
-						return Source.REMOVE;
+						return false;
 					});
 				} while (true);
 
