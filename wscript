@@ -17,7 +17,6 @@ def configure(conf):
 
     conf.check_vala(min_version=(0,26,0))
     conf.check(lib='gcov', mandatory=False, uselib_store='GCOV', args='--cflags --libs')
-    conf.find_program('valadoc', mandatory=False)
 
     conf.recurse(['src', 'docs', 'tests'])
 
@@ -40,20 +39,6 @@ def configure(conf):
 def build(bld):
     bld.load('compiler_c vala')
     bld.recurse(['src', 'data', 'docs', 'tests'])
-
-    # generate the api documentation
-    if bld.env.VALADOC:
-        bld.load('valadoc')
-        bld(
-            features        = 'valadoc',
-            packages        = ['glib-2.0', 'gio-2.0', 'gio-unix-2.0', 'libsoup-2.4', 'fcgi'],
-            files           = bld.path.ant_glob('src/**/*.vala'),
-            vala_defines    = 'GLIB_2_32',
-            package_name    = 'valum',
-            package_version = VERSION,
-            vapi_dirs       = 'src/vsgi-fastcgi',
-            output_dir      = 'apidocs',
-            force           = True)
 
     # build examples
     if bld.env.ENABLE_EXAMPLES:
