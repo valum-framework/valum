@@ -199,10 +199,12 @@ namespace Valum.Static {
 	}
 
 	/**
-	 * Serve files from the global resources or a provided {@link GLib.Resource}
-	 * bundle.
+	 * Serve files from the provided {@link GLib.Resource} bundle.
 	 *
 	 * The 'ETag' header is obtained from a SHA1 checksum.
+	 *
+	 * To serve the global bundle, use {@link GLib.File.new_for_uri} along with
+	 * the 'resource://' scheme with {@link Valum.Static.serve_from_file}.
 	 *
 	 * [[http://valadoc.org/#!api=gio-2.0/GLib.Resource]]
 	 *
@@ -212,15 +214,15 @@ namespace Valum.Static {
 	 *
 	 * @since 0.3
 	 *
+	 * @param resource    resource bundle to serve
 	 * @param prefix      prefix from which resources are resolved in the
 	 *                    resource bundle; a valid prefix begin and start with a
 	 *                    '/' character
 	 * @param serve_flags flags for serving the resources
-	 * @param resourcea   resource bundle to serve or the global one if null
 	 */
-	public HandlerCallback serve_from_resources (string prefix,
-	                                             ServeFlags serve_flags = ServeFlags.NONE,
-	                                             Resource? resource     = null) {
+	public HandlerCallback serve_from_resource (Resource   resource,
+	                                            string     prefix,
+	                                            ServeFlags serve_flags = ServeFlags.NONE) {
 		// cache for already computed 'ETag' values
 		var etag_cache = new HashTable <string, string> (str_hash, str_equal);
 
@@ -229,9 +231,7 @@ namespace Valum.Static {
 
 			Bytes lookup;
 			try {
-				lookup = resource == null ?
-					resources_lookup_data (path, ResourceLookupFlags.NONE) :
-					resource.lookup_data (path, ResourceLookupFlags.NONE);
+				lookup = resource.lookup_data (path, ResourceLookupFlags.NONE);
 			} catch (Error err) {
 				next (req, res);
 				return;
@@ -261,9 +261,7 @@ namespace Valum.Static {
 			if (uncertain)
 				warning ("could not infer content type of file '%s' with certainty", path);
 
-			var file = resource == null ?
-				resources_open_stream (path, ResourceLookupFlags.NONE) :
-				resource.open_stream (path, ResourceLookupFlags.NONE);
+			var file = resource.open_stream (path, ResourceLookupFlags.NONE);
 
 			// transfer the file
 			if (ServeFlags.ASYNC in serve_flags) {
