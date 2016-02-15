@@ -84,11 +84,11 @@ namespace Valum.ServerSentEvents {
 	 */
 	public HandlerCallback stream_events (owned EventStreamCallback context) {
 		return (req, res, next, _context) => {
+			res.headers.set_encoding (req.http_version == Soup.HTTPVersion.@1_0 ? Soup.Encoding.EOF :
+			                                                                      Soup.Encoding.CHUNKED);
 			HashTable<string, string> @params;
 			res.headers.get_content_type (out @params);
 			res.headers.set_content_type ("text/event-stream", @params);
-			res.headers.set_encoding (req.http_version == Soup.HTTPVersion.@1_0 ? Soup.Encoding.EOF :
-			                                                                      Soup.Encoding.CHUNKED);
 
 			try {
 				// write headers right away
