@@ -354,7 +354,6 @@ public static void test_router_success_created () {
 
 	assert (Soup.Status.CREATED == response.status);
 	assert ("/document/5" == response.headers.get_one ("Location"));
-	assert (response.head_written);
 }
 
 /**
@@ -393,7 +392,6 @@ public static void test_router_redirection () {
 
 	assert (response.status == Soup.Status.MOVED_TEMPORARILY);
 	assert ("http://example.com" == response.headers.get_one ("Location"));
-	assert (response.head_written);
 }
 
 /**
@@ -417,7 +415,6 @@ public static void test_router_client_error_method_not_allowed () {
 
 	assert (Soup.Status.METHOD_NOT_ALLOWED == response.status);
 	assert ("POST" == response.headers.get_one ("Allow"));
-	assert (response.head_written);
 }
 
 /**
@@ -437,7 +434,6 @@ public static void test_router_client_error_upgrade_required () {
 
 	assert (426 == response.status);
 	assert ("HTTP/1.1" == response.headers.get_one ("Upgrade"));
-	assert (response.head_written);
 }
 
 /**
@@ -459,7 +455,6 @@ public static void test_router_server_error () {
 	HashTable<string, string> @params;
 
 	assert (response.status == Soup.Status.INTERNAL_SERVER_ERROR);
-	assert (response.head_written);
 	assert ("text/plain" == response.headers.get_content_type (out @params));
 	assert ("charset" in @params);
 	assert ("utf-8" == @params["charset"]);
@@ -506,7 +501,6 @@ public static void test_router_method_not_allowed () {
 
 	assert (response.status == 405);
 	assert ("GET, PUT" == response.headers.get_one ("Allow"));
-	assert (response.head_written);
 }
 
 /**
@@ -538,7 +532,6 @@ public static void test_router_method_not_allowed_excludes_request_method () {
 
 	assert (response.status == 405);
 	assert ("GET" == response.headers.get_one ("Allow"));
-	assert (response.head_written);
 }
 
 /**
@@ -553,7 +546,6 @@ public static void test_router_not_found () {
 	router.handle (request, response);
 
 	assert (Soup.Status.NOT_FOUND == response.status);
-	assert (response.head_written);
 }
 
 
