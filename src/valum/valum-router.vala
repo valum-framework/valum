@@ -451,12 +451,6 @@ namespace Valum {
 						}
 						break;
 				}
-
-				try {
-					res.body.close ();
-				} catch (IOError io_err) {
-					warning (io_err.message);
-				}
 			}
 		}
 
