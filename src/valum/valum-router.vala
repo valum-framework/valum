@@ -492,7 +492,11 @@ namespace Valum {
 						allowedv += flags_value.value_nick == "only-get" ? "GET" : flags_value.value_nick.up ();
 					} while (allowed > 0);
 
-					throw new ClientError.METHOD_NOT_ALLOWED (string.joinv (", ", allowedv));
+					if (req.method == Request.OPTIONS) {
+						res.headers.append ("Accept", string.joinv (", ", allowedv));
+					} else {
+						throw new ClientError.METHOD_NOT_ALLOWED (string.joinv (", ", allowedv));
+					}
 				}
 
 				throw new ClientError.NOT_FOUND ("The request URI %s was not found.", req.uri.to_string (true));
