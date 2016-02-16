@@ -32,12 +32,20 @@ The installation process is fully documented in the
 Features
 --------
 
- - asynchronous processing based on RAII and automated reference counting that
-   just doesn't get in your way
- - powerful routing mechanism with scope, typed parameters and
-   low-level utilities to write expressive web services
- - deploy anywhere with libsoup-2.4 built-in HTTP server, CGI, [FastCGI](http://www.fastcgi.com/drupal/) or SCGI
- - extensive documentation available at [valum-framework.readthedocs.org](http://valum-framework.readthedocs.org/en/latest)
+ - streaming-first API for minimal overhead with support for async I/O through [GIO](https://developer.gnome.org/gio/stable/)
+ - powerful routing mechanism to write expressive web services:
+    - helpers and flags (i.e. `Method.GET | Method.POST`) for common HTTP methods
+    - scoping
+    - rule system supporting typed parameters, group, optional and wildcard
+    - regular expression with capture extraction
+    - automatic `HEAD` and `OPTIONS`
+    - subrouting
+    - status codes through error domains (i.e. `throw new Redirection.PERMANENT ("http://example.com/");`
+    - filtering by composition
+    - context to hold states
+ - middlewares for subdomains, server-sent events, content negotiation and much more
+ - written upon VSGI so that you can deploy using libsoup-2.4 built-in HTTP server, CGI, [FastCGI](http://www.fastcgi.com/drupal/) or [SCGI](https://python.ca/scgi/)
+ - extensively documented at [docs.valum-framework.org](http://docs.valum-framework.org/en/latest/)
 
 
 Contributing
