@@ -53,12 +53,12 @@ namespace Valum {
          *
 		 * @since 0.0.1
 		 */
-		public void fire (Request req, Response res, NextCallback next, Context ctx) throws Success,
+		public bool fire (Request req, Response res, NextCallback next, Context ctx) throws Success,
 		                                                                                    Redirection,
 		                                                                                    ClientError,
 		                                                                                    ServerError,
 																							Error {
-			_fire (req, res, next, ctx);
+			return _fire (req, res, next, ctx);
 		}
 
 		/**

@@ -319,14 +319,14 @@ namespace Valum {
 				var req_method = Method.from_string (req.method);
 				var local_context = new Context.with_parent (context);
 				if (req_method in node.@get ().method && node.@get ().match (req, local_context)) {
-					node.@get ().fire (req, res, (req, res) => {
+					return node.@get ().fire (req, res, (req, res) => {
 						// keep routing if there are more routes to explore
-						if (!node.next ().is_end ())
-							if (perform_routing (node.next (), req, res, local_context))
-								return true;
-						throw new ClientError.NOT_FOUND ("The request URI %s was not found.", req.uri.to_string (true));
+						if (node.next ().is_end ()) {
+							return false;
+						} else {
+							return perform_routing (node.next (), req, res, local_context);
+						}
 					}, local_context);
-					return true;
 				}
 			}
 			return false;
@@ -488,6 +488,11 @@ namespace Valum {
 
 				// find routes from other methods matching this request
 				var req_method = Method.from_string (req.method);
+
+				// prevent head w/o get
+				if (req_method in Method.GET)
+					req_method |= Method.GET;
+
 				Method allowed = 0;
 				this.routes.@foreach ((route) => {
 					if (route.match (req, new Context ())) {
