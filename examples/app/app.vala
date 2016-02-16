@@ -43,7 +43,7 @@ app.get ("", (req, res, next) => {
 });
 
 app.get ("async", (req, res) => {
-	respond_async (req, res);
+	respond_async.begin (req, res);
 });
 
 app.get ("gzip", (req, res, next) => {
@@ -293,7 +293,11 @@ app.get ("static/<path:path>", (req, res, next, context) => {
 app.get ("server-sent-events", stream_events ((req, send) => {
 	send (null, "now!");
 	GLib.Timeout.add_seconds (5, () => {
-		send (null, "later!");
+		try {
+			send (null, "later!");
+		} catch (Error err) {
+			warning (err.message);
+		}
 		return false;
 	});
 }));
