@@ -480,7 +480,7 @@ namespace Valum {
 					req_method |= Method.GET;
 
 				// prevent the meta
-				req_method |= Method.PROVIDED;
+				req_method |= Method.META;
 
 				Method allowed = 0;
 				this.routes.@foreach ((route) => {

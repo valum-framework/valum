@@ -55,7 +55,12 @@ namespace Valum {
 		 * Indicate that the method literally provided by the {@link Valum.Route}
 		 * object which declared it.
 		 */
-		PROVIDED;
+		PROVIDED,
+
+		/**
+		 * Mask for all meta flags.
+		 */
+		META = PROVIDED;
 
 		/**
 		 * @since 0.3
