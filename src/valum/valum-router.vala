@@ -189,7 +189,7 @@ namespace Valum {
 			pattern.append (rule);
 
 			try {
-				return this.route (new RuleRoute (method, pattern.str, types, (owned) cb));
+				return this.route (new RuleRoute (method | Method.PROVIDED, pattern.str, types, (owned) cb));
 			} catch (RegexError err) {
 				error (err.message);
 			}
@@ -230,7 +230,7 @@ namespace Valum {
 			pattern.append ("$");
 
 			try {
-				return route (new RegexRoute (method, new Regex (pattern.str, RegexCompileFlags.OPTIMIZE), (owned) cb));
+				return route (new RegexRoute (method | Method.PROVIDED, new Regex (pattern.str, RegexCompileFlags.OPTIMIZE), (owned) cb));
 			} catch (RegexError err) {
 				error (err.message);
 			}
@@ -246,7 +246,7 @@ namespace Valum {
 		 * @param cb      callback used to process the pair of request and response.
 		 */
 		public Route matcher (Method method, owned MatcherCallback matcher, owned HandlerCallback cb) {
-			return this.route (new MatcherRoute (method, (owned) matcher, (owned) cb));
+			return this.route (new MatcherRoute (method | Method.PROVIDED, (owned) matcher, (owned) cb));
 		}
 
 		/**
@@ -474,9 +474,17 @@ namespace Valum {
 
 				// find routes from other methods matching this request
 				var req_method = Method.from_string (req.method);
+
+				// prevent head w/o get
+				if (req_method in Method.GET)
+					req_method |= Method.GET;
+
+				// prevent the meta
+				req_method |= Method.PROVIDED;
+
 				Method allowed = 0;
 				this.routes.@foreach ((route) => {
-					if (route.match (req, new Context ())) {
+					if (Method.PROVIDED in route.method && route.match (req, new Context ())) {
 						allowed |= route.method & ~req_method;
 					}
 				});

@@ -49,7 +49,13 @@ namespace Valum {
 		/**
 		 *
 		 */
-		ANY = ALL | OTHER;
+		ANY = ALL | OTHER,
+
+		/**
+		 * Indicate that the method literally provided by the {@link Valum.Route}
+		 * object which declared it.
+		 */
+		PROVIDED;
 
 		/**
 		 * @since 0.3
