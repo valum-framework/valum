@@ -26,6 +26,6 @@ public class UserRouter : Router {
 
 	public void view (Request req, Response res, NextCallback next, Context ctx) throws Error {
 		res.headers.set_content_type ("text/plain", null);
-		res.body.write_all ("Hello, user %s!".printf (ctx["id"].get_string ()).data, null);
+		res.expand_utf8 ("Hello, user %s!".printf (ctx["id"].get_string ()), null);
 	}
 }

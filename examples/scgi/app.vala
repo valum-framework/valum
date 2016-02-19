@@ -21,7 +21,7 @@ using VSGI.SCGI;
 var app = new Router ();
 
 app.get ("", (req, res) => {
-	res.body.write_all ("Hello world!".data, null);
+	res.expand_utf8 ("Hello world!", null);
 });
 
 app.post ("", (req, res) => {
@@ -29,7 +29,7 @@ app.post ("", (req, res) => {
 });
 
 app.get ("async", (req, res) => {
-	res.body.write_all_async.begin ("Hello world!".data, Priority.DEFAULT, null);
+	res.expand_utf8_async.begin ("Hello world!", Priority.DEFAULT, null);
 });
 
 new Server ("org.valum.example.SCGI", app.handle).run ({"app"});
