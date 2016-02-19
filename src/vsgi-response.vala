@@ -55,7 +55,7 @@ namespace VSGI {
 		 *
 		 * @since 0.2
 		 */
-		public bool head_written { get; protected set; default = false; }
+		public virtual bool head_written { get; protected set; default = false; }
 
 		/**
 		 * Response body.

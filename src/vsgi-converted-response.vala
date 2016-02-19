@@ -45,7 +45,7 @@ namespace VSGI {
 		 * @since 0.2
 		 */
 		public ConvertedResponse (Response base_response, Converter converter) {
-			Object (base_response: base_response, converter: converter);
+			Object (request: base_response.request, base_response: base_response, converter: converter);
 		}
 	}
 }
