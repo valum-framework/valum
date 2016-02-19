@@ -27,38 +27,6 @@ using Soup;
 [CCode (gir_namespace = "VSGI.FastCGI", gir_version = "0.2")]
 namespace VSGI.FastCGI {
 
-	/**
-	 * Process the error on the stream.
-	 */
-	private inline void process_error (global::FastCGI.Stream stream) throws IOError {
-		var error = new GLib.Error (IOError.quark (),
-		                            FileUtils.error_from_errno (stream.get_error ()), // TODO: fix and use IOError.from_errno
-		                            "%s",
-		                            strerror (stream.get_error ()));
-
-		// FastCGI error
-		if (stream.get_error () < 0) {
-			switch (stream.get_error ()) {
-				case global::FastCGI.CALL_SEQ_ERROR:
-					error.message = "FCXG: Call seq error";
-					break;
-				case global::FastCGI.PARAMS_ERROR:
-					error.message = "FCGX: Params error";
-					break;
-				case global::FastCGI.PROTOCOL_ERROR:
-					error.message = "FCGX: Protocol error";
-					break;
-				case global::FastCGI.UNSUPPORTED_VERSION:
-					error.message = "FCGX: Unsupported version";
-					break;
-			}
-		}
-
-		stream.clear_error ();
-
-		throw (IOError) error;
-	}
-
 	private class StreamInputStream : UnixInputStream {
 
 		public unowned global::FastCGI.Stream @in { construct; get; }
@@ -70,19 +38,16 @@ namespace VSGI.FastCGI {
 		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
 			var read = this.in.read (buffer);
 
-			if (read == GLib.FileStream.EOF) {
-				process_error (this.in);
-			}
+			if (read == GLib.FileStream.EOF)
+				return -1;
 
 			return read;
 		}
 
 		public override bool close (Cancellable? cancellable = null) throws IOError {
-			if (this.in.close () == GLib.FileStream.EOF) {
-				process_error (this.in);
-			}
-
-			return this.in.is_closed;
+			if (in.close () == GLib.FileStream.EOF)
+				return false;
+			return in.is_closed;
 		}
 	}
 
@@ -99,12 +64,10 @@ namespace VSGI.FastCGI {
 		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
 			var written = this.out.put_str (buffer);
 
-			if (written == GLib.FileStream.EOF) {
-				message ("err write");
-				process_error (this.out);
-			}
+			if (written == GLib.FileStream.EOF)
+				return -1;
 
-			return buffer.length;
+			return written;
 		}
 
 		/**
@@ -118,13 +81,11 @@ namespace VSGI.FastCGI {
 		 * The 'err' stream is closed before 'out' to avoid an extra write.
 		 */
 		public override bool close (Cancellable? cancellable = null) throws IOError {
-			if (this.err.close () == GLib.FileStream.EOF) {
-				process_error (this.err);
-			}
+			if (this.err.close () == GLib.FileStream.EOF)
+				return false;
 
-			if (this.out.close () == GLib.FileStream.EOF) {
-				process_error (this.out);
-			}
+			if (this.out.close () == GLib.FileStream.EOF)
+				return false;
 
 			return this.err.is_closed && this.out.is_closed;
 		}
