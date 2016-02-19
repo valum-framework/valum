@@ -56,12 +56,12 @@ namespace VSGI {
 			get { return base_request.body; }
 		}
 
-		public override uint8[] flatten (Cancellable? cancellable = null) {
+		public override uint8[] flatten (Cancellable? cancellable = null) throws IOError {
 			return base_request.flatten (cancellable);
 		}
 
 		public override async uint8[] flatten_async (int          priority    = GLib.Priority.DEFAULT,
-													 Cancellable? cancellable = null) {
+													 Cancellable? cancellable = null) throws IOError {
 			return yield base_request.flatten_async (priority, cancellable);
 		}
 	}
