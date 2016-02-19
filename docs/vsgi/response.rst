@@ -82,7 +82,7 @@ their respective asynchronous versions are provided.
 
 It will automatically set the ``Content-Length`` header to the size of the
 provided buffer, write the response head and pipe the buffer into the body
-stream.
+stream and close it properly.
 
 ::
 

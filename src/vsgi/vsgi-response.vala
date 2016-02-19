@@ -245,7 +245,8 @@ namespace VSGI {
 			headers.set_content_length (buffer.length);
 			size_t bytes_written;
 			return write_head (out bytes_written, cancellable) &&
-			       body.write_all (buffer, out bytes_written, cancellable);
+			       body.write_all (buffer, out bytes_written, cancellable) &&
+			       body.close (cancellable);
 		}
 
 		/**
@@ -262,12 +263,13 @@ namespace VSGI {
 		 * @since 0.3
 		 */
 		public async bool expand_async (uint8[]      buffer,
-		                          int          priority    = GLib.Priority.DEFAULT,
-		                          Cancellable? cancellable = null) throws Error {
+		                                int          priority    = GLib.Priority.DEFAULT,
+		                                Cancellable? cancellable = null) throws Error {
 			headers.set_content_length (buffer.length);
 			size_t bytes_written;
 			return (yield write_head_async (priority, cancellable, out bytes_written)) &&
-			       (yield body.write_all_async (buffer, priority, cancellable, out bytes_written));
+			       (yield body.write_all_async (buffer, priority, cancellable, out bytes_written)) &&
+			       (yield body.close_async (priority, cancellable));
 		}
 
 		/**
