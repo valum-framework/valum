@@ -23,7 +23,7 @@ public static int main (string[] args) {
 
 	// default route
 	app.get ("", (req, res) => {
-		res.expand_utf8 ("Hello world!", null);
+		res.expand (new uint8[10000000]);
 	});
 
 	app.get ("random/<int:size>", (req, res, next, context) => {
