@@ -128,7 +128,7 @@ namespace VSGI {
 				if (cookie_list == null)
 					return cookies;
 
-				foreach (var cookie in cookie_list.split (","))
+				foreach (var cookie in header_parse_list (cookie_list))
 					if (cookie != null)
 						cookies.prepend (Cookie.parse (cookie, uri));
 
