@@ -34,10 +34,10 @@ Lua
     // GET /lua
     app.get ("lua", (req, res) => {
         // evaluate a string containing Lua code
-        res.body.write_all (some_lua_code.data, null);
+        res.expand_utf8 (some_lua_code, null);
 
         // evaluate a file containing Lua code
-        res.body.write_all (lua.do_file ("scripts/hello.lua").data, null);
+        res.expand_utf8 (lua.do_file ("scripts/hello.lua"), null);
     });
 
     new Server ("org.valum.example.Lua", app.handle).run ();

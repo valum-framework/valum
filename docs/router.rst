@@ -166,7 +166,7 @@ invoked to jump to the next status handler in the queue.
 
     app.status (Soup.Status.NOT_FOUND, (req, res) => {
         res.status = 404;
-        res.body.write_all ("Not found!".data, null);
+        res.expand_utf8 ("Not found!", null);
     });
 
 :doc:`redirection-and-error` can be thrown during the status handling, they
@@ -205,7 +205,7 @@ It provides a nice way to ignore passively unrecoverable errors.
 ::
 
     app.get ("", (req, res) => {
-        res.write_all_async ("Hello world!".data, null, () => {
+        res.expand_utf8_async ("Hello world!", null, () => {
             app.invoke (req, res, () => {
                 throw new IOError.FAILED ("I/O failed undesirably.")
             });
@@ -367,7 +367,7 @@ with custom and default status code handlers. It constitute an entry point for
 ::
 
     app.get ("", (req, res, next) => {
-        res.body.write_all_async ("Hello world!".data, Priority.DEFAULT, null, () => {
+        res.expand_utf8_async ("Hello world!", Priority.DEFAULT, null, () => {
             app.invoke (req, res, next);
         });
     });
@@ -401,7 +401,7 @@ responses designed for non-human client.
     });
 
     app.status (Status.NOT_ACCEPTABLE, (req, res, next, context) => {
-        res.body.write_all ("<p>%s</p>".printf (context["message"].get_string ()).data, null);
+        res.expand_utf8 ("<p>%s</p>".printf (context["message"].get_string ()), null);
     });
 
 Middleware
@@ -472,7 +472,7 @@ the :doc:`vsgi/response` body.
     });
 
     app.get ("home", (req, res) => {
-        res.body.write_all ("Hello world!".data, null); // transparently compress the output
+        res.expand_utf8 ("Hello world!", null); // transparently compress the output
     });
 
 If this is wrapped in a function, which is typically the case, it can even be
@@ -488,7 +488,7 @@ used directly from the handler.
     app.get ("home", compress);
 
     app.get ("home", (req, res) => {
-        res.body.write_all ("Hello world!".data, null);
+        res.expand_utf8 ("Hello world!", null);
     });
 
 Alternatively, a handling middleware can be used directly instead of being
@@ -498,6 +498,6 @@ attached to a :doc:`route`, the processing will happen in a ``NextCallback``.
 
     app.get ("home", (req, res, next, context) => {
         compress (req, res, (req, res) => {
-            res.body.write_all ("Hello world!".data, null);
+            res.expand_utf8 ("Hello world!", null);
         }, new Context.with_parent (context));
     });

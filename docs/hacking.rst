@@ -52,7 +52,7 @@ spending time on producing a body that won't be considered is important.
         return;
     }
 
-    res.body.write_all ("<!DOCTYPE html><html></html>");
+    res.expand_utf8 ("<!DOCTYPE html><html></html>");
 
 Use the ``construct`` block to perform post-initialization work. It will be
 called independently of how the object is constructed.

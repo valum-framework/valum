@@ -39,7 +39,7 @@ a :doc:`route` instance.
 ::
 
     app.get ("", (req, res, next, context) => {
-        res.body.write_all ("Hello world!".data, null);
+        res.expand_utf8 ("Hello world!", null);
     });
 
 Every route declaration has a callback associated that does the request
@@ -77,7 +77,7 @@ a :doc:`vsgi/request` and :doc:`vsgi/response`.
 
     new Server ("org.valum.example.App", (req, res) => {
         res.status = 200;
-        res.body.write_all ("Hello world!".data, null);
+        res.expand ("Hello world!", null);
     }).run ({"app", "--port", "3003"});
 
 Usually, you would only pass the CLI arguments to ``run``, so that your runtime
