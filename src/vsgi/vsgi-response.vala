@@ -237,6 +237,52 @@ namespace VSGI {
 #endif
 
 		/**
+		 * Expand a buffer into the response body.
+		 *
+		 * @since 0.3
+		 */
+		public bool expand (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
+			headers.set_content_length (buffer.length);
+			size_t bytes_written;
+			return write_head (out bytes_written, cancellable) &&
+			       body.write_all (buffer, out bytes_written, cancellable) &&
+			       body.close (cancellable);
+		}
+
+		/**
+		 * Expand a UTF-8 string into the response body.
+		 *
+		 * @since 0.3
+		 */
+		public bool expand_utf8 (string body, Cancellable? cancellable = null) throws IOError {
+			return expand (body.data, cancellable);
+		}
+
+#if GIO_2_44
+		/**
+		 * @since 0.3
+		 */
+		public async bool expand_async (uint8[]      buffer,
+		                                int          priority    = GLib.Priority.DEFAULT,
+		                                Cancellable? cancellable = null) throws Error {
+			headers.set_content_length (buffer.length);
+			size_t bytes_written;
+			return (yield write_head_async (priority, cancellable, out bytes_written)) &&
+			       (yield body.write_all_async (buffer, priority, cancellable, out bytes_written)) &&
+			       (yield body.close_async (priority, cancellable));
+		}
+
+		/**
+		 * @since 0.3
+		 */
+		public async bool expand_utf8_async (string       body,
+		                                     int          priority    = GLib.Priority.DEFAULT,
+		                                     Cancellable? cancellable = null) throws Error {
+			return yield expand_async (body.data, priority, cancellable);
+		}
+#endif
+
+		/**
 		 * Write the head before disposing references to other objects.
 		 */
 		public override void dispose () {

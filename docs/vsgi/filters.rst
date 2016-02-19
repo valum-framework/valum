@@ -27,6 +27,6 @@ You can use any :doc:`converters` provided by GLib or VSGI with ease.
         res = new ConvertedResponse (res, new ZlibCompressor (ZlibCompressorFormat.GZIP));
         res.status = 200;
         res.headers.append ("Content-Encoding", "gzip");
-        res.body.write_all ("Hello world!".data);
+        res.expand_utf8 ("Hello world!");
     });
 

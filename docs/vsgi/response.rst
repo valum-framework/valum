@@ -72,6 +72,24 @@ The body of a response is accessed through the ``body`` property. It inherits
 from `GLib.OutputStream`_ and provides synchronous and asynchronous streaming
 capabilities.
 
+Fixed-size body
+~~~~~~~~~~~~~~~
+
+.. versionadded:: 0.3
+
+To deal with fixed-size body, ``expand``, ``expand_utf8`` utilities as well as
+their respective asynchronous versions are provided.
+
+It will automatically set the ``Content-Length`` header to the size of the
+provided buffer, write the response head and pipe the buffer into the body
+stream and close it properly.
+
+::
+
+    app.get ("", (req, res) => {
+        res.expand_utf8 ("Hello world!");
+    })
+
 Filtering
 ~~~~~~~~~
 

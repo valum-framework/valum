@@ -25,7 +25,7 @@ Additionally, an array of supported HTTP methods is provided by
 ::
 
     if (req.method == Request.GET) {
-        res.body.write_all ("Hello world!".data, null);
+        res.expand_utf8 ("Hello world!", null);
     }
 
     if (req.method == Request.POST) {

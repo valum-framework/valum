@@ -48,7 +48,7 @@ public class AdminRouter : Router {
 		}
 
 		res.headers.set_content_type ("text/html", null);
-		res.body.write_all ("""
+		res.expand_utf8 ("""
 		<!DOCTYPE html>
 		<html>
 		  <head>
@@ -61,7 +61,7 @@ public class AdminRouter : Router {
 		    </form>
 		  </body>
 		</html>
-		""".data, null);
+		""", null);
 	}
 
 	/**
@@ -69,6 +69,6 @@ public class AdminRouter : Router {
 	 */
 	public void view (Request req, Response res, NextCallback next, Context ctx) throws Error {
 		res.headers.set_content_type ("text/plain", null);
-		res.body.write ("Hello admin!".data, null);
+		res.expand_utf8 ("Hello admin!", null);
 	}
 }

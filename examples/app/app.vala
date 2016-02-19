@@ -67,27 +67,27 @@ app.get ("headers", (req, res) => {
 	req.headers.foreach ((name, header) => {
 		headers.append_printf ("%s: %s\n", name, header);
 	});
-	res.body.write_all (headers.data, null);
+	res.expand_utf8 (headers.str, null);
 });
 
 app.get ("query", (req, res) => {
 	if (req.query == null) {
-		res.body.write_all ("null".data, null);
+		res.expand_utf8 ("null", null);
 	} else {
 		var query = new StringBuilder ();
 		req.query.foreach ((k, v) => {
 			query.append_printf ("%s: %s\n", k, v);
 		});
-		res.body.write_all (query.data, null);
+		res.expand_utf8 (query.str, null);
 	}
 });
 
 app.get ("cookies", (req, res) => {
 	if (req.cookies == null) {
-		res.body.write_all ("null".data, null);
+		res.expand_utf8 ("null", null);
 	} else {
 		foreach (var cookie in req.cookies) {
-			res.body.write_all ("%s: %s\n".printf (cookie.name, cookie.value).data, null);
+			res.expand_utf8 ("%s: %s\n".printf (cookie.name, cookie.value), null);
 		}
 	}
 });
@@ -96,7 +96,7 @@ app.scope ("cookie", (inner) => {
 	inner.get ("<name>", (req, res, next, context) => {
 		foreach (var cookie in req.cookies)
 			if (cookie.name == context["name"].get_string ())
-				res.body.write_all ("%s\n".printf (cookie.value).data, null);
+				res.expand_utf8 ("%s\n".printf (cookie.value), null);
 	});
 
 	inner.post ("<name>", (req, res, next, context) => {
@@ -108,7 +108,7 @@ app.scope ("cookie", (inner) => {
 app.scope ("urlencoded-data", (inner) => {
 	inner.get ("", (req, res) => {
 		res.headers.set_content_type ("text/html", null);
-		res.body.write_all (
+		res.expand_utf8 (
 		"""
 		<!DOCTYPE html>
 		<html>
@@ -119,7 +119,7 @@ app.scope ("urlencoded-data", (inner) => {
 			</form>
 		  </body>
 		</html>
-		""".data, null);
+		""", null);
 	});
 
 	inner.post ("", (req, res) => {
@@ -130,29 +130,29 @@ app.scope ("urlencoded-data", (inner) => {
 			builder.append_printf ("%s: %s\n", k, v);
 		});
 
-		res.body.write_all (builder.str.data, null);
+		res.expand_utf8 (builder.str, null);
 	});
 });
 
 // hello world! (compare with Node.js!)
 app.get ("hello", (req, res) => {
-	res.body.write_all ("Hello world!".data, null);
+	res.expand_utf8 ("Hello world!", null);
 });
 
 app.get ("hello/", (req, res) => {
-	res.body.write_all ("Hello world!".data, null);
+	res.expand_utf8 ("Hello world!", null);
 });
 
 app.rule (Method.GET | Method.POST, "get-and-post", (req, res) => {
-	res.body.write_all ("Matches GET and POST".data, null);
+	res.expand_utf8 ("Matches GET and POST", null);
 });
 
 app.rule (Method.GET, "custom-method", (req, res) => {
-	res.body.write_all (req.method.data, null);
+	res.expand_utf8 (req.method, null);
 });
 
 app.get ("hello/<id>", (req, res, next, context) => {
-	res.body.write_all ("hello %s!".printf (context["id"].get_string ()).data, null);
+	res.expand_utf8 ("hello %s!".printf (context["id"].get_string ()), null);
 });
 
 app.get ("users/<int:id>(/<action>)?", (req, res, next, context) => {
@@ -167,23 +167,23 @@ app.get ("users/<int:id>(/<action>)?", (req, res, next, context) => {
 app.register_type ("permutations", /abc|acb|bac|bca|cab|cba/);
 
 app.get ("custom-route-type/<permutations:p>", (req, res, next, context) => {
-	res.body.write_all (context["p"].get_string ().data, null);
+	res.expand_utf8 (context["p"].get_string (), null);
 });
 
 app.get ("trailing-slash/?", (req, res) => {
 	if (req.uri.get_path ().has_suffix ("/")) {
-		res.body.write_all ("It has it!".data, null);
+		res.expand_utf8 ("It has it!", null);
 	} else {
-		res.body.write_all ("It does not!".data, null);
+		res.expand_utf8 ("It does not!", null);
 	}
 });
 
 app.regex (Method.GET, /custom-regular-expression/, (req, res) => {
-	res.body.write_all ("This route was matched using a custom regular expression.".data, null);
+	res.expand_utf8 ("This route was matched using a custom regular expression.", null);
 });
 
 app.matcher (Method.GET, (req) => { return req.uri.get_path () == "/custom-matcher"; }, (req, res) => {
-	res.body.write_all ("This route was matched using a custom matcher.".data, null);
+	res.expand_utf8 ("This route was matched using a custom matcher.", null);
 });
 
 // scoped routing
@@ -193,11 +193,11 @@ app.scope ("admin", (adm) => {
 		// matches /admin/fun/hack
 		fun.get ("hack", (req, res) => {
 			var time = new DateTime.now_utc ();
-			res.body.write_all ("It's %s around here!\n".printf (time.format ("%H:%M")).data, null);
+			res.expand_utf8 ("It's %s around here!\n".printf (time.format ("%H:%M")), null);
 		});
 		// matches /admin/fun/heck
 		fun.get ("heck", (req, res) => {
-			res.body.write_all ("Wuzzup!".data, null);
+			res.expand_utf8 ("Wuzzup!", null);
 		});
 	});
 });
@@ -216,7 +216,7 @@ app.use (subdomain ("api", api.handle));
 
 api.get ("repository/<name>", (req, res, next, context) => {
 	var name = context["name"].get_string ();
-	res.body.write_all (name.data, null);
+	res.expand_utf8 (name, null);
 });
 
 // delegate all other GET requests to a subrouter
@@ -227,7 +227,7 @@ app.get ("next", (req, res, next) => {
 });
 
 app.get ("next", (req, res) => {
-	res.body.write_all ("Matched by the next route in the queue.".data, null);
+	res.expand_utf8 ("Matched by the next route in the queue.", null);
 });
 
 app.get ("state", (req, res, next, context) => {
@@ -236,7 +236,7 @@ app.get ("state", (req, res, next, context) => {
 });
 
 app.get ("state", (req, res, next, context) => {
-	res.body.write_all (context["state"].get_string ().data, null);
+	res.expand_utf8 (context["state"].get_string (), null);
 });
 
 // Ctpl template rendering
@@ -304,13 +304,13 @@ app.get ("server-sent-events", stream_events ((req, send) => {
 
 app.get ("negociate", accept ("application/json", (req, res) => {
 	res.headers.set_content_type ("application/json", null);
-	res.body.write_all ("{\"a\":\"b\"}".data, null);
+	res.expand_utf8 ("{\"a\":\"b\"}", null);
 })).then (accept ("text/xml", (req, res) => {
 	res.headers.set_content_type ("text/xml", null);
-	res.body.write_all ("<a>b</a>".data, null);
+	res.expand_utf8 ("<a>b</a>", null);
 })).then ((req, res) => {
 	res.status = global::Soup.Status.NOT_ACCEPTABLE;
-	res.body.write_all ("Supply the 'Accept' header with either 'application/json' or 'text/xml'.".data, null);
+	res.expand_utf8 ("Supply the 'Accept' header with either 'application/json' or 'text/xml'.", null);
 });
 
 app.status (Soup.Status.NOT_FOUND, (req, res, next, context) => {

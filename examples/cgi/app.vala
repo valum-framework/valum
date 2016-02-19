@@ -21,7 +21,7 @@ using VSGI.CGI;
 var app = new Router ();
 
 app.get ("", (req, res) => {
-	res.body.write_all ("Hello world!".data, null);
+	res.expand_utf8 ("Hello world!", null);
 });
 
 new Server ("org.valum.example.CGI", app.handle).run ();

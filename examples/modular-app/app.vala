@@ -21,7 +21,7 @@ using VSGI.HTTP;
 var app = new Router ();
 
 app.get ("", (req, res) => {
-	res.body.write_all (
+	res.expand_utf8 (
 	"""
 	<!DOCTYPE html>
 	<html>
@@ -30,7 +30,7 @@ app.get ("", (req, res) => {
 	<a href="/admin/view">Enter administrative business</a>
 	</body>
 	</html>
-	""".data, null);
+	""", null);
 });
 
 app.rule (Method.ANY, "user/*", new UserRouter ().handle);

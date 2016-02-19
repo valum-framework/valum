@@ -39,7 +39,7 @@ app.get ("", (req, res) => {
 
 			var main = parser.get_root ().get_object ().get_object_member ("main");
 
-			res.body.write_all ("""
+			res.expand_utf8 ("""
 			<h1>Weather in Montreal</h1>
 			<dl>
 			  <dt>Humidity</dt><dd>%s</dd>
@@ -52,7 +52,7 @@ app.get ("", (req, res) => {
 			            main.get_string_member ("pressure"),
 			            main.get_string_member ("temp"),
 			            main.get_string_member ("temp_max"),
-						main.get_string_member ("temp_min")).data, null);
+						main.get_string_member ("temp_min")), null);
 		});
 	});
 });
