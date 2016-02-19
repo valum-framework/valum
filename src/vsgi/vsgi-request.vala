@@ -120,7 +120,7 @@ namespace VSGI {
 		 *
 		 * @since 0.3
 		 */
-		public virtual SList<Cookie> cookies {
+		public SList<Cookie> cookies {
 			owned get {
 				var cookies     = new SList<Cookie> ();
 				var cookie_list = headers.get_list ("Cookie");

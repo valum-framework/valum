@@ -46,8 +46,17 @@ namespace VSGI {
 			get { return base_response.headers; }
 		}
 
+		public override bool head_written {
+			get { return base_response.head_written; }
+			protected set { base_response.head_written = value; }
+		}
+
 		public override OutputStream body {
 			get { return base_response.body; }
+		}
+
+		protected override uint8[]? build_head () {
+			return base_response.build_head ();
 		}
 	}
 }

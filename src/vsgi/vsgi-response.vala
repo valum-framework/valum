@@ -59,7 +59,7 @@ namespace VSGI {
 		 *
 		 * @since 0.3
 		 */
-		public virtual SList<Cookie> cookies {
+		public SList<Cookie> cookies {
 			owned get {
 				var cookies     = new SList<Cookie> ();
 				var cookie_list = headers.get_list ("Set-Cookie");
@@ -85,7 +85,7 @@ namespace VSGI {
 		 *
 		 * @since 0.2
 		 */
-		public bool head_written { get; protected set; default = false; }
+		public virtual bool head_written { get; protected set; default = false; }
 
 		/**
 		 * Response body.
@@ -134,9 +134,9 @@ namespace VSGI {
 		 *
 		 * @since 0.3
 		 */
-		public virtual async OutputStream get_body_async (int          priority    = GLib.Priority.DEFAULT,
-		                                                  Cancellable? cancellable = null,
-		                                                  out size_t   bytes_written) throws Error {
+		public async OutputStream get_body_async (int priority             = GLib.Priority.DEFAULT,
+		                                          Cancellable? cancellable = null,
+		                                          out size_t   bytes_written) throws Error {
 			if (head_written) {
 				bytes_written = 0;
 			} else {

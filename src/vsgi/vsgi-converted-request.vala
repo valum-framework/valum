@@ -45,7 +45,7 @@ namespace VSGI {
 		 * @since 0.2
 		 */
 		public ConvertedRequest (Request base_request, Converter converter) {
-			Object (base_request: base_request, converter: converter);
+			Object (connection: base_request.connection, base_request: base_request, converter: converter);
 		}
 	}
 }

@@ -55,5 +55,14 @@ namespace VSGI {
 		public override InputStream body {
 			get { return base_request.body; }
 		}
+
+		public override uint8[] flatten (Cancellable? cancellable = null) {
+			return base_request.flatten (cancellable);
+		}
+
+		public override async uint8[] flatten_async (int          priority    = GLib.Priority.DEFAULT,
+													 Cancellable? cancellable = null) {
+			return yield base_request.flatten_async (priority, cancellable);
+		}
 	}
 }
