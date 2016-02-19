@@ -30,7 +30,7 @@ public void test_vsgi_scgi_request_with_request_uri () {
 	};
 
 	var connection = new VSGI.Mock.Connection ();
-	var request    = new Request (connection, new SCGIInputStream (connection.input_stream, 0), environment);
+	var request    = new Request (connection, connection.input_stream, environment);
 
 	assert ("GET" == request.method);
 	assert ("/home" == request.uri.path);

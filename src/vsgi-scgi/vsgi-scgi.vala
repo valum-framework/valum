@@ -56,70 +56,6 @@ namespace VSGI.SCGI {
 	}
 
 	/**
-	 * Filter a SCGI request stream to provide the end-of-file behaviour of a
-	 * typical {@link GLib.InputStream}.
-	 *
-	 * @since 0.2.3
-	 */
-	public class SCGIInputStream : FilterInputStream {
-
-		/**
-		 * Number of bytes read from the base stream.
-		 */
-		private int64 bytes_read = 0;
-
-		/**
-		 * The {@link int64} type is used to remain consistent with
-		 * {@link Soup.MessageHeaders.get_content_length}
-		 *
-		 * @since 0.2.3
-		 */
-		public int64 content_length { construct; get; }
-
-		/**
-		 * {@inheritDoc}
-		 *
-		 * @param content_length number of bytes that can be read from the base
-		 *                       stream
-		 */
-		public SCGIInputStream (InputStream base_stream, int64 content_length) {
-			Object (base_stream: base_stream, content_length: content_length);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 *
-		 * Ensures that the read buffer is smaller than the remaining bytes to
-		 * read from the base stream. If no more data is available, it produces
-		 * an artificial EOF.
-		 */
-		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
-			if (bytes_read >= content_length)
-				return 0; // EOF
-
-			if (buffer.length > (content_length - bytes_read)) {
-				// the 'int' cast is guarantee since difference is smaller than
-				// the buffer length
-				buffer.length = (int) (content_length - bytes_read);
-			}
-
-			var ret = base_stream.read (buffer, cancellable);
-
-			if (ret > 0)
-				bytes_read += ret;
-
-			return ret;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public override bool close (Cancellable? cancellable = null) throws IOError {
-			return base_stream.close (cancellable);
-		}
-	}
-
-	/**
 	 * {@inheritDoc}
 	 *
 	 * The connection {@link GLib.InputStream} is ignored as it is being
@@ -128,7 +64,7 @@ namespace VSGI.SCGI {
 	 */
 	public class Request : CGI.Request {
 
-		private SCGIInputStream _body;
+		private InputStream _body;
 
 		/**
 		 * {@inheritDoc}
@@ -137,7 +73,7 @@ namespace VSGI.SCGI {
 		 *
 		 * @param reader stream holding the request body
 		 */
-		public Request (IOStream connection, SCGIInputStream reader, string[] environment) {
+		public Request (IOStream connection, InputStream reader, string[] environment) {
 			base (connection, environment);
 			_body = reader;
 		}
@@ -346,7 +282,7 @@ namespace VSGI.SCGI {
 				}
 			}
 
-			var req = new Request (new Connection (connection), new SCGIInputStream (reader, content_length), environment);
+			var req = new Request (new Connection (connection), new BoundedInputStream (reader, content_length), environment);
 			var res = new Response (req);
 
 			dispatch (req, res);
