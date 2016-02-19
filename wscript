@@ -16,14 +16,14 @@ def configure(conf):
 
     conf.check_vala(min_version=(0,26,0))
 
-    conf.recurse(['src', 'docs', 'tests'])
-
     conf.env.append_unique('CFLAGS', ['-Wall',
                                       '-Wno-deprecated-declarations',
                                       '-Wno-unused-variable',
                                       '-Wno-unused-but-set-variable',
                                       '-Wno-unused-function'])
     conf.env.append_unique('VALAFLAGS', ['--enable-experimental', '--enable-deprecated', '--fatal-warnings'])
+
+    conf.recurse(['src', 'docs', 'tests'])
 
     # configure examples
     if conf.options.enable_examples:
