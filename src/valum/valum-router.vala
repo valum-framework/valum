@@ -494,7 +494,7 @@ namespace Valum {
 
 					if (req.method == Request.OPTIONS) {
 						res.headers.append ("Allow", string.joinv (", ", allowedv));
-						throw new Success.OK ("The following methods are allowed: %s", string.joinv (", ", allowedv));
+						throw new Success.OK ("The following methods are allowed: %s.", string.joinv (", ", allowedv));
 					} else {
 						throw new ClientError.METHOD_NOT_ALLOWED (string.joinv (", ", allowedv));
 					}
