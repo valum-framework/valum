@@ -11,8 +11,15 @@ def build(bld):
     bld.program(
         features     = 'test',
         target       = 'tests',
-        source       = bld.path.ant_glob('*.vala') + ['tests.gresource.xml'],
+        source       = bld.path.ant_glob('*.vala', excl='vsgi-test.vala') + ['tests.gresource.xml'],
         use          = 'valum',
+        install_path = None)
+    bld.program(
+        features     = 'test',
+        target       = 'vsgi-test',
+        source       = 'vsgi-test.vala',
+        use          = 'vsgi vsgi-mock',
         install_path = None)
     from waflib.Tools import waf_unit_test
     bld.add_post_fun(waf_unit_test.summary)
+    bld.add_post_fun(waf_unit_test.set_exit_code)
