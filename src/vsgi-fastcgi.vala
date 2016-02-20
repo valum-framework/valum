@@ -176,10 +176,10 @@ namespace VSGI.FastCGI {
 		construct {
 #if GIO_2_40
 			const OptionEntry[] options = {
-				{"socket",          's', 0, OptionArg.FILENAME, null, "path to the UNIX socket"},
-				{"port",            'p', 0, OptionArg.INT,      null, "TCP port on this host"},
-				{"file-descriptor", 'f', 0, OptionArg.INT,      null, "file descriptor", "0"},
-				{"backlog",         'b', 0, OptionArg.INT,      null, "listen queue depth used in the listen() call", "0"},
+				{"socket",          's', 0, OptionArg.FILENAME, null, "Listen to the provided UNIX domain socket (or named pipe for WinNT)"},
+				{"port",            'p', 0, OptionArg.INT,      null, "Listen to the provided TCP port"},
+				{"file-descriptor", 'f', 0, OptionArg.INT,      null, "Listen to the provided file descriptor", "0"},
+				{"backlog",         'b', 0, OptionArg.INT,      null, "Listen queue depth used in the listen() call", "10"},
 				{null}
 			};
 			this.add_main_option_entries (options);
@@ -221,7 +221,7 @@ namespace VSGI.FastCGI {
 					return 1;
 				}
 
-				command_line.print ("listening on '%s' (backlog '%d')\n", socket_path, backlog);
+				command_line.print ("listening on 'fcgi://%s' (backlog '%d')\n", socket_path, backlog);
 			}
 
 			else if (options.contains ("port")) {
@@ -239,13 +239,13 @@ namespace VSGI.FastCGI {
 
 			else if (options.contains ("file-descriptor")) {
 				fd = options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 ();
-				command_line.print ("listening on the file descriptor '%d'\n", fd);
+				command_line.print ("listening on the file descriptor '%u'\n", fd);
 			}
 
 			else
 #endif
 			{
-				command_line.print ("listening from the default file descriptor");
+				command_line.print ("listening on the default file descriptor\n");
 			}
 
 			new Thread<int> (null, () => {

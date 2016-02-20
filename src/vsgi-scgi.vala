@@ -184,10 +184,10 @@ namespace VSGI.SCGI {
 #if GIO_2_40
 		construct {
 			const OptionEntry[] options = {
-				{"any",             'a', 0, OptionArg.NONE, null, "listen on any open TCP port"},
-				{"port",            'p', 0, OptionArg.INT,  null, "TCP port on this host"},
-				{"file-descriptor", 0,   0, OptionArg.INT,  null, "listen on a file descriptor",                  "0"},
-				{"backlog",         'b', 0, OptionArg.INT,  null, "listen queue depth used in the listen() call", "10"},
+				{"any",             'a', 0, OptionArg.NONE, null, "Listen on any open TCP port"},
+				{"port",            'p', 0, OptionArg.INT,  null, "Listen to the provided TCP port"},
+				{"file-descriptor", 'f', 0, OptionArg.INT,  null, "Listen to the provided file descriptor",       "0"},
+				{"backlog",         'b', 0, OptionArg.INT,  null, "Listen queue depth used in the listen() call", "10"},
 				{null}
 			};
 
@@ -199,23 +199,27 @@ namespace VSGI.SCGI {
 #if GIO_2_40
 			var options  = command_line.get_options_dict ();
 
-			if (options.contains ("backlog"))
-				listener.set_backlog (options.lookup_value ("backlog", VariantType.INT32).get_int32 ());
+			var backlog = options.contains ("backlog") ?
+				options.lookup_value ("backlog", VariantType.INT32).get_int32 () : 10;
+
+			listener.set_backlog (backlog);
 #endif
 
 			try {
 #if GIO_2_40
 				if (options.contains ("any")) {
 					var port = listener.add_any_inet_port (null);
-					command_line.print ("listening on tcp://0.0.0.0:%u\n", port);
+					command_line.print ("listening on 'scgi://0.0.0.0:%u' (backlog ('%d'))\n", port, backlog);
+					command_line.print ("listening on 'scgi://:::%u' (backlog '%d')\n", port, backlog);
 				} else if (options.contains ("port")) {
 					var port = (uint16) options.lookup_value ("port", VariantType.INT32).get_int32 ();
 					listener.add_inet_port (port, null);
-					command_line.print ("listening on tcp://0.0.0.0:%u\n", port);
+					command_line.print ("listening on 'scgi://0.0.0.0:%u' (backlog '%d')\n", port, backlog);
+					command_line.print ("listening on 'scgi://:::%u (backlog '%d')'\n", port, backlog);
 				} else if (options.contains ("file-descriptor")) {
 					var file_descriptor = options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 ();
 					listener.add_socket (new Socket.from_fd (file_descriptor), null);
-					command_line.print ("listening on file descriptor %u\n", file_descriptor);
+					command_line.print ("listening on file descriptor '%u'\n", file_descriptor);
 				} else
 #endif
 				{
