@@ -33,6 +33,27 @@ public Type plugin_init (TypeModule type_module) {
 [CCode (gir_namespace = "VSGI.FastCGI", gir_version = "0.2")]
 namespace VSGI.FastCGI {
 
+	/**
+	 * Produce a significant error message given an error on a
+	 * {@link FastCGI.Stream}.
+	 */
+	private string strerror (int error) {
+		if (error > 0) {
+			return GLib.strerror (error);
+		}
+		switch (error) {
+			case global::FastCGI.CALL_SEQ_ERROR:
+				return "FCXG: Call seq error";
+			case global::FastCGI.PARAMS_ERROR:
+				return "FCGX: Params error";
+			case global::FastCGI.PROTOCOL_ERROR:
+				return "FCGX: Protocol error";
+			case global::FastCGI.UNSUPPORTED_VERSION:
+				return "FCGX: Unsupported version";
+		}
+		return "Unknown error code '%d'".printf (error);
+	}
+
 	private class StreamInputStream : UnixInputStream {
 
 		public unowned global::FastCGI.Stream @in { construct; get; }
@@ -44,15 +65,20 @@ namespace VSGI.FastCGI {
 		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
 			var read = this.in.read (buffer);
 
-			if (read == GLib.FileStream.EOF)
+			if (read == GLib.FileStream.EOF) {
+				warning (strerror (this.in.get_error ()));
+				this.in.clear_error ();
 				return -1;
+			}
 
 			return read;
 		}
 
 		public override bool close (Cancellable? cancellable = null) throws IOError {
-			if (in.close () == GLib.FileStream.EOF)
-				return false;
+			if (in.close () == GLib.FileStream.EOF) {
+				warning (strerror (this.in.get_error ()));
+				this.in.clear_error ();
+			}
 			return in.is_closed;
 		}
 	}
@@ -70,8 +96,11 @@ namespace VSGI.FastCGI {
 		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
 			var written = this.out.put_str (buffer);
 
-			if (written == GLib.FileStream.EOF)
+			if (written == GLib.FileStream.EOF) {
+				warning (strerror (this.out.get_error ()));
+				this.out.clear_error ();
 				return -1;
+			}
 
 			return written;
 		}
@@ -87,11 +116,15 @@ namespace VSGI.FastCGI {
 		 * The 'err' stream is closed before 'out' to avoid an extra write.
 		 */
 		public override bool close (Cancellable? cancellable = null) throws IOError {
-			if (this.err.close () == GLib.FileStream.EOF)
-				return false;
+			if (this.err.close () == GLib.FileStream.EOF) {
+				warning (strerror (this.err.get_error ()));
+				this.err.clear_error ();
+			}
 
-			if (this.out.close () == GLib.FileStream.EOF)
-				return false;
+			if (this.out.close () == GLib.FileStream.EOF) {
+				warning (strerror (this.out.get_error ()));
+				this.out.clear_error ();
+			}
 
 			return this.err.is_closed && this.out.is_closed;
 		}
