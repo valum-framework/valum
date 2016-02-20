@@ -610,6 +610,28 @@ public static void test_router_method_not_allowed_excludes_request_method () {
 	assert ("GET, HEAD" == response.headers.get_one ("Allow"));
 }
 
+
+public static void test_router_method_not_allowed_success_on_options () {
+	var router = new Router ();
+
+	router.get ("", (req, res) => {
+
+	});
+
+	router.put ("", (req, res) => {
+
+	});
+
+	var request = new Request.with_method ("OPTIONS", new Soup.URI ("http://localhost/"));
+	var response = new Response.with_status (request, Soup.Status.METHOD_NOT_ALLOWED);
+
+	router.handle (request, response);
+
+	assert (response.status == 200);
+	message (response.headers.get_one ("Allow"));
+	assert ("GET, HEAD, PUT" == response.headers.get_one ("Allow"));
+}
+
 /**
  * @since 0.1
  */
