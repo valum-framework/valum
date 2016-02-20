@@ -21,7 +21,7 @@ using VSGI.SCGI;
 var app = new Router ();
 
 app.get ("", (req, res) => {
-	res.expand_async.begin (new uint8[10000000]);
+	res.expand_utf8 ("Hello world!", null);
 });
 
 app.post ("", (req, res) => {
