@@ -232,22 +232,22 @@ namespace VSGI.HTTP {
 #if GIO_2_40
 			const OptionEntry[] entries = {
 				// port options
-				{"port",      'p', 0, OptionArg.INT,  null, "port the server is listening on", "3003"},
-				{"all",       'a', 0, OptionArg.NONE, null, "listen on all interfaces '--port'"}, // only with '--port'
-				{"ipv4-only", '4', 0, OptionArg.NONE, null, "only listen to IPv4 interfaces"}, // only with '--port'
-				{"ipv6-only", '6', 0, OptionArg.NONE, null, "only listen on IPv6 interfaces"}, // only with '--port'
+				{"port",      'p', 0, OptionArg.INT,  null, "Listen to the provided TCP port", "3003"},
+				{"all",       'a', 0, OptionArg.NONE, null, "Listen on all interfaces '--port'"},
+				{"ipv4-only", '4', 0, OptionArg.NONE, null, "Only listen on IPv4 interfaces"},
+				{"ipv6-only", '6', 0, OptionArg.NONE, null, "Only listen on IPv6 interfaces"},
 
 				// fd options
-				{"file-descriptor", 'f', 0, OptionArg.INT, null, "listen to the provided file descriptor", "0"},
+				{"file-descriptor", 'f', 0, OptionArg.INT, null, "Listen to the provided file descriptor", "0"},
 
 				// https options
-				{"https",         0, 0, OptionArg.NONE,     null, "listen for https connections rather than plain http"},
-				{"ssl-cert-file", 0, 0, OptionArg.FILENAME, null, "path to a file containing a PEM-encoded certificate"},
-				{"ssl-key-file",  0, 0, OptionArg.FILENAME, null, "path to a file containing a PEM-encoded private key"},
+				{"https",         0, 0, OptionArg.NONE,     null, "Listen for HTTPS connections rather than plain HTTP"},
+				{"ssl-cert-file", 0, 0, OptionArg.FILENAME, null, "Path to a file containing a PEM-encoded certificate"},
+				{"ssl-key-file",  0, 0, OptionArg.FILENAME, null, "Path to a file containing a PEM-encoded private key"},
 
 				// headers options
-				{"server-header", 'h', 0, OptionArg.STRING, null, "value to use for the 'Server' header on Messages processed by this server"},
-				{"raw-paths",     0,   0, OptionArg.NONE,   null, "percent-encoding in the Request-URI path will not be automatically decoded"},
+				{"server-header", 'h', 0, OptionArg.STRING, null, "Value to use for the 'Server' header on Messages processed by this server"},
+				{"raw-paths",     0,   0, OptionArg.NONE,   null, "Percent-encoding in the Request-URI path will not be automatically decoded"},
 
 				{null}
 			};
@@ -364,12 +364,12 @@ namespace VSGI.HTTP {
 			}
 
 			foreach (var uri in this.server.get_uris ()) {
-				command_line.print ("listening on %s://%s:%u\n", uri.scheme, uri.host, uri.port);
+				command_line.print ("listening on '%s://%s:%u'\n", uri.scheme, uri.host, uri.port);
 			}
 #else
 			this.server.run_async ();
 
-			command_line.print ("listening on http://0.0.0.0:%u\n", this.server.port);
+			command_line.print ("listening on 'http://0.0.0.0:%u'\n", this.server.port);
 #endif
 
 			// keep the process alive

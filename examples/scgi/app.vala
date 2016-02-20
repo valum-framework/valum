@@ -18,18 +18,20 @@
 using Valum;
 using VSGI.SCGI;
 
-var app = new Router ();
+public int main (string[] args) {
+	var app = new Router ();
 
-app.get ("", (req, res) => {
-	res.expand_utf8 ("Hello world!", null);
-});
+	app.get ("", (req, res) => {
+		res.expand_utf8 ("Hello world!", null);
+	});
 
-app.post ("", (req, res) => {
-	res.body.splice (req.body, OutputStreamSpliceFlags.NONE);
-});
+	app.post ("", (req, res) => {
+		res.body.splice (req.body, OutputStreamSpliceFlags.NONE);
+	});
 
-app.get ("async", (req, res) => {
-	res.expand_utf8_async.begin ("Hello world!", Priority.DEFAULT, null);
-});
+	app.get ("async", (req, res) => {
+		res.expand_utf8_async.begin ("Hello world!", Priority.DEFAULT, null);
+	});
 
-new Server ("org.valum.example.SCGI", app.handle).run ({"app"});
+	return new Server ("org.valum.example.SCGI", app.handle).run (args);
+}
