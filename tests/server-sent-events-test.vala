@@ -86,3 +86,20 @@ public void test_server_sent_events_send_multiline () {
 		assert_not_reached ();
 	}
 }
+
+public void test_server_sent_events_skip_on_head () {
+	var router = new Router ();
+
+	router.get ("/", stream_events ((req, send) => {
+		assert_not_reached ();
+	}));
+
+	var connection = new Connection ();
+	var req = new Request (connection, "HEAD", new Soup.URI ("http://127.0.0.1:3003/"));
+	var res = new Response (req);
+
+	router.handle (req, res);
+
+	HashTable<string, string> @params;
+	assert ("text/event-stream" == res.headers.get_content_type (out @params));
+}
