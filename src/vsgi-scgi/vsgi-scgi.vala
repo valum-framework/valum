@@ -52,7 +52,11 @@ namespace VSGI.SCGI {
 		 *
 		 * @since 0.3
 		 */
-		MALFORMED_NETSTRING
+		MALFORMED_NETSTRING,
+		/**
+		 * @since 0.3
+		 */
+		BAD_CONTENT_LENGTH
 	}
 
 	/**
@@ -224,11 +228,16 @@ namespace VSGI.SCGI {
 			yield reader.fill_async (-1, priority, cancellable);
 
 			size_t length;
-			var size = int.parse (reader.read_upto (":", 1, out length));
+			var size_str = reader.read_upto (":", 1, out length);
+
+			int64 size;
+			if (!int64.try_parse (size_str, out size)) {
+				throw new SCGIError.MALFORMED_NETSTRING ("'%s' is not a valid netstring length", size_str);
+			}
 
 			// prefill based on the size knowledge if appliable
 			if (size > 1 + 512) {
-				reader.set_buffer_size (1 + size);
+				reader.set_buffer_size (1 + (size_t) size_str);
 				yield reader.fill_async (-1, priority, cancellable);
 			}
 
@@ -264,7 +273,11 @@ namespace VSGI.SCGI {
 				throw new SCGIError.MALFORMED_NETSTRING ("missing ','");
 			}
 
-			var content_length = int64.parse (Environ.get_variable (environment, "CONTENT_LENGTH"));
+			int64 content_length;
+			if (!int64.try_parse (Environ.get_variable (environment, "CONTENT_LENGTH"), out content_length)) {
+				throw new SCGIError.BAD_CONTENT_LENGTH ("'%s' is not a valid content length",
+				                                        Environ.get_variable (environment, "CONTENT_LENGTH"));
+			}
 
 			// buffer the rest of the body
 			if (content_length > 0) {
