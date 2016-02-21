@@ -56,6 +56,10 @@ namespace VSGI.SCGI {
 		/**
 		 * @since 0.3
 		 */
+		MISSING_CONTENT_LENGTH,
+		/**
+		 * @since 0.3
+		 */
 		BAD_CONTENT_LENGTH
 	}
 
@@ -273,10 +277,15 @@ namespace VSGI.SCGI {
 				throw new SCGIError.MALFORMED_NETSTRING ("missing ','");
 			}
 
+			var content_length_str = Environ.get_variable (environment, "CONTENT_LENGTH");
+
+			if (content_length_str == null) {
+				throw new SCGIError.MISSING_CONTENT_LENGTH ("the content length is a mandatory field");
+			}
+
 			int64 content_length;
-			if (!int64.try_parse (Environ.get_variable (environment, "CONTENT_LENGTH"), out content_length)) {
-				throw new SCGIError.BAD_CONTENT_LENGTH ("'%s' is not a valid content length",
-				                                        Environ.get_variable (environment, "CONTENT_LENGTH"));
+			if (!int64.try_parse (content_length_str, out content_length)) {
+				throw new SCGIError.BAD_CONTENT_LENGTH ("'%s' is not a valid content length", content_length_str);
 			}
 
 			// buffer the rest of the body
