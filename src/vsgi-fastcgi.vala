@@ -221,7 +221,7 @@ namespace VSGI.FastCGI {
 					return 1;
 				}
 
-				command_line.print ("listening on 'fcgi://%s' (backlog '%d')\n", socket_path, backlog);
+				command_line.print ("listening on 'fcgi://unix:%s' (backlog '%d')\n", socket_path, backlog);
 			}
 
 			else if (options.contains ("port")) {
