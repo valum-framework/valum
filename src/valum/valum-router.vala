@@ -502,8 +502,9 @@ namespace Valum {
 					} while (allowed > 0);
 
 					if (req.method == Request.OPTIONS) {
+						res.status = Soup.Status.OK;
 						res.headers.append ("Allow", string.joinv (", ", allowedv));
-						throw new Success.OK ("The following methods are allowed: %s.", string.joinv (", ", allowedv));
+						return res.expand_utf8 (""); // result in 'Content-Length: 0' as specified
 					} else {
 						throw new ClientError.METHOD_NOT_ALLOWED (string.joinv (", ", allowedv));
 					}

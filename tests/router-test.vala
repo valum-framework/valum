@@ -649,6 +649,8 @@ public static void test_router_method_not_allowed_success_on_options () {
 	assert (response.status == 200);
 	message (response.headers.get_one ("Allow"));
 	assert ("GET, HEAD, PUT" == response.headers.get_one ("Allow"));
+	assert (Soup.Encoding.CONTENT_LENGTH == response.headers.get_encoding ());
+	assert (0 == response.headers.get_content_length ());
 }
 
 /**
