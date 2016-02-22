@@ -33,7 +33,7 @@ the latest changes in the framework.
     var app = new Router ();
 
     app.get ("", (req, res) => {
-        res.expand ("Hello world!".data, null);
+        return res.expand_utf8 ("Hello world!");
     });
 
     new Server (app.handle).run ({"app", "--port", "3003"});

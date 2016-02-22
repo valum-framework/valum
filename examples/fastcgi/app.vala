@@ -23,7 +23,7 @@ public static int main (string[] args) {
 
 	// default route
 	app.get ("", (req, res) => {
-		res.expand_utf8 ("Hello world!", null);
+		return res.expand_utf8 ("Hello world!", null);
 	});
 
 	app.get ("random/<int:size>", (req, res, next, context) => {
@@ -34,6 +34,8 @@ public static int main (string[] args) {
 			// write byte to byte
 			writer.put_uint32 (Random.next_int ());
 		}
+
+		return true;
 	});
 
 	return new Server ("org.valum.example.FastCGI", app.handle).run (args);

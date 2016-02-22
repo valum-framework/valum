@@ -6,5 +6,5 @@ init
 
   new VSGI.HTTP.Server ("org.valum.example.Genie", app.handle).run ({"app", "--all"})
 
-def home (req : VSGI.Request, res : VSGI.Response) raises IOError
-  res.body.write_all ("Hello world!".data, null)
+def home (req : VSGI.Request, res : VSGI.Response) : bool raises IOError
+  return res.body.write_all ("Hello world!".data, null)

@@ -16,7 +16,7 @@ var app = new Router ();
 
 app.get ("", (req, res) => {
     res.headers.set_content_type ("text/plain", null);
-    res.extend_utf8 ("Hello world!");
+    return res.extend_utf8 ("Hello world!");
 });
 
 new Server ("org.valum.example.App", app.handle).run ();

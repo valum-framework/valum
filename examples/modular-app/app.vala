@@ -21,7 +21,7 @@ using VSGI.HTTP;
 var app = new Router ();
 
 app.get ("", (req, res) => {
-	res.expand_utf8 (
+	return res.expand_utf8 (
 	"""
 	<!DOCTYPE html>
 	<html>

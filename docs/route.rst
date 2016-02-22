@@ -119,8 +119,7 @@ and optimized.
 ::
 
     app.regex (Request.GET, new Regex ("home/?", RegexCompileFlags.OPTIMIZE), (req, res) => {
-        var writer = new DataOutputStream (res.body);
-        writer.put_string ("Matched using a regular expression.");
+        return res.body.write_all ("Matched using a regular expression.".data, true);
     });
 
 Named captures are registered in the routing context.
@@ -145,8 +144,7 @@ A matcher consist of a callback matching a given ``Request`` object.
     MatcherCallback matcher = (req) => { req.path == "/custom-matcher"; };
 
     app.matcher (Method.GET, matcher, (req, res) => {
-        var writer = new DataOutputStream (res.body);
-        writer.put_string ("Matched using a custom matcher.");
+        return res.body.write_all ("Matched using a custom matcher.".data, null);
     });
 
 You could, for instance, match the request if the user is an administrator and

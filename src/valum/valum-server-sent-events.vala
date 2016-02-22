@@ -97,7 +97,7 @@ namespace Valum.ServerSentEvents {
 
 				// don't hang the user agent on a 'HEAD' request
 				if (req.method == Request.HEAD)
-					return;
+					return true;
 
 				context (req, (event, data, id, retry) => {
 					var message = new StringBuilder ();
@@ -124,6 +124,8 @@ namespace Valum.ServerSentEvents {
 			} catch (Error err) {
 				warning (err.message);
 			}
+
+			return true;
 		};
 	}
 }

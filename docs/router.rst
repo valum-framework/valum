@@ -22,7 +22,7 @@ It can be performed automatically with ``Router.use``:
         var params = new HashTable<string, string> (str_hash, str_equal);
         params["charset"] = "iso-8859-1";
         res.headers.set_content_type ("text/xhtml+xml", params);
-        next (req, res);
+        return next (req, res);
     });
 
 Routing context
@@ -38,11 +38,12 @@ context if it's missing.
 
     app.get ("", (req, res, next, context) => {
         context["some key"] = "some value";
-        next (req, res);
+        return next (req, res);
     });
 
     app.get ("", (req, res, next, context) => {
         var some_value = context["some key"]; // or context.parent["some key"]
+        return return res.body.write_all (some_value.data, null);
     });
 
 HTTP methods
@@ -53,7 +54,7 @@ Callback can be connected to HTTP methods via a list of helpers having the
 
 ::
 
-    app.get ("rule", (req, res, next) => {});
+    app.get ("rule", (req, res, next) => { return false; });
 
 The rule has to respect the rule syntax described in :doc:`route`. It will be
 compiled down to a regex which named groups are made accessible in the context.
@@ -87,6 +88,8 @@ the ``application/x-www-form-urlencoded`` body of the :doc:`vsgi/request`.
 
         // assuming you have a session implementation in your app
         var session = new Session.authenticated_by (username, password);
+
+        return true;
     });
 
 It is also possible to use a custom HTTP method via the ``method``
@@ -161,12 +164,12 @@ invoked to jump to the next status handler in the queue.
 ::
 
     app.status (Soup.Status.NOT_FOUND, (req, res, next) => {
-        next (req, res);
+        return next (req, res);
     });
 
     app.status (Soup.Status.NOT_FOUND, (req, res) => {
         res.status = 404;
-        res.expand_utf8 ("Not found!", null);
+        return res.expand_utf8 ("Not found!");
     });
 
 :doc:`redirection-and-error` can be thrown during the status handling, they
@@ -210,6 +213,7 @@ It provides a nice way to ignore passively unrecoverable errors.
                 throw new IOError.FAILED ("I/O failed undesirably.")
             });
         });
+        return true;
     });
 
 If the routing context is lost, any operation can still be performed within
@@ -311,7 +315,7 @@ matching route.
 
     app.get ("", (req, res, next) => {
         message ("pre");
-        next (req, res); // keep routing
+        return next (req, res); // keep routing
     });
 
     app.get ("", (req, res) => {
@@ -327,7 +331,7 @@ Filters
 ::
 
     app.get ("", (req, res, next) => {
-        next (req, new ConvertedResponse (res, new ZlibCompressor (ZlibCompressorFormat.GZIP)));
+        return next (req, new ConvertedResponse (res, new ZlibCompressor (ZlibCompressorFormat.GZIP)));
     });
 
     app.get ("", (req, res) => {
@@ -345,10 +349,10 @@ processing for a resource using handling middlewares.
 
     app.get ("admin", (req, res, next) => {
         // authenticate user...
-        next (req, res);
+        return next (req, res);
     }).then ((req, res, next) => {
         // produce sensitive data...
-        next (req, res);
+        return next (req, res);
     }).then ((req, res) => {
         // produce the response
     });
@@ -367,9 +371,10 @@ with custom and default status code handlers. It constitute an entry point for
 ::
 
     app.get ("", (req, res, next) => {
-        res.expand_utf8_async ("Hello world!", Priority.DEFAULT, null, () => {
+        res.expand_utf8_async.begin ("Hello world!", Priority.DEFAULT, null, () => {
             app.invoke (req, res, next);
         });
+        return true;
     });
 
     app.use ((req, res) => {
@@ -401,7 +406,7 @@ responses designed for non-human client.
     });
 
     app.status (Status.NOT_ACCEPTABLE, (req, res, next, context) => {
-        res.expand_utf8 ("<p>%s</p>".printf (context["message"].get_string ()), null);
+        return res.expand_utf8 ("<p>%s</p>".printf (context["message"].get_string ()));
     });
 
 Middleware
@@ -458,7 +463,7 @@ conditionally to a matching middleware.
 
     app.use ((req, res, next) => {
         // executed on every request
-        next (req, res);
+        return next (req, res);
     });
 
 The following example shows a middleware that provide a compressed stream over
@@ -468,11 +473,11 @@ the :doc:`vsgi/response` body.
 
     app.use ((req, res, next) => {
         res.headers.replace ("Content-Encoding", "gzip");
-        next (req, new ConvertedResponse (res, new ZLibCompressor (ZlibCompressorFormat.GZIP)));
+        return next (req, new ConvertedResponse (res, new ZLibCompressor (ZlibCompressorFormat.GZIP)));
     });
 
     app.get ("home", (req, res) => {
-        res.expand_utf8 ("Hello world!", null); // transparently compress the output
+        return res.expand_utf8 ("Hello world!"); // transparently compress the output
     });
 
 If this is wrapped in a function, which is typically the case, it can even be
@@ -482,13 +487,13 @@ used directly from the handler.
 
     HandlerCallback compress = (req, res, next) => {
         res.headers.replace ("Content-Encoding", "gzip");
-        next (req, new ConvertedResponse (res, new ZLibCompressor (ZlibCompressorFormat.GZIP));
+        return next (req, new ConvertedResponse (res, new ZLibCompressor (ZlibCompressorFormat.GZIP));
     };
 
     app.get ("home", compress);
 
     app.get ("home", (req, res) => {
-        res.expand_utf8 ("Hello world!", null);
+        return res.expand_utf8 ("Hello world!");
     });
 
 Alternatively, a handling middleware can be used directly instead of being
@@ -497,7 +502,7 @@ attached to a :doc:`route`, the processing will happen in a ``NextCallback``.
 ::
 
     app.get ("home", (req, res, next, context) => {
-        compress (req, res, (req, res) => {
-            res.expand_utf8 ("Hello world!", null);
+        return compress (req, res, (req, res) => {
+            return res.expand_utf8 ("Hello world!");
         }, new Context.with_parent (context));
     });

@@ -34,9 +34,9 @@ namespace Valum {
 		return (req, res, next, stack) => {
 			var header = req.headers.get_list (header_name);
 			if (header != null && header_parse_quality_list (header, null).find_custom (expectation, strcmp) != null) {
-				forward (req, res, next, stack);
+				return forward (req, res, next, stack);
 			} else {
-				next (req, res);
+				return next (req, res);
 			}
 		};
 	}

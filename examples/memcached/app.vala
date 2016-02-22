@@ -30,8 +30,7 @@ app.get ("<key>", (req, res, next, context) => {
 
 	switch (error) {
 		case Memcached.ReturnCode.SUCCESS:
-			res.expand (data, null);
-			break;
+			return res.expand (data, null);
 		case Memcached.ReturnCode.NOTFOUND:
 			throw new ClientError.NOT_FOUND ("key '%s' was not found", key);
 		default:

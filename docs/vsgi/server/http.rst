@@ -13,7 +13,7 @@ application or spawn workers in production.
 
     new Server ("org.vsgi.HTTP", () => {
         res.status = Soup.Status.OK;
-        res.body.write_all ("Hello world!".data, null);
+        return res.body.write_all ("Hello world!".data, null);
     }).run ({"app", "--port", "3003"});
 
 Options

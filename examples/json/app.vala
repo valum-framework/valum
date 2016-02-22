@@ -42,7 +42,7 @@ app.get ("", (req, res) => {
 
 	res.headers.set_content_type ("application/json", null);
 
-	generator.to_stream (res.body);
+	return generator.to_stream (res.body);
 });
 
 new Server ("org.valum.example.JSON", app.handle).run ({"app", "--all"});

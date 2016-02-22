@@ -37,7 +37,7 @@ Lua
         res.expand_utf8 (some_lua_code, null);
 
         // evaluate a file containing Lua code
-        res.expand_utf8 (lua.do_file ("scripts/hello.lua"), null);
+        return res.expand_utf8 (lua.do_file ("scripts/hello.lua"));
     });
 
     new Server ("org.valum.example.Lua", app.handle).run ();
@@ -64,8 +64,7 @@ Scheme can be used to produce template or facilitate computation.
 ::
 
     app.get ("hello.scm", (req, res) => {
-        var writer = new DataOutputStream (res.body);
-        writer.put_string (scm.run ("scripts/hello.scm"));
+        return res.expand_utf8 (scm.run ("scripts/hello.scm"));
     });
 
 Scheme code:

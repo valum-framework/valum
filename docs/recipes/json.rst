@@ -35,7 +35,7 @@ stream synchronously it in the :doc:`../vsgi/response` body.
         generator.root   = user.get_root ();
         generator.pretty = false;
 
-        generator.to_stream (res.body);
+        return generator.to_stream (res.body);
     });
 
 Serialize GObject
@@ -70,7 +70,7 @@ a JSON object from the encountered properties.
         generator.root   = Json.gobject_serialize (user);
         generator.pretty = false;
 
-        generator.to_stream (res.body);
+        return generator.to_stream (res.body);
     });
 
 With middlewares, you can split the process in multiple reusable steps to avoid
@@ -89,7 +89,7 @@ code duplication. They are described in the :doc:`../router` document.
         // fetch the user
         app.get ("<username>", (req, res, next, context) => {
             context["user"] = new User.from_username (context["username"].get_string ());
-            next (req, res);
+            return next (req, res);
         });
 
         // update model data
@@ -121,7 +121,7 @@ code duplication. They are described in the :doc:`../router` document.
 
             context["user"] = user;
 
-            next (req, res);
+            return next (req, res);
         });
 
         // serialize to JSON any provided GObject
@@ -133,7 +133,7 @@ code duplication. They are described in the :doc:`../router` document.
 
             res.headers.set_content_type ("application/json", null);
 
-            generator.to_stream (res.body);
+            return generator.to_stream (res.body);
         });
     });
 
@@ -153,6 +153,6 @@ expecting a considerable user input.
         context["user"] = user;
 
         // execute 'next' in app context
-        app.invoke (req, res, next);
+        return app.invoke (req, res, next);
     });
 

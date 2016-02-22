@@ -9,7 +9,7 @@ app.get ("", (req, res) => {
 	doc.compile (DocumentFlags.EMBED);
 	string markdown;
 	doc.document (out markdown);
-	res.expand_utf8 (markdown, null);
+	return res.expand_utf8 (markdown, null);
 });
 
 new Server ("org.valum.example.Markdown", app.handle).run ();

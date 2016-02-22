@@ -31,5 +31,6 @@ require the status to be part of the response headers.
         message.write_all ("Content-Type: text/plain\r\n");
         message.write_all ("\r\n".data);
         message.write_all ("Hello world!".data);
+        return true;
     });
 

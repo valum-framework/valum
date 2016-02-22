@@ -48,11 +48,11 @@ spending time on producing a body that won't be considered is important.
     res.headers.set_content_type ("text/html", null);
 
     if (req.method == "HEAD") {
-        res.write_head ();
-        return;
+        size_t bytes_written;
+        return res.write_head (out bytes_written);
     }
 
-    res.expand_utf8 ("<!DOCTYPE html><html></html>");
+    return res.expand_utf8 ("<!DOCTYPE html><html></html>");
 
 Use the ``construct`` block to perform post-initialization work. It will be
 called independently of how the object is constructed.
