@@ -25,11 +25,11 @@ Additionally, an array of supported HTTP methods is provided by
 ::
 
     if (req.method == Request.GET) {
-        res.body.write_all ("Hello world!".data, null);
+        return res.body.write_all ("Hello world!".data, null);
     }
 
     if (req.method == Request.POST) {
-        res.body.splice (req.body, OutputStreamSpliceFlags.NONE);
+        return res.body.splice (req.body, OutputStreamSpliceFlags.NONE);
     }
 
     if (req.method in Request.METHODS) {
@@ -82,6 +82,7 @@ from the ``headers`` property.
 
     new Server ("org.vsgi.App", (req) => {
         var accept = req.headers.get_one ("Accept");
+        return true;
     });
 
 libsoup-2.4 provides a very extensive set of utilities to process the
@@ -138,7 +139,9 @@ which is submitted by web browsers.
 
             // decode the data
             var data = Soup.Form.decode (data);
-        })
+        });
+
+        return true;
     });
 
 Some considerations should be taken when accumulating the request body into
@@ -171,6 +174,7 @@ a buffer (a `GLib.MemoryOutputStream`_) and return the corresponding
 
     app.post ("", (req, res) => {
         var data = Soup.Form.decode ((string) req.flatten ());
+        return true;
     });
 
 Multipart body

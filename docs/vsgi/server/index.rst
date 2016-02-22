@@ -66,7 +66,7 @@ written in a usual ``main`` function.
     public static int main (string[] args) {
         return new Server ("org.vsgi.App", (req, res) => {
             res.status = Soup.Status.OK;
-            res.body.write_all ("Hello world!".data, null);
+            return res.body.write_all ("Hello world!".data, null);
         }).run (args);
     }
 

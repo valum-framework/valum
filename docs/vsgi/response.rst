@@ -25,6 +25,7 @@ The status code will be written in the response with ``write_head`` or
 
     new Server ("org.vsgi.App", (req, res) => {
         res.status = Soup.Status.MALFORMED;
+        return true;
     });
 
 Headers
@@ -40,6 +41,7 @@ The response headers can be accessed as a `Soup.MessageHeaders`_ from the
     new Server ("org.vsgi.App", (req, res) => {
         res.status = Soup.Status.OK;
         res.headers.set_content_type ("text/plain", null);
+        return res.body.write_all ("Hello world!".data, null);
     });
 
 Headers can be written in the response by invoking ``write_head`` or its
@@ -92,7 +94,7 @@ HTTP/1.1 specifications such as chunked encoding.
     var body = new ConverterOutputStream (res.body,
                                           new CharsetConverter (res.body, "iso-8859-1", "utf-8"));
 
-    body.write_all ("Omelette du fromâge!", null);
+    return body.write_all ("Omelette du fromâge!", null);
 
 Additionally, some filters are applied automatically if the ``Transfer-Encoding``
 header is set. The obtained `GLib.OutputStream`_ will be wrapped appropriately
@@ -105,7 +107,7 @@ so that the application can transparently produce its output.
 ::
 
     res.headers.append ("Transfer-Encoding", "chunked");
-    res.body.write_all ("Hello world!".data, null);
+    return res.body.write_all ("Hello world!".data, null);
 
 Asynchronous write
 ~~~~~~~~~~~~~~~~~~
@@ -129,6 +131,7 @@ The simplest thing to overcome this limitation is to reference the
             // the reference to the response has persisted
             var written = res.body.write_async.end (result);
         });
+        return true;
     });
 
 Closing the response
@@ -161,5 +164,7 @@ the last ``write`` operation and the end of the processing.
         res.body.close ();
 
         Mailer.send ("johndoe@example.com", "Had to close that stream mate!");
+
+        return true;
     });
 

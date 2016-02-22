@@ -48,6 +48,8 @@ callback, the connection will be kept alive until both are freed.
         Idle.add (() => {
             req.body.write_all ("Hello world!".data, null);
         });
+
+        return true;
     };
 
     server = new Server ("org.vsgi.CGI", app);

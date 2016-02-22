@@ -37,7 +37,7 @@ Lua
         res.body.write_all (some_lua_code.data, null);
 
         // evaluate a file containing Lua code
-        res.body.write_all (lua.do_file ("scripts/hello.lua").data, null);
+        return res.body.write_all (lua.do_file ("scripts/hello.lua").data, null);
     });
 
     new Server ("org.valum.example.Lua", app.handle).run ();
@@ -64,8 +64,7 @@ Scheme can be used to produce template or facilitate computation.
 ::
 
     app.get ("hello.scm", (req, res) => {
-        var writer = new DataOutputStream (res.body);
-        writer.put_string (scm.run ("scripts/hello.scm"));
+        return res.body.write_all (scm.run ("scripts/hello.scm").data, null);
     });
 
 Scheme code:

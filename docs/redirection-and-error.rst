@@ -123,7 +123,7 @@ the :doc:`router` can handle them properly.
 ::
 
     app.get ("", (req, res, next) => {
-        next (req, res); // will throw a 404
+        return next (req, res); // will throw a 404
     });
 
     app.get ("", (req, res) => {

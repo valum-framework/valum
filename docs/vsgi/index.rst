@@ -26,7 +26,8 @@ Entry point
 
 The entry point of a VSGI application is type-compatible with the
 ``ApplicationCallback`` delegate. It is a function of two arguments:
-a :doc:`request` and a :doc:`response`.
+a :doc:`request` and a :doc:`response` that return a boolean indicating if the
+request has been or will be processed.
 
 ::
 
@@ -34,7 +35,11 @@ a :doc:`request` and a :doc:`response`.
 
     new Server ("org.vsgi.App", (req, res) => {
         // process the request and produce the response...
+        return true;
     }).run ();
+
+If an application indicate that the request has not been processed, it's up to
+the server implementation to decide what will happen.
 
 Accessing the :doc:`response` ``body`` for the first time will write the status
 line and headers synchronously in the connection stream before returning an
@@ -57,7 +62,7 @@ the first time.
         res.status = 200;
         res.headers.append ("Transfer-Encoding", "chunked");
         // chunked encoding will be applied
-        res.body.write_all ("Hello world!".data, null);
+        return res.body.write_all ("Hello world!".data, null);
     });
 
 Asynchronous processing
