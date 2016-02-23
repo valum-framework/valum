@@ -441,10 +441,8 @@ namespace Valum {
 						                                             (EqualFunc<string>) Soup.str_case_equal);
 						@params["charset"] = "utf-8";
 						res.headers.set_content_type ("text/plain", @params);
-						res.headers.set_content_length (err.message.data.length);
 						try {
-							size_t bytes_written;
-							res.body.write_all (err.message.data, out bytes_written);
+							return res.expand_utf8 (err.message);
 						} catch (IOError io_err) {
 							warning (io_err.message);
 						}
