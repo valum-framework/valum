@@ -449,7 +449,12 @@ namespace Valum {
 						break;
 				}
 
-				return true;
+				try {
+					return res.end ();
+				} catch (IOError io_err) {
+					warning (io_err.message);
+					return true;
+				}
 			}
 		}
 

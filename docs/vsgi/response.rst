@@ -164,24 +164,30 @@ You can still close the body explicitly as it can provide multiple advantages:
 -  avoid further and undesired read or write operation
 -  closing early let the application process outside the behalf of the user
    agent
--  closing the stream asynchronously with ``close_async`` can yield better
-   performances
 
-The typical example where closing the response manually can have a great
-incidence on its throughput is when blocking operations are performed between
-the last ``write`` operation and the end of the processing.
+To properly close the response, writing headers if missing, ``end`` is
+provided:
+
+::
+
+    new Server ("org.vsgi.App", (req, res, next) => {
+        res.status = Soup.Status.NO_CONTENT;
+        return res.end () && next ();
+    }).then ((req, res) => {
+        // perform blocking operation here...
+    });
+
+If have to produce a message before closing, use ``extend`` utilities.
 
 ::
 
     new Server ("org.vsgi.App", (req, res) => {
         res.status = Soup.Status.OK;
-        res.body.write_all ("You should receive an email shortly...".data, null);
 
-        // do not perform blocking operation here...
+        // write the message and close the body
+        res.expand_utf8 ("You should receive an email shortly...");
 
-        res.body.close ();
-
-        Mailer.send ("johndoe@example.com", "Had to close that stream mate!");
+        // perform blocking operation here...
 
         return true;
     });

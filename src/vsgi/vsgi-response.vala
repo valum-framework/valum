@@ -301,6 +301,26 @@ namespace VSGI {
 		}
 
 		/**
+		 * End the response properly, writting the head if missing.
+		 *
+		 * @since 0.3
+		 */
+		public bool end (Cancellable? cancellable = null) throws IOError {
+			size_t bytes_written;
+			return (head_written || write_head (out bytes_written, cancellable)) && body.close (cancellable);
+		}
+
+		/**
+		 * @since 0.3
+		 */
+		public async bool end_async (int          priority    = GLib.Priority.DEFAULT,
+		                             Cancellable? cancellable = null) throws Error {
+			size_t bytes_written;
+			return (head_written || yield write_head_async (priority, cancellable, out bytes_written)) &&
+			       yield body.close_async (priority, cancellable);
+		}
+
+		/**
 		 * Write the head before disposing references to other objects.
 		 */
 		public override void dispose () {

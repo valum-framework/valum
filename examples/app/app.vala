@@ -107,13 +107,13 @@ app.scope ("/cookie", (inner) => {
 		foreach (var cookie in req.cookies)
 			if (cookie.name == context["name"].get_string ())
 				return res.expand_utf8 ("%s\n".printf (cookie.value), null);
-		return true;
+		return res.end ();
 	});
 
 	inner.post ("/<name>", (req, res, next, context) => {
 		var cookie = new Soup.Cookie (context["name"].get_string (), req.flatten_utf8 (), "0.0.0.0", "/", 60);
 		res.headers.append ("Set-Cookie", cookie.to_set_cookie_header ());
-		return true;
+		return res.end ();
 	});
 });
 
