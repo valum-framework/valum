@@ -237,8 +237,7 @@ namespace VSGI.SCGI {
 				var reader      = new DataInputStream (connection.input_stream);
 
 				try {
-					// buffer approximately the netstring (~460B)
-					reader.set_buffer_size (512);
+					// buffer the request
 					reader.fill (-1);
 
 					size_t length;
@@ -248,12 +247,6 @@ namespace VSGI.SCGI {
 					if (!int64.try_parse (size_str, out size)) {
 						command_line.printerr ("'%s' is not a valid netstring length\n", size_str);
 						return true;
-					}
-
-					// prefill based on the size knowledge if appliable
-					if (size > 1 + 512) {
-						reader.set_buffer_size (1 + (size_t) size);
-						reader.fill (-1);
 					}
 
 					// consume the semi-colon
@@ -312,9 +305,13 @@ namespace VSGI.SCGI {
 							return true;
 						}
 
-						// fill the buffer
-						reader.set_buffer_size ((size_t) content_length);
-						reader.fill (-1);
+						// resize the buffer only if needed
+						if (reader.buffer_size < content_length)
+							reader.set_buffer_size ((size_t) content_length);
+
+						// fill the buffer (if needed)
+						if (reader.get_available () < content_length)
+						reader.fill ((ssize_t) content_length - (ssize_t) reader.get_available ());
 
 						if (content_length < reader.get_available ()) {
 							command_line.printerr ("request body (%sB) could not be buffered",
