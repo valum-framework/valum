@@ -12,5 +12,5 @@ def build(bld):
         target       = 'app',
         source       = ['app.vala', 'view.vala', 'app.gresource.xml'],
         use          = 'valum CTPL GEE',
-        vapi_dirs    = '../../vapi',
+        vapi_dirs    = '../../vapi vapi',
         install_path = None)

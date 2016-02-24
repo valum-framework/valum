@@ -8,6 +8,6 @@ def build(bld):
         packages     = ['json-glib-1.0'],
         target       = 'app',
         source       = 'app.vala',
-        use          = 'valum JSON CTPL',
+        use          = 'valum JSON',
         vapi_dirs    = '../../vapi',
         install_path = None)
