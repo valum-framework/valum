@@ -242,11 +242,17 @@ namespace VSGI.SCGI {
 					reader.fill (-1);
 
 					size_t length;
-					var size = int.parse (reader.read_upto (":", 1, out length));
+					var size_str = reader.read_upto (":", 1, out length);
+
+					int64 size;
+					if (!int64.try_parse (size_str, out size)) {
+						command_line.printerr ("'%s' is not a valid netstring length\n", size_str);
+						return true;
+					}
 
 					// prefill based on the size knowledge if appliable
 					if (size > 1 + 512) {
-						reader.set_buffer_size (1 + size);
+						reader.set_buffer_size (1 + (size_t) size);
 						reader.fill (-1);
 					}
 
@@ -286,7 +292,12 @@ namespace VSGI.SCGI {
 						return true;
 					}
 
-					var content_length = int64.parse (environment["CONTENT_LENGTH"]);
+					int64 content_length;
+					if (!int64.try_parse (environment["CONTENT_LENGTH"], out content_length)) {
+						command_line.printerr ("'%s' is not a valid content length\n",
+						                       environment["CONTENT_LENGTH"]);
+						return true;
+					}
 
 					// buffer the rest of the body
 					if (content_length > 0) {
