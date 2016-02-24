@@ -24,7 +24,7 @@ the latest changes in the framework.
 
 .. _valum-framework/example: https://github.com/valum-framework/example
 
-.. code:: vala
+::
 
     using Valum;
     using VSGI.Soup;

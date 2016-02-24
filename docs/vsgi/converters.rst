@@ -21,7 +21,7 @@ encoding transparently.
 
 A typical utilisation would be to negociate a ``Content-Encoding: zlib`` header.
 
-.. code:: vala
+::
 
     new Server ("org.vsgi.App", (req, res) => {
         res.status = Soup.Status.OK;

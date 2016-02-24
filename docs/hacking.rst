@@ -62,7 +62,8 @@ inspected with the ``gcov`` utility.
     cd build
     gcov src/router.c.1.gcda
 
-::
+
+Would output something like:
 
     File 'src/router.c'
     Executed lines: 57.83% of 792
@@ -98,7 +99,7 @@ and guarantee its backward compatibility.
 You can refer an issue from GitHub by calling ``Test.bug`` with the issue
 number.
 
-.. code:: vala
+::
 
     Test.bug ("123");
 

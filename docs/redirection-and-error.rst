@@ -14,7 +14,7 @@ It is possible to register a handler on the :doc:`router` to handle a specific
 status code. Otherwise, the router will simply set the status code in the
 response and set its headers for specific status.
 
-.. code:: vala
+::
 
     app.status (Soup.Status.PERMANENT, (req, res) => {
         res.status = Soup.Status.PERMANENT;
@@ -73,7 +73,7 @@ resource.
 
 Successes are enumerated in ``Success`` error domain.
 
-.. code:: vala
+::
 
     app.get ("document/<int:id>", (req, res) => {
         // serve the document by its identifier...
@@ -93,7 +93,7 @@ message as a redirect URL. The :doc:`router` will automatically set the
 
 Redirections are enumerated in ``Redirection`` error domain.
 
-.. code:: vala
+::
 
     app.get ("user/<id>/save", (req, res) => {
         var user = User (req.params["id"]);
@@ -108,7 +108,7 @@ Client (4xx) and server (5xx) error
 Like for redirections, client and server errors are thrown. Errors are
 predefined in ``ClientError`` and ``ServerError`` error domains.
 
-.. code:: vala
+::
 
     app.get ("not-found", (req, res) => {
         throw new ClientError.NOT_FOUND ("The requested URI was not found.");
@@ -120,7 +120,7 @@ Errors in next
 The ``next`` continuation is designed to throw these specific errors so that
 the :doc:`router` can handle them properly.
 
-.. code:: vala
+::
 
     app.get ("", (req, res, next) => {
         next (req, res); // will throw a 404
@@ -133,7 +133,7 @@ the :doc:`router` can handle them properly.
 During status handling, the error message will be pushed on the routing stack
 as a ``string``.
 
-.. code:: vala
+::
 
     app.status (404, (req, res, next, stack) => {
         var message = stack.pop_tail ().get_string ();

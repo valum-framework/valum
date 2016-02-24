@@ -69,7 +69,7 @@ Matching using a rule
 Rules are used by the HTTP methods alias (``get``, ``post``, ...) and
 ``method`` function in :doc:`router`.
 
-.. code:: vala
+::
 
     // using an alias
     app.get ("your-rule/<int:id>", (req, res) => {
@@ -89,11 +89,11 @@ This class implements the rule system designed to simplify regular expression.
 A rule is a simple path with parameters delimited with ``<`` and ``>``
 characters. Formally, a parameter is defined by the following EBNF:
 
-::
+.. code-block:: ebnf
 
-    parameter := '<' (type ':')? name '>'
-    type      := \w+
-    name      := \w+
+    parameter = '<', [ type, ':' ], name, '>';
+    type      = ? \w+ ?;
+    name      = ? \w+ ?;
 
 The following items are valid rules:
 
@@ -170,7 +170,7 @@ slashes using a regular expression literal.
 
 .. code:: vala
 
-    app.types["path"] = /[\\w\/]+/;
+    app.types["path"] = new Regex ("[\\w\/]+", RegexCompileFlags.OPTIMIZE);
 
 If you would like ``ìnt`` to match negatives integer, you may just do:
 
@@ -178,7 +178,7 @@ If you would like ``ìnt`` to match negatives integer, you may just do:
 
     var app = new Router ();
 
-    app.types["int"] = /-?\d+/;
+    app.types["int"] = new Regex ("-?\d+", RegexCompileFlags.OPTIMIZE);
 
 Matching using a regular expression
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -189,7 +189,7 @@ and optimized.
 
 .. code:: vala
 
-    app.regex (Request.GET, /home\/?/, (req, res) => {
+    app.regex (Request.GET, new Regex ("home\/?", RegexCompileFlags.OPTIMIZE), (req, res) => {
         var writer = new DataOutputStream (res.body);
         writer.put_string ("Matched using a regular expression.");
     });
@@ -238,7 +238,7 @@ Matcher should respect the *populate if match* principle, so design it in a way
 that the request parameters remain untouched if the matcher happens not to
 accept the request.
 
-.. code:: vala
+::
 
     app.matcher ("GET", (req) => {
         var route = new Route.from_rule (app, "your-rule");
@@ -258,7 +258,7 @@ code flow conveniently. They are fully covered in the :doc:`router` document.
 See :doc:`redirection-and-error` for more details on what can be throws during
 the processing of a handler.
 
-.. code:: vala
+::
 
     app.get ("redirection", (req, res) => {
         throw new Redirection.MOVED_TEMPORAIRLY ("http://example.com");

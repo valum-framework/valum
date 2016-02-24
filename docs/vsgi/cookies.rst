@@ -44,7 +44,7 @@ The extracted cookies can be manipulated with common `SList`_ operations.
     Cookies will be in their order of appearance and `SList.reverse`_ should be
     used prior to perform a lookup that respects precedence.
 
-.. code:: vala
+::
 
     cookies.reverse ();
 
@@ -82,7 +82,7 @@ The newly created cookie can be sent by adding a ``Set-Cookie`` header in the
 
 .. _Soup.Cookie: http://valadoc.org/#!api=libsoup-2.4/Soup.Cookie
 
-.. code:: vala
+::
 
     var cookie = new Cookie ("name", "value", "0.0.0.0", "/", 60);
     res.headers.append ("Set-Cookie", cookie.to_set_cookie_header ());
@@ -105,13 +105,13 @@ generally recommended.
 
 .. code:: vala
 
-    var @value = Cookies.sign (cookie, ChecksumType.SHA512, "secret".data);
+    var value = Cookies.sign (cookie, ChecksumType.SHA512, "secret".data);
 
-    cookie.@value = @value;
+    cookie.value = value;
 
-    string @value;
-    if (Cookies.verify (cookie, ChecksumType.SHA512, "secret.data", out @value)) {
-        // cookie's okay and the original value is stored in @value
+    string value;
+    if (Cookies.verify (cookie, ChecksumType.SHA512, "secret.data", out value)) {
+        // cookie's okay and the original value is stored in value
     }
 
 The signature is computed in a way it guarantees that:

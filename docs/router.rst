@@ -20,9 +20,9 @@ described later in this document.
 .. code:: vala
 
     app.get (null, (req, res, next) => {
-        var @params = new HashTable<string, string> (str_hash, str_equal);
-        @params["charset"] = "iso-8859-1";
-        res.headers.set_content_type ("text/xhtml+xml", @params);
+        var params = new HashTable<string, string> (str_hash, str_equal);
+        params["charset"] = "iso-8859-1";
+        res.headers.set_content_type ("text/xhtml+xml", params);
         next (req, res);
     });
 
@@ -57,7 +57,7 @@ HTTP methods
 Callback can be connected to HTTP methods via a list of helpers having the
 ``HandlerCallback`` delegate signature:
 
-.. code:: vala
+::
 
     app.get ("rule", (req, res, next) => {});
 
@@ -79,7 +79,7 @@ the ``application/x-www-form-urlencoded`` body of the :doc:`vsgi/request`.
 
 .. _Soup.Form: http://valadoc.org/#!api=libsoup-2.4/Soup.Form
 
-.. code:: vala
+::
 
     app.post ("login", (req, res) => {
         var buffer = new MemoryOutputStream.resizable ();
@@ -125,7 +125,7 @@ Multiple methods can be captured with ``methods`` and ``all``.
 Regular expression
 ------------------
 
-.. code:: vala
+::
 
     app.regex (/home/, (req, res) => {
         // matches /home
@@ -143,7 +143,7 @@ delegate.
     the `populate if match` rule, otherwise you will experience
     inconsistencies.
 
-.. code:: vala
+::
 
     app.matcher (Request.GET, (req) => { return req.uri.get_path () == "/home"; }, (req, res) => {
         // matches /home
@@ -156,34 +156,34 @@ Thrown status code can be handled by a ``HandlerCallback`` pretty much like how
 typically matched requests are being handled.
 
 The received :doc:`vsgi/request` and :doc:`vsgi/response` object are in the
-same state they were when the status was thrown. The error message is stacked
-and available in the ``HandlerCallback`` last parameter.
+same state they were when the status was thrown. The error message is bound to
+the key ``message`` in the routing context.
 
-.. code:: vala
+::
 
-    app.status (Soup.Status.NOT_FOUND, (req, res, next, stack) => {
+    app.status (Soup.Status.NOT_FOUND, (req, res, next, context) => {
         // produce a 404 page...
-        var message = stack.pop_tail ().get_string ();
+        var message = context["message"].get_string ();
     });
 
 Similarly to conventional request handling, the ``next`` continuation can be
 invoked to jump to the next status handler in the queue.
 
-.. code:: vala
+::
 
     app.status (Soup.Status.NOT_FOUND, (req, res, next) => {
-        next (req, res);
+        return next (req, res);
     });
 
     app.status (Soup.Status.NOT_FOUND, (req, res) => {
         res.status = 404;
-        res.body.write_all ("Not found!".data, null);
+        return res.expand_utf8 ("Not found!");
     });
 
 :doc:`redirection-and-error` can be thrown during the status handling, they
 will be caught by the ``Router`` and processed accordingly.
 
-.. code:: vala
+::
 
     // turns any 404 into a permanent redirection
     app.status (Soup.Status.NOT_FOUND, (req, res) => {
@@ -203,15 +203,17 @@ accordingly. Similarly to status codes, errors are propagated in the
 ``HandlerCallback`` and ``NextCallback`` delegate signatures and can be handled
 with a ``500`` handler.
 
+.. _GLib.Error: http://valadoc.org/#!api=glib-2.0/GLib.Error
+
 It provides a nice way to ignore passively unrecoverable errors.
 
-.. code:: vala
+::
 
     app.get ("", (req, res) => {
         throw new IOError.FAILED ("I/O failed some some reason.");
     });
 
-.. code:: vala
+::
 
     app.get ("", (req, res) => {
         res.write_all_async ("Hello world!".data, null, () => {
@@ -220,6 +222,7 @@ It provides a nice way to ignore passively unrecoverable errors.
             });
         });
     });
+
 If the routing context is lost, any operation can still be performed within
 ``Router.invoke``
 
@@ -236,7 +239,7 @@ a scope, it pushes the fragment on top of that stack and pops it when it exits.
 The default separator is a ``/`` and it might become possible to change it in
 a future release.
 
-.. code:: vala
+::
 
     app.scope ("admin", (admin) => {
         // admin is a scoped Router
@@ -279,7 +282,7 @@ The :doc:`route` handler takes a callback as an optional third argument. This
 callback is a continuation that will continue the routing process to the next
 matching route.
 
-.. code:: vala
+::
 
     app.get ("", (req, res, next) => {
         message ("pre");
@@ -332,7 +335,7 @@ Sequence
 handlers for a common matcher. It can be used to create a pipeline of
 processing for a resource using handling middlewares.
 
-.. code:: vala
+::
 
     app.get ("admin", (req, res, next) => {
         // authenticate user...
@@ -355,7 +358,7 @@ The function provides an invocation context that handles thrown status code
 with custom and default status code handlers. It constitute an entry point for
 ``handle`` where the next callback performs the actual routing.
 
-.. code:: vala
+::
 
     app.get ("", (req, res, next) => {
         res.body.write_all_async ("Hello world!".data, Priority.DEFAULT, null, () => {
@@ -378,7 +381,7 @@ The following example handles a situation where a client with the
 ``Accept: text/html`` header defined attempts to access an API that produces
 responses designed for non-human client.
 
-.. code:: vala
+::
 
     var app = new Router ();
     var api = new Router ();
@@ -409,7 +412,7 @@ These middlewares respect the ``Route.MatcherCallback`` delegate signature.
 
 The following piece of code is a reusable and generic content negociator:
 
-.. code:: vala
+::
 
     public MatcherCallback accept (string content_type) {
         return (req) => {
@@ -423,7 +426,7 @@ It is not really powerful as it does not support fuzzy matching like
 It can conveniently be used as a matcher callback to capture all requests that
 accept the ``application/json`` content type as a response.
 
-.. code:: vala
+::
 
     app.matcher (accept ("application/json"), (req, res) => {
         // produce a JSON output...
@@ -445,7 +448,7 @@ A handling middleware can also pass a filtered :doc:`vsgi/request` or
 The following example shows a middleware that provide a compressed stream over
 the :doc:`vsgi/response` body.
 
-.. code:: vala
+::
 
     app.get (null, (req, res, next) => {
         res.headers.replace ("Content-Encoding", "gzip");
@@ -459,7 +462,7 @@ the :doc:`vsgi/response` body.
 If this is wrapped in a function, which is typically the case, it can even be
 used directly from the handler.
 
-.. code:: vala
+::
 
     HandlerCallback compress = (req, res, next) => {
         res.headers.replace ("Content-Encoding", "gzip");
@@ -475,7 +478,7 @@ used directly from the handler.
 Alternatively, a handling middleware can be used directly instead of being
 attached to a :doc:`route`, the processing will happen in a ``NextCallback``.
 
-.. code:: vala
+::
 
     app.get ("home", (req, res, next, stack) => {
         compress (req, res, (req, res) => {

@@ -22,7 +22,7 @@ The ``Request`` class provides constants for the following HTTP methods:
 Additionally, an array of supported HTTP methods is provided by
 ``Request.METHODS``.
 
-.. code:: vala
+::
 
     if (req.method == Request.GET) {
         res.body.write_all ("Hello world!".data, null);
@@ -49,7 +49,7 @@ as a general metadata storage for requests.
 
 .. _Glib.HashTable: http://valadoc.org/#!api=glib-2.0/GLib.HashTable
 
-.. code:: vala
+::
 
     app.get ("<int:id>", (req, res) => {
         var id = req.params["id"];
@@ -64,7 +64,7 @@ since a matcher can be any function accepting a ``Request`` instance.
 
 The parameter defaults to ``null`` if it is not populated.
 
-.. code:: vala
+::
 
     new Server ("org.vsgi.App", (req) => {
         // req.params == null
@@ -78,7 +78,7 @@ from the ``headers`` property.
 
 .. _Soup.MessageHeaders: http://valadoc.org/#!api=libsoup-2.4/Soup.MessageHeaders
 
-.. code:: vala
+::
 
     new Server ("org.vsgi.App", (req) => {
         var accept = req.headers.get_one ("Accept");
@@ -87,7 +87,7 @@ from the ``headers`` property.
 libsoup-2.4 provides a very extensive set of utilities to process the
 information contained in headers.
 
-.. code:: vala
+::
 
     SList<string> unacceptable;
     Soup.header_parse_quality_list (req.headers.get_list ("Accept"), out unacceptable);
@@ -115,7 +115,7 @@ Form
 `Soup.Form`_ can be used to parse ``application/x-www-form-urlencoded`` format,
 which is submitted by web browsers.
 
-.. code:: vala
+::
 
     new Server ("org.vsgi.App", (req, res) => {
         var buffer = new MemoryOutputStream.resizable ();
@@ -167,7 +167,7 @@ The ``flatten`` and ``flatten`` functions flatten the request body into
 a buffer (a `GLib.MemoryOutputStream`_) and return the corresponding
 ``uint8[]`` data buffer.
 
-.. code:: vala
+::
 
     app.post ("", (req, res) => {
         var data = Soup.Form.decode ((string) req.flatten ());
