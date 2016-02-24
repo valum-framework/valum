@@ -14,7 +14,7 @@ using VSGI.HTTP;
 
 var app = new Router ();
 
-app.get ("", (req, res) => {
+app.get ("/", (req, res) => {
     res.headers.set_content_type ("text/plain", null);
     return res.extend_utf8 ("Hello world!");
 });

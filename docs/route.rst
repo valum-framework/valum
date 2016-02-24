@@ -22,12 +22,12 @@ functions in :doc:`router`.
 ::
 
     // using an alias
-    app.get ("your-rule/<int:id>", (req, res) => {
+    app.get ("/your-rule/<int:id>", (req, res) => {
 
     });
 
     // using a method
-    app.rule (Request.GET, "your-rule/<int:id>", (req, res) => {
+    app.rule (Request.GET, "/your-rule/<int:id>", (req, res) => {
 
     });
 
@@ -104,7 +104,7 @@ Rule parameters are available from the routing context by their name.
 
 ::
 
-    app.get ("<controller>/<action>", (req, res, next, context) => {
+    app.get ("/<controller>/<action>", (req, res, next, context) => {
         var controller = context["controller"].get_string ();
         var action     = context["action"].get_string ();
     });
@@ -118,7 +118,7 @@ and optimized.
 
 ::
 
-    app.regex (Request.GET, new Regex ("home/?", RegexCompileFlags.OPTIMIZE), (req, res) => {
+    app.regex (Request.GET, new Regex ("/home/?", RegexCompileFlags.OPTIMIZE), (req, res) => {
         return res.body.write_all ("Matched using a regular expression.".data, true);
     });
 
@@ -126,7 +126,7 @@ Named captures are registered in the routing context.
 
 ::
 
-    app.regex (new Regex ("(?<word>\w+)", RegexCompileFlags.OPTIMIZE), (req, res, next, ctx) => {
+    app.regex (new Regex ("/(?<word>\w+)", RegexCompileFlags.OPTIMIZE), (req, res, next, ctx) => {
         var word = ctx["word"].get_string ();
     });
 
@@ -195,6 +195,6 @@ the processing of a handler.
 
 ::
 
-    app.get ("redirection", (req, res) => {
+    app.get ("/redirection", (req, res) => {
         throw new Redirection.MOVED_TEMPORAIRLY ("http://example.com");
     });

@@ -22,11 +22,11 @@ public static int main (string[] args) {
 	var app = new Router ();
 
 	// default route
-	app.get ("", (req, res) => {
+	app.get ("/", (req, res) => {
 		return res.expand_utf8 ("Hello world!", null);
 	});
 
-	app.get ("random/<int:size>", (req, res, next, context) => {
+	app.get ("/random/<int:size>", (req, res, next, context) => {
 		var size   = int.parse (context["size"].get_string ());
 		var writer = new DataOutputStream (res.body);
 

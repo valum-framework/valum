@@ -37,17 +37,17 @@ app.use ((req, res, next) => {
 	return next (req, res);
 });
 
-app.get ("", (req, res, next) => {
+app.get ("/", (req, res, next) => {
 	var template = new View.from_resources ("/templates/home.html");
 	return template.to_stream (res.body);
 });
 
-app.get ("async", (req, res) => {
+app.get ("/async", (req, res) => {
 	respond_async.begin (req, res);
 	return true;
 });
 
-app.get ("gzip", (req, res, next) => {
+app.get ("/gzip", (req, res, next) => {
 	res.headers.replace ("Content-Encoding", "gzip");
 	return next (req, new VSGI.ConvertedResponse (res, new ZlibCompressor (ZlibCompressorFormat.GZIP)));
 }).then ((req, res) => {
@@ -63,7 +63,7 @@ app.use ((req, res, next) => {
 	return next (req, res);
 });
 
-app.get ("headers", (req, res) => {
+app.get ("/headers", (req, res) => {
 	var headers = new StringBuilder ();
 	req.headers.foreach ((name, header) => {
 		headers.append_printf ("%s: %s\n", name, header);
@@ -71,7 +71,7 @@ app.get ("headers", (req, res) => {
 	return res.expand_utf8 (headers.str, null);
 });
 
-app.get ("query", (req, res) => {
+app.get ("/query", (req, res) => {
 	if (req.query == null) {
 		return res.expand_utf8 ("null", null);
 	} else {
@@ -83,7 +83,7 @@ app.get ("query", (req, res) => {
 	}
 });
 
-app.get ("cookies", (req, res) => {
+app.get ("/cookies", (req, res) => {
 	if (req.cookies == null) {
 		return res.expand_utf8 ("null", null);
 	} else {
@@ -95,22 +95,22 @@ app.get ("cookies", (req, res) => {
 	}
 });
 
-app.scope ("cookie", (inner) => {
-	inner.get ("<name>", (req, res, next, context) => {
+app.scope ("/cookie", (inner) => {
+	inner.get ("/<name>", (req, res, next, context) => {
 		foreach (var cookie in req.cookies)
 			if (cookie.name == context["name"].get_string ())
 				return res.expand_utf8 ("%s\n".printf (cookie.value), null);
 		return true;
 	});
 
-	inner.post ("<name>", (req, res, next, context) => {
+	inner.post ("/<name>", (req, res, next, context) => {
 		var cookie = new Soup.Cookie (context["name"].get_string (), req.flatten_utf8 (), "0.0.0.0", "/", 60);
 		res.headers.append ("Set-Cookie", cookie.to_set_cookie_header ());
 		return true;
 	});
 });
 
-app.scope ("urlencoded-data", (inner) => {
+app.scope ("/urlencoded-data", (inner) => {
 	inner.get ("", (req, res) => {
 		res.headers.set_content_type ("text/html", null);
 		return res.expand_utf8 (
@@ -140,11 +140,11 @@ app.scope ("urlencoded-data", (inner) => {
 });
 
 // hello world! (compare with Node.js!)
-app.get ("hello", (req, res) => {
+app.get ("/hello", (req, res) => {
 	return res.expand_utf8 ("Hello world!", null);
 });
 
-app.get ("hello/", (req, res) => {
+app.get ("/hello/", (req, res) => {
 	return res.expand_utf8 ("Hello world!", null);
 });
 
@@ -156,11 +156,11 @@ app.rule (Method.GET, "custom-method", (req, res) => {
 	return res.expand_utf8 (req.method, null);
 });
 
-app.get ("hello/<id>", (req, res, next, context) => {
+app.get ("/hello/<id>", (req, res, next, context) => {
 	return res.expand_utf8 ("hello %s!".printf (context["id"].get_string ()), null);
 });
 
-app.get ("users/<int:id>(/<action>)?", (req, res, next, context) => {
+app.get ("/users/<int:id>(/<action>)?", (req, res, next, context) => {
 	var id     = context["id"].get_string ();
 	var test   = "action" in context ? context["action"].get_string () : "index";
 	var writer = new DataOutputStream (res.body);
@@ -173,11 +173,11 @@ app.get ("users/<int:id>(/<action>)?", (req, res, next, context) => {
 
 app.register_type ("permutations", /abc|acb|bac|bca|cab|cba/);
 
-app.get ("custom-route-type/<permutations:p>", (req, res, next, context) => {
+app.get ("/custom-route-type/<permutations:p>", (req, res, next, context) => {
 	return res.expand_utf8 (context["p"].get_string (), null);
 });
 
-app.get ("trailing-slash/?", (req, res) => {
+app.get ("/trailing-slash/?", (req, res) => {
 	if (req.uri.get_path ().has_suffix ("/")) {
 		return res.expand_utf8 ("It has it!", null);
 	} else {
@@ -196,24 +196,24 @@ app.matcher (Method.GET, (req) => { return req.uri.get_path () == "/custom-match
 // scoped routing
 app.scope ("admin", (adm) => {
 	// matches /admin/fun
-	adm.scope ("fun", (fun) => {
+	adm.scope ("/fun", (fun) => {
 		// matches /admin/fun/hack
-		fun.get ("hack", (req, res) => {
+		fun.get ("/hack", (req, res) => {
 			var time = new DateTime.now_utc ();
 			return res.expand_utf8 ("It's %s around here!\n".printf (time.format ("%H:%M")), null);
 		});
 		// matches /admin/fun/heck
-		fun.get ("heck", (req, res) => {
+		fun.get ("/heck", (req, res) => {
 			return res.expand_utf8 ("Wuzzup!", null);
 		});
 	});
 });
 
-app.get ("redirect", (req, res) => {
+app.get ("/redirect", (req, res) => {
 	throw new Redirection.MOVED_TEMPORARILY ("http://example.com");
 });
 
-app.get ("not-found", (req, res) => {
+app.get ("/not-found", (req, res) => {
 	throw new ClientError.NOT_FOUND ("This status were thrown and handled by a status handler.");
 });
 
@@ -221,33 +221,33 @@ var api = new Router ();
 
 app.use (subdomain ("api", api.handle));
 
-api.get ("repository/<name>", (req, res, next, context) => {
+api.get ("/repository/<name>", (req, res, next, context) => {
 	var name = context["name"].get_string ();
 	return res.expand_utf8 (name, null);
 });
 
 // delegate all other GET requests to a subrouter
-app.get ("repository/*", api.handle);
+app.get ("/repository/*", api.handle);
 
-app.get ("next", (req, res, next) => {
+app.get ("/next", (req, res, next) => {
 	return next (req, res);
 });
 
-app.get ("next", (req, res) => {
+app.get ("/next", (req, res) => {
 	return res.expand_utf8 ("Matched by the next route in the queue.", null);
 });
 
-app.get ("state", (req, res, next, context) => {
+app.get ("/state", (req, res, next, context) => {
 	context["state"] = "I have been passed!";
 	return next (req, res);
 });
 
-app.get ("state", (req, res, next, context) => {
+app.get ("/state", (req, res, next, context) => {
 	return res.expand_utf8 (context["state"].get_string (), null);
 });
 
 // Ctpl template rendering
-app.get ("ctpl/<foo>/<bar>", (req, res, next, context) => {
+app.get ("/ctpl/<foo>/<bar>", (req, res, next, context) => {
 	var tpl = new View.from_string ("""
 	   <p>hello {foo}</p>
 	   <p>hello {bar}</p>
@@ -268,7 +268,7 @@ app.get ("ctpl/<foo>/<bar>", (req, res, next, context) => {
 });
 
 // serve static resource using a path route parameter
-app.get ("static/<path:path>", (req, res, next, context) => {
+app.get ("/static/<path:path>", (req, res, next, context) => {
 	var path = "/static/%s".printf (context["path"].get_string ());
 	bool uncertain;
 
@@ -300,7 +300,7 @@ app.get ("static/<path:path>", (req, res, next, context) => {
 	}
 });
 
-app.get ("server-sent-events", stream_events ((req, send) => {
+app.get ("/server-sent-events", stream_events ((req, send) => {
 	send (null, "now!");
 	GLib.Timeout.add_seconds (5, () => {
 		try {
@@ -312,7 +312,7 @@ app.get ("server-sent-events", stream_events ((req, send) => {
 	});
 }));
 
-app.get ("negociate", accept ("application/json", (req, res) => {
+app.get ("/negociate", accept ("application/json", (req, res) => {
 	res.headers.set_content_type ("application/json", null);
 	return res.expand_utf8 ("{\"a\":\"b\"}", null);
 })).then (accept ("text/xml", (req, res) => {

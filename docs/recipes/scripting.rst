@@ -32,7 +32,7 @@ Lua
     var lua = new LuaVM ();
 
     // GET /lua
-    app.get ("lua", (req, res) => {
+    app.get ("/lua", (req, res) => {
         // evaluate a string containing Lua code
         res.expand_utf8 (some_lua_code, null);
 
@@ -63,7 +63,7 @@ Scheme can be used to produce template or facilitate computation.
 
 ::
 
-    app.get ("hello.scm", (req, res) => {
+    app.get ("/hello.scm", (req, res) => {
         return res.expand_utf8 (scm.run ("scripts/hello.scm"));
     });
 

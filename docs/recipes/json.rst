@@ -25,7 +25,7 @@ stream synchronously it in the :doc:`../vsgi/response` body.
 
 ::
 
-    app.get ("user/<username>", (req, res) => {
+    app.get ("/user/<username>", (req, res) => {
         var user      = new Json.Builder ();
         var generator = new Json.Generator ();
 
@@ -63,7 +63,7 @@ a JSON object from the encountered properties.
 
 ::
 
-    app.get ("user/<username>", (req, res) => {
+    app.get ("/user/<username>", (req, res) => {
         var user      = new User.from_username (req.params["username"]);
         var generator = new Json.Generator ();
 
@@ -85,17 +85,23 @@ code duplication. They are described in the :doc:`../router` document.
 
 ::
 
-    app.scope ("user", (user) => {
+    app.scope ("/user", (user) => {
         // fetch the user
-        app.get ("<username>", (req, res, next, context) => {
-            context["user"] = new User.from_username (context["username"].get_string ());
+        app.rule (Method.GET | Method.POST, "/<username>", (req, res, next, context) => {
+            var user = new User.from_username (context["username"].get_string ());
+
+            if (!user.exists ()) {
+                throw new ClientError.NOT_FOUND ("no such user '%s'", context["username"]);
+            }
+
+            context["user"] = user;
             return next (req, res);
         });
 
         // update model data
-        app.post ("<username>", (req, res, next, context) => {
+        app.post ("/<username>", (req, res, next, context) => {
             var username = context["username"].get_string ();
-            var user     = new User.from_username (username);
+            var user     = context["user"] as User;
             var parser   = new Json.Parser ();
 
             // whitelist for allowed properties
@@ -125,7 +131,7 @@ code duplication. They are described in the :doc:`../router` document.
         });
 
         // serialize to JSON any provided GObject
-        app.all (null, (req, res, next, context) => {
+        app.rule (Method.GET, "*", (req, res, next, context) => {
             var generator = new Json.Generator ();
 
             generator.root   = Json.gobject_serialize (context["user"].get_object ());

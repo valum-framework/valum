@@ -23,9 +23,9 @@ using VSGI.Mock;
  */
 public static void test_router () {
 	var router = new Router ();
-	router.get ("<int:i>", (req, res) => { return true; });
-	router.get ("<string:i>", (req, res) => { return true; });
-	router.get ("<path:i>", (req, res) => { return true; });
+	router.get ("/<int:i>", (req, res) => { return true; });
+	router.get ("/<string:i>", (req, res) => { return true; });
+	router.get ("/<path:i>", (req, res) => { return true; });
 }
 
 /**
@@ -34,7 +34,7 @@ public static void test_router () {
 public static void test_router_handle () {
 	var router = new Router ();
 
-	router.get ("", (req, res) => {
+	router.get ("/", (req, res) => {
 		res.status = 418;
 		return true;
 	});
@@ -55,7 +55,7 @@ public static void test_router_handle () {
 public static void test_router_get () {
 	var router = new Router ();
 
-	router.get ("", (req, res) => {
+	router.get ("/", (req, res) => {
 		res.status = 418;
 		return true;
 	});
@@ -74,7 +74,7 @@ public static void test_router_get () {
 public void test_router_get_default_head () {
 	var router = new Router ();
 
-	router.get ("", (req, res) => {
+	router.get ("/", (req, res) => {
 		res.status = 418;
 		return true;
 	});
@@ -93,7 +93,7 @@ public void test_router_get_default_head () {
 public void test_router_only_get () {
 	var router = new Router ();
 
-	router.rule (Method.ONLY_GET, "", (req, res) => {
+	router.rule (Method.ONLY_GET, "/", (req, res) => {
 		res.status = 418;
 		return true;
 	});
@@ -112,7 +112,7 @@ public void test_router_only_get () {
 public static void test_router_post () {
 	var router = new Router ();
 
-	router.post ("", (req, res) => {
+	router.post ("/", (req, res) => {
 		res.status = 418;
 		return true;
 	});
@@ -131,7 +131,7 @@ public static void test_router_post () {
 public static void test_router_put () {
 	var router = new Router ();
 
-	router.put ("", (req, res) => {
+	router.put ("/", (req, res) => {
 		res.status = 418;
 		return true;
 	});
@@ -150,7 +150,7 @@ public static void test_router_put () {
 public static void test_router_delete () {
 	var router = new Router ();
 
-	router.delete ("", (req, res) => {
+	router.delete ("/", (req, res) => {
 		res.status = 418;
 		return true;
 	});
@@ -169,7 +169,7 @@ public static void test_router_delete () {
 public static void test_router_head () {
 	var router = new Router ();
 
-	router.head ("", (req, res) => {
+	router.head ("/", (req, res) => {
 		res.status = 418;
 		return true;
 	});
@@ -188,7 +188,7 @@ public static void test_router_head () {
 public static void test_router_options () {
 	var router = new Router ();
 
-	router.options ("", (req, res) => {
+	router.options ("/", (req, res) => {
 		res.status = 418;
 		return true;
 	});
@@ -207,7 +207,7 @@ public static void test_router_options () {
 public static void test_router_trace () {
 	var router = new Router ();
 
-	router.trace ("", (req, res) => {
+	router.trace ("/", (req, res) => {
 		res.status = 418;
 		return true;
 	});
@@ -226,7 +226,7 @@ public static void test_router_trace () {
 public static void test_router_connect () {
 	var router = new Router ();
 
-	router.connect ("", (req, res) => {
+	router.connect ("/", (req, res) => {
 		res.status = 418;
 		return true;
 	});
@@ -244,7 +244,7 @@ public static void test_router_connect () {
 public static void test_router_patch () {
 	var router = new Router ();
 
-	router.patch ("", (req, res) => {
+	router.patch ("/", (req, res) => {
 		res.status = 418;
 		return true;
 	});
@@ -338,12 +338,12 @@ public void test_router_rule_any () {
 public static void test_router_regex () {
 	var router = new Router ();
 
-	var route = router.regex (Method.GET, /home/, (req, res) => {
+	var route = router.regex (Method.GET, /\/home/, (req, res) => {
 		res.status = 418;
 		return true;
 	}) as RegexRoute;
 
-	assert ("^/home$" == route.regex.get_pattern ());
+	assert ("^\\/home$" == route.regex.get_pattern ());
 	assert (RegexCompileFlags.OPTIMIZE in route.regex.get_compile_flags ());
 
 	var request  = new Request.with_uri (new Soup.URI ("http://localhost/home"));
@@ -379,8 +379,8 @@ public static void test_router_matcher () {
 public static void test_router_scope () {
 	var router = new Router ();
 
-	router.scope ("test", (inner) => {
-		inner.get ("test", (req, res) => {
+	router.scope ("/test", (inner) => {
+		inner.get ("/test", (req, res) => {
 			res.status = 418; // I'm a teapot
 			return true;
 		});
@@ -401,7 +401,7 @@ public void test_router_scope_regex () {
 	var router = new Router ();
 
 	Route? route = null;
-	router.scope ("test", (test) => {
+	router.scope ("/test/", (test) => {
 		route = test.regex (Method.GET, /(?<id>\d+)/, (req, res) => { return true; });
 	});
 
@@ -439,7 +439,7 @@ public static void test_router_informational_switching_protocols () {
 public static void test_router_success_created () {
 	var router = new Router ();
 
-	router.put ("document", (req, res) => {
+	router.put ("/document", (req, res) => {
 		throw new Success.CREATED ("/document/5");
 	});
 
@@ -458,7 +458,7 @@ public static void test_router_success_created () {
 public static void test_router_success_partial_content () {
 	var router = new Router ();
 
-	router.put ("document", (req, res) => {
+	router.put ("/document", (req, res) => {
 		throw new Success.PARTIAL_CONTENT ("bytes 21010-47021/47022");
 	});
 
@@ -477,7 +477,7 @@ public static void test_router_success_partial_content () {
 public static void test_router_redirection () {
 	var router = new Router ();
 
-	router.get ("", (req, res) => {
+	router.get ("/", (req, res) => {
 		throw new Redirection.MOVED_TEMPORARILY ("http://example.com");
 	});
 
@@ -496,7 +496,7 @@ public static void test_router_redirection () {
 public static void test_router_client_error_method_not_allowed () {
 	var router = new Router ();
 
-	router.post ("", (req, res) => {
+	router.post ("/", (req, res) => {
 		return true;
 	});
 
@@ -538,7 +538,7 @@ public static void test_router_client_error_upgrade_required () {
 public static void test_router_server_error () {
 	var router = new Router ();
 
-	router.get ("", (req, res) => {
+	router.get ("/", (req, res) => {
 		throw new ServerError.INTERNAL_SERVER_ERROR ("Teapot's burning!");
 	});
 
@@ -564,7 +564,7 @@ public static void test_router_server_error () {
 public static void test_router_custom_method () {
 	var router = new Router ();
 
-	router.rule (Method.OTHER, "", (req, res) => {
+	router.rule (Method.OTHER, "/", (req, res) => {
 		res.status = 418;
 		return true;
 	});
@@ -583,11 +583,11 @@ public static void test_router_custom_method () {
 public static void test_router_method_not_allowed () {
 	var router = new Router ();
 
-	router.get ("", (req, res) => {
+	router.get ("/", (req, res) => {
 		return true;
 	});
 
-	router.put ("", (req, res) => {
+	router.put ("/", (req, res) => {
 		return true;
 	});
 
@@ -597,7 +597,6 @@ public static void test_router_method_not_allowed () {
 	router.handle (request, response);
 
 	assert (response.status == 405);
-	message (response.headers.get_one ("Allow"));
 	assert ("GET, HEAD, PUT" == response.headers.get_one ("Allow"));
 }
 
@@ -633,11 +632,11 @@ public static void test_router_method_not_allowed_excludes_request_method () {
 public static void test_router_method_not_allowed_success_on_options () {
 	var router = new Router ();
 
-	router.get ("", (req, res) => {
+	router.get ("/", (req, res) => {
 		return true;
 	});
 
-	router.put ("", (req, res) => {
+	router.put ("/", (req, res) => {
 		return true;
 	});
 
@@ -647,7 +646,6 @@ public static void test_router_method_not_allowed_success_on_options () {
 	router.handle (request, response);
 
 	assert (response.status == 200);
-	message (response.headers.get_one ("Allow"));
 	assert ("GET, HEAD, PUT" == response.headers.get_one ("Allow"));
 	assert (Soup.Encoding.CONTENT_LENGTH == response.headers.get_encoding ());
 	assert (0 == response.headers.get_content_length ());
@@ -675,12 +673,12 @@ public static void test_router_subrouting () {
 	var router    = new Router ();
 	var subrouter = new Router ();
 
-	subrouter.get ("", (req, res) => {
+	subrouter.get ("/", (req, res) => {
 		res.status = 418;
 		return true;
 	});
 
-	router.get ("", subrouter.handle);
+	router.get ("/", subrouter.handle);
 
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response.with_status (request, Soup.Status.NOT_FOUND);
@@ -696,16 +694,16 @@ public static void test_router_subrouting () {
 public static void test_router_next () {
 	var router = new Router ();
 
-	router.get ("", (req, res, next) => {
+	router.get ("/", (req, res, next) => {
 		return next (req, res);
 	});
 
 	// should recurse a bit in process_routing
-	router.get ("", (req, res, next) => {
+	router.get ("/", (req, res, next) => {
 		return next (req, res);
 	});
 
-	router.get ("", (req, res, next) => {
+	router.get ("/", (req, res, next) => {
 		res.status = 418;
 		return true;
 	});
@@ -721,12 +719,12 @@ public static void test_router_next () {
 public static void test_router_next_not_found () {
 	var router = new Router ();
 
-	router.get ("", (req, res, next) => {
+	router.get ("/", (req, res, next) => {
 		return next (req, res);
 	});
 
 	// should recurse a bit in process_routing
-	router.get ("", (req, res, next) => {
+	router.get ("/", (req, res, next) => {
 		return next (req, res);
 	});
 
@@ -746,16 +744,16 @@ public static void test_router_next_not_found () {
 public static void test_router_next_propagate_error () {
 	var router = new Router ();
 
-	router.get ("", (req, res, next) => {
+	router.get ("/", (req, res, next) => {
 		return next (req, res);
 	});
 
-	router.get ("", (req, res, next) => {
+	router.get ("/", (req, res, next) => {
 		return next (req, res);
 	});
 
-	router.get ("", (req, res, next) => {
-		throw new ClientError.UNAUTHORIZED ("");
+	router.get ("/", (req, res, next) => {
+		throw new ClientError.UNAUTHORIZED ("/");
 	});
 
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
@@ -773,16 +771,16 @@ public static void test_router_next_propagate_state () {
 	var router = new Router ();
 	var state  = new Object ();
 
-	router.get ("", (req, res, next, context) => {
+	router.get ("/", (req, res, next, context) => {
 		context["state"] = state;
 		return next (req, res);
 	});
 
-	router.get ("", (req, res, next) => {
+	router.get ("/", (req, res, next) => {
 		return next (req, res);
 	});
 
-	router.get ("", (req, res, next, context) => {
+	router.get ("/", (req, res, next, context) => {
 		res.status = 413;
 		assert (state == context["state"]);
 		return true;
@@ -803,18 +801,18 @@ public static void test_router_next_replace_propagated_state () {
 	var router = new Router ();
 	var state  = new Object ();
 
-	router.get ("", (req, res, next, context) => {
+	router.get ("/", (req, res, next, context) => {
 		context["state"] = state;
 		return next (req, res);
 	});
 
-	router.get ("", (req, res, next, context) => {
+	router.get ("/", (req, res, next, context) => {
 		assert (state == context["state"]);
 		context["state"] = "something really different";
 		return next (req, res);
 	});
 
-	router.get ("", (req, res, next, context) => {
+	router.get ("/", (req, res, next, context) => {
 		res.status = 413;
 		assert (context["state"].holds (typeof (string)));
 		assert (context.parent["state"].holds (typeof (string)));
@@ -854,7 +852,7 @@ public static void test_router_status_propagates_error_message () {
 public void test_router_status_handle_error () {
 	var router = new Router ();
 
-	router.get ("", (req, res) => {
+	router.get ("/", (req, res) => {
 		throw new IOError.FAILED ("Just failed!");
 	});
 
@@ -877,11 +875,11 @@ public void test_router_status_handle_error () {
 public static void test_router_invoke () {
 	var router = new Router ();
 
-	router.get ("", (req, res, next) => {
+	router.get ("/", (req, res, next) => {
 		return router.invoke (req, res, next);
 	});
 
-	router.get ("", (req, res) => {
+	router.get ("/", (req, res) => {
 		throw new ClientError.IM_A_TEAPOT ("this is insane!");
 	});
 
@@ -900,12 +898,12 @@ public static void test_router_invoke_propagate_state () {
 	var router  = new Router ();
 	var message = "test";
 
-	router.get ("", (req, res, next, context) => {
+	router.get ("/", (req, res, next, context) => {
 		context["message"] = message;
 		return router.invoke (req, res, next);
 	});
 
-	router.get ("", (req, res, next, context) => {
+	router.get ("/", (req, res, next, context) => {
 		assert (message == context["message"].get_string ());
 		throw new ClientError.IM_A_TEAPOT ("this is insane!");
 	});
@@ -927,7 +925,7 @@ public void test_router_then () {
 	var setted      = false;
 	var then_setted = false;
 
-	router.get ("<int:id>", (req, res, next) => {
+	router.get ("/<int:id>", (req, res, next) => {
 		setted = true;
 		return next (req, res);
 	}).then ((req, res) => {
@@ -953,7 +951,7 @@ public void test_router_then_preserve_matching_context () {
 
 	var reached = false;
 
-	router.get ("<int:id>", (req, res, next, context) => {
+	router.get ("/<int:id>", (req, res, next, context) => {
 		context["test"] = "test";
 		return next (req, res);
 	}).then ((req, res, next, context) => {
@@ -977,7 +975,7 @@ public void test_router_then_preserve_matching_context () {
 public void test_router_error () {
 	var router = new Router ();
 
-	router.get ("", (req, res) => {
+	router.get ("/", (req, res) => {
 		throw new IOError.FAILED ("Just failed!");
 	});
 

@@ -75,11 +75,11 @@ Successes are enumerated in ``Success`` error domain.
 
 ::
 
-    app.get ("document/<int:id>", (req, res) => {
+    app.get ("/document/<int:id>", (req, res) => {
         // serve the document by its identifier...
     });
 
-    app.put ("document", (req, res) => {
+    app.put ("/document", (req, res) => {
         // create the document described by the request
         throw new Success.CREATED ("/document/%u".printf (id));
     });
@@ -95,7 +95,7 @@ Redirections are enumerated in ``Redirection`` error domain.
 
 ::
 
-    app.get ("user/<id>/save", (req, res) => {
+    app.get ("/user/<id>/save", (req, res) => {
         var user = User (req.params["id"]);
 
         if (user.save ())
@@ -110,7 +110,7 @@ predefined in ``ClientError`` and ``ServerError`` error domains.
 
 ::
 
-    app.get ("not-found", (req, res) => {
+    app.get ("/not-found", (req, res) => {
         throw new ClientError.NOT_FOUND ("The requested URI was not found.");
     });
 
@@ -122,11 +122,11 @@ the :doc:`router` can handle them properly.
 
 ::
 
-    app.get ("", (req, res, next) => {
+    app.get ("/", (req, res, next) => {
         return next (req, res); // will throw a 404
     });
 
-    app.get ("", (req, res) => {
+    app.get ("/", (req, res) => {
         throw new ClientError.NOT_FOUND ("");
     });
 

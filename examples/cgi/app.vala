@@ -20,7 +20,7 @@ using VSGI.CGI;
 
 var app = new Router ();
 
-app.get ("", (req, res) => {
+app.get ("/", (req, res) => {
 	return res.expand_utf8 ("Hello world!", null);
 });
 

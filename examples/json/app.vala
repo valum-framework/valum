@@ -20,7 +20,7 @@ using VSGI.HTTP;
 
 var app = new Router ();
 
-app.get ("", (req, res) => {
+app.get ("/", (req, res) => {
 	var builder   = new Json.Builder ();
 	var generator = new Json.Generator ();
 

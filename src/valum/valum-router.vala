@@ -165,9 +165,8 @@ namespace Valum {
 		/**
 		 * Bind a callback with a custom method.
 		 *
-		 * The actual rule is rooted, scoped, anchored and compiled down to
-		 * {@link GLib.Regex}. It starts matching after the leading slash '/'
-		 * in the request URI path.
+		 * The actual rule is scoped, anchored and compiled down to a
+		 * {@link GLib.Regex}.
 		 *
 		 * @since 0.1
 		 *
@@ -178,12 +177,9 @@ namespace Valum {
 		public Route rule (Method method, string rule, owned HandlerCallback cb) {
 			var pattern = new StringBuilder ();
 
-			// root the route
-			pattern.append ("/");
-
 			// scope the route
 			foreach (var scope in scopes.head) {
-				pattern.append_printf ("%s/", scope);
+				pattern.append (scope);
 			}
 
 			pattern.append (rule);
@@ -203,9 +199,6 @@ namespace Valum {
 		 * with '^' and '$' characters and providing a pre-optimized {@link  GLib.Regex}
 		 * is useless.
 		 *
-		 * Like for the rules, the regular expression starts matching after the
-		 * scopes and the leading '/' character.
-		 *
 		 * @since 0.1
 		 *
 		 * @param method HTTP method or 'null' for any
@@ -217,12 +210,9 @@ namespace Valum {
 
 			pattern.append ("^");
 
-			// root the route
-			pattern.append ("/");
-
 			// scope the route
 			foreach (var scope in scopes.head) {
-				pattern.append_printf ("%s/", Regex.escape_string (scope));
+				pattern.append (Regex.escape_string (scope));
 			}
 
 			pattern.append (regex.get_pattern ());

@@ -21,7 +21,7 @@ using VSGI.HTTP;
 var app       = new Router ();
 var memcached = new Memcached.Context.from_configuration ("--SERVER=localhost".data);
 
-app.get ("<key>", (req, res, next, context) => {
+app.get ("/<key>", (req, res, next, context) => {
 	var key = context["key"].get_string ();
 
 	uint32 flags;
@@ -38,7 +38,7 @@ app.get ("<key>", (req, res, next, context) => {
 	}
 });
 
-app.put ("<key>", (req, res, next, context) => {
+app.put ("/<key>", (req, res, next, context) => {
 	var key = context["key"].get_string ();
 
 	var buffer = new MemoryOutputStream (null, realloc, free);
@@ -58,7 +58,7 @@ app.put ("<key>", (req, res, next, context) => {
 	}
 });
 
-app.delete ("<key>", (req, res, next, context) => {
+app.delete ("/<key>", (req, res, next, context) => {
 	var key = context["key"].get_string ();
 
 	var error = memcached.delete (key.data, 0);

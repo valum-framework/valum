@@ -88,7 +88,7 @@ stream and close it properly.
 
 ::
 
-    app.get ("", (req, res) => {
+    new Server ("org.vsgi.App", (req, res) => {
         res.expand_utf8 ("Hello world!");
     })
 

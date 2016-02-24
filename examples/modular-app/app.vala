@@ -20,7 +20,7 @@ using VSGI.HTTP;
 
 var app = new Router ();
 
-app.get ("", (req, res) => {
+app.get ("/", (req, res) => {
 	return res.expand_utf8 (
 	"""
 	<!DOCTYPE html>
@@ -33,7 +33,7 @@ app.get ("", (req, res) => {
 	""", null);
 });
 
-app.rule (Method.ANY, "user/*", new UserRouter ().handle);
-app.rule (Method.ANY, "admin/*", new AdminRouter ().handle);
+app.rule (Method.ANY, "/user/*", new UserRouter ().handle);
+app.rule (Method.ANY, "/admin/*", new AdminRouter ().handle);
 
 new Server ("org.valum.example.ModularApp", app.handle).run ();

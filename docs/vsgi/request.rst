@@ -51,7 +51,7 @@ as a general metadata storage for requests.
 
 ::
 
-    app.get ("<int:id>", (req, res) => {
+    app.get ("/<int:id>", (req, res) => {
         var id = req.params["id"];
     });
 
@@ -172,7 +172,7 @@ a buffer (a `GLib.MemoryOutputStream`_) and return the corresponding
 
 ::
 
-    app.post ("", (req, res) => {
+    new Server ("org.vsgi.App", (req, res) => {
         var data = Soup.Form.decode ((string) req.flatten ());
         return true;
     });

@@ -4,7 +4,7 @@ using VSGI.HTTP;
 
 var app = new Router ();
 
-app.get ("", (req, res) => {
+app.get ("/", (req, res) => {
 	var doc = new Document.from_string ("# Hello world!".data, DocumentFlags.EMBED);
 	doc.compile (DocumentFlags.EMBED);
 	string markdown;
