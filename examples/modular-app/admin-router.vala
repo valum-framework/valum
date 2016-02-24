@@ -22,7 +22,7 @@ public class AdminRouter : Router {
 
 	construct {
 		use (authenticate);
-		rule (Method.GET | Method.POST, "admin/view", view);
+		rule (Method.GET | Method.POST, "/admin/view", view);
 	}
 
 	/**

@@ -38,7 +38,7 @@ a :doc:`route` instance.
 
 ::
 
-    app.get ("", (req, res, next, context) => {
+    app.get ("/", (req, res, next, context) => {
         return res.expand_utf8 ("Hello world!", null);
     });
 

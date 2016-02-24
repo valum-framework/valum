@@ -28,7 +28,7 @@ openweathermap.authenticate.connect ((msg, auth) => {
     auth.authenticate ("client_id", "secret_id");
 });
 
-app.get ("", (req, res) => {
+app.get ("/", (req, res) => {
 	openweathermap.send_async.begin (new Soup.Message ("GET", "http://api.openweathermap.org/data/2.5/weather?q=Montreal&units=metric"),
 	                                 null,
 	                                 (obj, result) => {

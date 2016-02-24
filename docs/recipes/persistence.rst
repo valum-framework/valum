@@ -35,7 +35,7 @@ maintained in nemequ/vala-extra-vapis GitHub repository.
     var app       = new Router ();
     var memcached = new Memcached.Context ();
 
-    app.get ("<key>", (req, res) => {
+    app.get ("/<key>", (req, res) => {
         var key = req.params["key"];
 
         int32 flags;
@@ -45,7 +45,7 @@ maintained in nemequ/vala-extra-vapis GitHub repository.
         return res.expand (value, null);
     });
 
-    app.post ("<key>", (req, res) => {
+    app.post ("/<key>", (req, res) => {
         var key    = req.params["key"];
         var buffer = new MemoryOutputStream.resizable ();
 

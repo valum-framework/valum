@@ -21,16 +21,16 @@ using VSGI.SCGI;
 public int main (string[] args) {
 	var app = new Router ();
 
-	app.get ("", (req, res) => {
+	app.get ("/", (req, res) => {
 		return res.expand_utf8 ("Hello world!", null);
 	});
 
-	app.post ("", (req, res) => {
+	app.post ("/", (req, res) => {
 		res.body.splice (req.body, OutputStreamSpliceFlags.NONE);
 		return true;
 	});
 
-	app.get ("async", (req, res) => {
+	app.get ("/async", (req, res) => {
 		res.expand_utf8_async.begin ("Hello world!", Priority.DEFAULT, null);
 		return true;
 	});

@@ -36,12 +36,12 @@ context if it's missing.
 
 ::
 
-    app.get ("", (req, res, next, context) => {
+    app.get ("/", (req, res, next, context) => {
         context["some key"] = "some value";
         return next (req, res);
     });
 
-    app.get ("", (req, res, next, context) => {
+    app.get ("/", (req, res, next, context) => {
         var some_value = context["some key"]; // or context.parent["some key"]
         return return res.body.write_all (some_value.data, null);
     });
@@ -49,12 +49,17 @@ context if it's missing.
 HTTP methods
 ------------
 
+.. versionchanged:: 0.3
+
+    Rule helpers (e.g. ``get``, ``post``, ``rule``) must explicitly be provided
+    with a leading slash.
+
 Callback can be connected to HTTP methods via a list of helpers having the
 ``HandlerCallback`` delegate signature:
 
 ::
 
-    app.get ("rule", (req, res, next) => { return false; });
+    app.get ("/rule", (req, res, next) => { return false; });
 
 The rule has to respect the rule syntax described in :doc:`route`. It will be
 compiled down to a regex which named groups are made accessible in the context.
@@ -75,7 +80,7 @@ the ``application/x-www-form-urlencoded`` body of the :doc:`vsgi/request`.
 
 ::
 
-    app.post ("login", (req, res) => {
+    app.post ("/login", (req, res) => {
         var buffer = new MemoryOutputStream.resizable ();
 
         // consume the request body
@@ -97,14 +102,14 @@ function.
 
 ::
 
-    app.method ("METHOD", "rule", (req, res) => {});
+    app.method ("METHOD", "/rule", (req, res) => {});
 
 :doc:`vsgi/request` provide an enumeration of HTTP methods for your
 convenience.
 
 ::
 
-    app.method (Request.GET, "rule", (req, res) => {});
+    app.method (Request.GET, "/rule", (req, res) => {});
 
 Multiple methods can be captured with ``methods``:
 
@@ -117,9 +122,13 @@ Multiple methods can be captured with ``methods``:
 Regular expression
 ------------------
 
+.. versionchanged:: 0.3
+
+    The regex helper must be provided with an explicit leading slash.
+
 ::
 
-    app.regex (/home/, (req, res) => {
+    app.regex (new Regex ("/home/"), (req, res) => {
         // matches /home
     });
 
@@ -201,13 +210,13 @@ It provides a nice way to ignore passively unrecoverable errors.
 
 ::
 
-    app.get ("", (req, res) => {
+    app.get ("/", (req, res) => {
         throw new IOError.FAILED ("I/O failed some some reason.");
     });
 
 ::
 
-    app.get ("", (req, res) => {
+    app.get ("/", (req, res) => {
         res.expand_utf8_async ("Hello world!", null, () => {
             app.invoke (req, res, () => {
                 throw new IOError.FAILED ("I/O failed undesirably.")
@@ -222,26 +231,27 @@ If the routing context is lost, any operation can still be performed within
 Scoping
 -------
 
+.. versionchanged:: 0.3
+
+    The scope feature does not include a slash, instead you should scope with
+    a leading slash like shown in the following examples.
+
 Scoping is a powerful prefixing mechanism for rules and regular expressions.
-Route declarations within a scope will be prefixed by ``<scope>/``. There is an
-implicit initial scope so that all rules are automatically rooted with (``/``).
+Route declarations within a scope will be prefixed by ``<scope>``.
 
 The ``Router`` maintains a scope stack so that when the program flow enter
 a scope, it pushes the fragment on top of that stack and pops it when it exits.
 
-The default separator is a ``/`` and it might become possible to change it in
-a future release.
-
 ::
 
-    app.scope ("admin", (admin) => {
+    app.scope ("/admin", (admin) => {
         // admin is a scoped Router
-        app.get ("users", (req, res) => {
+        app.get ("/users", (req, res) => {
             // matches /admin/users
         });
     });
 
-    app.get ("users", (req, res) => {
+    app.get ("/users", (req, res) => {
         // matches /users
     });
 
@@ -285,7 +295,7 @@ subclassing ``Router`` and performing initialization in a ``construct`` block:
     public class AdminRouter : Router {
 
         construct {
-            get ("", view);
+            get ("/", view);
             rule (Method.GET | Method.POST, "", edit);
         }
 
@@ -302,7 +312,7 @@ the ``/admin/`` path prefix will be delegated to the ``admin`` router.
 
     var app = new Router ();
 
-    app.rule (Method.ALL, "admin/*", new AdminRouter ().handle);
+    app.rule (Method.ALL, "/admin/*", new AdminRouter ().handle);
 
 Next
 ----
@@ -313,12 +323,12 @@ matching route.
 
 ::
 
-    app.get ("", (req, res, next) => {
+    app.get ("/", (req, res, next) => {
         message ("pre");
         return next (req, res); // keep routing
     });
 
-    app.get ("", (req, res) => {
+    app.get ("/", (req, res) => {
         // this is invoked!
     });
 
@@ -330,11 +340,11 @@ Filters
 
 ::
 
-    app.get ("", (req, res, next) => {
+    app.get ("/", (req, res, next) => {
         return next (req, new ConvertedResponse (res, new ZlibCompressor (ZlibCompressorFormat.GZIP)));
     });
 
-    app.get ("", (req, res) => {
+    app.get ("/", (req, res) => {
         // res is transparently gzipped
     })
 
@@ -347,7 +357,7 @@ processing for a resource using handling middlewares.
 
 ::
 
-    app.get ("admin", (req, res, next) => {
+    app.get ("/admin", (req, res, next) => {
         // authenticate user...
         return next (req, res);
     }).then ((req, res, next) => {
@@ -370,7 +380,7 @@ with custom and default status code handlers. It constitute an entry point for
 
 ::
 
-    app.get ("", (req, res, next) => {
+    app.get ("/", (req, res, next) => {
         res.expand_utf8_async.begin ("Hello world!", Priority.DEFAULT, null, () => {
             app.invoke (req, res, next);
         });
@@ -476,7 +486,7 @@ the :doc:`vsgi/response` body.
         return next (req, new ConvertedResponse (res, new ZLibCompressor (ZlibCompressorFormat.GZIP)));
     });
 
-    app.get ("home", (req, res) => {
+    app.get ("/home", (req, res) => {
         return res.expand_utf8 ("Hello world!"); // transparently compress the output
     });
 
@@ -490,9 +500,9 @@ used directly from the handler.
         return next (req, new ConvertedResponse (res, new ZLibCompressor (ZlibCompressorFormat.GZIP));
     };
 
-    app.get ("home", compress);
+    app.get ("/home", compress);
 
-    app.get ("home", (req, res) => {
+    app.get ("/home", (req, res) => {
         return res.expand_utf8 ("Hello world!");
     });
 
@@ -501,7 +511,7 @@ attached to a :doc:`route`, the processing will happen in a ``NextCallback``.
 
 ::
 
-    app.get ("home", (req, res, next, context) => {
+    app.get ("/home", (req, res, next, context) => {
         return compress (req, res, (req, res) => {
             return res.expand_utf8 ("Hello world!");
         }, new Context.with_parent (context));

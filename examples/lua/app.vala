@@ -24,7 +24,7 @@ var vm  = new LuaVM ();
 
 vm.open_libs ();
 
-app.get ("", (req, res) => {
+app.get ("/", (req, res) => {
 	vm.do_string ("""
 		require "markdown"
 		return markdown('## Hello from lua.eval!')""");

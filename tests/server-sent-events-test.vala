@@ -26,7 +26,7 @@ using VSGI.Mock;
 public void test_server_sent_events_send () {
 	var router = new Router ();
 
-	router.get ("", stream_events ((req, send) => {
+	router.get ("/", stream_events ((req, send) => {
 		send ("important", "some event", "1234", TimeSpan.MILLISECOND);
 	}));
 
@@ -58,7 +58,7 @@ public void test_server_sent_events_send () {
 public void test_server_sent_events_send_multiline () {
 	var router = new Router ();
 
-	router.get ("", stream_events ((req, send) => {
+	router.get ("/", stream_events ((req, send) => {
 		send (null, "some event\nmore details");
 	}));
 

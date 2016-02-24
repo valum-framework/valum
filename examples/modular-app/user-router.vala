@@ -21,7 +21,7 @@ using VSGI;
 public class UserRouter : Router {
 
 	construct {
-		get ("user/<int:id>", view);
+		get ("/user/<int:id>", view);
 	}
 
 	public bool view (Request req, Response res, NextCallback next, Context ctx) throws Error {
