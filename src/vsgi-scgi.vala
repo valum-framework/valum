@@ -292,6 +292,11 @@ namespace VSGI.SCGI {
 						return true;
 					}
 
+					if (!environment.contains ("CONTENT_LENGTH")) {
+						command_line.printerr ("the content length is a mandatory field\n");
+						return true;
+					}
+
 					int64 content_length;
 					if (!int64.try_parse (environment["CONTENT_LENGTH"], out content_length)) {
 						command_line.printerr ("'%s' is not a valid content length\n",
