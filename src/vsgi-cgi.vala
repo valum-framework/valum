@@ -103,13 +103,17 @@ namespace VSGI.CGI {
 			else
 				this._uri.set_path ("/");
 
-			// raw HTTP query
-			if (environment.contains ("QUERY_STRING"))
+			// raw & parsed HTTP query
+			if (environment.contains ("QUERY_STRING") && environment["QUERY_STRING"].length > 0) {
 				this._uri.set_query (environment["QUERY_STRING"]);
-
-			// parsed HTTP query
-			if (environment.contains ("QUERY_STRING"))
 				this._query = Form.decode (environment["QUERY_STRING"]);
+			} else if (environment.contains ("PATH_TRANSLATED") && "?" in environment["PATH_TRANSLATED"]) {
+				this._uri.set_query (environment["PATH_TRANSLATED"].split ("?", 2)[1]);
+				this._query = Form.decode (environment["PATH_TRANSLATED"].split ("?", 2)[1]);
+			} else if (environment.contains ("REQUEST_URI") && "?" in environment["REQUEST_URI"]) {
+				this._uri.set_query (environment["REQUEST_URI"].split ("?", 2)[1]);
+				this._query = Form.decode (environment["REQUEST_URI"].split ("?", 2)[1]);
+			}
 
 			// extract HTTP headers, they are prefixed by 'HTTP_' in environment variables
 			environment.foreach ((name, @value) => {
