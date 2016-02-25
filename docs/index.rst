@@ -11,6 +11,10 @@ Valum web micro-framework
         <img src="https://coveralls.io/repos/github/valum-framework/valum/badge.svg?branch=master" alt="Coverage Status">
     </a>
 
+    <a href="https://codecov.io/github/valum-framework/valum?branch=master">
+        <img src="https://codecov.io/github/valum-framework/valum/coverage.svg?branch=master" alt="Coverage via Codecov" />
+    </a>
+
 Valum is a web micro-framework written in Vala and licensed under the LGPLv3.
 Its source code and releases are available on GitHub: `valum-framework/valum`_.
 
