@@ -188,6 +188,9 @@ namespace Valum.ContentNegotiation {
 	 * This must be applied before any other content negotiation as it might
 	 * convert the response to honor the negotiated encoding.
 	 *
+	 * The 'gzip', 'deflate' and 'identity' encodings are handled. Other
+	 * encodings must be handled manually.
+	 *
 	 * @since 0.3
 	 */
 	public HandlerCallback accept_encoding (string[]              encodings,
@@ -210,9 +213,10 @@ namespace Valum.ContentNegotiation {
 					         stack,
 					         encoding);
 					break;
-				default: // warn?
 				case "identity":
 					forward (req, res, next, stack, encoding);
+					break;
+				default:
 					break;
 			}
 		}, flags, (a, b) => { return a == "*" || Soup.str_case_equal (a, b); });
