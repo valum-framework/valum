@@ -69,9 +69,8 @@ public static void test_vsgi_fastcgi_request_https_on () {
 public static void test_vsgi_fastcgi_request_uri_with_query () {
 	var environment   = new HashTable<string, string> (str_hash, str_equal);
 
-	environment["PATH_INFO"]      = "/";
+	environment["PATH_INFO"]      = "";
 	environment["REQUEST_METHOD"] = "GET";
-	environment["REQUEST_URI"]    = "/";
 	environment["SERVER_NAME"]    = "0.0.0.0";
 	environment["SERVER_PORT"]    = "3003";
 

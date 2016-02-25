@@ -96,10 +96,10 @@ namespace VSGI.CGI {
 			if (environment.contains ("SERVER_PORT"))
 				this._uri.set_port (int.parse (environment["SERVER_PORT"]));
 
-			if (environment.contains ("REQUEST_URI") && environment["REQUEST_URI"].length > 0)
-				this._uri.set_path (environment["REQUEST_URI"].split ("?", 2)[0]); // strip the query
-			else if (environment.contains ("PATH_INFO") && environment["PATH_INFO"].length > 0)
+			if (environment.contains ("PATH_INFO") && environment["PATH_INFO"].length > 0)
 				this._uri.set_path (environment["PATH_INFO"]);
+			else if (environment.contains ("REQUEST_URI") && environment["REQUEST_URI"].length > 0)
+				this._uri.set_path (environment["REQUEST_URI"].split ("?", 2)[0]); // strip the query
 			else
 				this._uri.set_path ("/");
 
