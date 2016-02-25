@@ -81,8 +81,9 @@ namespace VSGI.CGI {
 		public Request (IOStream connection, HashTable<string, string> environment) {
 			Object (connection: connection, environment: environment);
 
-			if (environment.contains ("HTTPS") && environment["HTTPS"].length > 0 ||
-			    environment.contains ("PATH_TRANSLATED") && environment["PATH_TRANSLATED"].has_prefix ("https://"))
+			var https           = environment["HTTPS"] ?? "";
+			var path_translated = environment["PATH_TRANSLATED"] ?? "";
+			if (https.length > 0 || path_translated.has_prefix ("https://"))
 				this._uri.set_scheme ("https");
 			else
 				this._uri.set_scheme ("http");
@@ -96,23 +97,26 @@ namespace VSGI.CGI {
 			if (environment.contains ("SERVER_PORT"))
 				this._uri.set_port (int.parse (environment["SERVER_PORT"]));
 
-			if (environment.contains ("PATH_INFO") && environment["PATH_INFO"].length > 0)
-				this._uri.set_path (environment["PATH_INFO"]);
-			else if (environment.contains ("REQUEST_URI") && environment["REQUEST_URI"].length > 0)
-				this._uri.set_path (environment["REQUEST_URI"].split ("?", 2)[0]); // strip the query
+			var path_info   = environment["PATH_INFO"] ?? "";
+			var request_uri = environment["REQUEST_URI"] ?? "";
+			if (path_info.length > 0)
+				this._uri.set_path (path_info);
+			else if (request_uri.length > 0)
+				this._uri.set_path (request_uri.split ("?", 2)[0]); // strip the query
 			else
 				this._uri.set_path ("/");
 
 			// raw & parsed HTTP query
-			if (environment.contains ("QUERY_STRING") && environment["QUERY_STRING"].length > 0) {
-				this._uri.set_query (environment["QUERY_STRING"]);
-				this._query = Form.decode (environment["QUERY_STRING"]);
-			} else if (environment.contains ("PATH_TRANSLATED") && "?" in environment["PATH_TRANSLATED"]) {
-				this._uri.set_query (environment["PATH_TRANSLATED"].split ("?", 2)[1]);
-				this._query = Form.decode (environment["PATH_TRANSLATED"].split ("?", 2)[1]);
-			} else if (environment.contains ("REQUEST_URI") && "?" in environment["REQUEST_URI"]) {
-				this._uri.set_query (environment["REQUEST_URI"].split ("?", 2)[1]);
-				this._query = Form.decode (environment["REQUEST_URI"].split ("?", 2)[1]);
+			var query_string = environment["QUERY_STRING"] ?? "";
+			if (query_string.length > 0) {
+				this._uri.set_query (query_string);
+				this._query = Form.decode (query_string);
+			} else if ("?" in path_translated) {
+				this._uri.set_query (path_translated.split ("?", 2)[1]);
+				this._query = Form.decode (path_translated.split ("?", 2)[1]);
+			} else if ("?" in request_uri) {
+				this._uri.set_query (request_uri.split ("?", 2)[1]);
+				this._query = Form.decode (request_uri.split ("?", 2)[1]);
 			}
 
 			// extract HTTP headers, they are prefixed by 'HTTP_' in environment variables
