@@ -20,3 +20,4 @@ script:
 after_success:
     - coveralls --repo-token $COVERALLS_TOKEN --build-root build
                 --exclude build/examples --exclude build/tests
+    - bash <(curl -s https://codecov.io/bash)
