@@ -26,4 +26,3 @@ def build(bld):
         install_path = '${LIBDIR}/pkgconfig',
         VERSION      = Context.g_module.VERSION)
 
-    bld.install_files('${DATADIR}/vala/vapi', 'fcgi.deps fcgi.vapi')
