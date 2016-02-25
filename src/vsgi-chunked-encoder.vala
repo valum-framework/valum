@@ -61,23 +61,24 @@ namespace VSGI {
 			}
 
 			if (required_size > outbuf.length)
-				throw new IOError.NO_SPACE ("need %u more bytes to write the chunk", (uint) (required_size - outbuf.length));
+				throw new IOError.NO_SPACE ("need '%u' more bytes to write the chunk", (uint) (required_size - outbuf.length));
 
 			// size
-			for (int i = 0; i < size_buffer.length; i++)
-				outbuf[bytes_written++] = size_buffer[i];
+			Memory.copy (outbuf[bytes_written:-1], size_buffer, size_buffer.length);
+			bytes_written += size_buffer.length;
 
 			// newline after the size
-			outbuf[bytes_written++] = '\r';
-			outbuf[bytes_written++] = '\n';
+			Memory.copy (outbuf[bytes_written:-1], "\r\n", 2);
+			bytes_written += 2;
 
 			// chunk
-			for (; bytes_read < inbuf.length;)
-				outbuf[bytes_written++] = inbuf[bytes_read++];
+			Memory.copy (outbuf[bytes_written:-1], inbuf, inbuf.length);
+			bytes_written += inbuf.length;
+			bytes_read    += inbuf.length;
 
 			// newline after the chunk
-			outbuf[bytes_written++] = '\r';
-			outbuf[bytes_written++] = '\n';
+			Memory.copy (outbuf[bytes_written:-1], "\r\n", 2);
+			bytes_written += 2;
 
 			// chunk is fully read
 			assert (bytes_read == inbuf.length);
@@ -85,11 +86,8 @@ namespace VSGI {
 
 			// write a zero-sized chunk
 			if (ConverterFlags.INPUT_AT_END in flags && inbuf.length > 0) {
-				outbuf[bytes_written++] = '0';
-				outbuf[bytes_written++] = '\r';
-				outbuf[bytes_written++] = '\n';
-				outbuf[bytes_written++] = '\r';
-				outbuf[bytes_written++] = '\n';
+				Memory.copy (outbuf[bytes_written:-1], "0\r\n\r\n", 5);
+				bytes_written += 5;
 				return ConverterResult.FINISHED;
 			}
 
