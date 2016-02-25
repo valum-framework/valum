@@ -185,7 +185,7 @@ app.get ("/trailing-slash/?", (req, res) => {
 	}
 });
 
-app.regex (Method.GET, /custom-regular-expression/, (req, res) => {
+app.regex (Method.GET, /\/custom-regular-expression/, (req, res) => {
 	return res.expand_utf8 ("This route was matched using a custom regular expression.", null);
 });
 
@@ -194,7 +194,7 @@ app.matcher (Method.GET, (req) => { return req.uri.get_path () == "/custom-match
 });
 
 // scoped routing
-app.scope ("admin", (adm) => {
+app.scope ("/admin", (adm) => {
 	// matches /admin/fun
 	adm.scope ("/fun", (fun) => {
 		// matches /admin/fun/hack
