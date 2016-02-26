@@ -29,6 +29,7 @@ namespace Valum {
 
 		public AsteriskRoute (Method method, owned HandlerCallback handler) {
 			Object (method: method);
+			set_handler_callback ((owned) handler);
 		}
 
 		public override bool match (Request req, Context ctx) {

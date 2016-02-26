@@ -46,6 +46,8 @@ public int main (string[] args) {
 	Test.add_func ("/router/not_found", test_router_not_found);
 	Test.add_func ("/router/server_error", test_router_server_error);
 
+	Test.add_func ("/router/asterisk", test_router_asterisk);
+
 	Test.add_func ("/router/get", test_router_get);
 	Test.add_func ("/router/get/default_head", test_router_get_default_head);
 	Test.add_func ("/router/only_get", test_router_only_get);

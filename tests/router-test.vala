@@ -50,6 +50,29 @@ public static void test_router_handle () {
 }
 
 /**
+ * @since 0.3
+ */
+public void test_router_asterisk () {
+	var router = new Router ();
+
+	router.asterisk (Method.OPTIONS, (req, res) => {
+		res.status = 418;
+		return true;
+	});
+
+	var uri = new Soup.URI ("http://127.0.0.1:3003/*");
+
+	uri.set_path ("*");
+
+	var request  = new Request.with_method ("OPTIONS", uri);
+	var response = new Response (request);
+
+	router.handle (request, response);
+
+	assert (418 == response.status);
+}
+
+/**
  * @since 0.1
  */
 public static void test_router_get () {
