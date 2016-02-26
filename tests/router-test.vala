@@ -892,6 +892,30 @@ public void test_router_status_handle_error () {
 	assert (418 == res.status);
 }
 
+public void test_router_status_feedback_error () {
+	var router = new Router ();
+
+	router.get ("/", (req, res) => {
+		throw new ServerError.INTERNAL_SERVER_ERROR ("a");
+	});
+
+	router.status (500, (req, res, next, ctx) => {
+		throw new Redirection.MOVED_TEMPORARILY ("b");
+	});
+
+	router.status (302, (req, res, next, ctx) => {
+		res.status = 418;
+		return true;
+	});
+
+	var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
+	var res = new Response (req);
+
+	assert (router.handle (req, res));
+
+	assert (418 == res.status);
+}
+
 /**
  * @since 0.2
  */
