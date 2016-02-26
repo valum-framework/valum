@@ -182,7 +182,7 @@ namespace VSGI.SCGI {
 					var port = (uint16) options.lookup_value ("port", VariantType.INT32).get_int32 ();
 					listener.add_inet_port (port, null);
 					command_line.print ("listening on 'scgi://0.0.0.0:%u' (backlog '%d')\n", port, backlog);
-					command_line.print ("listening on 'scgi://:::%u (backlog '%d')'\n", port, backlog);
+					command_line.print ("listening on 'scgi://:::%u' (backlog '%d')\n", port, backlog);
 				} else if (options.contains ("file-descriptor")) {
 					var file_descriptor = options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 ();
 					listener.add_socket (new Socket.from_fd (file_descriptor), null);
