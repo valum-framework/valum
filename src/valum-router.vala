@@ -321,9 +321,10 @@ namespace Valum {
 						if (this.perform_routing (this.status_handlers[status_code].head, req, res, stack))
 							return; // handled!
 					} catch (Error err) {
+						var _err = err; // Vala bug, '_err' is not in the closure scope
 						// feed the error back in the invocation
 						invoke (req, res, () => {
-							throw err;
+							throw _err;
 						});
 						return;
 					}
