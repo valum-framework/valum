@@ -82,6 +82,53 @@ public void test_route_from_rule_undefined_type () {
 	}
 }
 
+public void test_route_from_rule_group () {
+	try {
+		var route = new RuleRoute (Method.GET, "/(<id>)?", null, (req, res) => { return true; });
+
+		assert (route.match (new Request.with_uri (new Soup.URI ("http://127.0.0.1:3003/5")), new Context ()));
+
+		var ctx = new Context ();
+		assert (route.match (new Request.with_uri (new Soup.URI ("http://127.0.0.1:3003/")), ctx));
+
+		assert (!ctx.contains ("id"));
+
+	} catch (RegexError err) {
+		message (err.message);
+		assert_not_reached ();
+	}
+}
+
+/**
+ * @since 0.3
+ */
+public void test_route_from_rule_wildcard () {
+	try {
+		var route = new RuleRoute (Method.GET, "/test/*", null, (req, res) => { return true; });
+
+		assert (route.match (new Request.with_uri (new Soup.URI ("http://127.0.0.1:3003/test/")), new Context ()));
+		assert (route.match (new Request.with_uri (new Soup.URI ("http://127.0.0.1:3003/test/asdf")), new Context ()));
+
+	} catch (RegexError err) {
+		assert_not_reached ();
+	}
+}
+
+/**
+ * @since 0.3
+ */
+public void test_route_from_rule_optional () {
+	try {
+		var route = new RuleRoute (Method.GET, "/test/?", null, (req, res) => { return true; });
+
+		assert (route.match (new Request.with_uri (new Soup.URI ("http://127.0.0.1:3003/test")), new Context ()));
+		assert (route.match (new Request.with_uri (new Soup.URI ("http://127.0.0.1:3003/test/")), new Context ()));
+
+	} catch (RegexError err) {
+		assert_not_reached ();
+	}
+}
+
 /**
  * @since 0.1
  */

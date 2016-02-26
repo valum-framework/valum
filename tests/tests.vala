@@ -89,6 +89,9 @@ public int main (string[] args) {
 	Test.add_func ("/route/from_rule", test_route_from_rule);
 	Test.add_func ("/route/from_rule/without_captures", test_route_from_rule_without_captures);
 	Test.add_func ("/route/from_rule/undefined_type", test_route_from_rule_undefined_type);
+	Test.add_func ("/route/from_rule/group", test_route_from_rule_group);
+	Test.add_func ("/route/from_rule/wildcard", test_route_from_rule_wildcard);
+	Test.add_func ("/route/from_rule/optional", test_route_from_rule_optional);
 
 	Test.add_func ("/route/from_regex", test_route_from_regex);
 	Test.add_func ("/route/from_regex/multiple_captures", test_route_from_regex_multiple_captures);
