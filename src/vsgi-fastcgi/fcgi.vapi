@@ -292,18 +292,14 @@ namespace FastCGI {
 	}
 
 	/**
-	 * CGI parameters
+	 * Obtain the value of FCGI parameter in environment.
+	 *
+	 * @return value if bound to name, NULL if name not present in the
+	 *         environment envp. Caller must not mutate the result or retain it
+	 *         past the end of this request.
 	 */
-	[CCode (cname = "FCGX_ParamArray", has_type_id = false)]
-	[SimpleType]
-	public struct parameters {
-		[CCode (cname = "FCGX_GetParam", instance_pos = -1)]
-		public unowned string? get (string name);
-		[CCode (array_null_terminated = true, array_length = false)]
-		public unowned string[] get_all () {
-			return (string[]) this;
-		}
-	}
+	[CCode (cname = "FCGX_GetParam", instance_pos = -1)]
+	public unowned string? get_parameter (string name, [CCode (array_null_terminated = true)] string[] parameters);
 
 	/**
 	 * State associated with a request.
@@ -353,8 +349,8 @@ namespace FastCGI {
 	 */
 	[CCode (cname = "FCGX_Request", has_type_id = false, destroy_function = "")]
 	public struct request {
-		[CCode (cname = "envp")]
-		public parameters environment;
+		[CCode (cname = "envp", array_null_terminated = true)]
+		public string[] environment;
 		public Stream err;
 		public Stream @in;
 		public Stream @out;
@@ -426,13 +422,6 @@ namespace FastCGI {
 		 */
 		[CCode (cname = "FCGX_InitRequest")]
 		public static int init (out request request, int sock = 0, RequestFlags flags = RequestFlags.NONE);
-
-		/**
-		 * Get a named parameter from the environment.
-		 */
-		public unowned string? @get (string name) {
-			return environment[name];
-		}
 	}
 
 	[CCode (cname = "int", cprefix = "FCGI_", has_type_id = false)]
@@ -475,7 +464,7 @@ namespace FastCGI {
 	 * @return 0 for successful call, -1 for error.
 	 */
 	[CCode (cname = "FCGX_Accept")]
-	public int accept (out Stream @in, out Stream @out, out Stream err, out unowned parameters envp);
+	public int accept (out Stream @in, out Stream @out, out Stream err, [CCode (array_null_terminated = true)] out unowned string[] envp);
 
 	/**
 	 * Finish the current request
@@ -485,8 +474,8 @@ namespace FastCGI {
 	 * Finishes the request accepted by (and frees any storage allocated by) the
 	 * previous call to {@link accept}.
 	 *
-	 * DO NOT retain pointers to the {@link parameters} or any strings contained
-	 * in it, since these will be freed.
+	 * DO NOT retain pointers to the parameters or any strings contained in it,
+	 * since these will be freed.
 	 *
 	 * @see accept
 	 */

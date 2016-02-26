@@ -266,7 +266,7 @@ namespace VSGI.FastCGI {
 						break;
 					}
 
-					var req = new Request (connection, connection.request.environment.get_all ());
+					var req = new Request (connection, connection.request.environment);
 					var res = new Response (req);
 
 					// dispatch the app in the main loop
