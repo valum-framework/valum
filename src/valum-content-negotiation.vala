@@ -151,32 +151,32 @@ namespace Valum.ContentNegotiation {
 	 * If no content type is set when forwarding, default to
 	 * 'application/octet-stream'.
 	 *
-	 * If the expected charset is different from the current, it is
-	 * automatically converted using a {@link GLib.CharsetConverter}. If no
-	 * charset is defined, it is assumed to be 'utf-8'.
+	 * If the expected charset is different from the current and the media
+	 * type is 'text', it is automatically converted using a
+	 * {@link GLib.CharsetConverter}. If no charset is defined, it is assumed to
+	 * be 'iso-8859-1'.
 	 *
 	 * @since 0.3
 	 */
 	public HandlerCallback accept_charset (string[]              charsets,
 	                                       owned ForwardCallback forward = ContentNegotiation.forward,
 	                                       NegotiateFlags        flags   = NegotiateFlags.NONE) {
-		return negotiate ("Accept-Charset", charsets, (req, res, next, stack, charset) => {
+		return negotiate ("Accept-Charset", charsets, (req, res, next, stack, negotiated_charset) => {
 			HashTable<string, string> @params;
-			var content_type = res.headers.get_content_type (out @params);
-			var old_charset  = @params["charset"] ?? "utf-8";
-			if (content_type == null) {
-				content_type = "application/octet-stream";
-				@params      = new HashTable<string, string> ((HashFunc<string>) Soup.str_case_hash,
-				                                              (EqualFunc<string>) Soup.str_case_equal);
+			var content_type = res.headers.get_content_type (out @params) ?? "application/octet-stream";
+			var charset      = @params["charset"] ?? "iso-8859-1";
+			if (content_type.has_prefix ("text/") && !Soup.str_case_equal (charset, negotiated_charset)) {
+				@params["charset"] = negotiated_charset;
+				res.headers.set_content_type (content_type, @params);
+				forward (req,
+				         new ConvertedResponse (res, new CharsetConverter (negotiated_charset, charset)),
+						 next,
+						 stack,
+						 charset);
+			} else {
+				// forward as-is
+				forward (req, res, next, stack, charset);
 			}
-			@params["charset"] = charset;
-			res.headers.set_content_type (content_type, @params);
-			forward (req,
-			         old_charset == charset ? res :
-			                                  new ConvertedResponse (res, new CharsetConverter (charset, old_charset)),
-			         next,
-			         stack,
-			         charset);
 		}, flags, (a, b) => { return a == "*" || Soup.str_case_equal (a, b); });
 	}
 
