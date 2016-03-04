@@ -33,11 +33,15 @@ namespace VSGI {
 	 */
 	public class ChunkedEncoder : Object, Converter {
 
-		public ConverterResult convert (uint8[] inbuf,
-				                        uint8[] outbuf,
-										ConverterFlags flags,
-										out size_t bytes_read,
-										out size_t bytes_written) throws IOError {
+#if VALA_0_31
+		public ConverterResult convert (uint8[]?       inbuf,
+#else
+		public ConverterResult convert (uint8[]        inbuf,
+#endif
+		                                uint8[]        outbuf,
+		                                ConverterFlags flags,
+		                                out size_t     bytes_read,
+		                                out size_t     bytes_written) throws Error {
 
 			bytes_read    = 0;
 			bytes_written = 0;
