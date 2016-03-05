@@ -82,7 +82,7 @@ namespace Valum {
 		 * @since 0.3
 		 */
 		public Route use (owned HandlerCallback cb) {
-			return route (new AnyRoute (Method.ANY, (owned) cb));
+			return route (new MatcherRoute (Method.ANY, () => { return true; }, (owned) cb));
 		}
 
 		/**
@@ -265,7 +265,7 @@ namespace Valum {
 			if (!this.status_handlers.contains (status))
 				this.status_handlers[status] = new Sequence<Route> ();
 
-			var route = new AnyRoute (Method.ANY, (owned) cb);
+			var route = new MatcherRoute (Method.ANY, () => { return true; }, (owned) cb);
 			this.status_handlers[status].append (route);
 			return route;
 		}
