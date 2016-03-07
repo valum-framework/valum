@@ -79,7 +79,7 @@ namespace VSGI.CookieUtils {
 
 		// constant-time equal to avoid time-based attacks
 		for (int i = 0; i < checksum.length; i++)
-			match |= checksum[i] ^ cookie.@value.substring (0, checksum_length)[i];
+			match |= checksum[i] ^ cookie.@value[i];
 
 		if (match == 0)
 			@value = cookie.@value.substring (checksum_length);
