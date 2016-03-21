@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 
 def configure(cfg):
-    cfg.find_program('sphinx-build', var='SPHINXBUILD', mandatory=False)
+    cfg.find_program('sphinx-build', var='SPHINXBUILD')
 
 def build(bld):
-    if bld.env.SPHINXBUILD:
-        bld.load('gnu_dirs')
-        bld(
-            rule   = '${SPHINXBUILD} -W -b html ../docs ${TGT}',
-            target = '.',
-            source = bld.path.ant_glob('*.rst') + bld.path.ant_glob('**/*.rst'))
+    bld.load('gnu_dirs')
+    bld(
+        rule   = '${SPHINXBUILD} -W -b html ${SRC[0].parent.abspath()} ${TGT}',
+        target = '.',
+        source = bld.path.ant_glob('*.rst') + bld.path.ant_glob('**/*.rst'))

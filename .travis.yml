@@ -15,7 +15,7 @@ before_install:
     - sudo pip install cpp-coveralls sphinx PyYAML
 
 before_script:
-    - ./waf configure CFLAGS='-fprofile-arcs -ftest-coverage' LINKFLAGS='-lgcov -coverage' VALAFLAGS='--enable-checking --debug'
+    - ./waf configure --enable-docs CFLAGS='-fprofile-arcs -ftest-coverage' LINKFLAGS='-lgcov -coverage' VALAFLAGS='--enable-checking --debug'
     - ./waf build --notests
 
 script:

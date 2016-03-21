@@ -8,6 +8,7 @@ API_VERSION='0.2'
 
 def options(opt):
     opt.load('compiler_c')
+    opt.add_option('--enable-docs', action='store_true', default=False, help='generate user documentation')
     opt.add_option('--enable-examples', action='store_true', default=False, help='build examples')
     opt.recurse('tests')
 
@@ -23,7 +24,11 @@ def configure(conf):
                                       '-Wno-unused-function'])
     conf.env.append_unique('VALAFLAGS', ['--enable-experimental', '--enable-deprecated', '--fatal-warnings'])
 
-    conf.recurse(['src', 'docs', 'tests'])
+    conf.recurse('src tests')
+
+    if conf.options.enable_docs:
+        conf.env.ENABLE_DOCS = True
+        conf.recurse('docs')
 
     # configure examples
     if conf.options.enable_examples:
@@ -32,7 +37,10 @@ def configure(conf):
 
 def build(bld):
     bld.load('compiler_c vala')
-    bld.recurse(['src', 'data', 'docs', 'tests'])
+    bld.recurse('src data tests')
+
+    if bld.env.ENABLE_DOCS:
+        bld.recurse('docs')
 
     # build examples
     if bld.env.ENABLE_EXAMPLES:
