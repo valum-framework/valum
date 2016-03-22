@@ -56,5 +56,24 @@ public int main (string[] args) {
 		}
 	});
 
+	Test.add_func ("/basepath/restore_path_on_error", () => {
+		var req = new Request.with_uri (new Soup.URI ("http://localhost/base"));
+		var res = new Response (req);
+		var ctx = new Context ();
+
+		try {
+			basepath ("/base", (req, res, next) => {
+				assert ("/" == req.uri.get_path ());
+				throw new ClientError.NOT_FOUND ("");
+			}) (req, res, () => {
+				assert_not_reached ();
+			}, ctx);
+		} catch (ClientError.NOT_FOUND r) {
+			assert ("/base" == req.uri.get_path ());
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+	});
+
 	return Test.run ();
 }

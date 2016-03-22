@@ -41,10 +41,14 @@ namespace Valum {
 				var original_path = req.uri.get_path ();
 				req.uri.set_path (req.uri.get_path ().length > path.length ? 
 				                  req.uri.get_path ().substring (path.length) : "/");
-				return forward (req, res, (req, res) => {
+				try {
+					return forward (req, res, (req, res) => {
+						req.uri.set_path (original_path);
+						return next (req, res);
+					}, context);
+				} finally {
 					req.uri.set_path (original_path);
-					return next (req, res);
-				}, context);
+				}
 			} else {
 				return next (req, res);
 			}
