@@ -30,6 +30,9 @@ namespace Valum {
 	 *
 	 * If 'next' is called while forwarding, the URI path is restored.
 	 *
+	 * Error which message consist of a 'Location' header are prefixed by
+	 * the basepath.
+	 *
 	 * @since 0.3
 	 *
 	 * @param path
@@ -46,6 +49,12 @@ namespace Valum {
 						req.uri.set_path (original_path);
 						return next (req, res);
 					}, context);
+				} catch (Success.CREATED s) {
+					s.message = s.message[0] == '/' ? (path + s.message) : s.message;
+					throw s;
+				} catch (Redirection r) {
+					r.message = r.message[0] == '/' ? (path + r.message) : r.message;
+					throw r;
 				} finally {
 					req.uri.set_path (original_path);
 				}

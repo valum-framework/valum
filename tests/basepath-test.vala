@@ -75,5 +75,45 @@ public int main (string[] args) {
 		}
 	});
 
+	Test.add_func ("/basepath/success_created/prefix_message", () => {
+		var req = new Request.with_uri (new Soup.URI ("http://localhost/base"));
+		var res = new Response (req);
+		var ctx = new Context ();
+
+		try {
+			basepath ("/base", (req, res, next) => {
+				assert ("/" == req.uri.get_path ());
+				throw new Success.CREATED ("/5");
+			}) (req, res, () => {
+				assert_not_reached ();
+			}, ctx);
+		} catch (Success.CREATED s) {
+			assert ("/base/5" == s.message);
+			assert ("/base" == req.uri.get_path ());
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+	});
+
+	Test.add_func ("/basepath/success_created/omit_non_relative_message", () => {
+		var req = new Request.with_uri (new Soup.URI ("http://localhost/base"));
+		var res = new Response (req);
+		var ctx = new Context ();
+
+		try {
+			basepath ("/base", (req, res, next) => {
+				assert ("/" == req.uri.get_path ());
+				throw new Success.CREATED ("http://localhost/5");
+			}) (req, res, () => {
+				assert_not_reached ();
+			}, ctx);
+		} catch (Success.CREATED s) {
+			assert ("http://localhost/5" == s.message);
+			assert ("/base" == req.uri.get_path ());
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+	});
+
 	return Test.run ();
 }
