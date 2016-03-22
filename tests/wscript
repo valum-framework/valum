@@ -11,7 +11,7 @@ def build(bld):
     bld.program(
         features     = 'test',
         target       = 'tests',
-        source       = bld.path.ant_glob('*.vala', excl='vsgi-test.vala') + ['tests.gresource.xml'],
+        source       = bld.path.ant_glob('*.vala', excl='vsgi-test.vala basepath-test.vala') + ['tests.gresource.xml'],
         use          = 'valum',
         install_path = None)
     bld.program(
@@ -19,6 +19,12 @@ def build(bld):
         target       = 'vsgi-test',
         source       = 'vsgi-test.vala',
         use          = 'vsgi vsgi-mock',
+        install_path = None)
+    bld.program(
+        features     = 'test',
+        target       = 'basepath-test',
+        source       = 'basepath-test.vala',
+        use          = 'valum',
         install_path = None)
     from waflib.Tools import waf_unit_test
     bld.add_post_fun(waf_unit_test.summary)

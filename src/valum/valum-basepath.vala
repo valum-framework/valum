@@ -1,0 +1,47 @@
+/*
+ * This file is part of Valum.
+ *
+ * Valum is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * Valum is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Valum.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using GLib;
+
+namespace Valum {
+
+	/**
+	 * Rebase and forward requests which path match the provided basepath.
+	 *
+	 * If the {@link Valum.Request.uri} path has the provided prefix, it is 
+	 * stripped and the resulting request is forwared.
+	 *
+	 * Typically, a leading slash and no ending slash are used to form the
+	 * prefix path (e.g. '/user').
+	 *
+	 * @since 0.3
+	 *
+	 * @param path
+	 * @param forward callback used to forward the request
+	 */
+	public HandlerCallback basepath (string path, owned HandlerCallback forward) {
+		return (req, res, next, context) => {
+			if (req.uri.get_path ().has_prefix (path)) {
+				req.uri.set_path (req.uri.get_path ().length > path.length ? 
+				                  req.uri.get_path ().substring (path.length) : "/");
+				return forward (req, res, next, context);
+			} else {
+				return next (req, res);
+			}
+		};
+	}
+}

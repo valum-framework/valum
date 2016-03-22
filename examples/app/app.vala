@@ -219,15 +219,14 @@ app.get ("/not-found", (req, res) => {
 
 var api = new Router ();
 
-app.use (subdomain ("api", api.handle));
-
-api.get ("/repository/<name>", (req, res, next, context) => {
+api.get ("/<name>", (req, res, next, context) => {
 	var name = context["name"].get_string ();
 	return res.expand_utf8 (name, null);
 });
 
-// delegate all other GET requests to a subrouter
-app.get ("/repository/*", api.handle);
+// delegate all requests which path starts with '/repository'
+app.use (subdomain ("api", api.handle));
+app.use (basepath ("/repository", api.handle));
 
 app.get ("/next", (req, res, next) => {
 	return next (req, res);
