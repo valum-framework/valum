@@ -35,7 +35,7 @@ namespace Valum {
 	 *
 	 * @since 0.3
 	 *
-	 * @param path
+	 * @param path    path prefix stripped on forwarded requests
 	 * @param forward callback used to forward the request
 	 */
 	public HandlerCallback basepath (string path, owned HandlerCallback forward) {
