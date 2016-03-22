@@ -28,6 +28,8 @@ namespace Valum {
 	 * Typically, a leading slash and no ending slash are used to form the
 	 * prefix path (e.g. '/user').
 	 *
+	 * If 'next' is called while forwarding, the URI path is restored.
+	 *
 	 * @since 0.3
 	 *
 	 * @param path
@@ -36,9 +38,13 @@ namespace Valum {
 	public HandlerCallback basepath (string path, owned HandlerCallback forward) {
 		return (req, res, next, context) => {
 			if (req.uri.get_path ().has_prefix (path)) {
+				var original_path = req.uri.get_path ();
 				req.uri.set_path (req.uri.get_path ().length > path.length ? 
 				                  req.uri.get_path ().substring (path.length) : "/");
-				return forward (req, res, next, context);
+				return forward (req, res, (req, res) => {
+					req.uri.set_path (original_path);
+					return next (req, res);
+				}, context);
 			} else {
 				return next (req, res);
 			}
