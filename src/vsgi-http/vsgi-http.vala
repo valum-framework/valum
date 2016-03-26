@@ -61,10 +61,6 @@ namespace VSGI.HTTP {
 
 		private HashTable<string, string>? _query;
 
-#if SOUP_2_50
-		private MemoryInputStream _body;
-#endif
-
 		/**
 		 * Message underlying this request.
 		 *
@@ -100,24 +96,11 @@ namespace VSGI.HTTP {
 		public Request (IOStream connection, Message msg, HashTable<string, string>? query) {
 			Object (connection: connection, message: msg);
 			this._query = query;
-#if SOUP_2_50
-			this._body  = new MemoryInputStream.from_data (msg.request_body.flatten ().data, null);
-#endif
 		}
 
-#if SOUP_2_50
-		/**
-		 * {@inheritDoc}
-		 *
-		 * The body from the connection is already consumed, so we provide a
-		 * memory-based stream over the message data.
-		 */
-		public override InputStream body {
-			get {
-				return this._body;
-			}
+		construct {
+			_body = new MemoryInputStream.from_data (message.request_body.flatten ().data, null);
 		}
-#endif
 
 		/**
 		 * {@inheritDoc}
@@ -172,32 +155,10 @@ namespace VSGI.HTTP {
 		}
 
 #if SOUP_2_50
-		/**
-		 * Placeholder for the filtered body.
-		 */
-		private OutputStream? filtered_body = null;
-
-		/**
-		 * {@inheritDoc}
-		 *
-		 * If libsoup-2.4 (>=2.50) is available and the http_version in the
-		 * {@link Request} is set to 'HTTP/1.1', chunked encoding will be
-		 * applied.
-		 */
-		protected override OutputStream body {
-			get {
-				if (this.filtered_body != null)
-					return this.filtered_body;
-
-				// filter the stream properly
-				if (this.request.http_version == HTTPVersion.@1_1 && this.headers.get_encoding () == Encoding.CHUNKED) {
-					this.filtered_body = new ConverterOutputStream (base.body,
-					                                                new ChunkedEncoder ());
-				} else {
-					this.filtered_body = base.body;
-				}
-
-				return this.filtered_body;
+		construct {
+			// filter the stream properly
+			if (this.request.http_version == HTTPVersion.@1_1 && this.headers.get_encoding () == Encoding.CHUNKED) {
+				convert (new ChunkedEncoder ());
 			}
 		}
 #else

@@ -332,16 +332,19 @@ matching route.
         // this is invoked!
     });
 
-Filters
-~~~~~~~
+Converters
+~~~~~~~~~~
 
-:doc:`vsgi/filters` from VSGI are integrated by passing a filtered
-:doc:`vsgi/request` or :doc:`vsgi/response` object to the next handler.
+:doc:`vsgi/converters` can be applied on both the :doc:`vsgi/request` and
+:doc:`vsgi/response` objects in order to filter the consumed or produced
+payload.
 
 ::
 
     app.get ("/", (req, res, next) => {
-        return next (req, new ConvertedResponse (res, new ZlibCompressor (ZlibCompressorFormat.GZIP)));
+        res.headers.append ("Content-Encoding", "gzip");
+        res.convert (new ZlibCompressor (ZlibCompressorFormat.GZIP));
+        return next ();
     });
 
     app.get ("/", (req, res) => {

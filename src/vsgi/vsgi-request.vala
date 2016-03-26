@@ -184,6 +184,13 @@ namespace VSGI {
 		}
 
 		/**
+		 * Placeholder for the request body.
+		 *
+		 * @since 0.3
+		 */
+		protected InputStream? _body = null;
+
+		/**
 		 * Request body.
 		 *
 		 * The provided stream is filtered by the implementation according to
@@ -193,10 +200,19 @@ namespace VSGI {
 		 *
 		 * @since 0.2
 		 */
-		public virtual InputStream body {
+		public InputStream body {
 			get {
-				return this.connection.input_stream;
+				return _body ?? this.connection.input_stream;
 			}
+		}
+
+		/**
+		 * Apply a converter to the request body.
+		 *
+		 * @since 0.3
+		 */
+		public void convert (Converter converter) {
+			_body = new ConverterInputStream (_body ?? connection.input_stream, converter);
 		}
 
 		/**

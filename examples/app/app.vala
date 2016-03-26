@@ -49,7 +49,8 @@ app.get ("/async", (req, res) => {
 
 app.get ("/gzip", (req, res, next) => {
 	res.headers.replace ("Content-Encoding", "gzip");
-	return next (req, new VSGI.ConvertedResponse (res, new ZlibCompressor (ZlibCompressorFormat.GZIP)));
+	res.convert (new ZlibCompressor (ZlibCompressorFormat.GZIP));
+	return next (req, res);
 }).then ((req, res) => {
 	var template = new View.from_resources ("/templates/home.html");
 	return template.to_stream (res.body);

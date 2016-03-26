@@ -88,6 +88,13 @@ namespace VSGI {
 		public virtual bool head_written { get; protected set; default = false; }
 
 		/**
+		 * Placeholder for the response body.
+		 *
+		 * @since 0.3
+		 */
+		protected OutputStream? _body = null;
+
+		/**
 		 * Response body.
 		 *
 		 * On the first attempt to access the response body stream, the status
@@ -108,7 +115,7 @@ namespace VSGI {
 		 *
 		 * @since 0.2
 		 */
-		public virtual OutputStream body {
+		public OutputStream body {
 			get {
 				try {
 					// write head synchronously
@@ -120,7 +127,7 @@ namespace VSGI {
 					warning ("could not write the head in the connection stream: %s", err.message);
 				}
 
-				return this.request.connection.output_stream;
+				return _body ?? this.request.connection.output_stream;
 			}
 		}
 
@@ -235,6 +242,15 @@ namespace VSGI {
 			return this.head_written;
 		}
 #endif
+
+		/**
+		 * Apply a converter to the response body.
+		 *
+		 * @since 0.3
+		 */
+		public void convert (Converter converter) {
+			_body = new ConverterOutputStream (_body ?? request.connection.output_stream, converter);
+		}
 
 		/**
 		 * Expand a buffer into the response body.

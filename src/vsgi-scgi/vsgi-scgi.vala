@@ -72,8 +72,6 @@ namespace VSGI.SCGI {
 	 */
 	public class Request : CGI.Request {
 
-		private InputStream _body;
-
 		/**
 		 * {@inheritDoc}
 		 *
@@ -84,12 +82,6 @@ namespace VSGI.SCGI {
 		public Request (IOStream connection, InputStream reader, string[] environment) {
 			base (connection, environment);
 			_body = reader;
-		}
-
-		public override InputStream body {
-			get {
-				return _body;
-			}
 		}
 	}
 
