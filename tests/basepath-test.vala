@@ -75,6 +75,46 @@ public int main (string[] args) {
 		}
 	});
 
+	Test.add_func ("/basepath/rewrite_location_header", () => {
+		var req = new Request.with_uri (new Soup.URI ("http://localhost/base"));
+		var res = new Response (req);
+		var ctx = new Context ();
+
+		try {
+			basepath ("/base", (req, res, next) => {
+				assert ("/" == req.uri.get_path ());
+				res.headers.replace ("Location", "/5");
+				return next (req, res);
+			}) (req, res, () => {
+				assert ("/base/5" == res.headers.get_one ("Location"));
+				return true;
+			}, ctx);
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+	});
+
+	Test.add_func ("/basepath/rewrite_location_header_on_error", () => {
+		var req = new Request.with_uri (new Soup.URI ("http://localhost/base"));
+		var res = new Response (req);
+		var ctx = new Context ();
+
+		try {
+			basepath ("/base", (req, res, next) => {
+				assert ("/" == req.uri.get_path ());
+				res.headers.replace ("Location", "/5");
+				throw new ClientError.NOT_FOUND ("");
+			}) (req, res, () => {
+				assert_not_reached ();
+			}, ctx);
+
+		} catch (ClientError err) {
+			assert ("/base/5" == res.headers.get_one ("Location"));
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+	});
+
 	Test.add_func ("/basepath/success_created/prefix_message", () => {
 		var req = new Request.with_uri (new Soup.URI ("http://localhost/base"));
 		var res = new Response (req);
