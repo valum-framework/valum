@@ -43,12 +43,11 @@ One typical use case would be to apply a ``Content-Encoding: gzip`` header.
         return res.expand_utf8 ("Hello world!");
     });
 
-ChunkedConverter
-----------------
+Chunked encoder
+---------------
 
-The ``ChunkedConverter`` will convert written data into chunks according to
-`RFC2126 section 3.6.1`_. It is used automatically if the ``Transport-Encoding``
-header is set to ``chunked`` in the :doc:`response`.
+The ``ChunkedEncoder`` will convert written data into chunks according to
+`RFC2126 section 3.6.1`_.
 
 .. _RFC2126 section 3.6.1: http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.6.1
 

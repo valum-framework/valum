@@ -33,7 +33,6 @@ public Type plugin_init (TypeModule type_module) {
 [CCode (gir_namespace = "VSGI.HTTP", gir_version = "0.2")]
 namespace VSGI.HTTP {
 
-#if !SOUP_2_50
 	private class MessageBodyOutputStream : OutputStream {
 
 		public MessageBody message_body { construct; get; }
@@ -52,7 +51,6 @@ namespace VSGI.HTTP {
 			return true;
 		}
 	}
-#endif
 
 	/**
 	 * Soup Request
@@ -96,10 +94,6 @@ namespace VSGI.HTTP {
 		public Request (IOStream connection, Message msg, HashTable<string, string>? query) {
 			Object (connection: connection, message: msg);
 			this._query = query;
-		}
-
-		construct {
-			_body = new MemoryInputStream.from_data (message.request_body.flatten ().data, null);
 		}
 
 		/**
@@ -154,14 +148,6 @@ namespace VSGI.HTTP {
 			Object (request: req, message: msg);
 		}
 
-#if SOUP_2_50
-		construct {
-			// filter the stream properly
-			if (this.request.http_version == HTTPVersion.@1_1 && this.headers.get_encoding () == Encoding.CHUNKED) {
-				convert (new ChunkedEncoder ());
-			}
-		}
-#else
 		/**
 		 * {@inheritDoc}
 		 *
@@ -170,7 +156,6 @@ namespace VSGI.HTTP {
 		 * returned.
 		 */
 		protected override uint8[]? build_head () { return null; }
-#endif
 	}
 
 	/**
@@ -282,13 +267,9 @@ namespace VSGI.HTTP {
 
 			// register a catch-all handler
 			this.server.add_handler (null, (server, msg, path, query, client) => {
-#if SOUP_2_50
-				var connection = client.steal_connection ();
-				msg.set_status (Status.OK);
-				msg.response_headers.replace ("Connection", "close");
-#else
 				var connection = new Connection (server, msg);
-#endif
+
+				msg.set_status (Status.OK);
 
 				var req = new Request (connection, msg, query);
 				var res = new Response (req, msg);
@@ -339,12 +320,7 @@ namespace VSGI.HTTP {
 			return 0;
 		}
 
-#if !SOUP_2_50
 		/**
-		 * Represents a connection between the server and the client for older
-		 * version of libsoup-2.4 (<2.50). It essentially complements the lack
-		 * of {@link Soup.ClientContext.steal_connection}.
-		 *
 		 * @since 0.2
 		 */
 		private class Connection : IOStream {
@@ -390,6 +366,5 @@ namespace VSGI.HTTP {
 				this.server.unpause_message (message);
 			}
 		}
-#endif
 	}
 }
