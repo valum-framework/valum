@@ -95,20 +95,6 @@ namespace VSGI.HTTP {
 			Object (connection: connection, message: msg);
 			this._query = query;
 		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public override uint8[] flatten (Cancellable? cancellable = null) {
-			return message.request_body.data;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public override async uint8[] flatten_async (int io_priority = GLib.Priority.DEFAULT, Cancellable? cancellable = null) {
-			return message.request_body.data;
-		}
 	}
 
 	/**

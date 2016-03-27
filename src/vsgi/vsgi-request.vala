@@ -228,7 +228,7 @@ namespace VSGI {
 		 *
 		 * @return buffer containing the stream data
 		 */
-		public virtual uint8[] flatten (Cancellable? cancellable = null) throws IOError {
+		public uint8[] flatten (Cancellable? cancellable = null) throws IOError {
 			var buffer = this.headers.get_encoding () == Encoding.CONTENT_LENGTH ?
 				new MemoryOutputStream (new uint8[this.headers.get_content_length ()], null, free) :
 				new MemoryOutputStream (null, realloc, free);
@@ -264,8 +264,8 @@ namespace VSGI {
 		 *
 		 * @return buffer containing the stream data
 		 */
-		public virtual async uint8[] flatten_async (int io_priority = GLib.Priority.DEFAULT,
-		                                            Cancellable? cancellable = null) throws IOError {
+		public async uint8[] flatten_async (int io_priority = GLib.Priority.DEFAULT,
+		                                    Cancellable? cancellable = null) throws IOError {
 			var buffer = this.headers.get_encoding () == Encoding.CONTENT_LENGTH ?
 				new MemoryOutputStream (new uint8[this.headers.get_content_length ()], null, free) :
 				new MemoryOutputStream (null, realloc, free);
