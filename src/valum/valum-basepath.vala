@@ -45,12 +45,12 @@ namespace Valum {
 				req.uri.set_path (req.uri.get_path ().length > path.length ? 
 				                  req.uri.get_path ().substring (path.length) : "/");
 				try {
-					return forward (req, res, (req, res) => {
+					return forward (req, res, () => {
 						req.uri.set_path (original_path);
 						var location = res.headers.get_one ("Location");
 						if (location != null && location[0] == '/')
 							res.headers.replace ("Location", path + location);
-						return next (req, res);
+						return next ();
 					}, context);
 				} catch (Success.CREATED s) {
 					s.message = s.message[0] == '/' ? (path + s.message) : s.message;
@@ -65,7 +65,7 @@ namespace Valum {
 						res.headers.replace ("Location", path + location);
 				}
 			} else {
-				return next (req, res);
+				return next ();
 			}
 		};
 	}

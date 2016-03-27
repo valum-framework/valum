@@ -34,7 +34,7 @@ app.use ((req, res, next) => {
 	HashTable<string, string>? @params = new HashTable<string, string> (str_hash, str_equal);
 	@params["charset"] = "utf-8";
 	res.headers.set_content_type ("text/html", @params);
-	return next (req, res);
+	return next ();
 });
 
 app.get ("/", (req, res, next) => {
@@ -50,7 +50,7 @@ app.get ("/async", (req, res) => {
 app.get ("/gzip", (req, res, next) => {
 	res.headers.replace ("Content-Encoding", "gzip");
 	res.convert (new ZlibCompressor (ZlibCompressorFormat.GZIP));
-	return next (req, res);
+	return next ();
 }).then ((req, res) => {
 	var template = new View.from_resources ("/templates/home.html");
 	return template.to_stream (res.body);
@@ -61,7 +61,7 @@ app.use ((req, res, next) => {
 	HashTable<string, string>? @params;
 	res.headers.get_content_type (out @params);
 	res.headers.set_content_type ("text/plain", @params);
-	return next (req, res);
+	return next ();
 });
 
 app.get ("/headers", (req, res) => {
@@ -230,7 +230,7 @@ app.use (subdomain ("api", api.handle));
 app.use (basepath ("/repository", api.handle));
 
 app.get ("/next", (req, res, next) => {
-	return next (req, res);
+	return next ();
 });
 
 app.get ("/next", (req, res) => {
@@ -239,7 +239,7 @@ app.get ("/next", (req, res) => {
 
 app.get ("/state", (req, res, next, context) => {
 	context["state"] = "I have been passed!";
-	return next (req, res);
+	return next ();
 });
 
 app.get ("/state", (req, res, next, context) => {

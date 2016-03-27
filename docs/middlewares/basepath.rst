@@ -34,7 +34,7 @@ is restored.
 ::
 
     user.get ("/<int:id>", (req, res, next) => { 
-        return next (req, res); // path is '/5'
+        return next (); // path is '/5'
     });
 
     app.use (basepath ("/user", user.handle));

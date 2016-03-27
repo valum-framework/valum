@@ -78,15 +78,15 @@ namespace Valum {
 			var expected_labels = expected_subdomain.split (".");
 			var labels          = extract_subdomains (req.uri.host, skip);
 			if (expected_labels.length > labels.length) {
-				return next (req, res);
+				return next ();
 			}
 			if (SubdomainFlags.STRICT in flags && expected_labels.length != labels.length) {
-				return next (req, res);
+				return next ();
 			}
 			for (var i = 1; i <= expected_labels.length; i++) {
 				if (expected_labels[expected_labels.length - i] != "*" &&
 					expected_labels[expected_labels.length - i] != labels[labels.length - i]) {
-					return next (req, res);
+					return next ();
 				}
 			}
 			return forward (req, res, next, stack);

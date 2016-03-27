@@ -32,7 +32,7 @@ public class AdminRouter : Router {
 		string @value;
 		req.lookup_signed_cookie ("session", ChecksumType.SHA256, "impossible to break".data, out @value);
 		if (@value == "admin") {
-			return next (req, res);
+			return next ();
 		}
 
 		if (req.method == Request.POST) {
@@ -41,7 +41,7 @@ public class AdminRouter : Router {
 				var session_cookie = new Soup.Cookie ("session", "admin", "", "/admin/view", Soup.COOKIE_MAX_AGE_ONE_HOUR);
 				CookieUtils.sign (session_cookie, ChecksumType.SHA256, "impossible to break".data);
 				res.headers.append ("Set-Cookie", session_cookie.to_set_cookie_header ());
-				return next (req, res);
+				return next ();
 			}
 		}
 

@@ -22,7 +22,7 @@ It can be performed automatically with ``Router.use``:
         var params = new HashTable<string, string> (str_hash, str_equal);
         params["charset"] = "iso-8859-1";
         res.headers.set_content_type ("text/xhtml+xml", params);
-        return next (req, res);
+        return next ();
     });
 
 Routing context
@@ -38,7 +38,7 @@ context if it's missing.
 
     app.get ("/", (req, res, next, context) => {
         context["some key"] = "some value";
-        return next (req, res);
+        return next ();
     });
 
     app.get ("/", (req, res, next, context) => {
@@ -173,7 +173,7 @@ invoked to jump to the next status handler in the queue.
 ::
 
     app.status (Soup.Status.NOT_FOUND, (req, res, next) => {
-        return next (req, res);
+        return next ();
     });
 
     app.status (Soup.Status.NOT_FOUND, (req, res) => {
@@ -325,7 +325,7 @@ matching route.
 
     app.get ("/", (req, res, next) => {
         message ("pre");
-        return next (req, res); // keep routing
+        return next (); // keep routing
     });
 
     app.get ("/", (req, res) => {
@@ -362,10 +362,10 @@ processing for a resource using middlewares.
 
     app.get ("/admin", (req, res, next) => {
         // authenticate user...
-        return next (req, res);
+        return next ();
     }).then ((req, res, next) => {
         // produce sensitive data...
-        return next (req, res);
+        return next ();
     }).then ((req, res) => {
         // produce the response
     });
@@ -438,7 +438,7 @@ returned to perform a specific task:
         return (req, res, next, ctx) => {
             var referer = req.headers.get_one ("Referer");
             ctx["referer"] = new Soup.URI (referer);
-            return next (req, res);
+            return next ();
         };
     }
 

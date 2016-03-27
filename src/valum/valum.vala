@@ -88,14 +88,11 @@ namespace Valum {
 	 * See {@link Valum.HandlerCallback} for details on thrown error domains.
 	 *
 	 * @since 0.1
-	 *
-	 * @param req request for the next handler
-	 * @param res response for the next handler
 	 */
-	public delegate bool NextCallback (Request req, Response res) throws Informational,
-	                                                                     Success,
-	                                                                     Redirection,
-	                                                                     ClientError,
-	                                                                     ServerError,
-	                                                                     Error;
+	public delegate bool NextCallback () throws Informational,
+	                                            Success,
+	                                            Redirection,
+	                                            ClientError,
+	                                            ServerError,
+	                                            Error;
 }

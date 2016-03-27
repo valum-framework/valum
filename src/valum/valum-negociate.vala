@@ -36,7 +36,7 @@ namespace Valum {
 			if (header != null && header_parse_quality_list (header, null).find_custom (expectation, strcmp) != null) {
 				return forward (req, res, next, stack);
 			} else {
-				return next (req, res);
+				return next ();
 			}
 		};
 	}

@@ -718,12 +718,12 @@ public static void test_router_next () {
 	var router = new Router ();
 
 	router.get ("/", (req, res, next) => {
-		return next (req, res);
+		return next ();
 	});
 
 	// should recurse a bit in process_routing
 	router.get ("/", (req, res, next) => {
-		return next (req, res);
+		return next ();
 	});
 
 	router.get ("/", (req, res, next) => {
@@ -743,12 +743,12 @@ public static void test_router_next_not_found () {
 	var router = new Router ();
 
 	router.get ("/", (req, res, next) => {
-		return next (req, res);
+		return next ();
 	});
 
 	// should recurse a bit in process_routing
 	router.get ("/", (req, res, next) => {
-		return next (req, res);
+		return next ();
 	});
 
 	// no more route matching
@@ -768,11 +768,11 @@ public static void test_router_next_propagate_error () {
 	var router = new Router ();
 
 	router.get ("/", (req, res, next) => {
-		return next (req, res);
+		return next ();
 	});
 
 	router.get ("/", (req, res, next) => {
-		return next (req, res);
+		return next ();
 	});
 
 	router.get ("/", (req, res, next) => {
@@ -796,11 +796,11 @@ public static void test_router_next_propagate_state () {
 
 	router.get ("/", (req, res, next, context) => {
 		context["state"] = state;
-		return next (req, res);
+		return next ();
 	});
 
 	router.get ("/", (req, res, next) => {
-		return next (req, res);
+		return next ();
 	});
 
 	router.get ("/", (req, res, next, context) => {
@@ -826,13 +826,13 @@ public static void test_router_next_replace_propagated_state () {
 
 	router.get ("/", (req, res, next, context) => {
 		context["state"] = state;
-		return next (req, res);
+		return next ();
 	});
 
 	router.get ("/", (req, res, next, context) => {
 		assert (state == context["state"]);
 		context["state"] = "something really different";
-		return next (req, res);
+		return next ();
 	});
 
 	router.get ("/", (req, res, next, context) => {
@@ -974,7 +974,7 @@ public void test_router_then () {
 
 	router.get ("/<int:id>", (req, res, next) => {
 		setted = true;
-		return next (req, res);
+		return next ();
 	}).then ((req, res) => {
 		assert (setted);
 		then_setted = true;
@@ -1000,7 +1000,7 @@ public void test_router_then_preserve_matching_context () {
 
 	router.get ("/<int:id>", (req, res, next, context) => {
 		context["test"] = "test";
-		return next (req, res);
+		return next ();
 	}).then ((req, res, next, context) => {
 		reached = true;
 		assert ("test" == context["test"].get_string ());

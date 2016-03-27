@@ -46,7 +46,7 @@ public int main (string[] args) {
 		try {
 			basepath ("/base", (req, res, next) => {
 				assert ("/" == req.uri.get_path ());
-				return next (req, res);
+				return next ();
 			}) (req, res, () => {
 				assert ("/base" == req.uri.get_path ());
 				return true;
@@ -84,7 +84,7 @@ public int main (string[] args) {
 			basepath ("/base", (req, res, next) => {
 				assert ("/" == req.uri.get_path ());
 				res.headers.replace ("Location", "/5");
-				return next (req, res);
+				return next ();
 			}) (req, res, () => {
 				assert ("/base/5" == res.headers.get_one ("Location"));
 				return true;

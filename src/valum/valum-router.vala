@@ -309,7 +309,7 @@ namespace Valum {
 				var req_method = Method.from_string (req.method);
 				var local_context = new Context.with_parent (context);
 				if (req_method in node.@get ().method && node.@get ().match (req, local_context)) {
-					return node.@get ().fire (req, res, (req, res) => {
+					return node.@get ().fire (req, res, () => {
 						// keep routing if there are more routes to explore
 						if (node.next ().is_end ()) {
 							return false;
@@ -336,7 +336,7 @@ namespace Valum {
 		 */
 		public bool invoke (Request req, Response res, NextCallback next) {
 			try {
-				return next (req, res);
+				return next ();
 			} catch (Error err) {
 				// replace any other error by a 500 status
 				var status_code = (err is Informational ||

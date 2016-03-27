@@ -77,7 +77,7 @@ namespace Valum {
 		public Route then (owned HandlerCallback handler) {
 			var old_fire = (owned) _fire;
 			_fire = (req, res, next, context) => {
-				return old_fire (req, res, (req, res) => {
+				return old_fire (req, res, () => {
 					// since the same matcher is shared, we preserve the context intact
 					return handler (req, res, next, context);
 				}, context);

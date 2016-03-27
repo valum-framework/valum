@@ -95,7 +95,7 @@ code duplication. They are described in the :doc:`../router` document.
             }
 
             context["user"] = user;
-            return next (req, res);
+            return next ();
         });
 
         // update model data
@@ -127,7 +127,7 @@ code duplication. They are described in the :doc:`../router` document.
 
             context["user"] = user;
 
-            return next (req, res);
+            return next ();
         });
 
         // serialize to JSON any provided GObject
