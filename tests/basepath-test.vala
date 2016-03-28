@@ -115,6 +115,26 @@ public int main (string[] args) {
 		}
 	});
 
+	Test.add_func ("/basepath/keep_location_header_intact_on_head_written", () => {
+		var req = new Request.with_uri (new Soup.URI ("http://localhost/base"));
+		var res = new Response (req);
+		var ctx = new Context ();
+
+		try {
+			basepath ("/base", (req, res, next) => {
+				res.headers.replace ("Location", "/5");
+				size_t bytes_written;
+				res.write_head (out bytes_written);
+				return next ();
+			}) (req, res, () => {
+				assert ("/5" == res.headers.get_one ("Location"));
+				return true;
+			}, ctx);
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+	});
+
 	Test.add_func ("/basepath/success_created/prefix_message", () => {
 		var req = new Request.with_uri (new Soup.URI ("http://localhost/base"));
 		var res = new Response (req);

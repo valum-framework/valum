@@ -22,7 +22,7 @@ namespace Valum {
 	/**
 	 * Rebase and forward requests which path match the provided basepath.
 	 *
-	 * If the {@link Valum.Request.uri} path has the provided prefix, it is 
+	 * If the {@link Valum.Request.uri} path has the provided prefix, it is
 	 * stripped and the resulting request is forwared.
 	 *
 	 * Typically, a leading slash and no ending slash are used to form the
@@ -42,13 +42,13 @@ namespace Valum {
 		return (req, res, next, context) => {
 			if (req.uri.get_path ().has_prefix (path)) {
 				var original_path = req.uri.get_path ();
-				req.uri.set_path (req.uri.get_path ().length > path.length ? 
+				req.uri.set_path (req.uri.get_path ().length > path.length ?
 				                  req.uri.get_path ().substring (path.length) : "/");
 				try {
 					return forward (req, res, () => {
 						req.uri.set_path (original_path);
 						var location = res.headers.get_one ("Location");
-						if (location != null && location[0] == '/')
+						if (!res.head_written && location != null && location[0] == '/')
 							res.headers.replace ("Location", path + location);
 						return next ();
 					}, context);
@@ -61,7 +61,7 @@ namespace Valum {
 				} finally {
 					req.uri.set_path (original_path);
 					var location = res.headers.get_one ("Location");
-					if (location != null && location[0] == '/')
+					if (!res.head_written && location != null && location[0] == '/')
 						res.headers.replace ("Location", path + location);
 				}
 			} else {
