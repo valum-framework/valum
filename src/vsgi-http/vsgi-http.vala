@@ -221,21 +221,16 @@ namespace VSGI.HTTP {
 				    options.lookup_value ("ssl-key-file", VariantType.BYTESTRING) == null) {
 					throw new ServerError.FAILED ("both '--ssl-cert-file' and '--ssl-key-file' must be provided");
 				}
-#if SOUP_2_38
+
 				var tls_certificate = new TlsCertificate.from_files (options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING).get_bytestring (),
 				                                                     options.lookup_value ("ssl-key-file", VariantType.BYTESTRING).get_bytestring ());
-#endif
+
 				this.server = new Soup.Server (
 #if !SOUP_2_48
 					SERVER_PORT,            port,
 #endif
 					SERVER_RAW_PATHS,       options.lookup_value ("raw-paths", VariantType.BOOLEAN) != null,
-#if SOUP_2_38
 					SERVER_TLS_CERTIFICATE, tls_certificate,
-#else
-					SERVER_SSL_CERT_FILE,   options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING).get_bytestring (),
-					SERVER_SSL_KEY_FILE,    options.lookup_value ("ssl-key-file", VariantType.BYTESTRING).get_bytestring (),
-#endif
 					SERVER_SERVER_HEADER, null);
 			} else {
 				this.server = new Soup.Server (
