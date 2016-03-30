@@ -37,7 +37,7 @@ app.get ("/", (req, res) => {
 
 			parser.load_from_stream (openweathermap.send_async.end (result));
 
-			var main = parser.get_root ().get_object ().get_object_member ("main");
+			var _main = parser.get_root ().get_object ().get_object_member ("main");
 
 			return res.expand_utf8 ("""
 			<h1>Weather in Montreal</h1>
@@ -48,11 +48,11 @@ app.get ("/", (req, res) => {
 			  <dt>Max</dt><dd>%s°C</dd>
 			  <dt>Min</dt><dd>%s°C</dd>
 			</dl>
-			""".printf (main.get_string_member ("humidity"),
-			            main.get_string_member ("pressure"),
-			            main.get_string_member ("temp"),
-			            main.get_string_member ("temp_max"),
-						main.get_string_member ("temp_min")), null);
+			""".printf (_main.get_string_member ("humidity"),
+			            _main.get_string_member ("pressure"),
+			            _main.get_string_member ("temp"),
+			            _main.get_string_member ("temp_max"),
+						_main.get_string_member ("temp_min")), null);
 		});
 	});
 	return true;
