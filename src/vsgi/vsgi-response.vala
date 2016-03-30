@@ -131,7 +131,6 @@ namespace VSGI {
 			}
 		}
 
-#if GIO_2_44
 		/**
 		 * Obtain the body stream asynchronously.
 		 *
@@ -151,7 +150,6 @@ namespace VSGI {
 			}
 			return body;
 		}
-#endif
 
 		/**
 		 * Produce the head of this response including the status line, the
@@ -212,7 +210,6 @@ namespace VSGI {
 			return this.head_written;
 		}
 
-#if GIO_2_44
 		/**
 		 * Write status line and headers asynchronously.
 		 *
@@ -227,6 +224,7 @@ namespace VSGI {
 		                                    out size_t bytes_written) throws Error
 			requires (!this.head_written)
 		{
+#if GIO_2_44
 			var head = this.build_head ();
 
 			if (head == null) {
@@ -240,8 +238,10 @@ namespace VSGI {
 			}
 
 			return this.head_written;
-		}
+#else
+			return write_head (out bytes_written, cancellable);
 #endif
+		}
 
 		/**
 		 * Apply a converter to the response body.
@@ -274,18 +274,21 @@ namespace VSGI {
 			return expand (body.data, cancellable);
 		}
 
-#if GIO_2_44
 		/**
 		 * @since 0.3
 		 */
 		public async bool expand_async (uint8[]      buffer,
 		                                int          priority    = GLib.Priority.DEFAULT,
 		                                Cancellable? cancellable = null) throws Error {
+#if GIO_2_44
 			headers.set_content_length (buffer.length);
 			size_t bytes_written;
 			return (yield write_head_async (priority, cancellable, out bytes_written)) &&
 			       (yield body.write_all_async (buffer, priority, cancellable, out bytes_written)) &&
 			       (yield body.close_async (priority, cancellable));
+#else
+			return expand (buffer, cancellable);
+#endif
 		}
 
 		/**
@@ -296,7 +299,6 @@ namespace VSGI {
 		                                     Cancellable? cancellable = null) throws Error {
 			return yield expand_async (body.data, priority, cancellable);
 		}
-#endif
 
 		/**
 		 * Write the head before disposing references to other objects.
