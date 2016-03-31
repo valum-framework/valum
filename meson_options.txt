@@ -1,0 +1,2 @@
+option('enable_docs', type: 'boolean', value: false, description: 'generate user documentation')
+option('enable_examples', type: 'boolean', value: false, description: 'build examples')

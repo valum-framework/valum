@@ -44,5 +44,9 @@ endif
 subdir('data')
 subdir('src')
 subdir('tests')
-subdir('docs')
-subdir('examples')
+if get_option('enable_docs')
+    subdir('docs')
+endif
+if get_option('enable_examples')
+    subdir('examples')
+endif
