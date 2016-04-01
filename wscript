@@ -22,7 +22,10 @@ def configure(conf):
                                       '-Wno-unused-variable',
                                       '-Wno-unused-but-set-variable',
                                       '-Wno-unused-function'])
-    conf.env.append_unique('VALAFLAGS', ['--enable-experimental', '--enable-deprecated', '--fatal-warnings'])
+    conf.env.append_unique('VALAFLAGS', ['--target-glib=2.32',
+                                         '--enable-experimental',
+                                         '--enable-deprecated',
+                                         '--fatal-warnings'])
 
     conf.recurse('src tests')
 
