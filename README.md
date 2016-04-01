@@ -77,7 +77,7 @@ Discussions and help
 You can get help with Valum from different sources:
 
  - mailing list: [vala-list](https://mail.gnome.org/mailman/listinfo/vala-list).
- - IRC channel: #vala at irc.gimp.net
+ - IRC channel: #vala and #valum at irc.gimp.net
  - [Google+ page for Vala](https://plus.google.com/115393489934129239313/)
  - issues on [GitHub](https://github.com/antono/valum/issues) with the
    `question` label
