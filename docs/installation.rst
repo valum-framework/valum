@@ -2,9 +2,9 @@ Installation
 ============
 
 This document describes the compilation and installation process. Most of that
-work is automated with `waf`_, a build tool written in Python.
+work is automated with `Meson`_, a build tool written in Python.
 
-.. _waf: https://code.google.com/p/waf/
+.. _Meson: http://mesonbuild.com/
 
 Packages
 --------
@@ -50,9 +50,11 @@ The following dependencies are minimal to build the framework under Ubuntu
 +==============+==========+
 | vala         | >=0.26   |
 +--------------+----------+
-| python       | latest   |
+| python       | >=3.4    |
 +--------------+----------+
-| waf          | provided |
+| meson        | >=0.31   |
++--------------+----------+
+| ninja        | >=1.5.1  |
 +--------------+----------+
 | glib-2.0     | >=2.32   |
 +--------------+----------+
@@ -118,8 +120,9 @@ Build
 
 .. code-block:: bash
 
-    ./waf configure
-    ./waf build
+    mkdir build && cd build
+    meson ..
+    ninja # or 'ninja-build' on some distribution
 
 Install
 -------
@@ -130,7 +133,7 @@ library has been generated.
 
 .. code-block:: bash
 
-    sudo ./waf install
+    sudo ninja install
 
 The installation is usually prefixed by ``/usr/local``, which is generally not
 in the dynamic library path. You have to export the ``LD_LIBRARY_PATH``
@@ -145,7 +148,7 @@ Run the tests
 
 .. code-block:: bash
 
-    ./build/tests/tests
+    ninja test
 
 If any of them fail, please `open an issue on GitHub`_ so that we can tackle
 the bug.
@@ -156,7 +159,7 @@ Run the sample application
 --------------------------
 
 You can run the sample application from the ``build`` folder if you called
-``./waf configure`` with the ``--enable-examples`` flag, it uses the
+``meson`` with the ``-D enable_examples=true`` flag, it uses the
 :doc:`vsgi/server/http`.
 
 .. code-block:: bash
