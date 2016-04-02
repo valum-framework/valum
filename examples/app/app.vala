@@ -22,7 +22,11 @@ using VSGI.HTTP;
 public async void respond_async (VSGI.Request req, VSGI.Response res) throws Error {
 	size_t bytes_written;
 	var body    = yield res.get_body_async (Priority.DEFAULT, null, out bytes_written);
+#if GIO_2_44
 	yield body.write_all_async ("Hello world!".data, Priority.DEFAULT, null, out bytes_written);
+#else
+	body.write_all ("Hello world!".data, out bytes_written);
+#endif
 	yield body.close_async ();
 }
 
