@@ -19,6 +19,10 @@ using GLib;
 
 namespace VSGI {
 
+	public errordomain ServerError {
+		FAILED
+	}
+
 	/**
 	 * Server that feeds a {@link VSGI.ApplicationCallback} with incoming
 	 * requests.
@@ -32,7 +36,14 @@ namespace VSGI {
 	 *
 	 * @since 0.1
 	 */
-	public class Server : GLib.Application {
+	public abstract class Server : GLib.Application {
+
+		/**
+		 * List of URIs this server is currently listening on.
+		 *
+		 * @since 0.3
+		 */
+		public abstract SList<Soup.URI> uris { get; }
 
 		/**
 		 * Enforces implementation to take the application as a sole argument
@@ -63,6 +74,34 @@ namespace VSGI {
 			         ApplicationFlags.SEND_ENVIRONMENT |
 			         ApplicationFlags.NON_UNIQUE;
 		}
+
+		public override int command_line (ApplicationCommandLine command_line) {
+			try {
+#if GIO_2_40
+				var options = command_line.get_options_dict ();
+#else
+				var options = new VariantDict ();
+#endif
+
+				listen (options);
+
+				foreach (var uri in uris) {
+					command_line.print ("listening on '%s'\n", uri.to_string (false)[0:-uri.path.length]);
+				}
+				hold ();
+				return 0;
+			} catch (Error err) {
+				command_line.printerr ("%s\n", err.message);
+				return 1;
+			}
+		}
+
+		/**
+		 * Prepare the server for listening based on the provided options.
+		 *
+		 * @param options
+		 */
+		public abstract void listen (VariantDict options) throws Error;
 
 		/**
 		 * Dispatch the request to the application callback.

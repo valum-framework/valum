@@ -136,6 +136,11 @@ namespace VSGI.SCGI {
 		 */
 		public SocketService listener { get; protected set; default = new SocketService (); }
 
+		private SList<Soup.URI> _uris = new SList<Soup.URI> ();
+		public override SList<Soup.URI> uris {
+			get { return _uris; }
+		}
+
 		public Server (string application_id, owned VSGI.ApplicationCallback application) {
 			base (application_id, (owned) application);
 		}
@@ -154,40 +159,28 @@ namespace VSGI.SCGI {
 		}
 #endif
 
-		public override int command_line (ApplicationCommandLine command_line) {
-#if GIO_2_40
-			var options  = command_line.get_options_dict ();
-
+		public override void listen (VariantDict options) throws Error {
 			var backlog = options.contains ("backlog") ?
 				options.lookup_value ("backlog", VariantType.INT32).get_int32 () : 10;
 
 			listener.set_backlog (backlog);
-#endif
 
-			try {
-#if GIO_2_40
-				if (options.contains ("any")) {
-					var port = listener.add_any_inet_port (null);
-					command_line.print ("listening on 'scgi://0.0.0.0:%u' (backlog ('%d'))\n", port, backlog);
-					command_line.print ("listening on 'scgi://:::%u' (backlog '%d')\n", port, backlog);
-				} else if (options.contains ("port")) {
-					var port = (uint16) options.lookup_value ("port", VariantType.INT32).get_int32 ();
-					listener.add_inet_port (port, null);
-					command_line.print ("listening on 'scgi://0.0.0.0:%u' (backlog '%d')\n", port, backlog);
-					command_line.print ("listening on 'scgi://:::%u' (backlog '%d')\n", port, backlog);
-				} else if (options.contains ("file-descriptor")) {
-					var file_descriptor = options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 ();
-					listener.add_socket (new Socket.from_fd (file_descriptor), null);
-					command_line.print ("listening on file descriptor '%u'\n", file_descriptor);
-				} else
-#endif
-				{
-					listener.add_socket (new Socket.from_fd (0), null);
-					command_line.print ("listening on the default file descriptor\n");
-				}
-			} catch (Error err) {
-				command_line.print ("%s\n", err.message);
-				return 1;
+			if (options.contains ("any")) {
+				var port = listener.add_any_inet_port (null);
+				_uris.append (new Soup.URI ("scgi://0.0.0.0:%u/".printf (port)));
+				_uris.append (new Soup.URI ("scgi://[::]:%u/".printf (port)));
+			} else if (options.contains ("port")) {
+				var port = (uint16) options.lookup_value ("port", VariantType.INT32).get_int32 ();
+				listener.add_inet_port (port, null);
+				_uris.append (new Soup.URI ("scgi://0.0.0.0:%u/".printf (port)));
+				_uris.append (new Soup.URI ("scgi://[::]:%u/".printf (port)));
+			} else if (options.contains ("file-descriptor")) {
+				var file_descriptor = options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 ();
+				listener.add_socket (new Socket.from_fd (file_descriptor), null);
+				_uris.append (new Soup.URI ("scgi+fd://%u/".printf (file_descriptor)));
+			} else {
+				listener.add_socket (new Socket.from_fd (0), null);
+				_uris.append (new Soup.URI ("scgi+fd://0/"));
 			}
 
 			listener.incoming.connect ((connection) => {
@@ -195,8 +188,7 @@ namespace VSGI.SCGI {
 					try {
 						process_connection.end (result);
 					} catch (Error err) {
-						command_line.printerr ("%s\n", err.message);
-						return;
+						error ("%s", err.message);
 					}
 				});
 				return false;
@@ -206,10 +198,6 @@ namespace VSGI.SCGI {
 
 			// gracefully stop accepting new connections
 			shutdown.connect (listener.stop);
-
-			hold ();
-
-			return 0;
 		}
 
 		private async void process_connection (SocketConnection connection,

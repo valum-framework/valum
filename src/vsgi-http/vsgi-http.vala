@@ -162,7 +162,19 @@ namespace VSGI.HTTP {
 	 */
 	public class Server : VSGI.Server {
 
-		private Soup.Server server;
+		private Soup.Server? server = null;
+
+		private SList<Soup.URI> _uris = new SList<Soup.URI> ();
+
+		public override SList<Soup.URI> uris {
+			get {
+#if SOUP_2_48
+				if (server != null)
+					_uris = server.get_uris ();
+#endif
+				return _uris;
+			}
+		}
 
 		/**
 		 * {@inheritDoc}
@@ -198,13 +210,9 @@ namespace VSGI.HTTP {
 #endif
 		}
 
-		public override int command_line (ApplicationCommandLine command_line) {
-#if GIO_2_40
-			var options = command_line.get_options_dict ();
-
+		public override void listen (VariantDict options) throws Error {
 			if (options.contains ("port") && options.contains ("file-descriptor")) {
-				command_line.printerr ("'--port' and '--file-descriptor' cannot be specified together\n");
-				return 1;
+				throw new ServerError.FAILED ("'--port' and '--file-descriptor' cannot be specified together");
 			}
 
 			var port = options.contains ("port") ?
@@ -212,25 +220,14 @@ namespace VSGI.HTTP {
 
 			var file_descriptor = options.contains ("file-descriptor") ?
 				options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 () : 0;
-#else
-			var port            = 3003;
-#endif
 
-#if GIO_2_40
 			if (options.contains ("https")) {
 				if (!options.contains ("ssl-cert-file") || !options.contains ("ssl-key-file")) {
-					command_line.printerr ("both '--ssl-cert-file' and '--ssl-key-file' must be provided\n");
-					return 1;
+					throw new ServerError.FAILED ("both '--ssl-cert-file' and '--ssl-key-file' must be provided");
 				}
 #if SOUP_2_38
-				TlsCertificate? tls_certificate = null;
-				try {
-					tls_certificate = new TlsCertificate.from_files (options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING).get_bytestring (),
-					                                                 options.lookup_value ("ssl-key-file", VariantType.BYTESTRING).get_bytestring ());
-				} catch (GLib.Error err) {
-					command_line.printerr ("%s\n", err.message);
-					return 1;
-				}
+				var tls_certificate = new TlsCertificate.from_files (options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING).get_bytestring (),
+				                                                     options.lookup_value ("ssl-key-file", VariantType.BYTESTRING).get_bytestring ());
 #endif
 				this.server = new Soup.Server (
 #if !SOUP_2_48
@@ -244,23 +241,17 @@ namespace VSGI.HTTP {
 					SERVER_SSL_KEY_FILE,    options.lookup_value ("ssl-key-file", VariantType.BYTESTRING).get_bytestring (),
 #endif
 					SERVER_SERVER_HEADER, null);
-			} else
-#endif
-			{
+			} else {
 				this.server = new Soup.Server (
 #if !SOUP_2_48
 					SERVER_PORT, port,
 #endif
-#if GIO_2_40
 					SERVER_RAW_PATHS, options.contains ("raw-paths"),
-#endif
 					SERVER_SERVER_HEADER, null);
 			}
 
-#if GIO_2_40
 			if (options.contains ("server-header"))
 				this.server.server_header = options.lookup_value ("server-header", VariantType.STRING).get_string ();
-#endif
 
 			// register a catch-all handler
 			this.server.add_handler (null, (server, msg, path, query, client) => {
@@ -277,44 +268,26 @@ namespace VSGI.HTTP {
 #if SOUP_2_48
 			ServerListenOptions listen_options = 0;
 
-			try {
-#if GIO_2_40
-				if (options.contains ("https"))
-					listen_options |= ServerListenOptions.HTTPS;
+			if (options.contains ("https"))
+				listen_options |= ServerListenOptions.HTTPS;
 
-				if (options.contains ("ipv4-only"))
-					listen_options |= ServerListenOptions.IPV4_ONLY;
+			if (options.contains ("ipv4-only"))
+				listen_options |= ServerListenOptions.IPV4_ONLY;
 
-				if (options.contains ("ipv6-only"))
-					listen_options |= ServerListenOptions.IPV6_ONLY;
+			if (options.contains ("ipv6-only"))
+				listen_options |= ServerListenOptions.IPV6_ONLY;
 
-				if (options.contains ("file-descriptor")) {
-					this.server.listen_fd (file_descriptor, listen_options);
-				} else if (options.contains ("all")) {
-					this.server.listen_all (port, listen_options);
-				} else
-#endif
-				{
-					this.server.listen_local (port, listen_options);
-				}
-			} catch (Error err) {
-				command_line.printerr ("%s\n", err.message);
-				return 1;
-			}
-
-			foreach (var uri in this.server.get_uris ()) {
-				command_line.print ("listening on '%s://%s:%u'\n", uri.scheme, uri.host, uri.port);
+			if (options.contains ("file-descriptor")) {
+				this.server.listen_fd (file_descriptor, listen_options);
+			} else if (options.contains ("all")) {
+				this.server.listen_all (port, listen_options);
+			} else {
+				this.server.listen_local (port, listen_options);
 			}
 #else
 			this.server.run_async ();
-
-			command_line.print ("listening on 'http://0.0.0.0:%u'\n", this.server.port);
+			_uris.append (new Soup.URI ("%s://0.0.0.0:%u".printf (options.contains ("https") ? "https" : "http", server.port)));
 #endif
-
-			// keep the process alive
-			this.hold ();
-
-			return 0;
 		}
 
 		/**

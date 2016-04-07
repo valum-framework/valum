@@ -172,6 +172,11 @@ namespace VSGI.FastCGI {
 	 */
 	public class Server : VSGI.Server {
 
+		private SList<Soup.URI> _uris = new SList<Soup.URI> ();
+		public override unowned SList<Soup.URI> uris {
+			get { return _uris; }
+		}
+
 		/**
 		 * {@inheritDoc}
 		 */
@@ -200,34 +205,27 @@ namespace VSGI.FastCGI {
 			this.shutdown.connect (global::FastCGI.shutdown_pending);
 		}
 
-		public override int command_line (ApplicationCommandLine command_line) {
-#if GIO_2_40
-			var options = command_line.get_options_dict ();
-
+		public override void listen (VariantDict options) throws Error {
 			if ((options.contains ("socket") && options.contains ("port")) ||
 			    (options.contains ("socket") && options.contains ("file-descriptor")) ||
 			    (options.contains ("port") && options.contains ("file-descriptor"))) {
-				command_line.printerr ("--socket, --port and --file-descriptor must not be specified simultaneously\n");
-				return 1;
+				throw new ServerError.FAILED ("--socket, --port and --file-descriptor must not be specified simultaneously");
 			}
 
 			var backlog = options.contains ("backlog") ? options.lookup_value ("backlog", VariantType.INT32).get_int32 () : 10;
-#endif
 
 			var fd = global::FastCGI.LISTENSOCK_FILENO;
 
-#if GIO_2_40
 			if (options.contains ("socket")) {
 				var socket_path = options.lookup_value ("socket", VariantType.BYTESTRING).get_bytestring ();
 
 				fd = global::FastCGI.open_socket (socket_path, backlog);
 
 				if (fd == -1) {
-					command_line.printerr ("could not open socket path %s\n", socket_path);
-					return 1;
+					throw new ServerError.FAILED ("could not open socket path %s", socket_path);
 				}
 
-				command_line.print ("listening on 'fcgi://unix:%s' (backlog '%d')\n", socket_path, backlog);
+				_uris.append (new Soup.URI ("fcgi+unix://%s/".printf (socket_path)));
 			}
 
 			else if (options.contains ("port")) {
@@ -236,22 +234,19 @@ namespace VSGI.FastCGI {
 				fd = global::FastCGI.open_socket (port, backlog);
 
 				if (fd == -1) {
-					command_line.printerr ("could not open TCP port '%s'\n", port[1:-1]);
-					return 1;
+					throw new ServerError.FAILED ("could not open TCP port '%s'", port[1:-1]);
 				}
 
-				command_line.print ("listening on 'fcgi://0.0.0.0:%s' (backlog '%d')\n", port, backlog);
+				_uris.append (new Soup.URI ("fcgi://0.0.0.0:%s/".printf (port)));
 			}
 
 			else if (options.contains ("file-descriptor")) {
 				fd = options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 ();
-				command_line.print ("listening on the file descriptor '%u'\n", fd);
+				_uris.append (new Soup.URI ("fcgi+fd://%u/".printf (fd)));
 			}
 
-			else
-#endif
-			{
-				command_line.print ("listening on the default file descriptor\n");
+			else {
+				_uris.append (new Soup.URI ("fcgi+fd://%u/".printf (global::FastCGI.LISTENSOCK_FILENO)));
 			}
 
 			new Thread<int> (null, () => {
@@ -262,8 +257,7 @@ namespace VSGI.FastCGI {
 						if (!connection.init ())
 							break;
 					} catch (Error err) {
-						command_line.printerr (err.message);
-						break;
+						error (err.message);
 					}
 
 					var req = new Request (connection, connection.request.environment);
@@ -280,11 +274,6 @@ namespace VSGI.FastCGI {
 
 				return 1;
 			});
-
-			// keep the process alive
-			hold ();
-
-			return 0;
 		}
 
 		/**

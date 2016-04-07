@@ -171,26 +171,29 @@ namespace VSGI.CGI {
 	 */
 	public class Server : VSGI.Server {
 
+		private SList<URI> _uris = new SList<URI> ();
+		public override SList<URI> uris {
+			get {
+				return _uris;
+			}
+		}
+
 		public Server (string application_id, owned VSGI.ApplicationCallback application) {
 			base (application_id, (owned) application);
 		}
 
-		public override int command_line (ApplicationCommandLine command_line) {
+		public override void listen (VariantDict options) throws Error {
 			var connection = new Connection (this,
-#if GIO_2_34
-			                                 command_line.get_stdin (),
-#else
 			                                 new UnixInputStream (stdin.fileno (), true),
-#endif
 			                                 new UnixOutputStream (stdout.fileno (), true));
 
-			var req = new Request (connection, command_line.get_environ ());
+			_uris.append (new Soup.URI ("cgi+fd://%u/".printf (stdin.fileno ())));
+
+			var req = new Request (connection, Environ.@get ());
 			var res = new Response (req);
 
 			// handle a single request and quit
 			dispatch (req, res);
-
-			return 0;
 		}
 
 		private class Connection : IOStream {
@@ -208,10 +211,9 @@ namespace VSGI.CGI {
 				Object (server: server);
 				this._input_stream  = input_stream;
 				this._output_stream = output_stream;
-				this.server.hold ();
 			}
 
-			~Connection () {
+			public override void dispose () {
 				this.server.release ();
 			}
 		}
