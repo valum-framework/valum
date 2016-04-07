@@ -484,6 +484,9 @@ namespace Valum {
 					string[] allowedv = {};
 					var method_class = (FlagsClass) typeof (Method).class_ref ();
 
+					// always provided methods
+					allowed |= Method.TRACE;
+
 					do {
 						unowned FlagsValue flags_value = method_class.get_first_value (allowed);
 						allowed  &= ~flags_value.@value;
@@ -494,7 +497,26 @@ namespace Valum {
 						res.status = Soup.Status.OK;
 						res.headers.append ("Allow", string.joinv (", ", allowedv));
 						return res.expand_utf8 (""); // result in 'Content-Length: 0' as specified
-					} else {
+					}
+
+					else if (req.method == Request.TRACE) {
+						var head = new StringBuilder ();
+
+						head.append_printf ("%s %s HTTP/%s\r\n", req.method,
+						                                         req.uri.to_string (true),
+						                                         req.http_version == Soup.HTTPVersion.@1_0 ? "1.0" : "1.1");
+
+						req.headers.@foreach ((name, header) => {
+							head.append_printf ("%s: %s\r\n", name, header);
+						});
+
+						head.append ("\r\n");
+
+						res.headers.set_content_type ("message/http", null);
+						return res.expand_utf8 (head.str);
+					}
+
+					else {
 						throw new ClientError.METHOD_NOT_ALLOWED (string.joinv (", ", allowedv));
 					}
 				}

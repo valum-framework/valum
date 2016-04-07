@@ -620,7 +620,7 @@ public static void test_router_method_not_allowed () {
 	router.handle (request, response);
 
 	assert (response.status == 405);
-	assert ("GET, HEAD, PUT" == response.headers.get_one ("Allow"));
+	assert ("GET, HEAD, PUT, TRACE" == response.headers.get_one ("Allow"));
 }
 
 /**
@@ -648,7 +648,7 @@ public static void test_router_method_not_allowed_excludes_request_method () {
 	router.handle (request, response);
 
 	assert (response.status == 405);
-	assert ("GET, HEAD" == response.headers.get_one ("Allow"));
+	assert ("GET, HEAD, TRACE" == response.headers.get_one ("Allow"));
 }
 
 
@@ -669,7 +669,7 @@ public static void test_router_method_not_allowed_success_on_options () {
 	router.handle (request, response);
 
 	assert (response.status == 200);
-	assert ("GET, HEAD, PUT" == response.headers.get_one ("Allow"));
+	assert ("GET, HEAD, PUT, TRACE" == response.headers.get_one ("Allow"));
 	assert (Soup.Encoding.CONTENT_LENGTH == response.headers.get_encoding ());
 	assert (0 == response.headers.get_content_length ());
 }
