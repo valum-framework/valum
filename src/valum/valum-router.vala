@@ -512,6 +512,7 @@ namespace Valum {
 
 						head.append ("\r\n");
 
+						res.status = Soup.Status.OK;
 						res.headers.set_content_type ("message/http", null);
 						return res.expand_utf8 (head.str);
 					}
