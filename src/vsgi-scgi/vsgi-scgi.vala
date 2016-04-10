@@ -126,22 +126,21 @@ namespace VSGI.SCGI {
 		}
 #endif
 
-		public override void listen (VariantDict options) throws Error {
-			var backlog = options.contains ("backlog") ?
-				options.lookup_value ("backlog", VariantType.INT32).get_int32 () : 10;
+		public override void listen (Variant options) throws Error {
+			var backlog = options.lookup_value ("backlog", VariantType.INT32) ?? new Variant.@int32 (10);
 
-			listener.set_backlog (backlog);
+			listener.set_backlog (backlog.get_int32 ());
 
-			if (options.contains ("any")) {
+			if (options.lookup_value ("any", VariantType.BOOLEAN) != null) {
 				var port = listener.add_any_inet_port (null);
 				_uris.append (new Soup.URI ("scgi://0.0.0.0:%u/".printf (port)));
 				_uris.append (new Soup.URI ("scgi://[::]:%u/".printf (port)));
-			} else if (options.contains ("port")) {
+			} else if (options.lookup_value ("port", VariantType.INT32) != null) {
 				var port = (uint16) options.lookup_value ("port", VariantType.INT32).get_int32 ();
 				listener.add_inet_port (port, null);
 				_uris.append (new Soup.URI ("scgi://0.0.0.0:%u/".printf (port)));
 				_uris.append (new Soup.URI ("scgi://[::]:%u/".printf (port)));
-			} else if (options.contains ("file-descriptor")) {
+			} else if (options.lookup_value ("file-descriptor", VariantType.INT32) != null) {
 				var file_descriptor = options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 ();
 				listener.add_socket (new Socket.from_fd (file_descriptor), null);
 				_uris.append (new Soup.URI ("scgi+fd://%u/".printf (file_descriptor)));

@@ -213,16 +213,12 @@ namespace VSGI.HTTP {
 #endif
 		}
 
-		public override void listen (VariantDict options) throws Error {
-			if (options.contains ("port") && options.contains ("file-descriptor")) {
-				throw new ServerError.FAILED ("'--port' and '--file-descriptor' cannot be specified together");
-			}
+		public override void listen (Variant options) throws Error {
+			var port = options.lookup_value ("port", VariantType.INT32) ?? new Variant.@int32 (3003);
 
-			var port = options.contains ("port") ?
-				options.lookup_value ("port", VariantType.INT32).get_int32 () : 3003;
-
-			if (options.contains ("https")) {
-				if (!options.contains ("ssl-cert-file") || !options.contains ("ssl-key-file")) {
+			if (options.lookup_value ("https", VariantType.BOOLEAN) != null) {
+				if (options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING) == null ||
+				    options.lookup_value ("ssl-key-file", VariantType.BYTESTRING) == null) {
 					throw new ServerError.FAILED ("both '--ssl-cert-file' and '--ssl-key-file' must be provided");
 				}
 #if SOUP_2_38
@@ -233,7 +229,7 @@ namespace VSGI.HTTP {
 #if !SOUP_2_48
 					SERVER_PORT,            port,
 #endif
-					SERVER_RAW_PATHS,       options.contains ("raw-paths"),
+					SERVER_RAW_PATHS,       options.lookup_value ("raw-paths", VariantType.BOOLEAN) != null,
 #if SOUP_2_38
 					SERVER_TLS_CERTIFICATE, tls_certificate,
 #else
@@ -246,11 +242,11 @@ namespace VSGI.HTTP {
 #if !SOUP_2_48
 					SERVER_PORT, port,
 #endif
-					SERVER_RAW_PATHS, options.contains ("raw-paths"),
+					SERVER_RAW_PATHS, options.lookup_value ("raw-paths", VariantType.BOOLEAN) != null,
 					SERVER_SERVER_HEADER, null);
 			}
 
-			if (options.contains ("server-header"))
+			if (options.lookup_value ("server-header", VariantType.STRING) != null)
 				this.server.server_header = options.lookup_value ("server-header", VariantType.STRING).get_string ();
 
 			// register a catch-all handler
@@ -268,26 +264,27 @@ namespace VSGI.HTTP {
 #if SOUP_2_48
 			ServerListenOptions listen_options = 0;
 
-			if (options.contains ("https"))
+			if (options.lookup_value ("https", VariantType.BOOLEAN) != null)
 				listen_options |= ServerListenOptions.HTTPS;
 
-			if (options.contains ("ipv4-only"))
+			if (options.lookup_value ("ipv4-only", VariantType.BOOLEAN) != null)
 				listen_options |= ServerListenOptions.IPV4_ONLY;
 
-			if (options.contains ("ipv6-only"))
+			if (options.lookup_value ("ipv6-only", VariantType.BOOLEAN) != null)
 				listen_options |= ServerListenOptions.IPV6_ONLY;
 
-			if (options.contains ("file-descriptor")) {
+			if (options.lookup_value ("file-descriptor", VariantType.INT32) != null) {
 				this.server.listen_fd (options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 (),
 				                       listen_options);
-			} else if (options.contains ("all")) {
-				this.server.listen_all (port, listen_options);
+			} else if (options.lookup_value ("all", VariantType.BOOLEAN) != null) {
+				this.server.listen_all (port.get_int32 (), listen_options);
 			} else {
-				this.server.listen_local (port, listen_options);
+				this.server.listen_local (port.get_int32 (), listen_options);
 			}
 #else
 			this.server.run_async ();
-			_uris.append (new Soup.URI ("%s://0.0.0.0:%u".printf (options.contains ("https") ? "https" : "http", server.port)));
+			_uris.append (new Soup.URI ("%s://0.0.0.0:%u".printf (options.lookup_value ("https", VariantType.BOOLEAN) == null ? "http" :
+							"https", server.port)));
 #endif
 		}
 

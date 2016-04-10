@@ -183,7 +183,7 @@ namespace VSGI.CGI {
 			base (application_id, (owned) application);
 		}
 
-		public override void listen (VariantDict options) throws Error {
+		public override void listen (Variant options) throws Error {
 			var connection = new Connection (this,
 			                                 new UnixInputStream (stdin.fileno (), true),
 			                                 new UnixOutputStream (stdout.fileno (), true));

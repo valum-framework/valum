@@ -85,9 +85,9 @@ namespace VSGI {
 
 		public override int command_line (ApplicationCommandLine command_line) {
 #if GIO_2_40
-			var options = command_line.get_options_dict ();
+			var options = command_line.get_options_dict ().end ();
 #else
-			var options = new VariantDict ();
+			var options = new VariantDict ().end ();
 #endif
 
 			// keep the process (and workers) alive
@@ -100,7 +100,7 @@ namespace VSGI {
 				return 1;
 			}
 
-			if (options.contains ("forks")) {
+			if (options.lookup_value ("forks", VariantType.INT32) != null) {
 				foreach (var uri in uris) {
 					command_line.printerr ("master:\t\tlistening on '%s'\n", uri.to_string (false)[0:-uri.path.length]);
 				}
@@ -135,7 +135,7 @@ namespace VSGI {
 		 *
 		 * @param options
 		 */
-		public abstract void listen (VariantDict options) throws Error;
+		public abstract void listen (Variant options) throws Error;
 
 		/**
 		 * Fork the execution.

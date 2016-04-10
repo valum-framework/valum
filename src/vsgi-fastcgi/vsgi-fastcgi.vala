@@ -206,21 +206,15 @@ namespace VSGI.FastCGI {
 			this.shutdown.connect (global::FastCGI.shutdown_pending);
 		}
 
-		public override void listen (VariantDict options) throws Error {
-			if ((options.contains ("socket") && options.contains ("port")) ||
-			    (options.contains ("socket") && options.contains ("file-descriptor")) ||
-			    (options.contains ("port") && options.contains ("file-descriptor"))) {
-				throw new ServerError.FAILED ("--socket, --port and --file-descriptor must not be specified simultaneously");
-			}
-
-			var backlog = options.contains ("backlog") ? options.lookup_value ("backlog", VariantType.INT32).get_int32 () : 10;
+		public override void listen (Variant options) throws Error {
+			var backlog = options.lookup_value ("backlog", VariantType.INT32) ?? new Variant.@int32 (10);
 
 			var fd = global::FastCGI.LISTENSOCK_FILENO;
 
-			if (options.contains ("socket")) {
+			if (options.lookup_value ("socket", VariantType.BYTESTRING) != null) {
 				var socket_path = options.lookup_value ("socket", VariantType.BYTESTRING).get_bytestring ();
 
-				fd = global::FastCGI.open_socket (socket_path, backlog);
+				fd = global::FastCGI.open_socket (socket_path, backlog.get_int32 ());
 
 				if (fd == -1) {
 					throw new ServerError.FAILED ("could not open socket path %s", socket_path);
@@ -229,10 +223,10 @@ namespace VSGI.FastCGI {
 				_uris.append (new Soup.URI ("fcgi+unix://%s/".printf (socket_path)));
 			}
 
-			else if (options.contains ("port")) {
+			else if (options.lookup_value ("port", VariantType.INT32) != null) {
 				var port = ":%d".printf (options.lookup_value ("port", VariantType.INT32).get_int32 ());
 
-				fd = global::FastCGI.open_socket (port, backlog);
+				fd = global::FastCGI.open_socket (port, backlog.get_int32 ());
 
 				if (fd == -1) {
 					throw new ServerError.FAILED ("could not open TCP port '%s'", port[1:-1]);
@@ -241,7 +235,7 @@ namespace VSGI.FastCGI {
 				_uris.append (new Soup.URI ("fcgi://0.0.0.0:%s/".printf (port)));
 			}
 
-			else if (options.contains ("file-descriptor")) {
+			else if (options.lookup_value ("file-descriptor", VariantType.INT32) != null) {
 				fd = options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 ();
 				_uris.append (new Soup.URI ("fcgi+fd://%u/".printf (fd)));
 			}
