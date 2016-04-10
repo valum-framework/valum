@@ -93,3 +93,70 @@ available options which vary from an implementation to another.
       -f, --file-descriptor=0     file descriptor
       -b, --backlog=0             listen queue depth used in the listen() call
 
+
+Forking
+-------
+
+To achieve optimal performances on a multi-core architecture, VSGI support
+forking at the server level.
+
+.. warning::
+
+    Keep in mind that the ``fork`` system call will actually copy the whole
+    process: no resources (e.g. lock, memory) can be shared unless
+    inter-process communication is used.
+
+The ``--forks`` option will spawn the requested amount of workers, which should
+optimally default to the number of available CPUs.
+
+::
+
+    server.run ("app", {"--forks=4"});
+
+It's also possible to fork manually via the ``fork`` call.
+
+::
+
+    using VSGI.HTTP;
+
+    var server = new Server ();
+
+    server.listen (options);
+    server.fork ();
+
+    new MainLoop ().run ();
+
+It is recommended to fork only through that call since implementations such as
+:doc:`cgi` are not guaranteed to support it.
+
+Listen on distinct interfaces
+-----------------------------
+
+Typically, ``fork`` is called after ``listen`` so that all processes share the
+same file descriptors and interfaces. However, it might be useful to listen
+to multiple ports (e.g. HTTP and HTTPS).
+
+::
+
+    using VSGI.HTTP;
+
+    var server = new Server ();
+
+    var parent_options = new VariantDict ();
+    var child_options = new VariantDict ();
+
+    // parent serve HTTP
+    parent_options.insert_value ("port", new Variant.int32 (80));
+
+    // child serve HTTPS
+    child_options.insert_value ("https");
+    child_options.insert_value ("port", new Variant.int32 (443));
+
+    if (server.fork () > 0) {
+        server.listen (parent_options);
+    } else {
+        server.listen (child_options);
+    }
+
+    new MainLoop ().run ();
+

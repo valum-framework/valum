@@ -189,7 +189,7 @@ namespace VSGI.FastCGI {
 			const OptionEntry[] options = {
 				{"socket",          's', 0, OptionArg.FILENAME, null, "Listen to the provided UNIX domain socket (or named pipe for WinNT)"},
 				{"port",            'p', 0, OptionArg.INT,      null, "Listen to the provided TCP port"},
-				{"file-descriptor", 'f', 0, OptionArg.INT,      null, "Listen to the provided file descriptor", "0"},
+				{"file-descriptor", 'f', 0, OptionArg.INT,      null, "Listen to the provided file descriptor",       "0"},
 				{"backlog",         'b', 0, OptionArg.INT,      null, "Listen queue depth used in the listen() call", "10"},
 				{null}
 			};

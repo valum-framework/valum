@@ -20,7 +20,7 @@ def configure(cfg):
 def build(bld):
     from waflib import Context
     bld.shlib(
-        packages     = ['glib-2.0', 'gio-2.0', 'libsoup-2.4'],
+        packages     = ['glib-2.0', 'gio-2.0', 'libsoup-2.4', 'posix'],
         target       = 'vsgi',
         gir          = 'VSGI-{}'.format(Context.g_module.API_VERSION),
         source       = bld.path.ant_glob('*.vala'),

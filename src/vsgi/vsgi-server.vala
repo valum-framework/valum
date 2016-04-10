@@ -73,27 +73,61 @@ namespace VSGI {
 			flags |= ApplicationFlags.HANDLES_COMMAND_LINE |
 			         ApplicationFlags.SEND_ENVIRONMENT |
 			         ApplicationFlags.NON_UNIQUE;
+#if GIO_2_40
+			const OptionEntry[] entries = {
+				// general options
+				{"forks", 0, 0, OptionArg.INT, null, "Number of fork to create", "0"},
+				{null}
+			};
+			this.add_main_option_entries (entries);
+#endif
 		}
 
 		public override int command_line (ApplicationCommandLine command_line) {
-			try {
 #if GIO_2_40
-				var options = command_line.get_options_dict ();
+			var options = command_line.get_options_dict ();
 #else
-				var options = new VariantDict ();
+			var options = new VariantDict ();
 #endif
 
-				listen (options);
+			// keep the process (and workers) alive
+			hold ();
 
-				foreach (var uri in uris) {
-					command_line.print ("listening on '%s'\n", uri.to_string (false)[0:-uri.path.length]);
-				}
-				hold ();
-				return 0;
+			try {
+				listen (options);
 			} catch (Error err) {
 				command_line.printerr ("%s\n", err.message);
 				return 1;
 			}
+
+			if (options.contains ("forks")) {
+				foreach (var uri in uris) {
+					command_line.print ("master:\t\tlistening on '%s'\n", uri.to_string (false)[0:-uri.path.length]);
+				}
+				var remaining = options.lookup_value ("forks", VariantType.INT32).get_int32 ();
+				for (var i = 0; i < remaining; i++) {
+					var pid = fork ();
+					if (pid == 0) {
+						return 0;
+					} else if (pid > 0) {
+						ChildWatch.add (pid, (pid, status) => {
+							command_line.print ("worker %d:\texited with status '%d'\n", pid, status);
+						});
+						foreach (var uri in uris) {
+							command_line.print ("worker %d:\tlistening on '%s'\n", pid, uri.to_string (false)[0:-uri.path.length]);
+						}
+					} else {
+						command_line.printerr ("could not fork worker: %s (errno %u)\n", strerror (errno), errno);
+						return 1;
+					}
+				}
+			} else {
+				foreach (var uri in uris) {
+					command_line.print ("listening on '%s'\n", uri.to_string (false)[0:-uri.path.length]);
+				}
+			}
+
+			return 0;
 		}
 
 		/**
@@ -102,6 +136,22 @@ namespace VSGI {
 		 * @param options
 		 */
 		public abstract void listen (VariantDict options) throws Error;
+
+		/**
+		 * Fork the execution.
+		 *
+		 * This is called after {@link VSGI.Server.listen} such that workers can
+		 * share listening interfaces and descriptors.
+		 *
+		 * The default implementation invoke {@link Posix.fork}.
+		 *
+		 * To disable forking, simply override this and return '0'.
+		 *
+		 * @since 0.3
+		 */
+		public virtual Pid fork () {
+			return Posix.fork ();
+		}
 
 		/**
 		 * Dispatch the request to the application callback.

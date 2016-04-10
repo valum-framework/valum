@@ -196,6 +196,13 @@ namespace VSGI.CGI {
 			dispatch (req, res);
 		}
 
+		/**
+		 * Forking does not make sense for CGI.
+		 */
+		public override Pid fork () {
+			return 0;
+		}
+
 		private class Connection : IOStream {
 
 			private InputStream _input_stream;
