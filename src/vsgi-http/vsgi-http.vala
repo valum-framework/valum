@@ -189,15 +189,17 @@ namespace VSGI.HTTP {
 			const OptionEntry[] entries = {
 				// port options
 				{"port",      'p', 0, OptionArg.INT,  null, "Listen to the provided TCP port", "3003"},
+#if SOUP_2_48
 				{"all",       'a', 0, OptionArg.NONE, null, "Listen on all interfaces '--port'"},
 				{"ipv4-only", '4', 0, OptionArg.NONE, null, "Only listen on IPv4 interfaces"},
 				{"ipv6-only", '6', 0, OptionArg.NONE, null, "Only listen on IPv6 interfaces"},
 
 				// fd options
-				{"file-descriptor", 'f', 0, OptionArg.INT, null, "Listen to the provided file descriptor", "0"},
+				{"file-descriptor", 'f', 0, OptionArg.INT, null, "Listen to the provided file descriptor"},
 
 				// https options
 				{"https",         0, 0, OptionArg.NONE,     null, "Listen for HTTPS connections rather than plain HTTP"},
+#endif
 				{"ssl-cert-file", 0, 0, OptionArg.FILENAME, null, "Path to a file containing a PEM-encoded certificate"},
 				{"ssl-key-file",  0, 0, OptionArg.FILENAME, null, "Path to a file containing a PEM-encoded private key"},
 
@@ -218,9 +220,6 @@ namespace VSGI.HTTP {
 
 			var port = options.contains ("port") ?
 				options.lookup_value ("port", VariantType.INT32).get_int32 () : 3003;
-
-			var file_descriptor = options.contains ("file-descriptor") ?
-				options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 () : 0;
 
 			if (options.contains ("https")) {
 				if (!options.contains ("ssl-cert-file") || !options.contains ("ssl-key-file")) {
@@ -279,7 +278,8 @@ namespace VSGI.HTTP {
 				listen_options |= ServerListenOptions.IPV6_ONLY;
 
 			if (options.contains ("file-descriptor")) {
-				this.server.listen_fd (file_descriptor, listen_options);
+				this.server.listen_fd (options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 (),
+				                       listen_options);
 			} else if (options.contains ("all")) {
 				this.server.listen_all (port, listen_options);
 			} else {
