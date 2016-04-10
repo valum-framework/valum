@@ -42,7 +42,7 @@ namespace VSGI.SCGI {
 	/**
 	 * @since 0.3
 	 */
-	public errordomain SCGIError {
+	private errordomain SCGIError {
 		/**
 		 *
 		 */
@@ -100,43 +100,10 @@ namespace VSGI.SCGI {
 	 */
 	public class Server : VSGI.Server {
 
-		/**
-		 * Provide an auto-closing SCGI connection.
-		 */
-		private class Connection : IOStream {
-
-			/**
-			 *
-			 */
-			public IOStream base_connection { construct; get; }
-
-			public override InputStream input_stream {
-				get {
-					return base_connection.input_stream;
-				}
-			}
-
-			public override OutputStream output_stream {
-				get {
-					return base_connection.output_stream;
-				}
-			}
-
-			public Connection (IOStream base_connection) {
-				Object (base_connection: base_connection);
-			}
-
-			~Connection ()  {
-				base_connection.close ();
-			}
-		}
-
-		/**
-		 * @since 0.2.4
-		 */
-		public SocketService listener { get; protected set; default = new SocketService (); }
+		private SocketService listener = new SocketService ();
 
 		private SList<Soup.URI> _uris = new SList<Soup.URI> ();
+
 		public override SList<Soup.URI> uris {
 			get { return _uris; }
 		}
@@ -287,6 +254,37 @@ namespace VSGI.SCGI {
 			var res = new Response (req);
 
 			dispatch (req, res);
+		}
+
+		/**
+		 * Provide an auto-closing SCGI connection.
+		 */
+		private class Connection : IOStream {
+
+			/**
+			 *
+			 */
+			public IOStream base_connection { construct; get; }
+
+			public override InputStream input_stream {
+				get {
+					return base_connection.input_stream;
+				}
+			}
+
+			public override OutputStream output_stream {
+				get {
+					return base_connection.output_stream;
+				}
+			}
+
+			public Connection (IOStream base_connection) {
+				Object (base_connection: base_connection);
+			}
+
+			~Connection ()  {
+				base_connection.close ();
+			}
 		}
 	}
 }

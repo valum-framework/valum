@@ -172,6 +172,7 @@ namespace VSGI.CGI {
 	public class Server : VSGI.Server {
 
 		private SList<URI> _uris = new SList<URI> ();
+
 		public override SList<URI> uris {
 			get {
 				return _uris;

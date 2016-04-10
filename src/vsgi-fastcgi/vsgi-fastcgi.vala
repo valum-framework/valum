@@ -161,7 +161,7 @@ namespace VSGI.FastCGI {
 	/**
 	 * @since 0.3
 	 */
-	public errordomain RequestError {
+	private errordomain RequestError {
 		FAILED
 	}
 
@@ -173,6 +173,7 @@ namespace VSGI.FastCGI {
 	public class Server : VSGI.Server {
 
 		private SList<Soup.URI> _uris = new SList<Soup.URI> ();
+
 		public override unowned SList<Soup.URI> uris {
 			get { return _uris; }
 		}
