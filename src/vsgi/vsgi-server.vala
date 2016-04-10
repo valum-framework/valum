@@ -102,7 +102,7 @@ namespace VSGI {
 
 			if (options.contains ("forks")) {
 				foreach (var uri in uris) {
-					command_line.print ("master:\t\tlistening on '%s'\n", uri.to_string (false)[0:-uri.path.length]);
+					command_line.printerr ("master:\t\tlistening on '%s'\n", uri.to_string (false)[0:-uri.path.length]);
 				}
 				var remaining = options.lookup_value ("forks", VariantType.INT32).get_int32 ();
 				for (var i = 0; i < remaining; i++) {
@@ -114,7 +114,7 @@ namespace VSGI {
 							command_line.print ("worker %d:\texited with status '%d'\n", pid, status);
 						});
 						foreach (var uri in uris) {
-							command_line.print ("worker %d:\tlistening on '%s'\n", pid, uri.to_string (false)[0:-uri.path.length]);
+							command_line.printerr ("worker %d:\tlistening on '%s'\n", pid, uri.to_string (false)[0:-uri.path.length]);
 						}
 					} else {
 						command_line.printerr ("could not fork worker: %s (errno %u)\n", strerror (errno), errno);
@@ -123,7 +123,7 @@ namespace VSGI {
 				}
 			} else {
 				foreach (var uri in uris) {
-					command_line.print ("listening on '%s'\n", uri.to_string (false)[0:-uri.path.length]);
+					command_line.printerr ("listening on '%s'\n", uri.to_string (false)[0:-uri.path.length]);
 				}
 			}
 
