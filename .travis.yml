@@ -21,7 +21,7 @@ before_script:
 script:
     - ./waf --alltests
     - valadoc --pkg=glib-2.0 --pkg=gio-2.0 --pkg=gio-unix-2.0 --pkg=libsoup-2.4
-      --pkg=fcgi --target-glib=2.32 --directory=build/apidocs
+      --pkg=fcgi --pkg=posix --target-glib=2.32 --directory=build/apidocs
       --vapidir=/usr/share/vala-0.26/vapi --vapidir=src/vsgi-fastcgi
       src/**/*.vala
 
