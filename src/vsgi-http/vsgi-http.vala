@@ -35,19 +35,30 @@ namespace VSGI.HTTP {
 
 	private class MessageBodyOutputStream : OutputStream {
 
-		public MessageBody message_body { construct; get; }
+		public Soup.Server server { construct; get; }
 
-		public MessageBodyOutputStream (MessageBody message_body) {
-			Object (message_body: message_body);
+		public Soup.Message message { construct; get; }
+
+		public MessageBodyOutputStream (Soup.Server server, Message message) {
+			Object (server: server, message: message);
 		}
 
 		public override ssize_t write (uint8[] data, Cancellable? cancellable = null) {
-			this.message_body.append_take (data);
+			message.response_body.append_take (data);
 			return data.length;
 		}
 
+		/**
+		 * Resume I/O on the underlying {@link Soup.Message} to flush the
+		 * written chunks.
+		 */
+		public override bool flush (Cancellable? cancellable = null) {
+			server.unpause_message (message);
+			return true;
+		}
+
 		public override bool close (Cancellable? cancellable = null) {
-			this.message_body.complete ();
+			message.response_body.complete ();
 			return true;
 		}
 	}
@@ -341,7 +352,7 @@ namespace VSGI.HTTP {
 				Object (server: server, message: message);
 
 				this._input_stream  = new MemoryInputStream.from_data (message.request_body.flatten ().data, null);
-				this._output_stream = new MessageBodyOutputStream (message.response_body);
+				this._output_stream = new MessageBodyOutputStream (server, message);
 
 				// prevent the server from completing the message
 				this.server.pause_message (message);
