@@ -87,7 +87,7 @@ namespace VSGI {
 #if GIO_2_40
 			var options = command_line.get_options_dict ().end ();
 #else
-			var options = new VariantDict ().end ();
+			var options = new Variant ("a{sv}");
 #endif
 
 			// keep the process (and workers) alive
