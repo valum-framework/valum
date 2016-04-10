@@ -59,6 +59,7 @@ namespace VSGI.HTTP {
 
 		public override bool close (Cancellable? cancellable = null) {
 			message.response_body.complete ();
+			server.unpause_message (message);
 			return true;
 		}
 	}
@@ -329,11 +330,6 @@ namespace VSGI.HTTP {
 
 				// prevent the server from completing the message
 				this.server.pause_message (message);
-			}
-
-			~Connection () {
-				// resume I/O operations
-				this.server.unpause_message (message);
 			}
 		}
 	}
