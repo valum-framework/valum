@@ -133,7 +133,11 @@ namespace VSGI {
 		/**
 		 * Prepare the server for listening based on the provided options.
 		 *
-		 * @param options
+		 * @param options dictionary of options that map string to variant, just
+		 *                like {@link GLib.ApplicationCommandLine}
+		 *
+		 * @throws Error if anything fail during the initialization, use
+		 *               {@link VSGI.ServerError} for general errors
 		 */
 		public abstract void listen (Variant options) throws Error;
 
