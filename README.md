@@ -20,7 +20,7 @@ app.get ("/", (req, res) => {
     return res.extend_utf8 ("Hello world!");
 });
 
-new Server ("org.valum.example.App", app.handle).run ();
+new Server ("org.valum.example.App", app.handle).run ({"app", "--forks=4"});
 ```
 
 
@@ -47,6 +47,7 @@ Features
     - context to hold states
  - middlewares for subdomains, server-sent events, content negotiation and much more
  - written upon VSGI so that you can deploy using libsoup-2.4 built-in HTTP server, CGI, [FastCGI](http://www.fastcgi.com/drupal/) or [SCGI](https://python.ca/scgi/)
+ - support for `fork` to scale on multi-core architecture
  - extensively documented at [docs.valum-framework.org](http://docs.valum-framework.org/en/latest/)
 
 
