@@ -7,10 +7,6 @@ def configure(cfg):
     if cfg.check_cfg(package='libsoup-2.4', atleast_version='2.48', mandatory=False, uselib_store='SOUP', args='--cflags --libs'):
         cfg.env.append_unique('VALAFLAGS', ['--define=SOUP_2_48'])
 
-    # libsoup (>=2.50) for steal_connection
-    if cfg.check_cfg(package='libsoup-2.4', atleast_version='2.50', mandatory=False, uselib_store='SOUP', args='--cflags --libs'):
-        cfg.env.append_unique('VALAFLAGS', ['--define=SOUP_2_50'])
-
 def build(bld):
     from waflib import Context
     bld.shlib(
