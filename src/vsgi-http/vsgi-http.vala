@@ -59,7 +59,6 @@ namespace VSGI.HTTP {
 
 		public override bool close (Cancellable? cancellable = null) {
 			message.response_body.complete ();
-			server.unpause_message (message);
 			return true;
 		}
 	}
