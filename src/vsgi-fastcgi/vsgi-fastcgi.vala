@@ -318,6 +318,10 @@ namespace VSGI.FastCGI {
 					                               request_status);
 				}
 
+				new IOChannel.unix_new (fd).add_watch_full (priority, IOCondition.IN, init_async.callback);
+
+				yield;
+
 				// accept loop
 				IOSchedulerJob.push ((job) => {
 					if (request.accept () < 0) {
