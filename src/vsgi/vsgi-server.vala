@@ -121,38 +121,61 @@ namespace VSGI {
 			var options = new Variant ("a{sv}");
 #endif
 
+			// per-worker logging
+			if (Posix.isatty (stderr.fileno ())) {
+				Log.set_handler_full (null, LogLevelFlags.LEVEL_MASK, (domain, level, message) => {
+					stderr.printf ("%s%s\t%s%s%s%s%s\n",
+					               "\x1b[33m",
+					               "worker %d:".printf (Posix.getpid ()),
+					               "\x1b[0m",
+					               domain == null ? "" : "%s:\t".printf (domain),
+					               LogLevelFlags.LEVEL_ERROR    in level ? "\x1b[31m" :
+					               LogLevelFlags.LEVEL_CRITICAL in level ? "\x1b[31m" :
+					               LogLevelFlags.LEVEL_WARNING  in level ? "\x1b[33m" :
+					               LogLevelFlags.LEVEL_MESSAGE  in level ? "\x1b[32m" :
+#if GLIB_2_40
+					               LogLevelFlags.LEVEL_INFO     in level ? "\x1b[34m" :
+#endif
+					               LogLevelFlags.LEVEL_DEBUG    in level ? "\x1b[36m" : "",
+					               message.replace ("\n", "\n\t\t"),
+					               "\x1b[0m");
+				});
+			}
+
 			try {
 				listen (options);
 			} catch (Error err) {
-				command_line.printerr ("%s\n", err.message);
+				critical ("%s", err.message);
 				return 1;
 			}
 
 			if (options.lookup_value ("forks", VariantType.INT32) != null) {
-				foreach (var uri in uris) {
-					command_line.printerr ("master:\t\tlistening on '%s'\n", uri.to_string (false)[0:-uri.path.length]);
-				}
 				var remaining = options.lookup_value ("forks", VariantType.INT32).get_int32 ();
 				for (var i = 0; i < remaining; i++) {
 					var pid = fork ();
-					if (pid == 0) {
-						return 0;
-					} else if (pid > 0) {
+
+					// worker
+					if (pid == 0)
+						break;
+
+					// parent
+					else if (pid > 0) {
+						// monitor child process
 						ChildWatch.add (pid, (pid, status) => {
-							command_line.print ("worker %d:\texited with status '%d'\n", pid, status);
+							warning ("worker %d exited with status '%d'", pid, status);
 						});
-						foreach (var uri in uris) {
-							command_line.printerr ("worker %d:\tlistening on '%s'\n", pid, uri.to_string (false)[0:-uri.path.length]);
-						}
-					} else {
-						command_line.printerr ("could not fork worker: %s (errno %u)\n", strerror (errno), errno);
+					}
+
+					// fork failed
+					else {
+						critical ("could not fork worker: %s (errno %u)", strerror (errno), errno);
 						return 1;
 					}
 				}
-			} else {
-				foreach (var uri in uris) {
-					command_line.printerr ("listening on '%s'\n", uri.to_string (false)[0:-uri.path.length]);
-				}
+			}
+
+			foreach (var uri in uris) {
+				message ("listening on '%s'", uri.to_string (false)[0:-uri.path.length]);
 			}
 
 			// keep the process (and workers) alive
