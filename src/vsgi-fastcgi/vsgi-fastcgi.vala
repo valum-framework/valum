@@ -244,37 +244,35 @@ namespace VSGI.FastCGI {
 				_uris.append (new Soup.URI ("fcgi+fd://%u/".printf (global::FastCGI.LISTENSOCK_FILENO)));
 			}
 
-			new Thread<int> (null, () => {
-				do {
-					var connection = new Connection (fd);
-
-					try {
-						if (!connection.init ())
-							break;
-					} catch (Error err) {
-						error (err.message);
-					}
-
-					var req = new Request (connection, connection.request.environment);
-					var res = new Response (req);
-
-					// dispatch the app in the main loop
-					MainContext.@default ().invoke (() => {
-						dispatch (req, res);
-						return false;
-					});
-				} while (true);
-
+			accept_loop_async.begin (fd, (obj, result) => {
+				accept_loop_async.end (result);
 				release ();
-
-				return 1;
 			});
+		}
+
+		private async void accept_loop_async (int fd) {
+			do {
+				var connection = new Connection (fd);
+
+				try {
+					if (!yield connection.init_async (Priority.DEFAULT, null))
+						break;
+				} catch (Error err) {
+					critical (err.message);
+					break;
+				}
+
+				var req = new Request (connection, connection.request.environment);
+				var res = new Response (req);
+
+				dispatch (req, res);
+			} while (true);
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
-		private class Connection : IOStream, Initable {
+		private class Connection : IOStream, AsyncInitable {
 
 			/**
 			 * @since 0.2
@@ -311,7 +309,7 @@ namespace VSGI.FastCGI {
 			/**
 			 * @since 0.3
 			 */
-			public bool init (Cancellable? cancellable = null) throws Error {
+			public async bool init_async (int priority = Priority.DEFAULT, Cancellable? cancellable = null) throws Error {
 				// accept a request
 				var request_status = global::FastCGI.request.init (out request, fd);
 
@@ -321,7 +319,15 @@ namespace VSGI.FastCGI {
 				}
 
 				// accept loop
-				while (request.accept () < 0);
+				IOSchedulerJob.push ((job) => {
+					if (request.accept () < 0) {
+						return true;
+					}
+					job.send_to_mainloop_async (init_async.callback);
+					return false;
+				}, priority, cancellable);
+
+				yield;
 
 				this._input_stream  = new StreamInputStream (fd, request.in);
 				this._output_stream = new StreamOutputStream (fd, request.out, request.err);

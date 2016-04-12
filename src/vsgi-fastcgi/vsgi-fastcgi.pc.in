@@ -7,7 +7,7 @@ Name: VSGI.FastCGI
 Description: FastCGI implementation of VSGI
 Version: @VERSION@
 Requires: vsgi-cgi
-Requires.private: gio-unix-2.0 gthread-2.0
+Requires.private: gio-unix-2.0
 Libs: -L${libdir} -lvsgi-fastcgi
 Libs.private: -L${libdir} -lfcgi
 Cflags: -I${includedir}/vsgi

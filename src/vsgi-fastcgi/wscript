@@ -2,7 +2,6 @@
 
 def configure(cfg):
     cfg.check_cfg(package='gio-unix-2.0', atleast_version='2.32', uselib_store='GIOUNIX', args='--cflags --libs')
-    cfg.check_cfg(package='gthread-2.0', atleast_version='2.32', uselib_store='GTHREAD', args='--cflags --libs')
     cfg.check(lib='fcgi', uselib_store='FCGI', args='--cflags --libs')
 
 def build(bld):
@@ -13,7 +12,7 @@ def build(bld):
         gir              = 'VSGI.FastCGI-{}'.format(Context.g_module.API_VERSION),
         source           = 'vsgi-fastcgi.vala',
         use              = 'vsgi-cgi',
-        uselib           = 'GIOUNIX GTHREAD FCGI',
+        uselib           = 'GIOUNIX FCGI',
         vala_target_glib = '2.32',
         vapi_dirs        = '.',
         header_path      = '${INCLUDEDIR}/vsgi',
