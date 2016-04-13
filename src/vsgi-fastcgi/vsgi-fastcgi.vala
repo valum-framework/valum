@@ -224,15 +224,15 @@ namespace VSGI.FastCGI {
 			}
 
 			else if (options.lookup_value ("port", VariantType.INT32) != null) {
-				var port = ":%d".printf (options.lookup_value ("port", VariantType.INT32).get_int32 ());
+				var port =  (options.lookup_value ("port", VariantType.INT32).get_int32 ());
 
-				fd = global::FastCGI.open_socket (port, backlog.get_int32 ());
+				fd = global::FastCGI.open_socket (":%d".printf (port), backlog.get_int32 ());
 
 				if (fd == -1) {
-					throw new ServerError.FAILED ("could not open TCP port '%s'", port[1:-1]);
+					throw new ServerError.FAILED ("could not open TCP port '%d'", port);
 				}
 
-				_uris.append (new Soup.URI ("fcgi://0.0.0.0:%s/".printf (port)));
+				_uris.append (new Soup.URI ("fcgi://0.0.0.0:%d/".printf (port)));
 			}
 
 			else if (options.lookup_value ("file-descriptor", VariantType.INT32) != null) {
