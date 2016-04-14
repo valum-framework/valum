@@ -7,7 +7,9 @@ vsgi_cgi = declare_dependency(include_directories: include_directories('.'), lin
 install_headers(meson.current_build_dir() + '/vsgi-cgi.h', subdir: 'vsgi')
 
 pkgconfig = import('pkgconfig')
-pkgconfig.generate(libraries: vsgi_cgi_lib,
+pkgconfig.generate(requires: 'vsgi',
+                   requires_private: 'gio-unix-2.0',
+                   libraries: vsgi_cgi_lib,
                    version: meson.project_version(),
                    name: 'CGI implementation of VSGI',
                    filebase: 'vsgi-cgi',

@@ -8,7 +8,8 @@ vsgi_scgi = declare_dependency(include_directories: include_directories('.'),
 install_headers(meson.current_build_dir() + '/vsgi-scgi.h', subdir: 'vsgi')
 
 pkgconfig = import('pkgconfig')
-pkgconfig.generate(libraries: vsgi_scgi_lib,
+pkgconfig.generate(requires: 'vsgi-cgi',
+                   libraries: vsgi_scgi_lib,
                    version: meson.project_version(),
                    name: 'SCGI implementation of VSGI',
                    filebase: 'vsgi-scgi',

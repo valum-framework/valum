@@ -19,7 +19,8 @@ vsgi = declare_dependency(include_directories: include_directories('.'), link_wi
 install_headers(meson.current_build_dir() + '/vsgi.h', subdir: 'vsgi')
 
 pkgconfig = import('pkgconfig')
-pkgconfig.generate(libraries: vsgi_lib,
+pkgconfig.generate(requires: 'glib-2.0 gobject-2.0 gio-2.0 libsoup-2.4',
+                   libraries: vsgi_lib,
                    version: meson.project_version(),
                    name: 'VSGI',
                    filebase: 'vsgi',

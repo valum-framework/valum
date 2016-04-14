@@ -8,7 +8,8 @@ vsgi_mock = declare_dependency(include_directories: include_directories('.'),
 install_headers(meson.current_build_dir() + '/vsgi-mock.h', subdir: 'vsgi')
 
 pkgconfig = import('pkgconfig')
-pkgconfig.generate(libraries: vsgi_mock_lib,
+pkgconfig.generate(requires: 'vsgi',
+                   libraries: vsgi_mock_lib,
                    version: meson.project_version(),
                    name: 'Mock implementation of VSGI',
                    filebase: 'vsgi-mock',
