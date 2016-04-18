@@ -3,8 +3,8 @@
 import glob
 
 APPNAME='valum'
-VERSION='0.2.6'
-API_VERSION='0.2'
+VERSION='0.3.0-dev'
+API_VERSION='0.3'
 
 def options(opt):
     opt.load('compiler_c')
