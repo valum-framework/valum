@@ -11,8 +11,20 @@ def build(bld):
     bld.load('glib2')
     bld.program(
         features     = 'test',
-        target       = 'tests',
-        source       = bld.path.ant_glob('*.vala', excl='basepath-test.vala socket-listener-server-test.vala fastcgi-server-test.vala') + ['tests.gresource.xml'],
+        target       = 'legacy-test',
+        source       = ['cgi-test.vala',
+                        'chunked-encoder-test.vala',
+                        'cookies-test.vala',
+                        'fastcgi-test.vala',
+                        'http-test.vala',
+                        'negociate-test.vala',
+                        'router-test.vala',
+                        'route-test.vala',
+                        'scgi-test.vala',
+                        'server-sent-events-test.vala',
+                        'subdomain-test.vala',
+                        'tests.gresource.xml',
+                        'tests.vala'],
         use          = 'valum',
         install_path = None)
     bld.program(
