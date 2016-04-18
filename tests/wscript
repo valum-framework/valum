@@ -5,13 +5,14 @@ def options(opt):
 
 def configure(cfg):
     cfg.load('glib2 waf_unit_test')
+    cfg.check_cfg(package='gio-unix-2.0', uselib_store='GIO_UNIX', args='--cflags --libs')
 
 def build(bld):
     bld.load('glib2')
     bld.program(
         features     = 'test',
         target       = 'tests',
-        source       = bld.path.ant_glob('*.vala', excl='basepath-test.vala') + ['tests.gresource.xml'],
+        source       = bld.path.ant_glob('*.vala', excl='basepath-test.vala socket-listener-server-test.vala') + ['tests.gresource.xml'],
         use          = 'valum',
         install_path = None)
     bld.program(
@@ -19,6 +20,13 @@ def build(bld):
         target       = 'basepath-test',
         source       = 'basepath-test.vala',
         use          = 'valum',
+        install_path = None)
+    bld.program(
+        features     = 'test',
+        packages     = 'gio-unix-2.0',
+        target       = 'socket-listener-server-test',
+        source       = 'socket-listener-server-test.vala',
+        use          = 'vsgi GIO_UNIX',
         install_path = None)
     from waflib.Tools import waf_unit_test
     bld.add_post_fun(waf_unit_test.summary)
