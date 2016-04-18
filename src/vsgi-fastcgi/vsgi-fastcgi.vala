@@ -33,6 +33,10 @@ public Type plugin_init (TypeModule type_module) {
 [CCode (gir_namespace = "VSGI.FastCGI", gir_version = "0.2")]
 namespace VSGI.FastCGI {
 
+	private errordomain FastCGIError {
+		FAILED
+	}
+
 	/**
 	 * Produce a significant error message given an error on a
 	 * {@link FastCGI.Stream}.
@@ -217,7 +221,7 @@ namespace VSGI.FastCGI {
 				fd = global::FastCGI.open_socket (socket_path, backlog.get_int32 ());
 
 				if (fd == -1) {
-					throw new ServerError.FAILED ("could not open socket path %s", socket_path);
+					throw new FastCGIError.FAILED ("could not open socket path %s", socket_path);
 				}
 
 				_uris.append (new Soup.URI ("fcgi+unix://%s/".printf (socket_path)));
@@ -229,7 +233,7 @@ namespace VSGI.FastCGI {
 				fd = global::FastCGI.open_socket (":%d".printf (port), backlog.get_int32 ());
 
 				if (fd == -1) {
-					throw new ServerError.FAILED ("could not open TCP port '%d'", port);
+					throw new FastCGIError.FAILED ("could not open TCP port '%d'", port);
 				}
 
 				_uris.append (new Soup.URI ("fcgi://0.0.0.0:%d/".printf (port)));

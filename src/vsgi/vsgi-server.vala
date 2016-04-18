@@ -19,10 +19,6 @@ using GLib;
 
 namespace VSGI {
 
-	public errordomain ServerError {
-		FAILED
-	}
-
 	/**
 	 * Server that feeds a {@link VSGI.ApplicationCallback} with incoming
 	 * requests.

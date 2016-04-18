@@ -33,6 +33,10 @@ public Type plugin_init (TypeModule type_module) {
 [CCode (gir_namespace = "VSGI.HTTP", gir_version = "0.2")]
 namespace VSGI.HTTP {
 
+	private errordomain HTTPError {
+		FAILED
+	}
+
 	private class MessageBodyOutputStream : OutputStream {
 
 		public Soup.Server server { construct; get; }
@@ -218,7 +222,7 @@ namespace VSGI.HTTP {
 			if (options.lookup_value ("https", VariantType.BOOLEAN) != null) {
 				if (options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING) == null ||
 				    options.lookup_value ("ssl-key-file", VariantType.BYTESTRING) == null) {
-					throw new ServerError.FAILED ("both '--ssl-cert-file' and '--ssl-key-file' must be provided");
+					throw new HTTPError.FAILED ("both '--ssl-cert-file' and '--ssl-key-file' must be provided");
 				}
 
 				var tls_certificate = new TlsCertificate.from_files (options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING).get_bytestring (),
