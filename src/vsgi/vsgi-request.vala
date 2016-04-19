@@ -109,6 +109,18 @@ namespace VSGI {
 		public abstract HashTable<string, string>? query { get; }
 
 		/**
+		 * Lookup a key in the request query.
+		 *
+		 * @since 0.3
+		 *
+		 * @param key     key to lookup
+		 * @return the corresponding value if found, otherwise 'null'
+		 */
+		public string? lookup_query (string key) {
+			return query == null ? null : query[key];
+		}
+
+		/**
 		 * Request headers.
 		 *
 		 * @since 0.0.1

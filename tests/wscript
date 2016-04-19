@@ -36,6 +36,12 @@ def build(bld):
         install_path = None)
     bld.program(
         features     = 'test',
+        target       = 'request-test',
+        source       = 'request-test.vala',
+        use          = 'vsgi-mock',
+        install_path = None)
+    bld.program(
+        features     = 'test',
         packages     = 'gio-unix-2.0',
         target       = 'socket-listener-server-test',
         source       = 'socket-listener-server-test.vala',

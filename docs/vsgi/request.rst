@@ -93,6 +93,30 @@ information contained in headers.
     SList<string> unacceptable;
     Soup.header_parse_quality_list (req.headers.get_list ("Accept"), out unacceptable);
 
+Query
+-----
+
+The HTTP query is provided in various way:
+
+ - parsed as a ``HashTable<string, string>?`` through the ``Request.query``
+   property
+ - raw with ``Request.uri.get_query``
+
+If the query is not provided (e.g. no ``?`` in the URI), then the
+``Request.query`` property will take the ``null`` value.
+
+.. note::
+
+    If the query is not encoded according to ``application/x-www-form-urlencoded``,
+    it has to be parsed explicitly.
+
+To safely obtain a value from the HTTP query, use ``Request.lookup_query`` with
+the null-coalescing operator ``??``.
+
+::
+
+    req.lookup_query ("key") ?? "default value";
+
 Body
 ----
 
