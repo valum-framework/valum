@@ -24,7 +24,8 @@ applications or services by taking advantage of machine code execution and
 asynchronous I/O.
 
 %package devel
-Summary:    Build files for Valum
+Summary:  Build files for Valum
+Requires: valum
 
 %description devel
 Provides build files including C header, Vala bindings and GIR introspection
@@ -34,7 +35,7 @@ meta-data.
 %setup -q
 
 %build
-./waf configure --prefix=%{_prefix} CFLAGS="%{optflags}" VALAFLAGS='--debug'
+./waf configure --prefix=%{_prefix} %{?_smp_mflags} CFLAGS="%{optflags}" VALAFLAGS='--debug'
 ./waf build
 
 %install
