@@ -18,13 +18,6 @@
 using GLib;
 using Soup;
 
-#if INCLUDE_TYPE_MODULE
-[ModuleInit]
-public Type plugin_init (TypeModule type_module) {
-	return typeof (VSGI.FastCGI.Server);
-}
-#endif
-
 /**
  * FastCGI implementation of VSGI.
  *
