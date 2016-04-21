@@ -346,6 +346,15 @@ namespace Valum {
 								   err is ServerError) ?  err.code : 500;
 
 				/*
+				 * If an error happen after 'write_head' is called, it's already
+				 * too late to perform any kind of status handling.
+				 */
+				if (res.head_written) {
+					critical ("%s", err.message);
+					return true;
+				}
+
+				/*
 				 * Only the error message is pushed on the routing context, the
 				 * handler should assume that the status code is the one for
 				 * which it has been registered.
