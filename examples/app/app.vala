@@ -182,9 +182,7 @@ app.scope ("/multipart", () => {
 		</html>""");
 	});
 
-	app.post ("", (req, res) => {
-		var mis = new MultipartInputStream.from_request (req);
-
+	app.post ("", multipart ((req, res, next, ctx, mis) => {
 		var i = 1;
 		Soup.MessageHeaders? part_headers;
 		while (mis.next_part (out part_headers)) {
@@ -193,9 +191,8 @@ app.scope ("/multipart", () => {
 			res.body.splice (mis, OutputStreamSpliceFlags.NONE);
 			res.append_utf8 ("</pre>");
 		}
-
 		return res.end ();
-	});
+	}));
 });
 
 // hello world! (compare with Node.js!)
