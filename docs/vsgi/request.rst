@@ -7,12 +7,12 @@ by an application.
 Method
 ------
 
-The ``Request`` class provides constants for the following HTTP methods:
-
 .. deprecated:: 0.3
 
     libsoup-2.4 provide an enumeration of valid HTTP methods and this will be
     removed once exposed in their Vala API.
+
+The ``Request`` class provides constants for the following HTTP methods:
 
 -  ``OPTIONS``
 -  ``GET``

@@ -74,8 +74,11 @@ namespace Valum.ServerSentEvents {
 	 * The stream is explicitly flushed the ensure that the user agent receives
 	 * the message.
 	 *
-	 * If the user agent uses HTTP/1.0, messages are sent directly in the
-	 * response, otherwise chunked encoding is used.
+	 * Messages are send directly with the {@link Soup.Encoding.EOF} encoding
+	 * as recommended by the W3C.
+	 *
+	 * The middleware automatically send a keep-alive every 15 seconds to ensure
+	 * that unaware clients keep the connection opened.
 	 *
 	 * @since 0.3
 	 *

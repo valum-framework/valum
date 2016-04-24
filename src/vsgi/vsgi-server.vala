@@ -88,9 +88,9 @@ namespace VSGI {
 		 *
 		 * @since 0.3
 		 *
-		 * @param name        name of the server implementation to load
-		 * @param application initial application callback
-		 * @param list        arguments to pass to {@link GLib.Object.new}
+		 * @param name     name of the server implementation to load
+		 * @param callback initial application callback
+		 * @param list     arguments to pass to {@link GLib.Object.new}
 		 *
 		 * @return the server instance of loaded successfully, otherwise 'null'
 		 *         and a warning will be emitted
@@ -177,7 +177,7 @@ namespace VSGI {
 		 *
 		 * @since 0.3
 		 *
-		 * @throws SpawnError.FORK if the {@link Posix.fork} call fails
+		 * @throws GLib.SpawnError.FORK if the {@link Posix.fork} call fails
 		 *
 		 * @return the process pid if this is the parent process,
 		 *         otherwise '0'

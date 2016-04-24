@@ -21,8 +21,6 @@ using GLib;
  * Bounded input stream that provide a end-of-file behaviour when a a certain
  * number of bytes has been read from the base stream.
  *
- * It is designed to integrate with {@link Soup.MessageHeaders.get_content_length}.
- *
  * @since 0.3
  */
 public class VSGI.BoundedInputStream : FilterInputStream {

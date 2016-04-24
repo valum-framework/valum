@@ -14,8 +14,8 @@ provides an enumeration in :valadoc:`libsoup-2.4/Soup.Status` for that purpose.
 The ``status`` property will default to ``200 OK``.
 
 The status code will be written in the response with ``write_head`` or
-``write_head_async`` if invoked manually or during the first access to its
-body.
+``write_head_async`` if invoked manually. Otherwise, it is left to the
+implementation to call it at a proper moment.
 
 ::
 
@@ -31,7 +31,8 @@ Reason phrase
 
 The reason phrase provide a textual description for the status code. If
 ``null``, which is the default, it will be generated using
-:valadoc:`libsoup-2.4/Soup.Status.get_phrase`.
+:valadoc:`libsoup-2.4/Soup.Status.get_phrase`. It is written along with the
+status line if ``write_head`` or ``write_head_async`` is invoked.
 
 ::
 
@@ -66,9 +67,8 @@ from the ``headers`` property.
         return res.body.write_all ("Hello world!".data, null);
     });
 
-Headers can be written in the response by invoking ``write_head`` or its
-asynchronous version ``write_head_async``. The synchronous version is called
-automatically when the body is accessed for the first time.
+Headers can be written in the response synchronously by invoking
+``write_head`` or asynchronously with ``write_head_async``.
 
 ::
 
@@ -124,8 +124,9 @@ Expand
 
 .. versionadded:: 0.3
 
-To deal with fixed-size body, ``expand``, ``expand_bytes`` and ``expand_utf8``
-utilities as well as their respective asynchronous versions are provided.
+To deal with fixed-size body, ``expand``, ``expand_bytes``,
+``expand_utf8`` and ``expand_file`` utilities as well as their respective
+asynchronous versions are provided.
 
 It will automatically set the ``Content-Length`` header to the size of the
 provided buffer, write the response head and pipe the buffer into the body
@@ -199,7 +200,7 @@ the produced response body into a key-based storage.
         res.tee (cache_entry.create (FileCreateFlags.PRIVATE));
     }
 
-    res.exand_utf8 ("Hello world!");
+    res.expand_utf8 ("Hello world!");
 
 End
 ---

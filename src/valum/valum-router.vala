@@ -79,7 +79,7 @@ namespace Valum {
 		}
 
 		/**
-		 * Bind a callback to handle asterisk '*'.
+		 * Bind a callback to handle asterisk '*' URI.
 		 *
 		 * Typically, this is used with {@link Valum.Method.OPTIONS} to provide
 		 * general information about the service.
@@ -91,6 +91,9 @@ namespace Valum {
 		}
 
 		/**
+		 * Since the {@link Valum.Method.GET} flag is used, 'HEAD' will be
+		 * provided as well.
+		 *
 		 * @since 0.0.1
 		 */
 		public new void @get (string rule, owned HandlerCallback cb, string? name = null) {
@@ -156,16 +159,19 @@ namespace Valum {
 		}
 
 		/**
-		 * Bind a callback with a custom method.
+		 * Bind a callback to a given method and rule.
 		 *
 		 * The actual rule is scoped, anchored and compiled down to a
 		 * {@link GLib.Regex}.
 		 *
+		 * The method will be marked as provided with the {@link Valum.Method.PROVIDED}
+		 * flag.
+		 *
 		 * @since 0.1
 		 *
-		 * @param method HTTP method
-		 * @param rule   rule
-		 * @param cb     callback used to process the pair of request and response.
+		 * @param method flag for allowed HTTP methods
+		 * @param rule   rule matching the request path
+		 * @param cb     callback used to process the pair of request and response
 		 */
 		public void rule (Method method, string rule, owned HandlerCallback cb, string? name = null) {
 			var pattern = new StringBuilder ();
@@ -185,18 +191,21 @@ namespace Valum {
 		}
 
 		/**
-		 * Bind a callback with a custom HTTP method and regular expression.
+		 * Bind a callback to a given method and regular expression.
 		 *
 		 * The providen regular expression pattern will be extracted, scoped,
 		 * anchored and optimized. This means you must not anchor the regex yourself
-		 * with '^' and '$' characters and providing a pre-optimized {@link  GLib.Regex}
+		 * with '^' and '$' characters and providing a pre-optimized {@link GLib.Regex}
 		 * is useless.
+		 *
+		 * The method will be marked as provided with the {@link Valum.Method.PROVIDED}
+		 * flag.
 		 *
 		 * @since 0.1
 		 *
-		 * @param method HTTP method or 'null' for any
-		 * @param regex  regular expression matching the request path.
-		 * @param cb     callback used to process the pair of request and response.
+		 * @param method flag for allowed HTTP methods
+		 * @param regex  regular expression matching the request path
+		 * @param cb     callback used to process the pair of request and response
 		 */
 		public void regex (Method method, Regex regex, owned HandlerCallback cb) {
 			var pattern = new StringBuilder ();
@@ -264,7 +273,7 @@ namespace Valum {
 		private HashTable<string, Route> _named_routes = new HashTable<string, Route> (str_hash, str_equal);
 
 		/**
-		 * Bind a {@link Route} to a custom HTTP method.
+		 * Append a {@link Route} object on the routing sequence.
 		 *
 		 * @since 0.3
 		 *
@@ -337,7 +346,7 @@ namespace Valum {
 		}
 
 		/**
-		 * Perform the routing given a specific list of routes.
+		 * Perform the routing given a specific sequence of routes.
 		 *
 		 * @param routes  sequence of routes to traverse
 		 * @param req     request
@@ -345,7 +354,9 @@ namespace Valum {
 		 * @param next    invoked when all the routes has been traversed without
 		 *                success
 		 * @param context routing context passed to match and fire
-		 * @return tells if something matched during the routing process
+		 *
+		 * @return 'true' if any of the route's matcher in the sequence has
+		 *         matched, otherwise the result of the 'next' continuation
 		 */
 		private bool perform_routing (SequenceIter<Route> routes,
 		                              Request req,
@@ -375,11 +386,23 @@ namespace Valum {
 		}
 
 		/**
-		 * Perform the routing of the request by calling {@link Valum.Router.invoke}.
+		 * Perform the routing of a pair of request and response objects.
 		 *
-		 * If nothing matches the request, look for alternate HTTP methods and
-		 * raise a {@link Valum.ClientError.METHOD_NOT_ALLOWED}, otherwise
-		 * raise a {@link Valum.ClientError.NOT_FOUND} exception.
+		 * If the request method is {@link VSGI.Request.TRACE}, a
+		 * representation of the request will be produced in the response.
+		 *
+		 * If nothing matches, the one of the following error will be thrown at
+		 * the bottom of the routing:
+		 *
+		 * * a {@link Valum.ClientError.METHOD_NOT_ALLOWED} if alternate methods exist
+		 * * a {@link Valum.ClientError.NOT_FOUND} otherwise
+		 *
+		 * If the request method is {@link VSGI.Request.OPTIONS}, a success
+		 * message will be produced with the 'Allow' header set accordingly. No
+		 * error will be thrown.
+		 *
+		 * Parameters and return values are complying with {@link VSGI.ApplicationCallback}
+		 * and meant to be used as such.
 		 *
 		 * @since 0.1
 		 */

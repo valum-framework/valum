@@ -4,18 +4,6 @@ Quickstart
 Assuming that Valum is built and installed correctly (view :doc:`installation`
 for more details), you are ready to create your first application!
 
-Unless you have installed Valum with ``--prefix=/usr`` or obtained it from your
-distribution, you might have to export both ``PKG_CONFIG_PATH`` and
-``LD_LIBRARY_PATH`` environment variables:
-
-.. code-block:: bash
-
-    export LD_LIBRARY_PATH=/usr/local/lib
-    export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
-
-Some distributions store 64-bit libraries in a separate folder, typically
-``lib64``.
-
 Simple 'Hello world!' application
 ---------------------------------
 
@@ -66,6 +54,36 @@ convenient for testing:
 
     vala --pkg=valum-0.3 src/app.vala
 
+Building with Meson
+-------------------
+
+`Meson`_ is highly-recommended for its simplicity and expressiveness. It's not
+as flexible as waf, but it will handle most projects very well.
+
+.. _Meson: http://mesonbuild.com/
+
+.. code-block:: python
+
+    project('example', 'c', 'vala')
+
+    glib = dependency('glib-2.0')
+    gobject = dependency('gobject-2.0')
+    gio = dependency('gio-2.0')
+    soup = dependency('libsoup-2.4')
+    vsgi = dependency('vsgi-0.3')   # or subproject('valum').get_variable('vsgi')
+    valum = dependency('valum-0.3') # or subproject('valum').get_variable('valum')
+
+    executable('app', 'src/app.vala', dependencies: [glib, gobject, gio, soup, vsgi, valum])
+    valum = dependency('valum-0.3')
+
+.. code-block:: bash
+
+    meson . build
+    ninja -C build
+
+To include Valum as a subproject, it is sufficient to clone the repository into
+``subprojects/valum``.
+
 Building with waf
 -----------------
 
@@ -98,27 +116,6 @@ You should now be able to build by issuing the following commands:
 
     ./waf configure
     ./waf build
-
-Building with Meson
--------------------
-
-`Meson`_ is highly-recommended for its simplicity and expressiveness. It's not
-as flexible as waf, but it will handle most projects very well.
-
-.. _Meson: http://mesonbuild.com/
-
-.. code-block:: python
-
-    project('example', 'c', 'vala')
-
-    valum = dependency('valum-0.3')
-
-    executable('app', sources: ['src/app.vala'], dependencies: valum)
-
-.. code-block:: bash
-
-    meson . build
-    ninja -C build
 
 Running the example
 -------------------

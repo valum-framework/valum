@@ -22,9 +22,6 @@ using GLib;
  * application in Vala.
  *
  * It is minimalist and relies on libsoup-2.4, a good and stable HTTP library.
- *
- * Two implementation are available: libsoup built-in Soup.Server and FastCGI.
- * The latter integrates with pretty much any web server.
  */
 [CCode (gir_namespace = "VSGI", gir_version = "0.2")]
 namespace VSGI {
@@ -32,15 +29,20 @@ namespace VSGI {
 	/**
 	 * Process a pair of {@link VSGI.Request} and {@link VSGI.Response}.
 	 *
-	 * The end continuation must be invoked when the application processing
-	 * finishes. It may be invoked in an asynchronous context even after the
-	 * callback returns to the callee.
+	 * This delegate describe the signature of a compliant VSGI application. It
+	 * is passed to a {@link VSGI.Server} in order to receive request to
+	 * process.
 	 *
 	 * @since 0.2
 	 *
+	 * @throws Error unrecoverable error condition can be raised and will be
+	 *               handled by the implementation
+	 *
 	 * @param req a resource being requested
 	 * @param res the response to that request
-	 * @return true if the request was or will eventually be fully handled
+	 *
+	 * @return 'true' if the request has been or will eventually be handled,
+	 *         otherwise 'false'
 	 */
 	public delegate bool ApplicationCallback (Request req, Response res) throws Error;
 

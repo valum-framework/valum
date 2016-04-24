@@ -22,7 +22,7 @@ namespace Valum {
 	/**
 	 * Rebase and forward requests which path match the provided basepath.
 	 *
-	 * If the {@link Valum.Request.uri} path has the provided prefix, it is
+	 * If the {@link VSGI.Request.uri} path has the provided prefix, it is
 	 * stripped and the resulting request is forwared.
 	 *
 	 * Typically, a leading slash and no ending slash are used to form the

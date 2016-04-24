@@ -27,20 +27,23 @@ queue when performing the ``accept`` system call.
 
     var fastcgi_server = Server.new ("fastcgi", backlog: 1024);
 
-lighttpd
+Lighttpd
 --------
 
-`lighttpd`_ can be used to develop and potentially deploy your application. An
-`example of configuration`_ file is available in the fastcgi example folder.
+`Lighttpd`_ can be used to develop and potentially deploy your application.
+More details about the FastCGI module are provided `in their wiki`_.
 
-.. _lighttpd: http://www.lighttpd.net/
-.. _example of configuration: https://github.com/valum-framework/valum/tree/master/examples/fastcgi/lighttpd.conf
+.. _Lighttpd: http://www.lighttpd.net/
+.. _in their wiki: http://redmine.lighttpd.net/projects/lighttpd/wiki/Docs_ModFastCGI
 
-You can run the FastCGI example with lighttpd:
+.. literalinclude:: ../../../examples/fastcgi/lighttpd.conf
+    :language: lighttpd
+
+You can run the FastCGI example with Lighttpd:
 
 .. code-block:: bash
 
-    ./waf configure --enable-examples && ./waf build
+    ./waf configure build --enable-examples
     lighttpd -D -f examples/fastcgi/lighttpd.conf
 
 Apache
@@ -53,13 +56,49 @@ did the FastCGI specifications.
 -  `mod\_fcgid <http://httpd.apache.org/mod_fcgid/>`__
 -  `mod\_fastcgi <http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html>`__
 
+.. code-block:: apache
+
+    <Location />
+        FcgidWrapper /usr/libexec/app
+    </Location>
+
+Apache 2.5 provide a `mod_proxy_fcgi`_, which can serve FastCGI instance like
+it currently does for :doc:`scgi` using the ``ProxyPass`` directive.
+
+.. _mod_proxy_fcgi: https://httpd.apache.org/docs/trunk/mod/mod_proxy_fcgi.html
+
+.. code-block:: apache
+
+    ProxyPass fcgi://localhost:3003
+
 Nginx
 -----
 
-Nginx expect a process to be already spawned and will communicate with it using
-a TCP port or a socket path. Read more about `ngx_http_fastcgi_module`_.
-
-You can spawn a process with `spawn-fcgi`_, an utility part of lighttpd.
+Nginx expects a process to be already spawned and will communicate with it on
+a TCP port or a UNIX socket path. Read more about `ngx_http_fastcgi_module`_.
 
 .. _ngx_http_fastcgi_module: http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html
-.. _spawn-fcgi: https://github.com/lighttpd/spawn-fcgi
+
+.. code-block:: nginx
+
+    location / {
+        fastcgi_pass 127.0.0.1:3003;
+    }
+
+If possible, it's preferable to spawn processes locally and serve them through
+a UNIX sockets. It is safer and much more efficient considering that requests
+are not going through the whole network stack.
+
+.. code-block:: nginx
+
+    location / {
+        fastcgi_pass unix:/var/run/app.sock;
+    }
+
+To spawn and manage a process, it is recommended to use a systemd unit and
+socket. More details are available in `Lighttpd wiki`_. Otherwise, it's
+possible to use the `spawn-fcgi`_ tool.
+
+.. _Lighttpd wiki: https://redmine.lighttpd.net/projects/spawn-fcgi/wiki/Systemd
+.. _spawn-fcgi: https://redmine.lighttpd.net/projects/spawn-fcgi/wiki
+

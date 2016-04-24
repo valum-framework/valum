@@ -20,6 +20,8 @@ using VSGI;
 namespace Valum {
 
 	/**
+	 * Route based on a {@link Valum.MatcherCallback}.
+	 *
 	 * @since 0.3
 	 */
 	public class MatcherRoute : Route {

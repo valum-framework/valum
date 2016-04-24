@@ -4,21 +4,6 @@ Hacking
 This document addresses hackers who wants to get involved in the framework
 development.
 
-Building
---------
-
-You can avoid installing the library if you export ``LD_LIBRARY_PATH`` to the
-``build`` folder.
-
-.. code-block:: bash
-
-    export LD_LIBRARY_PATH=build
-
-    ./waf configure
-    ./waf build
-
-    ./build/tests/tests
-
 Code conventions
 ----------------
 
@@ -60,7 +45,7 @@ called independently of how the object is constructed.
 Tricky stuff
 ------------
 
-Many parts of the HTTP/1.1 specification is case-insensitive, in these cases,
+Most of HTTP/1.1 specification is case-insensitive, in these cases,
 :valadoc:`libsoup-2.4/Soup.str_case_equal` must be used to perform comparisons.
 
 Try to stay by the book and read carefully the specification to ensure that the
@@ -84,46 +69,17 @@ Coverage
 `gcov`_ is used to measure coverage of the tests on the generated C code. The
 results are automatically uploaded to `Codecov`_ on a successful build.
 
-You can build Valum with gcov if you specify the appropriate ``CFLAGS`` and
-``VALAFLAGS`` during the configuration step.
+You can build Valum with coverage by passing the ``-D b_coverage`` flag during
+the configuration step.
 
 .. _gcov: http://gcc.gnu.org/onlinedocs/gcc/Gcov.html
 .. _Codecov: https://codecov.io/gh/valum-framework/valum
 
 .. code-block:: bash
 
-    ./waf configure CFLAGS='-fprovide-arcs -ftest-coverage' VALAFLAGS='--debug'
-    ./waf build
-    ./waf --alltests
-
-During the execution of the tests, some files will be generated and can be
-inspected with the ``gcov`` utility.
-
-.. code-block:: bash
-
-    cd build
-    gcov src/router.c.1.gcda
-
-Would output something like:
-
-.. code-block:: text
-
-    File 'src/router.c'
-    Executed lines: 57.83% of 792
-    Creating 'router.c.gcov'
-
-The generated ``router.c.gcov`` will contain detailed coverage information
-structured in three columns separated by a ``:`` character:
-
--  number of executions
--  line number
--  corresponding line of code
-
-The number of executions can take the following values:
-
--  a ``-`` symbol means that the line is irrelevant (eg. comment)
--  ``#####`` means that the line is uncovered
--  a positive integer indicates how many time the line has executed
+    meson -D b_coverage=true
+    ninja test
+    ninja coverage-html
 
 Once you have identified an uncovered region, you can supply a test that covers
 that particular case and submit us a `pull request on GitHub`_.
@@ -150,7 +106,7 @@ Version bump
 Most of the version substitutions is handled during the build, but some places
 in the code have to be updated manually:
 
--   ``VERSION`` and ``API_VERSION`` in ``wscript``
+-   ``version`` and ``api_version`` variable in ``meson.build``
 -   GIR version annotations for all declared namespaces
 -   ``version`` and ``release`` in ``docs/conf.py``
 

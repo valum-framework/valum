@@ -16,7 +16,7 @@ production environment.
 Fedora
 ~~~~~~
 
-RPM packages for Fedora (21, 22 and rawhide) are available from the
+RPM packages for Fedora (22, 23, 24 and rawhide) are available from the
 `arteymix/valum-framework`_ Copr repository.
 
 .. _arteymix/valum-framework: https://copr.fedoraproject.org/coprs/arteymix/valum-framework/
@@ -39,6 +39,35 @@ Nix
 
     nix-shell -p valum
 
+Subproject
+----------
+
+If your project uses the Meson build system, you may integrate the framework as
+a subproject. The project must be cloned in the ``subprojects`` folder,
+preferably using a git submodule. Be careful using a tag and not the ``master``
+trunk.
+
+The following variables can be used as dependencies:
+
+-   ``vsgi`` for the abstraction layer
+-   ``valum`` for the framework
+
+Note that due to Meson design, dependencies must be explicitly provided.
+
+.. code-block:: python
+
+    project('app', 'c', 'vala')
+
+    glib = dependency('glib-2.0')
+    gobject = dependency('gobject-2.0')
+    gio = dependency('gio-2.0')
+    soup = dependency('libsoup-2.4')
+    vsgi = subproject('valum').get_variable('vsgi')
+    valum = subproject('valum').get_variable('valum')
+
+    executable('app', 'app.vala',
+               dependencies: [glib, gobject, gio, soup, vsgi, valum])
+
 Dependencies
 ------------
 
@@ -52,17 +81,15 @@ The following dependencies are minimal to build the framework under Ubuntu
 +--------------+----------+
 | python       | >=3.4    |
 +--------------+----------+
-| meson        | >=0.31   |
+| meson        | >=0.33   |
 +--------------+----------+
-| ninja        | >=1.5.1  |
+| ninja        | >=1.6.0  |
 +--------------+----------+
 | glib-2.0     | >=2.32   |
 +--------------+----------+
 | gio-2.0      | >=2.32   |
 +--------------+----------+
 | gio-unix-2.0 | >=2.32   |
-+--------------+----------+
-| gthread-2.0  | >=2.32   |
 +--------------+----------+
 | libsoup-2.4  | >=2.38   |
 +--------------+----------+
@@ -77,27 +104,30 @@ Recent dependencies will enable more advanced features:
 +-------------+---------+------------------------------------------------------+
 | gio-2.0     | >=2.40  | CLI arguments parsing                                |
 +-------------+---------+------------------------------------------------------+
-| gio-2.0     | >=2.44  | ``write_head_async`` in :doc:`vsgi/response`         |
+| gio-2.0     | >=2.44  | better support for asynchronous I/O                  |
 +-------------+---------+------------------------------------------------------+
 | libsoup-2.4 | >=2.48  | new server API                                       |
 +-------------+---------+------------------------------------------------------+
-| libsoup-2.4 | >=2.50  | uses `Soup.ClientContext.steal_connection`_ directly |
-+-------------+---------+------------------------------------------------------+
-
-.. _GLib.strv_contains: http://valadoc.org/#!api=glib-2.0/GLib.strv_contains
-.. _Soup.ClientContext.steal_connection: http://valadoc.org/#!api=libsoup-2.4/Soup.ClientContext.steal_connection
 
 You can also install additional dependencies to build the examples, you will
-have to specify the ``--enable-examples`` flag during the configure step.
+have to specify the ``-D enable_examples=true`` flag during the configure step.
 
 +---------------+------------------------------------+
 | Package       | Description                        |
 +===============+====================================+
+| ctpl          | C templating library               |
++---------------+------------------------------------+
+| gee-0.8       | data structures                    |
++---------------+------------------------------------+
 | json-glib-1.0 | JSON library                       |
 +---------------+------------------------------------+
 | libmemcached  | client for memcached cache storage |
 +---------------+------------------------------------+
 | libluajit     | embed a Lua VM                     |
++---------------+------------------------------------+
+| libmarkdown   | parser and generator for Markdown  |
++---------------+------------------------------------+
+| template-glib | templating library                 |
 +---------------+------------------------------------+
 
 Download the sources
@@ -106,7 +136,7 @@ Download the sources
 You may either clone the whole git repository or download one of our
 `releases from GitHub`_:
 
-.. _releases from GitHub: https://github.com/antono/valum/releases
+.. _releases from GitHub: https://github.com/valum-framework/valum/releases
 
 .. code-block:: bash
 
@@ -127,21 +157,15 @@ Build
 Install
 -------
 
-Installing the build files is optional and if you omit that step, make sure
-that ``LD_LIBRARY_PATH`` points to the ``build`` folder where the shared
-library has been generated.
+The framework can be installed for system-wide availability.
 
 .. code-block:: bash
 
     sudo ninja install
 
-The installation is usually prefixed by ``/usr/local``, which is generally not
-in the dynamic library path. You have to export the ``LD_LIBRARY_PATH``
-environment variable for it to work.
-
-.. code-block:: bash
-
-    export LD_LIBRARY_PATH=/usr/local/lib64 # just lib on 32-bit systems
+Once installed, VSGI implementations will be looked up into ``${prefix}/${libdir}/vsgi-0.3/servers``.
+This path can be changed by setting the ``VSGI_SERVER_PATH`` environment
+variable.
 
 Run the tests
 --------------
@@ -151,7 +175,8 @@ Run the tests
     ninja test
 
 If any of them fail, please `open an issue on GitHub`_ so that we can tackle
-the bug.
+the bug. Include the test logs (e.g. ``build/meson-private/mesonlogs.txt``) and
+any relevant details.
 
 .. _open an issue on GitHub: https://github.com/valum-framework/valum/issues
 
@@ -159,8 +184,8 @@ Run the sample application
 --------------------------
 
 You can run the sample application from the ``build`` folder if you called
-``meson`` with the ``-D enable_examples=true`` flag, it uses the
-:doc:`vsgi/server/http`.
+``meson`` with the ``-D enable_examples=true`` flag. The following example uses
+the :doc:`vsgi/server/http` server.
 
 .. code-block:: bash
 

@@ -180,6 +180,16 @@ resources and generate URLs in a `Compose`_ template.
 Other helpers are provided to pass a ``GLib.HashTable`` via ``Router.url_for_hash``
 or explicit varidic arguments via ``Router.url_for_valist``.
 
+.. note::
+
+    Vala also support the ``:`` syntax for passing varidic argument in
+    a key-value style if the key is a :valadoc:`glib-2.0/string` which is the
+    case for ``Router.url_for`` and ``Route.to_url``.
+
+    ::
+
+        var bootstrap_url = app.url_for ("static", path: "bootstrap/dist/css/bootstrap.min.css");
+
 Use
 ---
 
@@ -444,6 +454,19 @@ route.
     app.get ("/", (req, res) => {
         // this is invoked!
     });
+
+.. warning::
+
+    The ``next`` continuation can only be called from within the handler
+    callback. Since it is not maked as ``owned``, the reference does not
+    persist beyond the function return.
+
+The ``next`` continuation can only be called synchronously. This is only
+temporary and an eventual release will revamp the whole routing when
+asynchronous delegates will be part of the Vala language (see `bug 604827`_ for
+details).
+
+.. _bug 604827: https://bugzilla.gnome.org/show_bug.cgi?id=604827
 
 Sequence
 ~~~~~~~~

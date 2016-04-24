@@ -38,8 +38,6 @@ namespace VSGI.CookieUtils {
 	 * @param cookie        cookie to sign
 	 * @param checksum_type hash algorithm used to compute the HMAC
 	 * @param key           secret used to sign the cookie name and value
-	 * @return              the signed value for the provided cookie, which can
-	 *                      be reassigned in the cookie
 	 */
 	public void sign (Cookie cookie, ChecksumType checksum_type, uint8[] key) {
 		var checksum = Hmac.compute_for_string (checksum_type,

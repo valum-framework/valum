@@ -50,7 +50,7 @@ namespace Valum.Static {
 		 * Produce a 'Last-Modified' header and raise a {@link Valum.Redirection.NOT_MODIFIED}
 		 * if the resource has already been transmitted.
 		 *
-		 * If {@link Valum.ServeFlags.ENABLE_ETAG} is specified and available,
+		 * If {@link Valum.Static.ServeFlags.ENABLE_ETAG} is specified and available,
 		 * it will be used instead.
 		 *
 		 * @since 0.3

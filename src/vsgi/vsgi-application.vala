@@ -18,6 +18,12 @@
 using GLib;
 
 /**
+ * Cushion around {@link VSGI.Server}.
+ *
+ * It automatically parses the CLI arguments into {@link VSGI.Server.listen}
+ * calls, produces pretty logs, run a {@link GLib.MainLoop} and gracefully
+ * shutdown if a 'SIGTERM' signal is caught.
+ *
  * @since 0.3
  */
 public class VSGI.Application : GLib.Application {

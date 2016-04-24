@@ -69,6 +69,8 @@ namespace VSGI {
 
 		/**
 		 * Request HTTP version.
+		 *
+		 * @since 0.3
 		 */
 		public abstract Soup.HTTPVersion http_version { get; }
 
@@ -106,12 +108,11 @@ namespace VSGI {
 		public abstract Soup.URI uri { get; }
 
 		/**
-		 * HTTP query.
+		 * HTTP query parsed if encoded according to percent-encoding,
+		 * otherwise it must be interpreted from {@link VSGI.Request.uri}
 		 *
-		 * This is null if the query hasn't been set.
-		 *
-		 * /path/? empty query
-		 * /path/  null query
+		 * It is 'null' if the query hasn't been set, which is different than an
+		 * empty query (eg. '/path/?' instead of '/path/')
 		 *
 		 * @since 0.1
 		 */
@@ -120,10 +121,11 @@ namespace VSGI {
 		/**
 		 * Lookup a key in the request query.
 		 *
+		 * If the query itself is 'null' or the key is not available
+		 *
 		 * @since 0.3
 		 *
-		 * @param key     key to lookup
-		 * @return the corresponding value if found, otherwise 'null'
+		 * @param key key to lookup
 		 */
 		public string? lookup_query (string key) {
 			return query == null ? null : query[key];
@@ -250,7 +252,7 @@ namespace VSGI {
 		}
 
 		/**
-		 * Buffer the body stream.
+		 * Flatten the request body in a buffer.
 		 *
 		 * This function consumes the body stream. Any subsequent calls will
 		 * yield an empty buffer.
@@ -278,6 +280,8 @@ namespace VSGI {
 		}
 
 		/**
+		 * Flatten the request body as a {@link GLib.Bytes}.
+		 *
 		 * @since 0.2.3
 		 */
 		public Bytes flatten_bytes (Cancellable? cancellable = null) throws IOError {
@@ -285,6 +289,11 @@ namespace VSGI {
 		}
 
 		/**
+		 * Flatten the request body as a 'UTF-8' string.
+		 *
+		 * The payload is assumed to be encoded according to 'UTF-8'. If it is
+		 * not the case, use {@link VSGI.Request.flatten} directly instead.
+		 *
 		 * @since 0.2.4
 		 */
 		public string flatten_utf8 (Cancellable? cancellable = null) throws IOError {

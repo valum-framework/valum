@@ -1,8 +1,8 @@
 Authenticate
 ============
 
-The ``authenticate`` middleware allow one to perform HTTP basic and digest
-authentication.
+The ``authenticate`` middleware allow one to perform HTTP basic
+authentications.
 
 It takes three parameters:
 

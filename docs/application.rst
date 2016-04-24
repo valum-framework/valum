@@ -27,7 +27,7 @@ requests. The router provides helpers to declare routes which internally use
 ::
 
     app.get ("/", (req, res, next, context) => {
-        return res.expand_utf8 ("Hello world!", null);
+        return res.expand_utf8 ("Hello world!");
     });
 
 Every route declaration has a callback associated that does the request
@@ -65,7 +65,7 @@ a :doc:`vsgi/request` and :doc:`vsgi/response`.
 
     Server.new_with_application ("http", (req, res) => {
         res.status = 200;
-        return res.expand ("Hello world!", null);
+        return res.expand_utf8 ("Hello world!");
     }).run ({"app", "--port", "3003"});
 
 Usually, you would only pass the CLI arguments to ``run``, so that your runtime

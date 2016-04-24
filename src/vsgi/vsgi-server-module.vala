@@ -18,6 +18,8 @@
 using GLib;
 
 /**
+ * Load custom {@link VSGI.Server} implementations.
+ *
  * @since 0.3
  */
 public class VSGI.ServerModule : TypeModule {

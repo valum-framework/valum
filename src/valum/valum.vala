@@ -35,12 +35,18 @@ namespace Valum {
 	public delegate void LoaderCallback (Router router);
 
 	/**
-	 * Match the request and populate the initial {@link Valum.Context}.
+	 * Match the request and populate the {@link Valum.Context}.
+	 *
+	 * This is expected to be *very* fast and thus, no blocking operation must
+	 * be performed. If necessary, it is preferable to use a
+	 * {@link Valum.HandlerCallback} and invoke the 'next' continuation when ready.
 	 *
 	 * @since 0.1
 	 *
 	 * @param req     request being matched
-	 * @param context initial context
+	 * @param context context which may be initial or derive from a parent
+	 *
+	 * @return 'true' if the request is matched, otherwise 'false'
 	 */
 	public delegate bool MatcherCallback (Request req, Context context);
 
@@ -49,30 +55,22 @@ namespace Valum {
 	 *
 	 * @since 0.0.1
 	 *
-	 * @throws Informational raise a 1xx informational code
-	 * @throws Success       raise a 2xx success code
-	 * @throws Redirection   perform a 3xx HTTP redirection
-	 * @throws ClientError   trigger a 4xx client error
-	 * @throws ServerError   trigger a 5xx server error
-	 * @throws Error         any other error which will be handled as a
-	 *                       {@link Valum.ServerError.INTERNAL_SERVER_ERROR}
+	 * @throws Error callback are free to raise any error
 	 *
 	 * @param req     request being handled
 	 * @param res     response to send back to the requester
-	 * @param next    keep routing
+	 * @param next    continuation to keep routing
 	 * @param context routing context which parent is the context of the
 	 *                preceeding 'next' invocation or initialized by the
 	 *                first {@link Valum.MatcherCallback}
+	 *
+	 * @return 'true' if the request has been or will eventually be handled,
+	 *         otherwise 'false'
 	 */
-	public delegate bool HandlerCallback (Request req,
-	                                      Response res,
+	public delegate bool HandlerCallback (Request      req,
+	                                      Response     res,
 	                                      NextCallback next,
-	                                      Context context) throws Informational,
-	                                                              Success,
-	                                                              Redirection,
-	                                                              ClientError,
-	                                                              ServerError,
-	                                                              Error;
+	                                      Context      context) throws Error;
 
 	/**
 	 * Define a type of {@link Valum.HandlerCallback} that forward a generic
@@ -90,14 +88,8 @@ namespace Valum {
 	 * Continuation passed in a {@link Valum.HandlerCallback} to *keep routing*
 	 * both {@link VSGI.Request} and {@link VSGI.Response}.
 	 *
-	 * It is also used as a generic continuation that propagates a thrown status
-	 * code or invoke processing in the {@link Valum.Router} context.
-	 *
-	 * The passed {@link VSGI.Request} and {@link VSGI.Response} objects can be
-	 * optionally filtered using {@link VSGI.FilteredRequest} and
-	 * {@link VSGI.FilteredResponse}.
-	 *
-	 * See {@link Valum.HandlerCallback} for details on thrown error domains.
+	 * Any thrown error will be propagate to the caller found upstream in the
+	 * routing.
 	 *
 	 * @since 0.1
 	 */

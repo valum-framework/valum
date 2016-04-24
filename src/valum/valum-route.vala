@@ -21,19 +21,17 @@ using VSGI;
 namespace Valum {
 
 	/**
-	 * Route provides a {@link Valum.MatcherCallback} and {@link Valum.HandlerCallback} to
-	 * respectively match and handle a {@link VSGI.Request} and
-	 * {@link VSGI.Response}.
+	 * Describe a matching and handling process for a pair of {@link VSGI.Request}
+	 * and {@link VSGI.Response} objects.
 	 *
-	 * Route can be declared using the rule system, a regular expression or an
-	 * arbitrary request-matching callback.
+	 * It holds metadata as well to optimize the routing process.
 	 *
 	 * @since 0.0.1
 	 */
 	public abstract class Route : Object {
 
 		/**
-		 * HTTP method this is matching or 'null' if it does apply.
+		 * Flag describing allowed HTTP methods.
 		 *
 		 * @since 0.2
 		 */

@@ -202,6 +202,8 @@ The following options are made available:
 +=======================+===========+=======================================+
 | ``--forks``           | none      | number of forks to create             |
 +-----------------------+-----------+---------------------------------------+
+| ``--address``         | none      | listen on each addresses              |
++-----------------------+-----------+---------------------------------------+
 | ``--port``            | none      | listen on each ports, '0' for random  |
 +-----------------------+-----------+---------------------------------------+
 | ``--socket``          | none      | listen on each UNIX socket paths      |
@@ -216,9 +218,14 @@ The following options are made available:
 | ``--file-descriptor`` | none      | listen on each file descriptors       |
 +-----------------------+-----------+---------------------------------------+
 
-If none of ``--port`` ``--socket`` nor ``--file-descriptor`` flags are
-provided, it will fallback on the default listening interface for the
+If none of ``--address``, ``--port``, ``--socket`` nor ``--file-descriptor``
+flags are provided, it will fallback on the default listening interface for the
 implementation.
+
+The ``--address`` flag uses :valadoc:`gio-2.0/GLib.NetworkAddress.parse` under
+the hood, which properly interpret IPv4 and IPv6 addresses. It will also
+resolve domains and parse ports. If no port is provided, a random one will be
+used.
 
 The default when ``--port`` is provided is to listen on both IPv4 and IPv6
 interfaces, or just IPv4 if IPv6 is not supported.

@@ -25,10 +25,10 @@ namespace Valum {
 	 *
 	 * The rule pattern is composed of a few elements:
 	 *
-	 * - '<' '>' for parameters
-	 * - '(' and ')' for group
-	 * - '?' for optional
-	 * - '*' for wildcard
+	 *  * '<' '>' for parameters
+	 *  * '(' and ')' for group
+	 *  * '?' for optional
+	 *  * '*' for wildcard
 	 *
 	 * The content of a parameters is a name with an optional type such as
 	 * '<type:name>'. Types are resolved in a provided mapping and names are
