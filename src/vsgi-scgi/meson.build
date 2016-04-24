@@ -1,6 +1,6 @@
-vsgi_scgi_lib = shared_library('vsgi-scgi', 'vsgi-scgi.vala',
-                               dependencies: [glib, gobject, gio, soup, vsgi, vsgi_cgi],
-                               install: true)
+vsgi_scgi_lib = library('vsgi-scgi', 'vsgi-scgi.vala',
+                        dependencies: [glib, gobject, gio, soup, vsgi, vsgi_cgi],
+                        install: true)
 
 vsgi_scgi = declare_dependency(include_directories: include_directories('.'),
                                link_with: vsgi_scgi_lib)

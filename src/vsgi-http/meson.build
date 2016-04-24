@@ -1,5 +1,5 @@
-vsgi_http_lib = shared_library('vsgi-http', ['vsgi-http.vala'],
-                               dependencies: [glib, gobject, gio, soup, vsgi])
+vsgi_http_lib = library('vsgi-http', ['vsgi-http.vala'],
+                        dependencies: [glib, gobject, gio, soup, vsgi])
 
 vsgi_http = declare_dependency(include_directories: include_directories('.'),
                                link_with: vsgi_http_lib)
