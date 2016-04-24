@@ -62,3 +62,24 @@ In this case, arguments would be used to pass the environment.
         }
     }
 
+Template-GLib
+-------------
+
+`Template-GLib`_ provide a more traditional solution that integrates with
+GObject. It can render properties and perform method calls.
+
+.. _Template-GLib: https://github.com/chergert/template-glib
+
+::
+
+    using Tmpl;
+
+    var home = new Template.from_resource ("home.tmpl");
+
+    app.get ("/", (req, res) => {
+        var scope = new Scope ();
+        scope.set_string ("title", "Home");
+        home.expand (scope, res.body);
+    });
+
+
