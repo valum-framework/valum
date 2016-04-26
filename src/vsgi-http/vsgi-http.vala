@@ -223,17 +223,17 @@ namespace VSGI.HTTP {
 
 				this.server = new Soup.Server (
 #if !SOUP_2_48
-					SERVER_PORT,            port,
+					SERVER_PORT,            port.get_int32 (),
 #endif
 					SERVER_RAW_PATHS,       options.lookup_value ("raw-paths", VariantType.BOOLEAN) != null,
 					SERVER_TLS_CERTIFICATE, tls_certificate,
-					SERVER_SERVER_HEADER, null);
+					SERVER_SERVER_HEADER,   null);
 			} else {
 				this.server = new Soup.Server (
 #if !SOUP_2_48
-					SERVER_PORT, port,
+					SERVER_PORT,          port.get_int32 (),
 #endif
-					SERVER_RAW_PATHS, options.lookup_value ("raw-paths", VariantType.BOOLEAN) != null,
+					SERVER_RAW_PATHS,     options.lookup_value ("raw-paths", VariantType.BOOLEAN) != null,
 					SERVER_SERVER_HEADER, null);
 			}
 
