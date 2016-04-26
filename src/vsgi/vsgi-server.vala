@@ -91,6 +91,17 @@ namespace VSGI {
 		 */
 		public abstract SList<Soup.URI> uris { get; }
 
+		/**
+		 * List of worker process identifiers issued when {@link VSGI.Server.fork}
+		 * is invoked.
+		 *
+		 * The list is only available to the master process and will be empty on
+		 * the workers (unless they fork as well).
+		 *
+		 * @since 0.3
+		 */
+		public SList<Pid> workers { get; protected owned set; default = new SList<Pid> (); }
+
 		private ApplicationCallback _application;
 
 		/**
@@ -126,7 +137,7 @@ namespace VSGI {
 				Log.set_handler (null, LogLevelFlags.LEVEL_MASK, (domain, level, message) => {
 					stderr.printf ("%s%s\t%s%s%s%s%s\n",
 					               "\x1b[33m",
-					               "worker %d:".printf (Posix.getpid ()),
+					               workers.length () > 0 ? "master:\t" : "worker %d:".printf (Posix.getpid ()),
 					               "\x1b[0m",
 					               domain == null ? "" : "%s:\t".printf (domain),
 					               LogLevelFlags.LEVEL_ERROR    in level ? "\x1b[31m" :
@@ -155,8 +166,9 @@ namespace VSGI {
 					var pid = fork ();
 
 					// worker
-					if (pid == 0)
+					if (pid == 0) {
 						break;
+					}
 
 					// parent
 					else if (pid > 0) {
@@ -207,14 +219,21 @@ namespace VSGI {
 		 * This is called after {@link VSGI.Server.listen} such that workers can
 		 * share listening interfaces and descriptors.
 		 *
-		 * The default implementation invoke {@link Posix.fork}.
+		 * The default implementation invoke {@link Posix.fork}, register the
+		 * worker pid to the master's list and cleanup the worker's list.
 		 *
 		 * To disable forking, simply override this and return '0'.
 		 *
 		 * @since 0.3
 		 */
 		public virtual Pid fork () {
-			return Posix.fork ();
+			var pid = Posix.fork ();
+			if (pid == 0){
+				workers = new SList<Pid> ();
+			} else if (pid > 0) {
+				workers.append (pid);
+			}
+			return pid;
 		}
 
 		/**

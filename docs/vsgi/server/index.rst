@@ -162,11 +162,11 @@ available options which vary from an implementation to another.
       --help-gapplication         Show GApplication options
 
     Application Options:
-      -s, --socket                path to the UNIX socket
-      -p, --port                  TCP port on this host
-      -f, --file-descriptor=0     file descriptor
-      -b, --backlog=0             listen queue depth used in the listen() call
-
+      --forks=0                   Number of fork to create
+      -s, --socket                Listen to the provided UNIX domain socket (or named pipe for WinNT)
+      -p, --port                  Listen to the provided TCP port
+      -f, --file-descriptor=0     Listen to the provided file descriptor
+      -b, --backlog=10            Listen queue depth used in the listen() call
 
 Forking
 -------
@@ -202,6 +202,20 @@ It's also possible to fork manually via the ``fork`` call.
 
 It is recommended to fork only through that call since implementations such as
 :doc:`cgi` are not guaranteed to support it.
+
+Workers
+~~~~~~~
+
+Once forked, the ``workers`` property will be populated on the master with
+a list of process identifiers.
+
+::
+
+    server.fork ();
+
+    foreach (var worker in server.workers) {
+        message ("%d", worker);
+    }
 
 Listen on distinct interfaces
 -----------------------------
