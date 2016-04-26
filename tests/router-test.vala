@@ -1026,11 +1026,17 @@ public void test_router_error () {
 		throw new IOError.FAILED ("Just failed!");
 	});
 
+	router.status (500, (req, res, next, ctx) => {
+		res.status = 418;
+		assert ("Just failed!" == ctx["message"].get_string ());
+		return true;
+	});
+
 	var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var res = new Response (req);
 
 	assert (router.handle (req, res));
 
-	assert (500 == res.status);
+	assert (418 == res.status);
 }
 

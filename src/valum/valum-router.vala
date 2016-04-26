@@ -442,7 +442,16 @@ namespace Valum {
 						@params["charset"] = "utf-8";
 						res.headers.set_content_type ("text/plain", @params);
 						try {
-							return res.expand_utf8 (err.message);
+							if (err is Informational ||
+							    err is Success       ||
+							    err is Redirection   ||
+							    err is ClientError   ||
+							    err is ServerError) {
+								return res.expand_utf8 (err.message);
+							} else {
+								critical (err.message);
+								return res.expand_utf8 ("The server encountered an unexpected condition which prevented it from fulfilling the request.");
+							}
 						} catch (IOError io_err) {
 							warning (io_err.message);
 						}
