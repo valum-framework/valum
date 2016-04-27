@@ -123,6 +123,10 @@ namespace VSGI.SCGI {
 			size_t length;
 			var size_str = reader.read_upto (":", 1, out length);
 
+			if (size_str == null) {
+				throw new SCGIError.FAILED ("could not read netstring length");
+			}
+
 			int64 size;
 			if (!int64.try_parse (size_str, out size)) {
 				throw new SCGIError.MALFORMED_NETSTRING ("'%s' is not a valid netstring length", size_str);
@@ -138,12 +142,18 @@ namespace VSGI.SCGI {
 			while (read < size) {
 				size_t key_length;
 				var key = reader.read_upto ("", 1, out key_length);
+				if (key == null) {
+					throw new SCGIError.FAILED ("could not read key");
+				}
 				if (reader.read_byte () != '\0') {
 					throw new SCGIError.MALFORMED_NETSTRING ("missing EOF");
 				}
 
 				size_t value_length;
 				var @value = reader.read_upto ("", 1, out value_length);
+				if (@value == null) {
+					throw new SCGIError.FAILED ("could not read value for key '%s'", key);
+				}
 				if (reader.read_byte () != '\0') {
 					throw new SCGIError.MALFORMED_NETSTRING ("missing EOF");
 				}
