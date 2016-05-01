@@ -150,47 +150,6 @@ delegate.
         // matches /home
     });
 
-Status handling
----------------
-
-Thrown status code can be handled by a ``HandlerCallback`` pretty much like how
-typically matched requests are being handled.
-
-The received :doc:`vsgi/request` and :doc:`vsgi/response` object are in the
-same state they were when the status was thrown. The error message is bound to
-the key ``message`` in the routing context.
-
-::
-
-    app.status (Soup.Status.NOT_FOUND, (req, res, next, context) => {
-        // produce a 404 page...
-        var message = context["message"].get_string ();
-    });
-
-Similarly to conventional request handling, the ``next`` continuation can be
-invoked to jump to the next status handler in the queue.
-
-::
-
-    app.status (Soup.Status.NOT_FOUND, (req, res, next) => {
-        return next ();
-    });
-
-    app.status (Soup.Status.NOT_FOUND, (req, res) => {
-        res.status = 404;
-        return res.expand_utf8 ("Not found!");
-    });
-
-:doc:`redirection-and-error` can be thrown during the status handling, they
-will be caught by the ``Router`` and processed accordingly.
-
-::
-
-    // turns any 404 into a permanent redirection
-    app.status (Soup.Status.NOT_FOUND, (req, res) => {
-        throw new Redirection.PERMANENT ("http://example.com");
-    });
-
 Error handling
 --------------
 
@@ -199,20 +158,39 @@ Error handling
     Prior to this release, any unhandled error would crash the main loop
     iteration.
 
+.. versionchanged:: 0.3
+
+    Error and status codes are now handled with a ``catch`` block or using the
+    :doc:`middlewares/status` middleware.
+
 The router will capture any thrown `GLib.Error`_ and produce an internal error
-accordingly. Similarly to status codes, errors are propagated in the
-``HandlerCallback`` and ``NextCallback`` delegate signatures and can be handled
-with a ``500`` handler.
+accordingly.
 
-.. _GLib.Error: http://valadoc.org/#!api=glib-2.0/GLib.Error
-
-It provides a nice way to ignore passively unrecoverable errors.
+Similarly to status codes, errors are propagated in the ``HandlerCallback`` and
+``NextCallback`` delegate signatures and can be handled in a ``catch`` block.
 
 ::
+
+    app.use (() => {
+        try {
+            return next ();
+        } catch (IOError err) {
+            throw new ServerError.INTERNAL_SERVER_ERROR (err.message);
+        }
+    });
 
     app.get ("/", (req, res) => {
         throw new IOError.FAILED ("I/O failed some some reason.");
     });
+
+.. _GLib.Error: http://valadoc.org/#!api=glib-2.0/GLib.Error
+
+Thrown status code can also be caught this way, but it's much more convenient
+to use the :doc:`middlewares/status` middleware.
+
+If the routing context is lost, the operation can still be performed within
+``Router.invoke``. However, no status handling but the router's default one
+will be performed.
 
 ::
 
@@ -224,9 +202,6 @@ It provides a nice way to ignore passively unrecoverable errors.
         });
         return true;
     });
-
-If the routing context is lost, any operation can still be performed within
-``Router.invoke``
 
 Scoping
 -------
@@ -394,10 +369,6 @@ with custom and default status code handlers. It constitute an entry point for
         throw new ClientError.NOT_FOUND ("the requested resource was not found");
     });
 
-    app.status (404, (req, res) => {
-        // produce a 404 page...
-    });
-
 Similarly to ``handle``, this function can be used to perform something similar
 to subrouting by executing a ``NextCallback`` in the context of another router.
 
@@ -418,9 +389,9 @@ responses designed for non-human client.
         });
     });
 
-    app.status (Status.NOT_ACCEPTABLE, (req, res, next, context) => {
-        return res.expand_utf8 ("<p>%s</p>".printf (context["message"].get_string ()));
-    });
+    app.use (status (Status.NOT_ACCEPTABLE, (req, res, next, ctx, err) => {
+        return res.expand_utf8 ("<p>%s</p>".printf (err.message));
+    }));
 
 Middleware
 ----------

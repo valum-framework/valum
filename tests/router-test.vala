@@ -851,71 +851,6 @@ public static void test_router_next_replace_propagated_state () {
 	assert (413 == response.status);
 }
 
-public static void test_router_status_propagates_error_message () {
-	var router = new Router ();
-
-	router.status (404, (req, res, next, context) => {
-		var message = context["message"];
-		res.status = 418;
-		assert ("The request URI / was not found." == message.get_string ());
-		return true;
-	});
-
-	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
-	var response = new Response (request);
-
-	router.handle (request, response);
-
-	assert (418 == response.status);
-}
-
-/**
- * @since 0.2.2
- */
-public void test_router_status_handle_error () {
-	var router = new Router ();
-
-	router.get ("/", (req, res) => {
-		throw new IOError.FAILED ("Just failed!");
-	});
-
-	router.status (500, (req, res) => {
-		res.status = 418;
-		return true;
-	});
-
-	var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
-	var res = new Response (req);
-
-	assert (router.handle (req, res));
-
-	assert (418 == res.status);
-}
-
-public void test_router_status_feedback_error () {
-	var router = new Router ();
-
-	router.get ("/", (req, res) => {
-		throw new ServerError.INTERNAL_SERVER_ERROR ("a");
-	});
-
-	router.status (500, (req, res, next, ctx) => {
-		throw new Redirection.MOVED_TEMPORARILY ("b");
-	});
-
-	router.status (302, (req, res, next, ctx) => {
-		res.status = 418;
-		return true;
-	});
-
-	var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
-	var res = new Response (req);
-
-	assert (router.handle (req, res));
-
-	assert (418 == res.status);
-}
-
 /**
  * @since 0.2
  */
@@ -1022,14 +957,18 @@ public void test_router_then_preserve_matching_context () {
 public void test_router_error () {
 	var router = new Router ();
 
-	router.get ("/", (req, res) => {
-		throw new IOError.FAILED ("Just failed!");
+	router.use ((req, res, next) => {
+		try {
+			return next ();
+		} catch (IOError.FAILED err) {
+			res.status = 418;
+			assert ("Just failed!" == err.message);
+			return true;
+		}
 	});
 
-	router.status (500, (req, res, next, ctx) => {
-		res.status = 418;
-		assert ("Just failed!" == ctx["message"].get_string ());
-		return true;
+	router.get ("/", (req, res) => {
+		throw new IOError.FAILED ("Just failed!");
 	});
 
 	var req = new Request.with_uri (new Soup.URI ("http://localhost/"));

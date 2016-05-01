@@ -11,14 +11,20 @@ In a ``HandlerCallback``, you may throw any of ``Informational``, ``Success``,
 rather than setting the status and returning from the function.
 
 It is possible to register a handler on the :doc:`router` to handle a specific
-status code. Otherwise, the router will simply set the status code in the
-response and set its headers for specific status.
+status code. Otherwise, the router will simply set the response status code and
+headers specifically for the status.
 
 ::
 
-    app.status (Soup.Status.PERMANENT, (req, res) => {
-        res.status = Soup.Status.PERMANENT;
-    });
+    app.use ((req, res, next) => {
+        try {
+            return next ();
+        } catch (Redirection.PERMANENT red) {
+            // handle a redirection...
+        }
+    }));
+
+To handle status more elegantly, see the :doc:`middlewares/status` middleware.
 
 .. warning::
 
@@ -122,6 +128,14 @@ the :doc:`router` can handle them properly.
 
 ::
 
+    app.use ((req, res, next) => {
+        try {
+            return next ();
+        } catch (ClientError.NOT_FOUND err) {
+            // handle a 404...
+        }
+    });
+
     app.get ("/", (req, res, next) => {
         return next (); // will throw a 404
     });
@@ -130,11 +144,3 @@ the :doc:`router` can handle them properly.
         throw new ClientError.NOT_FOUND ("");
     });
 
-During status handling, the error message will be pushed on the routing context
-as a ``string`` to the key ``message``.
-
-::
-
-    app.status (404, (req, res, next, context) => {
-        var message = context["message"].get_string ();
-    });

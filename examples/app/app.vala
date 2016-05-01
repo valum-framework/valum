@@ -43,6 +43,16 @@ app.use ((req, res, next) => {
 	return next ();
 });
 
+app.use (status (Soup.Status.NOT_FOUND, (req, res, next, context, err) => {
+	var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));
+	template.environment.push_string ("message", err.message);
+	res.status = Soup.Status.NOT_FOUND;
+	HashTable<string, string> @params;
+	res.headers.get_content_type (out @params);
+	res.headers.set_content_type ("text/html", @params);
+	return template.to_stream (res.body);
+}));
+
 app.get ("/", (req, res, next) => {
 	var template = new View.from_resources ("/templates/home.html");
 	return template.to_stream (res.body);
@@ -327,16 +337,6 @@ app.get ("/negociate", accept ("application/json", (req, res) => {
 })).then ((req, res) => {
 	res.status = global::Soup.Status.NOT_ACCEPTABLE;
 	return res.expand_utf8 ("Supply the 'Accept' header with either 'application/json' or 'text/xml'.", null);
-});
-
-app.status (Soup.Status.NOT_FOUND, (req, res, next, context) => {
-	var template = new View.from_stream (resources_open_stream ("/templates/404.html", ResourceLookupFlags.NONE));
-	template.environment.push_string ("message", context["message"].get_string ());
-	res.status = Soup.Status.NOT_FOUND;
-	HashTable<string, string> @params;
-	res.headers.get_content_type (out @params);
-	res.headers.set_content_type ("text/html", @params);
-	return template.to_stream (res.body);
 });
 
 new Server ("org.valum.example.App", app.handle).run ({"app", "--all"});

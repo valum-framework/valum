@@ -40,11 +40,6 @@ namespace Valum {
 		private Sequence<Route> routes = new Sequence<Route> ();
 
 		/**
-		 * Registered status handlers.
-		 */
-		private HashTable<uint , Sequence<Route>> status_handlers = new HashTable<uint, Sequence<Route>> (direct_hash, direct_equal);
-
-		/**
 		 * Stack of scopes.
 		 *
 		 * @since 0.1
@@ -253,24 +248,6 @@ namespace Valum {
 		}
 
 		/**
-		 * Bind a callback to handle a particular thrown status code.
-		 *
-		 * This only applies to status thrown by one of {@link Redirection}
-		 * {@link ClientError} or {@link ServerError} domains.
-		 *
-		 * @param status status handled
-		 * @param cb     callback used to handle the status
-		 */
-		public Route status (uint status, owned HandlerCallback cb) {
-			if (!this.status_handlers.contains (status))
-				this.status_handlers[status] = new Sequence<Route> ();
-
-			var route = new MatcherRoute (Method.ANY, () => { return true; }, (owned) cb);
-			this.status_handlers[status].append (route);
-			return route;
-		}
-
-		/**
 		 * Add a fragment to the scope stack and nest a router in this new
 		 * environment.
 		 *
@@ -338,13 +315,6 @@ namespace Valum {
 			try {
 				return next ();
 			} catch (Error err) {
-				// replace any other error by a 500 status
-				var status_code = (err is Informational ||
-								   err is Success ||
-								   err is Redirection ||
-								   err is ClientError ||
-								   err is ServerError) ?  err.code : 500;
-
 				/*
 				 * If an error happen after 'write_head' is called, it's already
 				 * too late to perform any kind of status handling.
@@ -355,27 +325,9 @@ namespace Valum {
 				}
 
 				/*
-				 * Only the error message is pushed on the routing context, the
-				 * handler should assume that the status code is the one for
-				 * which it has been registered.
+				 * Turn non-status into '500 Internal Server Error'
 				 */
-				if (this.status_handlers.contains (status_code)) {
-					var context = new Context ();
-					context["message"] = err.message;
-					try {
-						if (this.perform_routing (this.status_handlers[status_code].get_begin_iter (), req, res, context))
-							return true; // handled!
-					} catch (Error err) {
-						var _err = err; // Vala bug, '_err' is not in the closure scope
-						// feed the error back in the invocation
-						return invoke (req, res, () => {
-							throw _err;
-						});
-					}
-				}
-
-				// default status code handling
-				res.status = status_code;
+				res.status = is_status (err) ? err.code : 500;
 
 				/*
 				 * The error message is used as a header if the HTTP/1.1
@@ -388,7 +340,7 @@ namespace Valum {
 				 * For practical purposes, the error message is used for the
 				 * 'Location' of redirection codes.
 				 */
-				switch (status_code) {
+				switch (res.status) {
 					case global::Soup.Status.SWITCHING_PROTOCOLS:
 						res.headers.replace ("Upgrade", err.message);
 						res.headers.set_encoding (Soup.Encoding.NONE);
@@ -442,11 +394,7 @@ namespace Valum {
 						@params["charset"] = "utf-8";
 						res.headers.set_content_type ("text/plain", @params);
 						try {
-							if (err is Informational ||
-							    err is Success       ||
-							    err is Redirection   ||
-							    err is ClientError   ||
-							    err is ServerError) {
+							if (is_status (err)) {
 								return res.expand_utf8 (err.message);
 							} else {
 								critical (err.message);

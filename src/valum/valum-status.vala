@@ -20,6 +20,17 @@ using Soup;
 namespace Valum {
 
 	/**
+	 * Determine if a {@link GLib.Error} represent a status.
+	 */
+	internal inline bool is_status (Error err) {
+		return err is Informational ||
+		       err is Success ||
+		       err is Redirection ||
+		       err is ClientError ||
+		       err is ServerError;
+	}
+
+	/**
 	 * Informational status corresponding to the 1xx HTTP status codes.
 	 *
 	 * @see   Soup.Status
@@ -144,5 +155,41 @@ namespace Valum {
 		LOOP_DETECTED                   = 508,
 		NOT_EXTENDED                    = Status.NOT_EXTENDED,
 		NETWORK_AUTHENTICATION_REQUIRED = 511
+	}
+
+	/**
+	 * Provide a context for handling a thrown status code.
+	 *
+	 * @since 0.3
+	 */
+	public delegate bool StatusHandlerCallback (VSGI.Request  req,
+	                                            VSGI.Response res,
+	                                            NextCallback  next,
+	                                            Context       ctx,
+	                                            owned         Error err) throws Error;
+
+	/**
+	 * Handle any corresponding error thrown by the following handler.
+	 *
+	 * If {@link Soup.Status.INTERNAL_SERVER_ERROR} is specified, other errors
+	 * will be forwarded as well.
+	 *
+	 * @since 0.3
+	 */
+	public HandlerCallback status (uint status, owned StatusHandlerCallback forward) {
+		return (req, res, next, ctx) => {
+			try {
+				return next ();
+			} catch (Error err) {
+				if (is_status (err) && err.code == status) {
+						var _err = (owned) err;
+						return forward (req, res, () => {
+							throw _err; // forward the error upstream
+						}, ctx, _err);
+				} else {
+					throw err;
+				}
+			}
+		};
 	}
 }

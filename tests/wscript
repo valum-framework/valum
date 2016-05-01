@@ -36,6 +36,12 @@ def build(bld):
         install_path = None)
     bld.program(
         features     = 'test',
+        target       = 'status-test',
+        source       = 'status-test.vala',
+        use          = 'valum',
+        install_path = None)
+    bld.program(
+        features     = 'test',
         target       = 'request-test',
         source       = 'request-test.vala',
         use          = 'vsgi-mock',

@@ -5,4 +5,5 @@ Middlewares
     basepath
     decode
     server-sent-events
+    status
     subdomain
