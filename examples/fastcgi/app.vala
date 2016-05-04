@@ -22,21 +22,8 @@ using VSGI;
 public static int main (string[] args) {
 	var app = new Router ();
 
-	// default route
 	app.get ("/", (req, res) => {
-		return res.expand_utf8 ("Hello world!", null);
-	});
-
-	app.get ("/random/<int:size>", (req, res, next, context) => {
-		var size   = int.parse (context["size"].get_string ());
-		var writer = new DataOutputStream (res.body);
-
-		for (; size > 0; size--) {
-			// write byte to byte
-			writer.put_uint32 (Random.next_int ());
-		}
-
-		return true;
+		return res.expand_utf8 ("Hello world!");
 	});
 
 	return Server.new_with_application ("fastcgi", "org.valum.example.FastCGI", app.handle).run (args);

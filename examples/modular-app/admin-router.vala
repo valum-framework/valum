@@ -59,7 +59,7 @@ public class AdminRouter : Router {
 		    </form>
 		  </body>
 		</html>
-		""", null);
+		""");
 	}
 
 	/**
@@ -67,6 +67,6 @@ public class AdminRouter : Router {
 	 */
 	public bool view (Request req, Response res, NextCallback next, Context ctx) throws Error {
 		res.headers.set_content_type ("text/plain", null);
-		return res.expand_utf8 ("Hello admin!", null);
+		return res.expand_utf8 ("Hello admin!");
 	}
 }

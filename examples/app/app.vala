@@ -75,24 +75,24 @@ app.get ("/headers", (req, res) => {
 	req.headers.foreach ((name, header) => {
 		headers.append_printf ("%s: %s\n", name, header);
 	});
-	return res.expand_utf8 (headers.str, null);
+	return res.expand_utf8 (headers.str);
 });
 
 app.get ("/query", (req, res) => {
 	if (req.query == null) {
-		return res.expand_utf8 ("null", null);
+		return res.expand_utf8 ("null");
 	} else {
 		var query = new StringBuilder ();
 		req.query.foreach ((k, v) => {
 			query.append_printf ("%s: %s\n", k, v);
 		});
-		return res.expand_utf8 (query.str, null);
+		return res.expand_utf8 (query.str);
 	}
 });
 
 app.get ("/cookies", (req, res) => {
 	if (req.cookies == null) {
-		return res.expand_utf8 ("null", null);
+		return res.expand_utf8 ("null");
 	} else {
 		var cookies = new StringBuilder ();
 		foreach (var cookie in req.cookies) {
@@ -106,7 +106,7 @@ app.scope ("/cookie", (inner) => {
 	inner.get ("/<name>", (req, res, next, context) => {
 		foreach (var cookie in req.cookies)
 			if (cookie.name == context["name"].get_string ())
-				return res.expand_utf8 ("%s\n".printf (cookie.value), null);
+				return res.expand_utf8 ("%s\n".printf (cookie.value));
 		return res.end ();
 	});
 
@@ -131,7 +131,7 @@ app.scope ("/urlencoded-data", (inner) => {
 			</form>
 		  </body>
 		</html>
-		""", null);
+		""");
 	});
 
 	inner.post ("", (req, res) => {
@@ -142,7 +142,7 @@ app.scope ("/urlencoded-data", (inner) => {
 			builder.append_printf ("%s: %s\n", k, v);
 		});
 
-		return res.expand_utf8 (builder.str, null);
+		return res.expand_utf8 (builder.str);
 	});
 });
 
@@ -159,23 +159,23 @@ app.get ("/tee", (req, res) => {
 
 // hello world! (compare with Node.js!)
 app.get ("/hello", (req, res) => {
-	return res.expand_utf8 ("Hello world!", null);
+	return res.expand_utf8 ("Hello world!");
 });
 
 app.get ("/hello/", (req, res) => {
-	return res.expand_utf8 ("Hello world!", null);
+	return res.expand_utf8 ("Hello world!");
 });
 
-app.rule (Method.GET | Method.POST, "get-and-post", (req, res) => {
-	return res.expand_utf8 ("Matches GET and POST", null);
+app.rule (Method.GET | Method.POST, "/get-and-post", (req, res) => {
+	return res.expand_utf8 ("Matches GET and POST");
 });
 
-app.rule (Method.GET, "custom-method", (req, res) => {
-	return res.expand_utf8 (req.method, null);
+app.rule (Method.GET, "/custom-method", (req, res) => {
+	return res.expand_utf8 (req.method);
 });
 
 app.get ("/hello/<id>", (req, res, next, context) => {
-	return res.expand_utf8 ("hello %s!".printf (context["id"].get_string ()), null);
+	return res.expand_utf8 ("hello %s!".printf (context["id"].get_string ()));
 });
 
 app.get ("/users/<int:id>(/<action>)?", (req, res, next, context) => {
@@ -192,19 +192,19 @@ app.get ("/users/<int:id>(/<action>)?", (req, res, next, context) => {
 app.register_type ("permutations", /abc|acb|bac|bca|cab|cba/);
 
 app.get ("/custom-route-type/<permutations:p>", (req, res, next, context) => {
-	return res.expand_utf8 (context["p"].get_string (), null);
+	return res.expand_utf8 (context["p"].get_string ());
 });
 
 app.get ("/trailing-slash/?", (req, res) => {
 	if (req.uri.get_path ().has_suffix ("/")) {
-		return res.expand_utf8 ("It has it!", null);
+		return res.expand_utf8 ("It has it!");
 	} else {
-		return res.expand_utf8 ("It does not!", null);
+		return res.expand_utf8 ("It does not!");
 	}
 });
 
 app.regex (Method.GET, /\/custom-regular-expression/, (req, res) => {
-	return res.expand_utf8 ("This route was matched using a custom regular expression.", null);
+	return res.expand_utf8 ("This route was matched using a custom regular expression.");
 });
 
 app.path (Method.GET, "/exact-path", (req, res) => {
@@ -212,7 +212,7 @@ app.path (Method.GET, "/exact-path", (req, res) => {
 });
 
 app.matcher (Method.GET, (req) => { return req.uri.get_path () == "/custom-matcher"; }, (req, res) => {
-	return res.expand_utf8 ("This route was matched using a custom matcher.", null);
+	return res.expand_utf8 ("This route was matched using a custom matcher.");
 });
 
 // scoped routing
@@ -222,11 +222,11 @@ app.scope ("/admin", (adm) => {
 		// matches /admin/fun/hack
 		fun.get ("/hack", (req, res) => {
 			var time = new DateTime.now_utc ();
-			return res.expand_utf8 ("It's %s around here!\n".printf (time.format ("%H:%M")), null);
+			return res.expand_utf8 ("It's %s around here!\n".printf (time.format ("%H:%M")));
 		});
 		// matches /admin/fun/heck
 		fun.get ("/heck", (req, res) => {
-			return res.expand_utf8 ("Wuzzup!", null);
+			return res.expand_utf8 ("Wuzzup!");
 		});
 	});
 });
@@ -243,7 +243,7 @@ var api = new Router ();
 
 api.get ("/<name>", (req, res, next, context) => {
 	var name = context["name"].get_string ();
-	return res.expand_utf8 (name, null);
+	return res.expand_utf8 (name);
 });
 
 // delegate all requests which path starts with '/repository'
@@ -255,7 +255,7 @@ app.get ("/next", (req, res, next) => {
 });
 
 app.get ("/next", (req, res) => {
-	return res.expand_utf8 ("Matched by the next route in the queue.", null);
+	return res.expand_utf8 ("Matched by the next route in the queue.");
 });
 
 app.get ("/sequence", sequence ((req, res, next) => {
@@ -270,7 +270,7 @@ app.get ("/state", (req, res, next, context) => {
 });
 
 app.get ("/state", (req, res, next, context) => {
-	return res.expand_utf8 (context["state"].get_string (), null);
+	return res.expand_utf8 (context["state"].get_string ());
 });
 
 // Ctpl template rendering

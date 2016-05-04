@@ -21,6 +21,8 @@ using VSGI;
 var app       = new Router ();
 var memcached = new Memcached.Context.from_configuration ("--SERVER=localhost".data);
 
+app.use (basic ());
+
 app.get ("/<key>", (req, res, next, context) => {
 	var key = context["key"].get_string ();
 
@@ -30,9 +32,9 @@ app.get ("/<key>", (req, res, next, context) => {
 
 	switch (error) {
 		case Memcached.ReturnCode.SUCCESS:
-			return res.expand (data, null);
+			return res.expand (data);
 		case Memcached.ReturnCode.NOTFOUND:
-			throw new ClientError.NOT_FOUND ("key '%s' was not found", key);
+			throw new ClientError.NOT_FOUND ("The key '%s' was not found.", key);
 		default:
 			throw new ServerError.INTERNAL_SERVER_ERROR (memcached.strerror (error));
 	}
@@ -41,14 +43,7 @@ app.get ("/<key>", (req, res, next, context) => {
 app.put ("/<key>", (req, res, next, context) => {
 	var key = context["key"].get_string ();
 
-	var buffer = new MemoryOutputStream (null, realloc, free);
-
-	buffer.splice (req.body, OutputStreamSpliceFlags.CLOSE_SOURCE | OutputStreamSpliceFlags.CLOSE_TARGET);
-
-	var data    = buffer.steal_data ();
-	data.length = (int) buffer.get_data_size ();
-
-	var error = memcached.set (key.data, data, 0, 0);
+	var error = memcached.set (key.data, req.flatten (), 0, 0);
 
 	switch (error) {
 		case Memcached.ReturnCode.SUCCESS:
@@ -65,9 +60,9 @@ app.delete ("/<key>", (req, res, next, context) => {
 
 	switch (error) {
 		case Memcached.ReturnCode.SUCCESS:
-			throw new Success.NO_CONTENT ("The key %s has been successfully deleted.", key);
+			throw new Success.NO_CONTENT ("The key '%s' has been successfully deleted.", key);
 		case Memcached.ReturnCode.NOTFOUND:
-			throw new ClientError.NOT_FOUND ("key '%s' was not found", key);
+			throw new ClientError.NOT_FOUND ("The key '%s' was not found.", key);
 		default:
 			throw new ServerError.INTERNAL_SERVER_ERROR (memcached.strerror (error));
 	}

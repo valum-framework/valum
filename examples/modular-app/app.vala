@@ -30,7 +30,7 @@ app.get ("/", (req, res) => {
 	<a href="/admin/view">Enter administrative business</a>
 	</body>
 	</html>
-	""", null);
+	""");
 });
 
 app.rule (Method.ANY, "/user/*", new UserRouter ().handle);
