@@ -31,31 +31,51 @@ To handle status more elegantly, see the :doc:`middlewares/status` middleware.
     The :doc:`router` assumes that the :doc:`vsgi/response` head has never been
     written in order to perform its default handling.
 
+::
+
+    app.use (status (Status.NOT_FOUND, (req, res, next, ctx, err) => {
+        // handle 'err' properly...
+    }));
+
 The error message may be used to fill a specific :doc:`vsgi/response` headers
 or the response body. The following table describe how the router deal with
 these cases.
 
-+-----------------------------------+----------+------------------------------------------+
-| Status                            | Header   | Description                              |
-+===================================+==========+==========================================+
-| Informational.SWITCHING_PROTOCOLS | Upgrade  |                                          |
-+-----------------------------------+----------+------------------------------------------+
-| Success.CREATED                   | Location | URI to the newly created resource        |
-+-----------------------------------+----------+------------------------------------------+
-| Success.PARTIAL_CONTENT           | Range    | Range of the delivered resource in bytes |
-+-----------------------------------+----------+------------------------------------------+
-| Redirection.*                     | Location | URI to perform the redirection           |
-+-----------------------------------+----------+------------------------------------------+
-| ClientError.METHOD_NOT_ALLOWED    | Accept   |                                          |
-+-----------------------------------+----------+------------------------------------------+
-| ClientError.UPGRADE_REQUIRED      | Upgrade  |                                          |
-+-----------------------------------+----------+------------------------------------------+
++-----------------------------------+------------------+------------------------------------------+
+| Status                            | Header           | Description                              |
++===================================+==================+==========================================+
+| Informational.SWITCHING_PROTOCOLS | Upgrade          | Identifier of the protocol to use        |
++-----------------------------------+------------------+------------------------------------------+
+| Success.CREATED                   | Location         | URL to the newly created resource        |
++-----------------------------------+------------------+------------------------------------------+
+| Success.PARTIAL_CONTENT           | Range            | Range of the delivered resource in bytes |
++-----------------------------------+------------------+------------------------------------------+
+| Redirection.MOVED_PERMANENTLY     | Location         | URL to perform the redirection           |
++-----------------------------------+------------------+------------------------------------------+
+| Redirection.FOUND                 | Location         | URL of the found resource                |
++-----------------------------------+------------------+------------------------------------------+
+| Redirection.SEE_OTHER             | Location         | URL of the alternative resource          |
++-----------------------------------+------------------+------------------------------------------+
+| Redirection.USE_PROXY             | Location         | URL of the proxy                         |
++-----------------------------------+------------------+------------------------------------------+
+| Redirection.TEMPORARY_REDIRECT    | Location         | URL to perform the redirection           |
++-----------------------------------+------------------+------------------------------------------+
+| ClientError.UNAUTHORIZED          | WWW-Authenticate | Challenge for authentication             |
++-----------------------------------+------------------+------------------------------------------+
+| ClientError.METHOD_NOT_ALLOWED    | Allow            | Comma-separated list of allowed methods  |
++-----------------------------------+------------------+------------------------------------------+
+| ClientError.UPGRADE_REQUIRED      | Upgrade          | Identifier of the protocol to use        |
++-----------------------------------+------------------+------------------------------------------+
 
-.. note::
+The following errors does not produce any payload:
 
-    If the error message is not intended for a specific response header, the
-    message is automatically written in the body with ``Content-Type`` and
-    ``Content-Length`` headers set appropriately.
+-   ``Information.SWITCHING_PROTOCOLS``
+-   ``Success.NO_CONTENT``
+-   ``Success.RESET_CONTENT``
+-   ``Success.NOT_MODIFIED``
+
+For all other domains, the message will be used as a ``text/plain`` payload
+encoded with ``UTF-8``.
 
 The approach taken by Valum is to support at least all status defined by
 libsoup-2.4 and those defined in RFC documents. If anything is missing, you can

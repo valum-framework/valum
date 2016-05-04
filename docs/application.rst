@@ -34,7 +34,7 @@ Binding a route
 
 An application constitute of a list of routes matching and handling user
 requests. The router provides helpers to declare routes which internally use
-a :doc:`route` instance.
+``Route`` instances.
 
 ::
 

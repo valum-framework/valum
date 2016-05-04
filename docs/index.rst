@@ -33,9 +33,8 @@ development. If you think that this document could be improved,
     getting-started
     application
     vsgi/index
-    redirection-and-error
-    route
     router
+    redirection-and-error
     middlewares/index
     recipes/index
     hacking

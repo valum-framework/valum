@@ -5,16 +5,107 @@ Router is the core component of Valum. It dispatches request to the right
 handler and processes certain error conditions described in
 :doc:`redirection-and-error`.
 
-It initializes the :doc:`vsgi/response` with chunked encoding if the requester
-uses HTTP/1.1 before dispatching it through the attached routes.
+The router is constituted of a sequence of ``Route`` objects which may or may
+not match incoming requests and perform the process described in their
+handlers.
 
-The ``Content-Type`` header should be set explicitly with
-`Soup.MessageHeaders.set_content_type`_ based on the content transmitted to the
-user agent.
+Route
+-----
 
-.. _Soup.MessageHeaders.set_content_type: http://valadoc.org/#!api=libsoup-2.4/Soup.MessageHeaders.set_content_type
+The most basic and explicit way of attaching a handler is ``Router.route``,
+which attach the provided ``Route`` object to the sequence.
 
-It can be performed automatically with ``Router.use``:
+::
+
+    app.route (new RuleRoute (Method.GET, "/", null, () => {}));
+
+Route are simple objects which combine a matching and handling processes. The
+following sections implicitly treat of route objects such such as ``RuleRoute``
+and ``RegexRoute``.
+
+Method
+------
+
+.. versionadded:: 0.3
+
+The ``Method`` flag provide a list of HTTP methods and some useful masks used
+into route definitions.
+
+==================== =================================================
+Flag                  Description
+==================== =================================================
+``Method.ALL``        all standard HTTP methods
+``Method.OTHER``      any non-standard HTTP methods
+``Method.ANY``        anything, including non-standard methods
+``Method.PROVIDED``   indicate that the route provide its methods
+``Method.META``       mask for all meta flags like ``Method.PROVIDED``
+==================== =================================================
+
+Using a flag makes it really convenient to capture multiple methods with the
+``|`` binary operator.
+
+::
+
+    app.rule (Method.GET | Method.POST, "/", (req, res) => {
+        // matches GET and POST
+    });
+
+``Method.GET`` is defined as ``Method.ONLY_GET | Method.HEAD`` such that
+defining the former will also provide a ``HEAD`` implementation. In general,
+it's recommended to check the method in order to skip a body that won't be
+considered by the user agent.
+
+::
+
+    app.get ("/", () => {
+        res.headers.set_content_type ("text/plain", null);
+        if (req.method == Request.HEAD) {
+            return res.end (); // skip unnecessary I/O
+        }
+        return res.expand_utf8 ("Hello world!");
+    });
+
+To provide only the ``GET`` part, use ``Method.ONLY_GET``.
+
+::
+
+    app.rule (Method.ONLY_GET, () => {
+        res.headers.set_content_type ("text/plain", null);
+        return res.expand_utf8 ("Hello world!");
+    });
+
+Non-standard method
+~~~~~~~~~~~~~~~~~~~
+
+To handle non-standard HTTP method, use the ``Method.OTHER`` along with an
+explicit check.
+
+::
+
+    app.method (Method.OTHER, "/rule", (req, res) => {
+        if (req.method != "CUSTOM")
+            return next ();
+    });
+
+Introspection
+~~~~~~~~~~~~~
+
+The router introspect the route sequence to determine what methods are allowed
+for a given URI and thus produce a nice ``Allow`` header. To mark a method as
+*provided*, the ``Method.PROVIDED`` flag has to be used. This is automatically
+done for the helpers and the ``Router.rule`` function described below.
+
+Additionally, the ``OPTIONS`` and ``TRACE`` are automatically handled if not
+specified for a path. The ``OPTIONS`` will produce a ``Allow`` header and
+``TRACE`` will feedback the request into the response payload.
+
+Use
+---
+
+.. versionadded:: 0.3
+
+The simplest way to attach a handler is ``Router.use``, which unconditionally
+apply the route on the request.
 
 ::
 
@@ -25,8 +116,214 @@ It can be performed automatically with ``Router.use``:
         return next ();
     });
 
-Routing context
----------------
+It is typically used to mount a :doc:`middlewares/index` on the router.
+
+Asterisk
+--------
+
+.. versionadded:: 0.3
+
+The special ``*`` URI is handled by the ``Router.asterisk`` helper. It is
+typically used along with the ``OPTIONS`` method to provide a self-description
+of the web service or application.
+
+::
+
+    app.asterisk (Method.OPTIONS, () => {
+        return true;
+    });
+
+Rule
+----
+
+.. versionchanged:: 0.3
+
+    Rule helpers (e.g. ``get``, ``post``, ``rule``) must explicitly be provided
+    with a leading slash.
+
+    The rule syntax has been greatly improved to support groups, optionals and
+    wildcards.
+
+The *de facto* way of attaching handler callbacks is based on the rule system.
+The ``Router.rule`` as well as all HTTP method helpers use it.
+
+::
+
+    app.rule (Method.ALL, "/rule" (req, res) => {
+        return true;
+    });
+
+The syntax for rules is given by the following EBNF grammar:
+
+.. literalinclude:: rule.ebnf
+    :language: ebnf
+
+Remarks
+~~~~~~~
+
+-  a piece is a single character, so ``/users/?`` only indicates that the ``/``
+   is optional
+-  the wildcard ``*`` matches anything, just like the ``.*`` regular expression
+
+The following table show valid rules and their corresponding regular
+expressions. Note that rules are matching the whole path as they are
+automatically anchored.
+
+===================== ===========================
+Rule                  Regular expression
+===================== ===========================
+``/user``             ``^/user$``
+``/user/<id>``        ``^/user/(?<id>\w+)$``
+``/user/<int:id>``    ``^/user/(?<id>\d+)$``
+``/user(/<int:id>)?`` ``^/user(?:/(?<id>\d+))?$``
+===================== ===========================
+
+Types
+~~~~~
+
+Valum provides built-in types initialized in the :doc:`router` constructor. The
+following table details these types and what they match.
+
++------------+-----------------------+--------------------------------------+
+| Type       | Regex                 | Description                          |
++============+=======================+======================================+
+| ``int``    | ``\d+``               | matches non-negative integers like a |
+|            |                       | database primary key                 |
++------------+-----------------------+--------------------------------------+
+| ``string`` | ``\w+``               | matches any word character           |
++------------+-----------------------+--------------------------------------+
+| ``path``   | ``(?:\.?[\w/-\s/])+`` | matches a piece of route including   |
+|            |                       | slashes, but not ``..``              |
++------------+-----------------------+--------------------------------------+
+
+Undeclared types default to ``string``, which matches any word characters.
+
+It is possible to specify or overwrite types using the ``types`` map in
+:doc:`router`. This example will define the ``path`` type matching words and
+slashes using a regular expression literal.
+
+::
+
+    app.register_type ("path", new Regex ("[\w/]+", RegexCompileFlags.OPTIMIZE));
+
+If you would like ``ìnt`` to match negatives integer, you may just do:
+
+::
+
+    app.register_type ("int", new Regex ("-?\d+", RegexCompileFlags.OPTIMIZE));
+
+Rule parameters are available from the routing context by their name.
+
+::
+
+    app.get ("/<controller>/<action>", (req, res, next, context) => {
+        var controller = context["controller"].get_string ();
+        var action     = context["action"].get_string ();
+    });
+
+Helpers
+~~~~~~~
+
+Helpers for the methods defined in the HTTP/1.1 protocol and the extra
+``TRACE`` methods are included. The path is matched according to the rule
+system defined previously.
+
+::
+
+    app.get ("/", (req, res) => {
+        return res.expand_utf8 ("Hello world!");
+    });
+
+The following example deal with a ``POST`` request providing using `Soup.Form`_
+to decode the payload.
+
+.. _Soup.Form: http://valadoc.org/#!api=libsoup-2.4/Soup.Form
+
+::
+
+    app.post ("/login", (req, res) => {
+        var data = Soup.Form.decode (req.flatten_utf8 ());
+
+        var username = data["username"];
+        var password = data["password"];
+
+        // assuming you have a session implementation in your app
+        var session = new Session.authenticated_by (username, password);
+
+        return true;
+    });
+
+Regular expression
+------------------
+
+.. versionchanged:: 0.3
+
+    The regex helper must be provided with an explicit leading slash.
+
+If the rule system does not suit your needs, it is always possible to use
+regular expression. Regular expression will be automatically scoped, anchored
+and optimized.
+
+::
+
+    app.regex (Method.GET, new Regex ("/home/?", RegexCompileFlags.OPTIMIZE), (req, res) => {
+        return res.body.write_all ("Matched using a regular expression.".data, true);
+    });
+
+Named captures are registered on the routing context.
+
+::
+
+    app.regex (new Regex ("/(?<word>\w+)", RegexCompileFlags.OPTIMIZE), (req, res, next, ctx) => {
+        var word = ctx["word"].get_string ();
+    });
+
+Matcher callback
+----------------
+
+Request can be matched by a simple callback typed by the ``MatcherCallback``
+delegate.
+
+::
+
+    app.matcher (Method.GET, (req) => { return req.uri.get_path () == "/home"; }, (req, res) => {
+        // matches /home
+    });
+
+Scoping
+-------
+
+.. versionchanged:: 0.3
+
+    The scope feature does not include a slash, instead you should scope with
+    a leading slash like shown in the following examples.
+
+Scoping is a powerful prefixing mechanism for rules and regular expressions.
+Route declarations within a scope will be prefixed by ``<scope>``.
+
+The ``Router`` maintains a scope stack so that when the program flow enter
+a scope, it pushes the fragment on top of that stack and pops it when it exits.
+
+::
+
+    app.scope ("/admin", (admin) => {
+        // admin is a scoped Router
+        app.get ("/users", (req, res) => {
+            // matches /admin/users
+        });
+    });
+
+    app.get ("/users", (req, res) => {
+        // matches /users
+    });
+
+To literally mount an application on a prefix, see the
+:doc:`middlewares/basepath` middleware.
+
+Context
+-------
+
+.. versionadded:: 0.3
 
 During the routing, states can obtained from a previous handler or passed to
 the next one using the routing context.
@@ -46,108 +343,27 @@ context if it's missing.
         return return res.body.write_all (some_value.data, null);
     });
 
-HTTP methods
-------------
+Next
+----
 
 .. versionchanged:: 0.3
 
-    Rule helpers (e.g. ``get``, ``post``, ``rule``) must explicitly be provided
-    with a leading slash.
+    The ``next`` continuation does not take the request and response objects as
+    parameter. To perform transformation, see :doc:`vsgi/converters` and
+    :doc:`middlewares/index`.
 
-Callback can be connected to HTTP methods via a list of helpers having the
-``HandlerCallback`` delegate signature:
-
-::
-
-    app.get ("/rule", (req, res, next) => { return false; });
-
-The rule has to respect the rule syntax described in :doc:`route`. It will be
-compiled down to a regex which named groups are made accessible in the context.
-
-Helpers for the HTTP/1.1 protocol and the extra ``TRACE`` methods are included.
-
--  ``get``
--  ``post``
--  ``put``
--  ``delete``
--  ``connect``
--  ``trace``
-
-This is an example of ``POST`` request handling using `Soup.Form`_ to decode
-the ``application/x-www-form-urlencoded`` body of the :doc:`vsgi/request`.
-
-.. _Soup.Form: http://valadoc.org/#!api=libsoup-2.4/Soup.Form
+The handler takes a callback as an optional third argument. This callback is
+a continuation that will continue the routing process to the next matching
+route.
 
 ::
 
-    app.post ("/login", (req, res) => {
-        var buffer = new MemoryOutputStream.resizable ();
-
-        // consume the request body
-        buffer.splice (req.body, OutputStreamSpliceFlags.CLOSE_SOURCE);
-
-        var data = Soup.Form.decode ((string) buffer.get_data ());
-
-        var username = data["username"];
-        var password = data["password"];
-
-        // assuming you have a session implementation in your app
-        var session = new Session.authenticated_by (username, password);
-
-        return true;
+    app.get ("/", (req, res, next) => {
+        return next (); // keep routing
     });
 
-It is also possible to use a custom HTTP method via the ``method``
-function.
-
-::
-
-    app.method ("METHOD", "/rule", (req, res) => {});
-
-:doc:`vsgi/request` provide an enumeration of HTTP methods for your
-convenience.
-
-::
-
-    app.method (Request.GET, "/rule", (req, res) => {});
-
-Multiple methods can be captured with ``methods``:
-
-::
-
-    app.methods (Request.GET, Request.POST, "", (req, res) => {
-        // matches GET and POST
-    });
-
-Regular expression
-------------------
-
-.. versionchanged:: 0.3
-
-    The regex helper must be provided with an explicit leading slash.
-
-::
-
-    app.regex (new Regex ("/home/"), (req, res) => {
-        // matches /home
-    });
-
-Matcher callback
-----------------
-
-Request can be matched by a simple callback typed by the ``MatcherCallback``
-delegate.
-
-.. warning::
-
-    You have to be cautious if you want to fill request parameters and respect
-    the `populate if match` rule, otherwise you will experience
-    inconsistencies.
-
-::
-
-    app.matcher (Request.GET, (req) => { return req.uri.get_path () == "/home"; }, (req, res) => {
-        // matches /home
+    app.get ("/", (req, res) => {
+        // this is invoked!
     });
 
 Error handling
@@ -203,31 +419,25 @@ will be performed.
         return true;
     });
 
-Scoping
--------
+Sequence
+--------
 
-.. versionchanged:: 0.3
+.. versionadded:: 0.2
 
-    The scope feature does not include a slash, instead you should scope with
-    a leading slash like shown in the following examples.
-
-Scoping is a powerful prefixing mechanism for rules and regular expressions.
-Route declarations within a scope will be prefixed by ``<scope>``.
-
-The ``Router`` maintains a scope stack so that when the program flow enter
-a scope, it pushes the fragment on top of that stack and pops it when it exits.
+``Route`` has a ``then`` function that can be used to produce to sequence
+handlers for a common matcher. It can be used to create a pipeline of
+processing for a resource using middlewares.
 
 ::
 
-    app.scope ("/admin", (admin) => {
-        // admin is a scoped Router
-        app.get ("/users", (req, res) => {
-            // matches /admin/users
-        });
-    });
-
-    app.get ("/users", (req, res) => {
-        // matches /users
+    app.get ("/admin", (req, res, next) => {
+        // authenticate user...
+        return next ();
+    }).then ((req, res, next) => {
+        // produce sensitive data...
+        return next ();
+    }).then ((req, res) => {
+        // produce the response
     });
 
 Subrouting
@@ -256,10 +466,22 @@ will process in isolation with its own routing context.
     // delegate all GET requests to api router
     app.get ("*", api.handle);
 
+One common pattern with subrouting is to attempt another router and fallback on
+``next``.
+
+::
+
+    var app = new Router ();
+    var api = new Router ();
+
+    app.get ("/some-resource", (req, res) => {
+        return api.handle (req, res) || next ();
+    });
+
 .. _cleaning-up-route-logic:
 
 Cleaning up route logic
-~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------
 
 Performing a lot of route bindings can get messy, particularly if you want to
 split an application several reusable modules. Encapsulation can be achieved by
@@ -270,17 +492,26 @@ subclassing ``Router`` and performing initialization in a ``construct`` block:
     public class AdminRouter : Router {
 
         construct {
-            get ("/", view);
-            rule (Method.GET | Method.POST, "", edit);
+            rule (Method.GET,               "/admin/user",          view);
+            rule (Method.GET | Method.POST, "/admin/user/<int:id>", edit);
         }
 
-        public void view (Request req, Response res) {}
+        public bool view (Request req, Response res) {
+            return render_template ("users", Users.all ());
+        }
 
-        public void edit (Request req, Response res) {}
+        public bool edit (Request req, Response res) {
+            var user = User.find (ctx["id"]);
+            if (req.method == "POST") {
+                user.values (Soup.Form.decode (req.flatten_utf8 ()));
+                user.update ();
+            }
+            return render_template ("user", user);
+        }
     }
 
 Using subrouting, it can be assembled to a parent router given a rule (or any
-matching process described in :doc:`route`). This way, incoming request having
+matching process described in this document). This way, incoming request having
 the ``/admin/`` path prefix will be delegated to the ``admin`` router.
 
 ::
@@ -289,64 +520,29 @@ the ``/admin/`` path prefix will be delegated to the ``admin`` router.
 
     app.rule (Method.ALL, "/admin/*", new AdminRouter ().handle);
 
-Next
-----
-
-The :doc:`route` handler takes a callback as an optional third argument. This
-callback is a continuation that will continue the routing process to the next
-matching route.
+The :doc:`middlewares/basepath` middleware provide very handy path isolation so
+that the router can be simply written upon the leading ``/`` and rebased on any
+basepath. In that case, we can strip the leading ``/admin`` in router's rules.
 
 ::
 
-    app.get ("/", (req, res, next) => {
-        message ("pre");
-        return next (); // keep routing
-    });
+    var app = new Router ();
 
-    app.get ("/", (req, res) => {
-        // this is invoked!
-    });
-
-Converters
-~~~~~~~~~~
-
-:doc:`vsgi/converters` can be applied on both the :doc:`vsgi/request` and
-:doc:`vsgi/response` objects in order to filter the consumed or produced
-payload.
-
-::
-
-    app.get ("/", (req, res, next) => {
-        res.headers.append ("Content-Encoding", "gzip");
-        res.convert (new ZlibCompressor (ZlibCompressorFormat.GZIP));
-        return next ();
-    });
-
-    app.get ("/", (req, res) => {
-        // res is transparently gzipped
-    })
-
-Sequence
---------
-
-:doc:`route` has a ``then`` function that can be used to produce to sequence
-handlers for a common matcher. It can be used to create a pipeline of
-processing for a resource using middlewares.
-
-::
-
-    app.get ("/admin", (req, res, next) => {
-        // authenticate user...
-        return next ();
-    }).then ((req, res, next) => {
-        // produce sensitive data...
-        return next ();
-    }).then ((req, res) => {
-        // produce the response
-    });
+    // captures '/admin/users' and '/admin/user/<int:id>'
+    app.use (basepath ("/admin", new AdminRouter ().handle));
 
 Invoke
 ------
+
+.. versionadded:: 0.2
+
+.. note::
+
+    Invoke is a temporary hack until we get support for asychronous delegates
+    (see `bug #604827`_). At this point, it will not be of any use to execute in
+    the router's context.
+
+.. _bug #604827: https://bugzilla.gnome.org/show_bug.cgi?id=604827
 
 It is possible to invoke a ``NextCallback`` in the routing context when the
 latter is lost. This happens whenever you have to execute ``next`` in an async
@@ -375,95 +571,3 @@ to subrouting by executing a ``NextCallback`` in the context of another router.
 The following example handles a situation where a client with the
 ``Accept: text/html`` header defined attempts to access an API that produces
 responses designed for non-human client.
-
-::
-
-    var app = new Router ();
-    var api = new Router ();
-
-    api.matcher (accept ("text/html"), (req, res) => {a
-        // let the app produce a human-readable response as the client accepts
-        // 'text/html' response
-        app.invoke (req, res, () => {
-            throw ClientError.NOT_ACCEPTABLE ("this is an API");
-        });
-    });
-
-    app.use (status (Status.NOT_ACCEPTABLE, (req, res, next, ctx, err) => {
-        return res.expand_utf8 ("<p>%s</p>".printf (err.message));
-    }));
-
-Middleware
-----------
-
-Middlewares are reusable pieces of processing that can perform various work
-from authentication to the delivery of a static resource. They are described in
-the :doc:`middlewares/index` document.
-
-The typical way of declaring them involve closures. It is parametrized and
-returned to perform a specific task:
-
-::
-
-    public HandlerCallback middleware (/* parameters here */) {
-        return (req, res, next, ctx) => {
-            var referer = req.headers.get_one ("Referer");
-            ctx["referer"] = new Soup.URI (referer);
-            return next ();
-        };
-    }
-
-The following example shows a middleware that provide a compressed stream over
-the :doc:`vsgi/response` body.
-
-::
-
-    app.use ((req, res, next) => {
-        res.headers.replace ("Content-Encoding", "gzip");
-        return next (req, new ConvertedResponse (res, new ZLibCompressor (ZlibCompressorFormat.GZIP)));
-    });
-
-    app.get ("/home", (req, res) => {
-        return res.expand_utf8 ("Hello world!"); // transparently compress the output
-    });
-
-If this is wrapped in a function, which is typically the case, it can even be
-used directly from the handler.
-
-::
-
-    HandlerCallback compress = (req, res, next) => {
-        res.headers.replace ("Content-Encoding", "gzip");
-        return next (req, new ConvertedResponse (res, new ZLibCompressor (ZlibCompressorFormat.GZIP));
-    };
-
-    app.get ("/home", compress);
-
-    app.get ("/home", (req, res) => {
-        return res.expand_utf8 ("Hello world!");
-    });
-
-Alternatively, a middleware can be used directly instead of being attached to
-a :doc:`route`, the processing will happen in a ``NextCallback``.
-
-::
-
-    app.get ("/home", (req, res, next, context) => {
-        return compress (req, res, (req, res) => {
-            return res.expand_utf8 ("Hello world!");
-        }, new Context.with_parent (context));
-    });
-
-Forward
-~~~~~~~
-
-One typical pattern is to supply a ``HandlerCallback`` that is forwarded on
-success (or any other event) like it's the case for the ``accept`` middleware.
-
-.. code:: vala
-
-    app.get ("", accept ("text/xml", (req, res) => {
-        res.body.write_all ("<a>b</a>".data, null);
-    }), (req, res) => {
-        throw new ClientError.NOT_ACCEPTABLE ("We're only producing 'text/xml here!");
-    });

@@ -11,13 +11,11 @@ Status
 The response status can be set with the ``status`` property. libsoup-2.4
 provides an enumeration in `Soup.Status`_ for that purpose.
 
+The ``status`` property will default to ``200 OK``.
+
 The status code will be written in the response with ``write_head`` or
-``write_head_async`` if invoked manually or during the first access to its body.
-
-.. warning::
-
-    The response status is not initialised and not setting it will result into
-    an undefined status code.
+``write_head_async`` if invoked manually or during the first access to its
+body.
 
 .. _Soup.Status: http://valadoc.org/#!api=libsoup-2.4/Soup.Status
 
@@ -27,6 +25,24 @@ The status code will be written in the response with ``write_head`` or
         res.status = Soup.Status.MALFORMED;
         return true;
     });
+
+Reason phrase
+-------------
+
+.. versionadded:: 0.3
+
+The reason phrase provide a textual description for the status code. If
+``null``, which is the default, it will be generated using `Soup.Status.get_phrase`_.
+
+::
+
+    new Server ("org.vsgi.App", (req, res) => {
+        res.status = Soup.Status.OK;
+        res.reason_phrase = "Everything Went Well"
+        return true;
+    });
+
+.. _Soup.Status.get_phrase: http://valadoc.org/#!api=libsoup-2.4/Soup.Status.get_phrase
 
 Headers
 -------
@@ -67,6 +83,20 @@ even though a well written application should assume that already.
         res.headers.set_content_type ("text/html", null);
     }
 
+Since ``head_written`` is a property, it's possible to capture it's change
+using the ``notify`` signal.
+
+Since status, reason phrase and headers cannot be modified once written, this
+event can be used to trigger work that would assume a successful response.
+
+::
+
+    res.notify["head-written"].connect (() => {
+        if (res.head_written && res.status == 200) {
+            // perform some work assuming a '200 OK' response
+        }
+    });
+
 Body
 ----
 
@@ -74,13 +104,35 @@ The body of a response is accessed through the ``body`` property. It inherits
 from `GLib.OutputStream`_ and provides synchronous and asynchronous streaming
 capabilities.
 
-Fixed-size body
-~~~~~~~~~~~~~~~
+It's also possible to obtain the body asynchronously as it might trigger
+a blocking call call to ``write_head``.
+
+::
+
+    res.get_body_async.begin (Priority.DEFAULT, null, (obj, result) => {
+        var body = res.get_body_async.end (result);
+        body.write_all ("Hello world!".data, null);
+    });
+
+The response body is automatically closed following a RAII pattern whenever the
+``Response`` object is disposed.
+
+Note that a reference to the body is not sufficient to maintain the inner
+:doc:`connection` alive: a reference to either the :doc:`request` or response
+be maintained.
+
+You can still close the body early as it can provide multiple advantages:
+
+-  avoid further and undesired read or write operation
+-  indicate to the user agent that the body has been fully sent
+
+Expand
+~~~~~~
 
 .. versionadded:: 0.3
 
-To deal with fixed-size body, ``expand``, ``expand_utf8`` utilities as well as
-their respective asynchronous versions are provided.
+To deal with fixed-size body, ``expand``, ``expand_bytes`` and ``expand_utf8``
+utilities as well as their respective asynchronous versions are provided.
 
 It will automatically set the ``Content-Length`` header to the size of the
 provided buffer, write the response head and pipe the buffer into the body
@@ -90,7 +142,7 @@ stream and close it properly.
 
     new Server ("org.vsgi.App", (req, res) => {
         res.expand_utf8 ("Hello world!");
-    })
+    });
 
 Filtering
 ~~~~~~~~~
@@ -127,43 +179,17 @@ so that the application can transparently produce its output.
     res.headers.append ("Transfer-Encoding", "chunked");
     return res.body.write_all ("Hello world!".data, null);
 
-Asynchronous write
-~~~~~~~~~~~~~~~~~~
+Conversion
+~~~~~~~~~~
 
-When performing asynchronous write operations (``write_async``,
-``write_all_async``, ...), the connection stream will be closed before the
-response body if a reference to either the :doc:`request` or response is not
-preserved until the operation ends.
+.. versionadded:: 0.3
 
-The simplest thing to overcome this limitation is to reference the
-:doc:`request` or response object in the asynchronous callback.
+The body may be converted, see :doc:`converters` for more details.
 
-::
+End
+---
 
-    new Server ("org.vsgi.App", (req, res) => {
-        res.status = Soup.Status.OK;
-        res.body.write_all_async.begin ("Hello world!".data,
-                                        Priority.DEFAULT,
-                                        null,
-                                        null, (body, result) => {
-            // the reference to the response has persisted
-            var written = res.body.write_async.end (result);
-        });
-        return true;
-    });
-
-Closing the response
---------------------
-
-The response body is automatically closed following a RAII pattern whenever the
-``Connection`` object is freed. This object is held by both the :doc:`request`
-and response.
-
-You can still close the body explicitly as it can provide multiple advantages:
-
--  avoid further and undesired read or write operation
--  closing early let the application process outside the behalf of the user
-   agent
+.. versionadded:: 0.3
 
 To properly close the response, writing headers if missing, ``end`` is
 provided:
@@ -177,18 +203,5 @@ provided:
         // perform blocking operation here...
     });
 
-If have to produce a message before closing, use ``extend`` utilities.
-
-::
-
-    new Server ("org.vsgi.App", (req, res) => {
-        res.status = Soup.Status.OK;
-
-        // write the message and close the body
-        res.expand_utf8 ("You should receive an email shortly...");
-
-        // perform blocking operation here...
-
-        return true;
-    });
+To produce a message before closing, favour ``extend`` utilities.
 

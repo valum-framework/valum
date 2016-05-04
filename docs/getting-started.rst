@@ -100,6 +100,28 @@ You should now be able to build by issuing the following commands:
     ./waf configure
     ./waf build
 
+Building with Meson
+-------------------
+
+`Meson`_ is highly-recommended for its simplicity and expressiveness. It's not
+as flexible as waf, but it will handle most projects very well.
+
+.. _Meson: http://mesonbuild.com/
+
+.. code-block:: python
+
+    project('example', 'c', 'vala')
+
+    valum = dependency('valum')
+    vsgi_http = dependency('vsgi-http')
+
+    executable('app', sources: ['src/app.vala'], dependencies: [valum, vsgi_http])
+
+.. code-block:: bash
+
+    meson . build
+    ninja -C build
+
 Running the example
 -------------------
 
