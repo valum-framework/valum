@@ -270,18 +270,21 @@ namespace Valum {
 		 * @param routes  sequence of routes to traverse
 		 * @param req     request
 		 * @param res     response
+		 * @param next    invoked when all the routes has been traversed without
+		 *                success
 		 * @param context routing context passed to match and fire
 		 * @return tells if something matched during the routing process
 		 */
 		private bool perform_routing (SequenceIter<Route> routes,
 		                              Request req,
 		                              Response res,
+		                              NextCallback next,
 		                              Context context) throws Informational,
-		                                                          Success,
-		                                                          Redirection,
-		                                                          ClientError,
-		                                                          ServerError,
-		                                                          Error {
+		                                                      Success,
+		                                                      Redirection,
+		                                                      ClientError,
+		                                                      ServerError,
+		                                                      Error {
 			for (SequenceIter<Route> node = routes; !node.is_end (); node = node.next ()) {
 				var req_method = Method.from_string (req.method);
 				var local_context = new Context.with_parent (context);
@@ -289,130 +292,14 @@ namespace Valum {
 					return node.@get ().fire (req, res, () => {
 						// keep routing if there are more routes to explore
 						if (node.next ().is_end ()) {
-							return false;
+							return next ();
 						} else {
-							return perform_routing (node.next (), req, res, local_context);
+							return perform_routing (node.next (), req, res, next, local_context);
 						}
 					}, local_context);
 				}
 			}
-			return false;
-		}
-
-		/**
-		 * Invoke the {@link NextCallback} in the routing context.
-		 *
-		 * This is particularly useful to invoke next in an async callback when
-		 * the routing context is lost.
-		 *
-		 * @since 0.2
-		 *
-		 * @param req   request for the context
-		 * @param res   response for the context
-		 * @param next  callback to be invoked in the routing context
-		 */
-		public bool invoke (Request req, Response res, NextCallback next) {
-			try {
-				return next ();
-			} catch (Error err) {
-				/*
-				 * If an error happen after 'write_head' is called, it's already
-				 * too late to perform any kind of status handling.
-				 */
-				if (res.head_written) {
-					critical ("%s", err.message);
-					return true;
-				}
-
-				/*
-				 * Turn non-status into '500 Internal Server Error'
-				 */
-				res.status = is_status (err) ? err.code : 500;
-
-				/*
-				 * The error message is used as a header if the HTTP/1.1
-				 * specification indicate that it MUST be provided.
-				 *
-				 * The content encoding is set to NONE if the HTTP/1.1
-				 * specification indicates that an entity MUST NOT be
-				 * provided.
-				 *
-				 * For practical purposes, the error message is used for the
-				 * 'Location' of redirection codes.
-				 */
-				switch (res.status) {
-					case global::Soup.Status.SWITCHING_PROTOCOLS:
-						res.headers.replace ("Upgrade", err.message);
-						res.headers.set_encoding (Soup.Encoding.NONE);
-						break;
-
-					case global::Soup.Status.CREATED:
-						res.headers.replace ("Location", err.message);
-						break;
-
-					// no content
-					case global::Soup.Status.NO_CONTENT:
-					case global::Soup.Status.RESET_CONTENT:
-						res.headers.set_encoding (Soup.Encoding.NONE);
-						break;
-
-					case global::Soup.Status.PARTIAL_CONTENT:
-						res.headers.replace ("Range", err.message);
-						break;
-
-					case global::Soup.Status.MOVED_PERMANENTLY:
-					case global::Soup.Status.FOUND:
-					case global::Soup.Status.SEE_OTHER:
-						res.headers.replace ("Location", err.message);
-						break;
-
-					case global::Soup.Status.NOT_MODIFIED:
-						res.headers.set_encoding (Soup.Encoding.NONE);
-						break;
-
-					case global::Soup.Status.USE_PROXY:
-					case global::Soup.Status.TEMPORARY_REDIRECT:
-						res.headers.replace ("Location", err.message);
-						break;
-
-					case global::Soup.Status.UNAUTHORIZED:
-						res.headers.replace ("WWW-Authenticate", err.message);
-						break;
-
-					case global::Soup.Status.METHOD_NOT_ALLOWED:
-						res.headers.append ("Allow", err.message);
-						break;
-
-					case 426: // Upgrade Required
-						res.headers.replace ("Upgrade", err.message);
-						break;
-
-					// basic handling
-					default:
-						var @params = new HashTable<string, string> ((HashFunc<string>) Soup.str_case_hash,
-						                                             (EqualFunc<string>) Soup.str_case_equal);
-						@params["charset"] = "utf-8";
-						res.headers.set_content_type ("text/plain", @params);
-						try {
-							if (is_status (err)) {
-								return res.expand_utf8 (err.message);
-							} else {
-								critical (err.message);
-								return res.expand_utf8 ("The server encountered an unexpected condition which prevented it from fulfilling the request.");
-							}
-						} catch (IOError io_err) {
-							warning (io_err.message);
-						}
-						break;
-				}
-
-				try {
-					return res.end ();
-				} catch (IOError io_err) {
-					warning (io_err.message);
-					return true;
-				}
-			}
+			return next ();
 		}
 
 		/**
@@ -425,76 +312,77 @@ namespace Valum {
 		 * @since 0.1
 		 */
 		public bool handle (Request req, Response res) {
-			// initial invocation
-			return this.invoke (req, res, () => {
-				var context = new Context ();
+			var context = new Context ();
 
-				// ensure at least one route has been declared with that method
-				if (this.perform_routing (this.routes.get_begin_iter (), req, res, context))
-					return true; // something matched
+			// ensure at least one route has been declared with that method
+			try {
+				return this.perform_routing (this.routes.get_begin_iter (), req, res, () => {
+					// find routes from other methods matching this request
+					var req_method = Method.from_string (req.method);
 
-				// find routes from other methods matching this request
-				var req_method = Method.from_string (req.method);
+					// prevent head w/o get
+					if (req_method in Method.GET)
+						req_method |= Method.GET;
 
-				// prevent head w/o get
-				if (req_method in Method.GET)
-					req_method |= Method.GET;
+					// prevent the meta
+					req_method |= Method.META;
 
-				// prevent the meta
-				req_method |= Method.META;
+					Method allowed = 0;
+					this.routes.@foreach ((route) => {
+						if (Method.PROVIDED in route.method && route.match (req, new Context ())) {
+							allowed |= route.method & ~req_method;
+						}
+					});
 
-				Method allowed = 0;
-				this.routes.@foreach ((route) => {
-					if (Method.PROVIDED in route.method && route.match (req, new Context ())) {
-						allowed |= route.method & ~req_method;
+					// other method(s) match this request
+					if (allowed > 0) {
+						string[] allowedv = {};
+						var method_class = (FlagsClass) typeof (Method).class_ref ();
+
+						// always provided methods
+						allowed |= Method.TRACE;
+
+						do {
+							unowned FlagsValue flags_value = method_class.get_first_value (allowed);
+							allowed  &= ~flags_value.@value;
+							allowedv += flags_value.value_nick == "only-get" ? "GET" : flags_value.value_nick.up ();
+						} while (allowed > 0);
+
+						if (req.method == Request.OPTIONS) {
+							res.status = Soup.Status.OK;
+							res.headers.append ("Allow", string.joinv (", ", allowedv));
+							return res.expand_utf8 (""); // result in 'Content-Length: 0' as specified
+						}
+
+						else if (req.method == Request.TRACE) {
+							var head = new StringBuilder ();
+
+							head.append_printf ("%s %s HTTP/%s\r\n", req.method,
+																	 req.uri.to_string (true),
+																	 req.http_version == Soup.HTTPVersion.@1_0 ? "1.0" : "1.1");
+
+							req.headers.@foreach ((name, header) => {
+								head.append_printf ("%s: %s\r\n", name, header);
+							});
+
+							head.append ("\r\n");
+
+							res.status = Soup.Status.OK;
+							res.headers.set_content_type ("message/http", null);
+							return res.expand_utf8 (head.str);
+						}
+
+						else {
+							throw new ClientError.METHOD_NOT_ALLOWED (string.joinv (", ", allowedv));
+						}
 					}
-				});
 
-				// other method(s) match this request
-				if (allowed > 0) {
-					string[] allowedv = {};
-					var method_class = (FlagsClass) typeof (Method).class_ref ();
-
-					// always provided methods
-					allowed |= Method.TRACE;
-
-					do {
-						unowned FlagsValue flags_value = method_class.get_first_value (allowed);
-						allowed  &= ~flags_value.@value;
-						allowedv += flags_value.value_nick == "only-get" ? "GET" : flags_value.value_nick.up ();
-					} while (allowed > 0);
-
-					if (req.method == Request.OPTIONS) {
-						res.status = Soup.Status.OK;
-						res.headers.append ("Allow", string.joinv (", ", allowedv));
-						return res.expand_utf8 (""); // result in 'Content-Length: 0' as specified
-					}
-
-					else if (req.method == Request.TRACE) {
-						var head = new StringBuilder ();
-
-						head.append_printf ("%s %s HTTP/%s\r\n", req.method,
-						                                         req.uri.to_string (true),
-						                                         req.http_version == Soup.HTTPVersion.@1_0 ? "1.0" : "1.1");
-
-						req.headers.@foreach ((name, header) => {
-							head.append_printf ("%s: %s\r\n", name, header);
-						});
-
-						head.append ("\r\n");
-
-						res.status = Soup.Status.OK;
-						res.headers.set_content_type ("message/http", null);
-						return res.expand_utf8 (head.str);
-					}
-
-					else {
-						throw new ClientError.METHOD_NOT_ALLOWED (string.joinv (", ", allowedv));
-					}
-				}
-
-				throw new ClientError.NOT_FOUND ("The request URI %s was not found.", req.uri.to_string (true));
-			});
+					throw new ClientError.NOT_FOUND ("The request URI '%s' was not found.", req.uri.to_string (true));
+				}, context);
+			} catch (Error err) {
+				critical (err.message);
+				return false;
+			}
 		}
 	}
 }

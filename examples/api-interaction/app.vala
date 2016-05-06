@@ -28,18 +28,18 @@ openweathermap.authenticate.connect ((msg, auth) => {
     auth.authenticate ("client_id", "secret_id");
 });
 
-app.get ("/", (req, res) => {
+app.get ("/", (req, res, next, ctx) => {
 	openweathermap.send_async.begin (new Soup.Message ("GET", "http://api.openweathermap.org/data/2.5/weather?q=Montreal&units=metric"),
 	                                 null,
 	                                 (obj, result) => {
-		app.invoke (req, res, () => {
-			var parser = new Json.Parser ();
+		var parser = new Json.Parser ();
 
+		try {
 			parser.load_from_stream (openweathermap.send_async.end (result));
 
 			var _main = parser.get_root ().get_object ().get_object_member ("main");
 
-			return res.expand_utf8 ("""
+			res.expand_utf8 ("""
 			<h1>Weather in Montreal</h1>
 			<dl>
 			  <dt>Humidity</dt><dd>%s</dd>
@@ -49,11 +49,14 @@ app.get ("/", (req, res) => {
 			  <dt>Min</dt><dd>%s°C</dd>
 			</dl>
 			""".printf (_main.get_string_member ("humidity"),
-			            _main.get_string_member ("pressure"),
-			            _main.get_string_member ("temp"),
-			            _main.get_string_member ("temp_max"),
+						_main.get_string_member ("pressure"),
+						_main.get_string_member ("temp"),
+						_main.get_string_member ("temp_max"),
 						_main.get_string_member ("temp_min")), null);
-		});
+		} catch (Error err) {
+			critical (err.message);
+			return;
+		}
 	});
 	return true;
 });

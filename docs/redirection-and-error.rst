@@ -11,8 +11,7 @@ In a ``HandlerCallback``, you may throw any of ``Informational``, ``Success``,
 rather than setting the status and returning from the function.
 
 It is possible to register a handler on the :doc:`router` to handle a specific
-status code. Otherwise, the router will simply set the response status code and
-headers specifically for the status.
+status code.
 
 ::
 
@@ -24,12 +23,25 @@ headers specifically for the status.
         }
     }));
 
+Default handling
+----------------
+
+.. versionchanged:: 0.3
+
+    Default handling is not assured by the :doc:`middlewares/basic` middleware.
+
+The :doc:`router` can be configured to handle raised status by setting the
+response status code and headers appropriately.
+
+::
+
+    app.use (basic ());
+
+    app.get ("/", () => {
+        throw new ClientError.NOT_FOUND ("The request URI '/' was not found.");
+    });
+
 To handle status more elegantly, see the :doc:`middlewares/status` middleware.
-
-.. warning::
-
-    The :doc:`router` assumes that the :doc:`vsgi/response` head has never been
-    written in order to perform its default handling.
 
 ::
 

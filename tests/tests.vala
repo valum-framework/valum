@@ -76,9 +76,6 @@ public int main (string[] args) {
 	Test.add_func ("/router/next/propagate_state", test_router_next_propagate_state);
 	Test.add_func ("/router/next/replace_propagated_state", test_router_next_replace_propagated_state);
 
-	Test.add_func ("/router/invoke", test_router_invoke);
-	Test.add_func ("/router/invoke/propagate_state", test_router_invoke_propagate_state);
-
 	Test.add_func ("/router/then", test_router_then);
 	Test.add_func ("/router/then/preserve_matching_context", test_router_then_preserve_matching_context);
 

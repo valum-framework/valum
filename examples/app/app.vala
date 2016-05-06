@@ -33,6 +33,7 @@ public async void respond_async (VSGI.Request req, VSGI.Response res) throws Err
 
 var app = new Router ();
 
+app.use (basic ());
 app.use (decode ());
 
 app.use ((req, res, next) => {
@@ -304,10 +305,11 @@ app.get ("/static/<path:path>", (req, res, next, context) => {
 			                         OutputStreamSpliceFlags.CLOSE_SOURCE | OutputStreamSpliceFlags.CLOSE_TARGET,
 			                         Priority.DEFAULT,
 			                         null, (obj, result) => {
-			app.invoke (req, res, () => {
+			 try {
 				res.body.splice_async.end (result);
-				return true;
-			});
+			 } catch (Error err){
+				critical (err.message);
+			 }
 		});
 
 		return true;

@@ -7,6 +7,7 @@ from authentication to the delivery of a static resource.
 .. toctree::
 
     basepath
+    basic
     decode
     server-sent-events
     status

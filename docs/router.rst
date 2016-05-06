@@ -379,6 +379,11 @@ Error handling
     Error and status codes are now handled with a ``catch`` block or using the
     :doc:`middlewares/status` middleware.
 
+.. versionchanged:: 0.3
+
+    The default handling is not ensured by the :doc:`middlewares/basic`
+    middleware.
+
 The router will capture any thrown `GLib.Error`_ and produce an internal error
 accordingly.
 
@@ -391,7 +396,8 @@ Similarly to status codes, errors are propagated in the ``HandlerCallback`` and
         try {
             return next ();
         } catch (IOError err) {
-            throw new ServerError.INTERNAL_SERVER_ERROR (err.message);
+            res.status = 500;
+            return res.expand_utf8 (err.message);
         }
     });
 
@@ -403,21 +409,6 @@ Similarly to status codes, errors are propagated in the ``HandlerCallback`` and
 
 Thrown status code can also be caught this way, but it's much more convenient
 to use the :doc:`middlewares/status` middleware.
-
-If the routing context is lost, the operation can still be performed within
-``Router.invoke``. However, no status handling but the router's default one
-will be performed.
-
-::
-
-    app.get ("/", (req, res) => {
-        res.expand_utf8_async ("Hello world!", null, () => {
-            app.invoke (req, res, () => {
-                throw new IOError.FAILED ("I/O failed undesirably.")
-            });
-        });
-        return true;
-    });
 
 Sequence
 --------
@@ -531,43 +522,3 @@ basepath. In that case, we can strip the leading ``/admin`` in router's rules.
     // captures '/admin/users' and '/admin/user/<int:id>'
     app.use (basepath ("/admin", new AdminRouter ().handle));
 
-Invoke
-------
-
-.. versionadded:: 0.2
-
-.. note::
-
-    Invoke is a temporary hack until we get support for asychronous delegates
-    (see `bug #604827`_). At this point, it will not be of any use to execute in
-    the router's context.
-
-.. _bug #604827: https://bugzilla.gnome.org/show_bug.cgi?id=604827
-
-It is possible to invoke a ``NextCallback`` in the routing context when the
-latter is lost. This happens whenever you have to execute ``next`` in an async
-callback.
-
-The function provides an invocation context that handles thrown status code
-with custom and default status code handlers. It constitute an entry point for
-``handle`` where the next callback performs the actual routing.
-
-::
-
-    app.get ("/", (req, res, next) => {
-        res.expand_utf8_async.begin ("Hello world!", Priority.DEFAULT, null, () => {
-            app.invoke (req, res, next);
-        });
-        return true;
-    });
-
-    app.use ((req, res) => {
-        throw new ClientError.NOT_FOUND ("the requested resource was not found");
-    });
-
-Similarly to ``handle``, this function can be used to perform something similar
-to subrouting by executing a ``NextCallback`` in the context of another router.
-
-The following example handles a situation where a client with the
-``Accept: text/html`` header defined attempts to access an API that produces
-responses designed for non-human client.

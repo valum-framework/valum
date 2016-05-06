@@ -31,6 +31,8 @@ public int main (string[] args) {
 		var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 
+		router.use (basic ());
+
 		router.use (status (404, (req, res, next, ctx, err) => {
 			assert ("I'm a teapot!" == err.message);
 			try {

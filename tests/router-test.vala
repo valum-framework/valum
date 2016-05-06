@@ -324,6 +324,8 @@ public void test_router_rule_wildcard_matches_empty_path () {
 public void test_router_rule_path () {
 	var router  = new Router ();
 
+	router.use (basic ());
+
 	router.get ("<path:path>", (req, res, next, context) => {
 		assert_not_reached ();
 	});
@@ -443,6 +445,8 @@ public void test_router_scope_regex () {
 public static void test_router_informational_switching_protocols () {
 	var router = new Router ();
 
+	router.use (basic ());
+
 	router.use ((req, res) => {
 		throw new Informational.SWITCHING_PROTOCOLS ("HTTP/1.1");
 	});
@@ -461,6 +465,8 @@ public static void test_router_informational_switching_protocols () {
  */
 public static void test_router_success_created () {
 	var router = new Router ();
+
+	router.use (basic ());
 
 	router.put ("/document", (req, res) => {
 		throw new Success.CREATED ("/document/5");
@@ -481,6 +487,8 @@ public static void test_router_success_created () {
 public static void test_router_success_partial_content () {
 	var router = new Router ();
 
+	router.use (basic ());
+
 	router.put ("/document", (req, res) => {
 		throw new Success.PARTIAL_CONTENT ("bytes 21010-47021/47022");
 	});
@@ -500,6 +508,8 @@ public static void test_router_success_partial_content () {
 public static void test_router_redirection () {
 	var router = new Router ();
 
+	router.use (basic ());
+
 	router.get ("/", (req, res) => {
 		throw new Redirection.MOVED_TEMPORARILY ("http://example.com");
 	});
@@ -518,6 +528,8 @@ public static void test_router_redirection () {
  */
 public static void test_router_client_error_method_not_allowed () {
 	var router = new Router ();
+
+	router.use (basic ());
 
 	router.post ("/", (req, res) => {
 		return true;
@@ -542,6 +554,8 @@ public static void test_router_client_error_method_not_allowed () {
 public static void test_router_client_error_upgrade_required () {
 	var router = new Router ();
 
+	router.use (basic ());
+
 	router.use ((req, res) => {
 		throw new ClientError.UPGRADE_REQUIRED ("HTTP/1.1");
 	});
@@ -560,6 +574,8 @@ public static void test_router_client_error_upgrade_required () {
  */
 public static void test_router_server_error () {
 	var router = new Router ();
+
+	router.use (basic ());
 
 	router.get ("/", (req, res) => {
 		throw new ServerError.INTERNAL_SERVER_ERROR ("Teapot's burning!");
@@ -606,6 +622,8 @@ public static void test_router_custom_method () {
 public static void test_router_method_not_allowed () {
 	var router = new Router ();
 
+	router.use (basic ());
+
 	router.get ("/", (req, res) => {
 		return true;
 	});
@@ -632,6 +650,8 @@ public static void test_router_method_not_allowed_excludes_request_method () {
 	var get_matched  = 0;
 	var post_matched = 0;
 
+	router.use (basic ());
+
 	// matching, but not the same HTTP method
 	router.matcher (Method.GET, () => { get_matched++; return true; }, (req, res) => {
 		return true;
@@ -654,6 +674,8 @@ public static void test_router_method_not_allowed_excludes_request_method () {
 
 public static void test_router_method_not_allowed_success_on_options () {
 	var router = new Router ();
+
+	router.use (basic ());
 
 	router.get ("/", (req, res) => {
 		return true;
@@ -679,6 +701,8 @@ public static void test_router_method_not_allowed_success_on_options () {
  */
 public static void test_router_not_found () {
 	var router = new Router ();
+
+	router.use (basic ());
 
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
@@ -742,6 +766,8 @@ public static void test_router_next () {
 public static void test_router_next_not_found () {
 	var router = new Router ();
 
+	router.use (basic ());
+
 	router.get ("/", (req, res, next) => {
 		return next ();
 	});
@@ -768,7 +794,12 @@ public static void test_router_next_propagate_error () {
 	var router = new Router ();
 
 	router.get ("/", (req, res, next) => {
-		return next ();
+		try {
+			return next ();
+		} catch (ClientError.UNAUTHORIZED err) {
+			res.status = err.code;
+			return res.end ();
+		}
 	});
 
 	router.get ("/", (req, res, next) => {
@@ -849,53 +880,6 @@ public static void test_router_next_replace_propagated_state () {
 	router.handle (request, response);
 
 	assert (413 == response.status);
-}
-
-/**
- * @since 0.2
- */
-public static void test_router_invoke () {
-	var router = new Router ();
-
-	router.get ("/", (req, res, next) => {
-		return router.invoke (req, res, next);
-	});
-
-	router.get ("/", (req, res) => {
-		throw new ClientError.IM_A_TEAPOT ("this is insane!");
-	});
-
-	var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
-	var response = new Response (request);
-
-	router.handle (request, response);
-
-	assert (418 == response.status);
-}
-
-/**
- * @since 0.2
- */
-public static void test_router_invoke_propagate_state () {
-	var router  = new Router ();
-	var message = "test";
-
-	router.get ("/", (req, res, next, context) => {
-		context["message"] = message;
-		return router.invoke (req, res, next);
-	});
-
-	router.get ("/", (req, res, next, context) => {
-		assert (message == context["message"].get_string ());
-		throw new ClientError.IM_A_TEAPOT ("this is insane!");
-	});
-
-	var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
-	var response = new Response (request);
-
-	router.handle (request, response);
-
-	assert (418 == response.status);
 }
 
 /**
