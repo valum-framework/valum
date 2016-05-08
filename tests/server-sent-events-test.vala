@@ -34,7 +34,11 @@ public void test_server_sent_events_send () {
 	var req = new Request (connection, "GET", new Soup.URI ("http://127.0.0.1:3003/"));
 	var res = new Response (req);
 
-	router.handle (req, res);
+	try {
+		router.handle (req, res);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	try {
 		assert (res.body.close ());
@@ -66,7 +70,11 @@ public void test_server_sent_events_send_multiline () {
 	var req = new Request (connection, "GET", new Soup.URI ("http://127.0.0.1:3003/"));
 	var res = new Response (req);
 
-	router.handle (req, res);
+	try {
+		router.handle (req, res);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	try {
 		assert (res.body.close ());
@@ -98,7 +106,11 @@ public void test_server_sent_events_skip_on_head () {
 	var req = new Request (connection, "HEAD", new Soup.URI ("http://127.0.0.1:3003/"));
 	var res = new Response (req);
 
-	router.handle (req, res);
+	try {
+		router.handle (req, res);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	HashTable<string, string> @params;
 	assert ("text/event-stream" == res.headers.get_content_type (out @params));

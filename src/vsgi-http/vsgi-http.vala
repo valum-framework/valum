@@ -249,7 +249,11 @@ namespace VSGI.HTTP {
 				var req = new Request (connection, msg, query);
 				var res = new Response (req, msg);
 
-				dispatch (req, res);
+				try {
+					dispatch (req, res);
+				} catch (Error err) {
+					critical ("%s", err.message);
+				}
 			});
 
 #if SOUP_2_48

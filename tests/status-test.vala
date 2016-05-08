@@ -21,7 +21,11 @@ public int main (string[] args) {
 		var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
-		router.handle (request, response);
+		try {
+			router.handle (request, response);
+		} catch (Error err) {
+			assert_not_reached ();
+		}
 
 		assert (418 == response.status);
 	});
@@ -47,7 +51,11 @@ public int main (string[] args) {
 			throw new ClientError.NOT_FOUND ("I'm a teapot!");
 		});
 
-		router.handle (req, res);
+		try {
+			router.handle (req, res);
+		} catch (Error err) {
+			assert_not_reached ();
+		}
 
 		assert (404 == res.status);
 	});
@@ -70,7 +78,11 @@ public int main (string[] args) {
 
 		router.get ("/", () => { throw new ClientError.NOT_FOUND ("I'm a teapot!"); });
 
-		router.handle (req, res);
+		try {
+			router.handle (req, res);
+		} catch (Error err) {
+			assert_not_reached ();
+		}
 
 		assert (418 == res.status);
 	});
@@ -99,7 +111,11 @@ public int main (string[] args) {
 		var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 
-		assert (router.handle (req, res));
+		try {
+			assert (router.handle (req, res));
+		} catch (Error err) {
+			assert_not_reached ();
+		}
 
 		assert (418 == res.status);
 	});
@@ -123,7 +139,11 @@ public int main (string[] args) {
 		var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 
-		assert (router.handle (req, res));
+		try {
+			assert (router.handle (req, res));
+		} catch (Error err) {
+			assert_not_reached ();
+		}
 
 		assert (418 == res.status);
 	});

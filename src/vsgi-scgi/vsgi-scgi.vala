@@ -104,7 +104,7 @@ namespace VSGI.SCGI {
 				try {
 					process_connection.end (result);
 				} catch (Error err) {
-					warning ("%s", err.message);
+					critical ("%s", err.message);
 				}
 			});
 			return false;

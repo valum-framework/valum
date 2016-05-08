@@ -311,78 +311,70 @@ namespace Valum {
 		 *
 		 * @since 0.1
 		 */
-		public bool handle (Request req, Response res) {
-			var context = new Context ();
+		public bool handle (Request req, Response res) throws Error {
+			return this.perform_routing (this.routes.get_begin_iter (), req, res, () => {
+				// find routes from other methods matching this request
+				var req_method = Method.from_string (req.method);
 
-			// ensure at least one route has been declared with that method
-			try {
-				return this.perform_routing (this.routes.get_begin_iter (), req, res, () => {
-					// find routes from other methods matching this request
-					var req_method = Method.from_string (req.method);
+				// prevent head w/o get
+				if (req_method in Method.GET)
+					req_method |= Method.GET;
 
-					// prevent head w/o get
-					if (req_method in Method.GET)
-						req_method |= Method.GET;
+				// prevent the meta
+				req_method |= Method.META;
 
-					// prevent the meta
-					req_method |= Method.META;
+				Method allowed = 0;
+				this.routes.@foreach ((route) => {
+					if (Method.PROVIDED in route.method && route.match (req, new Context ())) {
+						allowed |= route.method & ~req_method;
+					}
+				});
 
-					Method allowed = 0;
-					this.routes.@foreach ((route) => {
-						if (Method.PROVIDED in route.method && route.match (req, new Context ())) {
-							allowed |= route.method & ~req_method;
-						}
-					});
+				// other method(s) match this request
+				if (allowed > 0) {
+					string[] allowedv = {};
+					var method_class = (FlagsClass) typeof (Method).class_ref ();
 
-					// other method(s) match this request
-					if (allowed > 0) {
-						string[] allowedv = {};
-						var method_class = (FlagsClass) typeof (Method).class_ref ();
+					// always provided methods
+					allowed |= Method.TRACE;
 
-						// always provided methods
-						allowed |= Method.TRACE;
+					do {
+						unowned FlagsValue flags_value = method_class.get_first_value (allowed);
+						allowed  &= ~flags_value.@value;
+						allowedv += flags_value.value_nick == "only-get" ? "GET" : flags_value.value_nick.up ();
+					} while (allowed > 0);
 
-						do {
-							unowned FlagsValue flags_value = method_class.get_first_value (allowed);
-							allowed  &= ~flags_value.@value;
-							allowedv += flags_value.value_nick == "only-get" ? "GET" : flags_value.value_nick.up ();
-						} while (allowed > 0);
-
-						if (req.method == Request.OPTIONS) {
-							res.status = Soup.Status.OK;
-							res.headers.append ("Allow", string.joinv (", ", allowedv));
-							return res.expand_utf8 (""); // result in 'Content-Length: 0' as specified
-						}
-
-						else if (req.method == Request.TRACE) {
-							var head = new StringBuilder ();
-
-							head.append_printf ("%s %s HTTP/%s\r\n", req.method,
-																	 req.uri.to_string (true),
-																	 req.http_version == Soup.HTTPVersion.@1_0 ? "1.0" : "1.1");
-
-							req.headers.@foreach ((name, header) => {
-								head.append_printf ("%s: %s\r\n", name, header);
-							});
-
-							head.append ("\r\n");
-
-							res.status = Soup.Status.OK;
-							res.headers.set_content_type ("message/http", null);
-							return res.expand_utf8 (head.str);
-						}
-
-						else {
-							throw new ClientError.METHOD_NOT_ALLOWED (string.joinv (", ", allowedv));
-						}
+					if (req.method == Request.OPTIONS) {
+						res.status = Soup.Status.OK;
+						res.headers.append ("Allow", string.joinv (", ", allowedv));
+						return res.expand_utf8 (""); // result in 'Content-Length: 0' as specified
 					}
 
-					throw new ClientError.NOT_FOUND ("The request URI '%s' was not found.", req.uri.to_string (true));
-				}, context);
-			} catch (Error err) {
-				critical (err.message);
-				return false;
-			}
+					else if (req.method == Request.TRACE) {
+						var head = new StringBuilder ();
+
+						head.append_printf ("%s %s HTTP/%s\r\n", req.method,
+																 req.uri.to_string (true),
+																 req.http_version == Soup.HTTPVersion.@1_0 ? "1.0" : "1.1");
+
+						req.headers.@foreach ((name, header) => {
+							head.append_printf ("%s: %s\r\n", name, header);
+						});
+
+						head.append ("\r\n");
+
+						res.status = Soup.Status.OK;
+						res.headers.set_content_type ("message/http", null);
+						return res.expand_utf8 (head.str);
+					}
+
+					else {
+						throw new ClientError.METHOD_NOT_ALLOWED (string.joinv (", ", allowedv));
+					}
+				}
+
+				throw new ClientError.NOT_FOUND ("The request URI '%s' was not found.", req.uri.to_string (true));
+			}, new Context ());
 		}
 	}
 }

@@ -40,17 +40,22 @@ request has been or will be processed.
 If an application indicate that the request has not been processed, it's up to
 the server implementation to decide what will happen.
 
-Accessing the :doc:`response` ``body`` for the first time will write the status
-line and headers synchronously in the connection stream before returning an
-`GLib.OutputStream`_.
+Error handling
+~~~~~~~~~~~~~~
 
-.. _GLib.OutputStream: http://valadoc.org/#!api=gio-2.0/GLib.OutputStream
+.. versionadded:: 0.3
 
-In case the body is not accessed, the head is written synchronously on disposal
-of the :doc:`response` object.
+At any moment, an error can be raised and handled by the server implementation
+which will in turn teardown the connection appropriately.
+
+::
+
+    new Server ("org.vsgi.App", (req, res) => {
+        throw new IOError.FAILED ("some I/O failed");
+    });
 
 Asynchronous processing
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 The asynchronous processing model follows the `RAII pattern`_ and wraps all
 resources in a connection that inherits from `GLib.IOStream`_. It is therefore

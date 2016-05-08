@@ -384,8 +384,10 @@ Error handling
     The default handling is not ensured by the :doc:`middlewares/basic`
     middleware.
 
-The router will capture any thrown `GLib.Error`_ and produce an internal error
-accordingly.
+.. versionchanged:: 0.3
+
+    Thrown errors are forwarded to VSGI, which process them essentially the
+    same way. See :doc:`vsgi/index` for more details.
 
 Similarly to status codes, errors are propagated in the ``HandlerCallback`` and
 ``NextCallback`` delegate signatures and can be handled in a ``catch`` block.

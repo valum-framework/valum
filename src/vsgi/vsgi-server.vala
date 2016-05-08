@@ -164,7 +164,7 @@ namespace VSGI {
 		 *
 		 * @return true if the request and response were dispatched
 		 */
-		protected bool dispatch (Request req, Response res) {
+		protected bool dispatch (Request req, Response res) throws Error {
 			return _application (req, res);
 		}
 	}

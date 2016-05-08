@@ -262,7 +262,11 @@ namespace VSGI.FastCGI {
 				var req = new Request (connection, connection.request.environment);
 				var res = new Response (req);
 
-				dispatch (req, res);
+				try {
+					dispatch (req, res);
+				} catch (Error err) {
+					critical (err.message);
+				}
 			} while (true);
 		}
 

@@ -42,7 +42,11 @@ public static void test_router_handle () {
 	var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	HashTable<string, string>? @params;
 	assert (418 == response.status);
@@ -67,7 +71,11 @@ public void test_router_asterisk () {
 	var request  = new Request.with_method ("OPTIONS", uri);
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (418 == response.status);
 }
@@ -86,7 +94,11 @@ public static void test_router_get () {
 	var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (418 == response.status);
 }
@@ -105,7 +117,11 @@ public void test_router_get_default_head () {
 	var request  = new Request.with_method ("HEAD", new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (418 == response.status);
 }
@@ -124,7 +140,11 @@ public void test_router_only_get () {
 	var request  = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (418 == response.status);
 }
@@ -143,7 +163,11 @@ public static void test_router_post () {
 	var request  = new Request.with_method ("POST", new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (418 == response.status);
 }
@@ -162,7 +186,11 @@ public static void test_router_put () {
 	var request  = new Request.with_method (VSGI.Request.PUT, new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (418 == response.status);
 }
@@ -181,7 +209,11 @@ public static void test_router_delete () {
 	var request  = new Request.with_method (VSGI.Request.DELETE, new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (418 == response.status);
 }
@@ -200,7 +232,11 @@ public static void test_router_head () {
 	var request  = new Request.with_method (VSGI.Request.HEAD, new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (418 == response.status);
 }
@@ -219,7 +255,11 @@ public static void test_router_options () {
 	var request  = new Request.with_method (VSGI.Request.OPTIONS, new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (418 == response.status);
 }
@@ -238,7 +278,11 @@ public static void test_router_trace () {
 	var request  = new Request.with_method (VSGI.Request.TRACE, new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (418 == response.status);
 }
@@ -257,7 +301,11 @@ public static void test_router_connect () {
 	var request  = new Request.with_method (VSGI.Request.CONNECT, new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (418 == response.status);
 }
@@ -275,7 +323,11 @@ public static void test_router_patch () {
 	var request  = new Request.with_method (VSGI.Request.PATCH, new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (418 == response.status);
 }
@@ -294,7 +346,11 @@ public void test_router_rule_wildcard () {
 	var req = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var res = new Response (req);
 
-	assert (router.handle (req, res));
+	try {
+		assert (router.handle (req, res));
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (418 == res.status);
 }
@@ -313,7 +369,11 @@ public void test_router_rule_wildcard_matches_empty_path () {
 	var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var res = new Response (req);
 
-	assert (router.handle (req, res));
+	try {
+		assert (router.handle (req, res));
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (418 == res.status);
 }
@@ -336,7 +396,11 @@ public void test_router_rule_path () {
 		var req = new Request.with_uri (new Soup.URI ("http://localhost/%s".printf (bad_path)));
 		var res = new Response (req);
 
-		assert (router.handle (req, res));
+		try {
+			assert (router.handle (req, res));
+		} catch (Error err) {
+			assert_not_reached ();
+		}
 	}
 }
 
@@ -354,7 +418,11 @@ public void test_router_rule_any () {
 	var req = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var res = new Response (req);
 
-	assert (router.handle (req, res));
+	try {
+		assert (router.handle (req, res));
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 }
 
 /**
@@ -374,7 +442,11 @@ public static void test_router_regex () {
 	var request  = new Request.with_uri (new Soup.URI ("http://localhost/home"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (418 == response.status);
 }
@@ -393,7 +465,11 @@ public static void test_router_matcher () {
 	var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (418 == response.status);
 }
@@ -414,7 +490,11 @@ public static void test_router_scope () {
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/test/test"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (response.status == 418);
 }
@@ -454,7 +534,11 @@ public static void test_router_informational_switching_protocols () {
 	var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (response.status == Soup.Status.SWITCHING_PROTOCOLS);
 	assert ("HTTP/1.1" == response.headers.get_one ("Upgrade"));
@@ -475,7 +559,11 @@ public static void test_router_success_created () {
 	var request  = new Request.with_method (VSGI.Request.PUT, new Soup.URI ("http://localhost/document"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (Soup.Status.CREATED == response.status);
 	assert ("/document/5" == response.headers.get_one ("Location"));
@@ -496,7 +584,11 @@ public static void test_router_success_partial_content () {
 	var request  = new Request.with_method (VSGI.Request.PUT, new Soup.URI ("http://localhost/document"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (Soup.Status.PARTIAL_CONTENT == response.status);
 	assert ("bytes 21010-47021/47022" == response.headers.get_one ("Range"));
@@ -517,7 +609,11 @@ public static void test_router_redirection () {
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (response.status == Soup.Status.MOVED_TEMPORARILY);
 	assert ("http://example.com" == response.headers.get_one ("Location"));
@@ -542,7 +638,11 @@ public static void test_router_client_error_method_not_allowed () {
 	var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (Soup.Status.METHOD_NOT_ALLOWED == response.status);
 	assert ("POST" == response.headers.get_one ("Allow"));
@@ -563,7 +663,11 @@ public static void test_router_client_error_upgrade_required () {
 	var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (426 == response.status);
 	assert ("HTTP/1.1" == response.headers.get_one ("Upgrade"));
@@ -584,7 +688,11 @@ public static void test_router_server_error () {
 	var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	var body = (MemoryOutputStream) request.connection.output_stream;
 	HashTable<string, string> @params;
@@ -611,7 +719,11 @@ public static void test_router_custom_method () {
 	var request = new Request.with_method ("TEST", new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (response.status == 418);
 }
@@ -635,7 +747,11 @@ public static void test_router_method_not_allowed () {
 	var request = new Request.with_method ("POST", new Soup.URI ("http://localhost/"));
 	var response = new Response.with_status (request, Soup.Status.METHOD_NOT_ALLOWED);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (response.status == 405);
 	assert ("GET, HEAD, PUT, TRACE" == response.headers.get_one ("Allow"));
@@ -665,7 +781,11 @@ public static void test_router_method_not_allowed_excludes_request_method () {
 	var request = new Request.with_method ("POST", new Soup.URI ("http://localhost/"));
 	var response = new Response.with_status (request, Soup.Status.METHOD_NOT_ALLOWED);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (response.status == 405);
 	assert ("GET, HEAD, TRACE" == response.headers.get_one ("Allow"));
@@ -688,7 +808,11 @@ public static void test_router_method_not_allowed_success_on_options () {
 	var request = new Request.with_method ("OPTIONS", new Soup.URI ("http://localhost/"));
 	var response = new Response.with_status (request, Soup.Status.METHOD_NOT_ALLOWED);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (response.status == 200);
 	assert ("GET, HEAD, PUT, TRACE" == response.headers.get_one ("Allow"));
@@ -707,7 +831,11 @@ public static void test_router_not_found () {
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (Soup.Status.NOT_FOUND == response.status);
 }
@@ -730,7 +858,11 @@ public static void test_router_subrouting () {
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response.with_status (request, Soup.Status.NOT_FOUND);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (418 == response.status);
 }
@@ -758,7 +890,11 @@ public static void test_router_next () {
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response.with_status (request, Soup.Status.NOT_FOUND);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (418 == response.status);
 }
@@ -782,7 +918,11 @@ public static void test_router_next_not_found () {
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (404 == response.status);
 }
@@ -813,7 +953,11 @@ public static void test_router_next_propagate_error () {
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (401 == response.status);
 }
@@ -843,7 +987,11 @@ public static void test_router_next_propagate_state () {
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (413 == response.status);
 }
@@ -877,7 +1025,11 @@ public static void test_router_next_replace_propagated_state () {
 	var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
 
-	router.handle (request, response);
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (413 == response.status);
 }
@@ -903,7 +1055,11 @@ public void test_router_then () {
 	var req = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var res = new Response (req);
 
-	assert (router.handle (req, res));
+	try {
+		assert (router.handle (req, res));
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (setted);
 	assert (then_setted);
@@ -930,7 +1086,11 @@ public void test_router_then_preserve_matching_context () {
 	var req = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var res = new Response (req);
 
-	assert (router.handle (req, res));
+	try {
+		assert (router.handle (req, res));
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (reached);
 }
@@ -958,7 +1118,11 @@ public void test_router_error () {
 	var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
 	var res = new Response (req);
 
-	assert (router.handle (req, res));
+	try {
+		assert (router.handle (req, res));
+	} catch (Error err) {
+		assert_not_reached ();
+	}
 
 	assert (418 == res.status);
 }
