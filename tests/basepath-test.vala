@@ -21,6 +21,23 @@ public int main (string[] args) {
 		}
 	});
 
+	Test.add_func ("/basepath/next", () => {
+		var req = new Request.with_uri (new Soup.URI ("http://localhost/other_base/"));
+		var res = new Response (req);
+		var ctx = new Context ();
+
+		try {
+			var reached = basepath ("/base", (req) => {
+				assert_not_reached ();
+			}) (req, res, () => {
+				return true;
+			}, ctx);
+			assert (reached);
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+	});
+
 	Test.add_func ("/basepath/empty_path", () => {
 		var req = new Request.with_uri (new Soup.URI ("http://localhost/base"));
 		var res = new Response (req);
@@ -169,6 +186,26 @@ public int main (string[] args) {
 			}, ctx);
 		} catch (Success.CREATED s) {
 			assert ("http://localhost/5" == s.message);
+			assert ("/base" == req.uri.get_path ());
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+	});
+
+	Test.add_func ("/basepath/redirection", () => {
+		var req = new Request.with_uri (new Soup.URI ("http://localhost/base"));
+		var res = new Response (req);
+		var ctx = new Context ();
+
+		try {
+			basepath ("/base", (req, res, next) => {
+				assert ("/" == req.uri.get_path ());
+				throw new Redirection.FOUND ("/5");
+			}) (req, res, () => {
+				assert_not_reached ();
+			}, ctx);
+		} catch (Redirection.FOUND r) {
+			assert ("/base/5" == r.message);
 			assert ("/base" == req.uri.get_path ());
 		} catch (Error err) {
 			assert_not_reached ();

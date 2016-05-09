@@ -52,12 +52,16 @@ namespace Valum {
 							res.headers.replace ("Location", path + location);
 						return next ();
 					}, context);
-				} catch (Success.CREATED s) {
-					s.message = s.message[0] == '/' ? (path + s.message) : s.message;
-					throw s;
-				} catch (Redirection r) {
-					r.message = r.message[0] == '/' ? (path + r.message) : r.message;
-					throw r;
+				} catch (Error err) {
+					if (err is Success.CREATED               ||
+					    err is Redirection.MOVED_PERMANENTLY ||
+					    err is Redirection.FOUND             ||
+					    err is Redirection.SEE_OTHER         ||
+					    err is Redirection.USE_PROXY         ||
+					    err is Redirection.TEMPORARY_REDIRECT) {
+						err.message = err.message[0] == '/' ? (path + err.message) : err.message;
+					}
+					throw err;
 				} finally {
 					req.uri.set_path (original_path);
 					var location = res.headers.get_one ("Location");
