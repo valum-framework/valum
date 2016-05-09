@@ -20,6 +20,9 @@ using Soup;
 
 [ModuleInit]
 public Type server_init (TypeModule type_module) {
+	var status = global::FastCGI.init ();
+	if (status != 0)
+		error ("code %u: failed to initialize FCGX library", status);
 	return typeof (VSGI.FastCGI.Server);
 }
 
@@ -191,12 +194,6 @@ namespace VSGI.FastCGI {
 			};
 			this.add_main_option_entries (options);
 #endif
-
-			this.startup.connect (() => {
-				var status = global::FastCGI.init ();
-				if (status != 0)
-					error ("code %u: failed to initialize FCGX library", status);
-			});
 
 			this.shutdown.connect (global::FastCGI.shutdown_pending);
 		}
