@@ -148,5 +148,22 @@ public int main (string[] args) {
 		assert (418 == res.status);
 	});
 
+	Test.add_func ("/status/forward_unhandled_error_upstream", () => {
+		var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var res = new Response (req);
+
+		try {
+			status (404, () => {
+				assert_not_reached ();
+			}) (req, res, () => {
+				throw new Redirection.FOUND ("");
+			}, new Context ());
+		} catch (Redirection.FOUND r) {
+			// ...
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+	});
+
 	return Test.run ();
 }
