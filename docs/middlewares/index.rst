@@ -9,6 +9,7 @@ from authentication to the delivery of a static resource.
     basepath
     basic
     decode
+    sequence
     server-sent-events
     status
     subdomain

@@ -366,6 +366,22 @@ route.
         // this is invoked!
     });
 
+Sequence
+~~~~~~~~
+
+.. versionadded:: 0.3
+
+The :doc:`middlewares/sequence` middleware should be used to chain handling
+callbacks.
+
+::
+
+    app.get ("/", sequence ((req, res, next) => {
+        return next ();
+    }, (req, res) => {
+        return res.expand_utf8 ("Hello world!");
+    }));
+
 Error handling
 --------------
 
@@ -411,27 +427,6 @@ Similarly to status codes, errors are propagated in the ``HandlerCallback`` and
 
 Thrown status code can also be caught this way, but it's much more convenient
 to use the :doc:`middlewares/status` middleware.
-
-Sequence
---------
-
-.. versionadded:: 0.2
-
-``Route`` has a ``then`` function that can be used to produce to sequence
-handlers for a common matcher. It can be used to create a pipeline of
-processing for a resource using middlewares.
-
-::
-
-    app.get ("/admin", (req, res, next) => {
-        // authenticate user...
-        return next ();
-    }).then ((req, res, next) => {
-        // produce sensitive data...
-        return next ();
-    }).then ((req, res) => {
-        // produce the response
-    });
 
 Subrouting
 ----------

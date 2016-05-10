@@ -1043,14 +1043,14 @@ public void test_router_then () {
 	var setted      = false;
 	var then_setted = false;
 
-	router.get ("/<int:id>", (req, res, next) => {
+	router.get ("/<int:id>", sequence ((req, res, next) => {
 		setted = true;
 		return next ();
-	}).then ((req, res) => {
+	}, (req, res) => {
 		assert (setted);
 		then_setted = true;
 		return true;
-	});
+	}));
 
 	var req = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var res = new Response (req);
@@ -1073,15 +1073,15 @@ public void test_router_then_preserve_matching_context () {
 
 	var reached = false;
 
-	router.get ("/<int:id>", (req, res, next, context) => {
+	router.get ("/<int:id>", sequence ((req, res, next, context) => {
 		context["test"] = "test";
 		return next ();
-	}).then ((req, res, next, context) => {
+	}, (req, res, next, context) => {
 		reached = true;
 		assert ("test" == context["test"].get_string ());
 		assert ("5" == context["id"].get_string ());
 		return true;
-	});
+	}));
 
 	var req = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 	var res = new Response (req);

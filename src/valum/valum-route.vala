@@ -67,22 +67,5 @@ namespace Valum {
 		public void set_handler_callback (owned HandlerCallback fire) {
 			_fire = (owned) fire;
 		}
-
-		/**
-		 * Pushes the handler in the {@link Router} queue to produce a sequence
-		 * of callbacks that reuses the same matcher.
-		 *
-		 * @since 0.2
-		 */
-		public Route then (owned HandlerCallback handler) {
-			var old_fire = (owned) _fire;
-			_fire = (req, res, next, context) => {
-				return old_fire (req, res, () => {
-					// since the same matcher is shared, we preserve the context intact
-					return handler (req, res, next, context);
-				}, context);
-			};
-			return this;
-		}
 	}
 }

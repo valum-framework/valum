@@ -64,14 +64,14 @@ app.get ("/async", (req, res) => {
 	return true;
 });
 
-app.get ("/gzip", (req, res, next) => {
+app.get ("/gzip", sequence ((req, res, next) => {
 	res.headers.replace ("Content-Encoding", "gzip");
 	res.convert (new ZlibCompressor (ZlibCompressorFormat.GZIP));
 	return next ();
-}).then ((req, res) => {
+}, (req, res) => {
 	var template = new View.from_resources ("/templates/home.html");
 	return template.to_stream (res.body);
-});
+}));
 
 // replace 'Content-Type' for 'text/plain'
 app.use ((req, res, next) => {
@@ -254,6 +254,12 @@ app.get ("/next", (req, res) => {
 	return res.expand_utf8 ("Matched by the next route in the queue.", null);
 });
 
+app.get ("/sequence", sequence ((req, res, next) => {
+	return next ();
+}, (req, res) => {
+	return res.expand_utf8 ("Hello world!");
+}));
+
 app.get ("/state", (req, res, next, context) => {
 	context["state"] = "I have been passed!";
 	return next ();
@@ -330,15 +336,21 @@ app.get ("/server-sent-events", stream_events ((req, send) => {
 	});
 }));
 
-app.get ("/negociate", accept ("application/json", (req, res) => {
-	res.headers.set_content_type ("application/json", null);
-	return res.expand_utf8 ("{\"a\":\"b\"}", null);
-})).then (accept ("text/xml", (req, res) => {
-	res.headers.set_content_type ("text/xml", null);
-	return res.expand_utf8 ("<a>b</a>", null);
-})).then ((req, res) => {
-	res.status = global::Soup.Status.NOT_ACCEPTABLE;
-	return res.expand_utf8 ("Supply the 'Accept' header with either 'application/json' or 'text/xml'.", null);
-});
+app.get ("/negociate", sequence (
+	accept ("application/json", (req, res) => {
+		res.headers.set_content_type ("application/json", null);
+		return res.expand_utf8 ("{\"a\":\"b\"}", null);
+	}),
+	sequence (
+		accept ("text/xml", (req, res) => {
+			res.headers.set_content_type ("text/xml", null);
+			return res.expand_utf8 ("<a>b</a>", null);
+		}),
+		(req, res) => {
+			res.status = global::Soup.Status.NOT_ACCEPTABLE;
+			return res.expand_utf8 ("Supply the 'Accept' header with either 'application/json' or 'text/xml'.", null);
+		}
+	)
+));
 
 new Server ("org.valum.example.App", app.handle).run ({"app", "--all"});
