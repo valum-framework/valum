@@ -85,17 +85,17 @@ namespace Valum.ContentNegotiation {
 	 * @param match        compare the user agent string against an expectation
 	 */
 	public HandlerCallback negotiate (string                header_name,
-	                                  string[]              expectations,
+	                                  string                expectations,
 	                                  owned ForwardCallback forward = ContentNegotiation.forward,
 	                                  NegotiateFlags        flags   = NegotiateFlags.NONE,
 	                                  EqualFunc<string>     match   = (EqualFunc<string>) Soup.str_case_equal) {
-		var _expectations = expectations;
+		var _expectations = Soup.header_parse_quality_list (expectations, null);
 		return (req, res, next, stack) => {
 			var header = req.headers.get_list (header_name);
-			if (_expectations.length == 0)
+			if (_expectations.length () == 0)
 				throw new ClientError.NOT_ACCEPTABLE ("'%s' cannot be satisfied: nothing is expected", header_name);
 			if (header == null) {
-				forward (req, res, next, stack, _expectations[0]);
+				forward (req, res, next, stack, _expectations.data);
 				return;
 			}
 			foreach (var accepted in Soup.header_parse_quality_list (header, null)) {
@@ -110,8 +110,8 @@ namespace Valum.ContentNegotiation {
 				next (req, res);
 			} else {
 				throw new ClientError.NOT_ACCEPTABLE ("'%s' is not satisfiable by any of '%s'.",
-													  header_name,
-													  string.joinv (", ", _expectations));
+				                                      header_name,
+				                                      expectations);
 			}
 		};
 	}
@@ -124,7 +124,7 @@ namespace Valum.ContentNegotiation {
 	 *
 	 * @since 0.3
 	 */
-	public HandlerCallback accept (string[]              content_types,
+	public HandlerCallback accept (string                content_types,
 	                               owned ForwardCallback forward = ContentNegotiation.forward,
 	                               NegotiateFlags        flags   = NegotiateFlags.NONE) {
 		return negotiate ("Accept", content_types, (req, res, next, stack, content_type) => {
@@ -158,7 +158,7 @@ namespace Valum.ContentNegotiation {
 	 *
 	 * @since 0.3
 	 */
-	public HandlerCallback accept_charset (string[]              charsets,
+	public HandlerCallback accept_charset (string                charsets,
 	                                       owned ForwardCallback forward = ContentNegotiation.forward,
 	                                       NegotiateFlags        flags   = NegotiateFlags.NONE) {
 		return negotiate ("Accept-Charset", charsets, (req, res, next, stack, negotiated_charset) => {
@@ -193,7 +193,7 @@ namespace Valum.ContentNegotiation {
 	 *
 	 * @since 0.3
 	 */
-	public HandlerCallback accept_encoding (string[]              encodings,
+	public HandlerCallback accept_encoding (string                encodings,
 	                                        owned ForwardCallback forward = forward,
 	                                        NegotiateFlags        flags   = NegotiateFlags.NONE) {
 		return negotiate ("Accept-Encoding", encodings, (req, res, next, stack, encoding) => {
@@ -230,7 +230,7 @@ namespace Valum.ContentNegotiation {
 	 *
 	 * @since 0.3
 	 */
-	public HandlerCallback accept_language (string[]              languages,
+	public HandlerCallback accept_language (string                languages,
 	                                        owned ForwardCallback forward = ContentNegotiation.forward,
 	                                        NegotiateFlags        flags   = NegotiateFlags.NONE) {
 		return negotiate ("Accept-Language", languages, (req, res, next, stack, language) => {
@@ -253,7 +253,7 @@ namespace Valum.ContentNegotiation {
 	 *
 	 * @since 0.3
 	 */
-	public HandlerCallback accept_ranges (string[]              ranges,
+	public HandlerCallback accept_ranges (string                ranges,
 	                                      owned ForwardCallback forward = ContentNegotiation.forward,
 	                                      NegotiateFlags        flags   = NegotiateFlags.NONE) {
 		return negotiate ("Accept-Ranges", ranges, (owned) forward, flags);

@@ -13,13 +13,13 @@ public void test_content_negotiation_negotiate () {
 	req.headers.append ("Accept", "text/html; q=0.9, text/xml; q=0");
 
 	var reached = false;
-	negotiate ("Accept", {"text/html"}) (req, res, (req, res) => {
+	negotiate ("Accept", "text/html") (req, res, (req, res) => {
 		reached = true;
 	}, stack);
 	assert (reached);
 
 	try {
-		negotiate ("Accept", {"text/html"}, (req, res, next, stack, content_type) => {
+		negotiate ("Accept", "text/html", (req, res, next, stack, content_type) => {
 			assert ("text/html" == content_type);
 		}) (req, res, () => {
 			assert_not_reached ();
@@ -31,7 +31,7 @@ public void test_content_negotiation_negotiate () {
 	// explicitly refuse the content type with 'q=0'
 	reached = false;
 	try {
-		negotiate ("Accept", {"text/xml"}, () => {
+		negotiate ("Accept", "text/xml", () => {
 			assert_not_reached ();
 		}) (req, res, () => {
 			assert_not_reached ();
@@ -43,7 +43,7 @@ public void test_content_negotiation_negotiate () {
 
 	reached = false;
 	try {
-		negotiate ("Accept", {"application/octet-stream"}, () => {
+		negotiate ("Accept", "application/octet-stream", () => {
 			assert_not_reached ();
 		}) (req, res, () => {
 			assert_not_reached ();
@@ -56,7 +56,7 @@ public void test_content_negotiation_negotiate () {
 	// no expectations always refuse
 	reached = false;
 	try {
-		negotiate ("Accept", {}, () => {
+		negotiate ("Accept", "", () => {
 			assert_not_reached ();
 		}) (req, res, () => {
 			assert_not_reached ();
@@ -70,7 +70,7 @@ public void test_content_negotiation_negotiate () {
 	assert (null == req.headers.get_one ("Accept-Encoding"));
 	reached = false;
 	try {
-		negotiate ("Accept-Encoding", {"utf-8"}, () => {
+		negotiate ("Accept-Encoding", "utf-8", () => {
 			reached = true;
 		}) (req, res, () => {
 			assert_not_reached ();
@@ -91,7 +91,7 @@ public void test_content_negotiation_negotiate_multiple () {
 
 	req.headers.append ("Accept", "text/html; q=0.9, text/xml; q=0.2");
 
-	negotiate ("Accept", {"text/xml", "text/html"}, (req, res, next, stack, content_type) => {
+	negotiate ("Accept", "text/xml, text/html", (req, res, next, stack, content_type) => {
 			message (content_type);
 		assert ("text/html" == content_type);
 	}) (req, res, () => {
@@ -110,7 +110,7 @@ public void test_content_negotiation_negotiate_next () {
 	req.headers.append ("Accept", "text/html; q=0.9, text/xml; q=0");
 
 	var reached = false;
-	negotiate ("Accept", {"application/octet-stream"}, () => {
+	negotiate ("Accept", "application/octet-stream", () => {
 		assert_not_reached ();
 	}, NegotiateFlags.NEXT) (req, res, () => {
 		reached = true;
@@ -128,7 +128,7 @@ public void test_content_negotiation_accept () {
 
 	req.headers.append ("Accept", "text/html");
 
-	accept ({"text/html"}, (req, res, next, stack, content_type) => {
+	accept ("text/html", (req, res, next, stack, content_type) => {
 		assert ("text/html" == content_type);
 	}) (req, res, () => {
 		assert_not_reached ();
@@ -137,7 +137,7 @@ public void test_content_negotiation_accept () {
 
 	var reached = false;
 	try {
-		accept ({"text/xml"}, (req, res, next, stack, content_type) => {
+		accept ("text/xml", (req, res, next, stack, content_type) => {
 			assert_not_reached ();
 		}) (req, res, () => {
 			assert_not_reached ();
@@ -158,7 +158,7 @@ public void test_content_negotiation_accept_any () {
 
 	req.headers.append ("Accept", "*/*");
 
-	accept ({"text/html"}, (req, res, next, stack, content_type) => {
+	accept ("text/html", (req, res, next, stack, content_type) => {
 		assert ("text/html" == content_type);
 	}) (req, res, () => {
 		assert_not_reached ();
@@ -177,14 +177,14 @@ public void test_content_negotiation_accept_any_subtype () {
 	req.headers.append ("Accept", "text/*");
 	req.headers.append ("Accept-Encoding", "*");
 
-	accept ({"text/html"}, (req, res, next, stack, content_type) => {
+	accept ("text/html", (req, res, next, stack, content_type) => {
 		assert ("text/html" == content_type);
 	}) (req, res, () => {
 		assert_not_reached ();
 	}, stack);
 	assert ("text/html" == res.headers.get_content_type (null));
 
-	accept ({"text/xml"}, (req, res, next, stack, content_type) => {
+	accept ("text/xml", (req, res, next, stack, content_type) => {
 		assert ("text/xml" == content_type);
 	}) (req, res, () => {
 		assert_not_reached ();
@@ -192,7 +192,7 @@ public void test_content_negotiation_accept_any_subtype () {
 	assert ("text/xml" == res.headers.get_content_type (null));
 
 	try {
-		accept ({"application/json"}, () => {
+		accept ("application/json", () => {
 			 assert_not_reached () ;
 		 }) (req, res, () => {
 			 assert_not_reached () ;

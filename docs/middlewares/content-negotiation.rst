@@ -13,7 +13,7 @@ value, otherwise a ``406 Not Acceptable`` status is raised.
     using Valum.ContentNegotiation;
 
     app.get ("", negotiate ("Accept",
-                            {"text/html", "text/html+xml"},
+                             "text/html, text/html+xml",
                             (req, res, next, stack, content_type) => {
         // produce a response based on 'content_type'
     }));
@@ -23,7 +23,7 @@ raising a ``406 Not Acceptable``.
 
 .. code:: vala
 
-    app.get ("", negotiate ("Accept", {"text/html"}, (req, res) => {
+    app.get ("", negotiate ("Accept", "text/html", (req, res) => {
         // produce 'text/html'
     }, NegotiateFlags.NEXT)).then ((req, res) => {
         // the user agent does not accept 'text/html'
@@ -35,7 +35,7 @@ typically what would be found on the top of an application.
 
 .. code:: vala
 
-    app.use (negotiate ("Accept", {"text/xhtml"}));
+    app.use (negotiate ("Accept", "text/xhtml"));
 
     // all the following route assume that 'text/xhtml' is being produced.
 
@@ -57,7 +57,7 @@ argument and the expectation is the second.
 .. code:: vala
 
     app.use (negotiate ("Accept",
-                        {"text/xhtml"},
+                        "text/xhtml",
                         forward,
                         NegotiateFlags.NONE,
                         (a, b) => {
