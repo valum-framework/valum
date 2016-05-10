@@ -25,6 +25,9 @@ process and a `GLib.MainLoop`_ to process events and asynchronous work.
 -  a resource base path
 -  ability to handle CLI arguments
 
+The server can be gracefully terminated by sending a `SIGTERM` signal to the
+process.
+
 .. _DBusConnection: http://valadoc.org/#!api=gio-2.0/GLib.DBusConnection
 .. _GLib.MainLoop: http://valadoc.org/#!api=glib-2.0/GLib.MainLoop
 

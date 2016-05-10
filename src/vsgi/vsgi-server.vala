@@ -181,6 +181,12 @@ namespace VSGI {
 			// keep the process (and workers) alive
 			hold ();
 
+			// release on 'SIGTERM'
+			Unix.signal_add (ProcessSignal.TERM, () => {
+				release ();
+				return Source.REMOVE;
+			});
+
 			return 0;
 		}
 
