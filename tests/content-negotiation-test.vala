@@ -13,13 +13,9 @@ public void test_content_negotiation_negotiate () {
 	req.headers.append ("Accept", "text/html; q=0.9, text/xml; q=0");
 
 	var reached = false;
-	negotiate ("Accept", "text/html") (req, res, (req, res) => {
-		reached = true;
-	}, stack);
-	assert (reached);
-
 	try {
 		negotiate ("Accept", "text/html", (req, res, next, stack, content_type) => {
+			reached = true;
 			assert ("text/html" == content_type);
 		}) (req, res, () => {
 			assert_not_reached ();
@@ -27,6 +23,7 @@ public void test_content_negotiation_negotiate () {
 	} catch (ClientError.NOT_ACCEPTABLE err) {
 		assert_not_reached ();
 	}
+	assert (reached);
 
 	// explicitly refuse the content type with 'q=0'
 	reached = false;
