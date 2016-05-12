@@ -255,10 +255,15 @@ namespace VSGI {
 		/**
 		 * Expand a buffer into the response body.
 		 *
+		 * If the content length can be determine reliably (eg. no
+		 * 'Content-Encoding' applied), it will be set as well.
+		 *
 		 * @since 0.3
 		 */
 		public bool expand (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
-			headers.set_content_length (buffer.length);
+			if (headers.get_list ("Content-Encoding") == null) {
+				headers.set_content_length (buffer.length);
+			}
 			size_t bytes_written;
 			return write_head (out bytes_written, cancellable) &&
 			       body.write_all (buffer, out bytes_written, cancellable) &&
