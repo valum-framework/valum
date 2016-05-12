@@ -118,6 +118,31 @@ public void test_content_negotiation_negotiate_next () {
 /**
  * @since 0.3
  */
+public void test_content_negotiation_negotiate_quality () {
+	var req   = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+	var res   = new Response (req);
+	var stack = new Queue<Value?> ();
+
+	res.headers.append ("Accept", "application/json, text/xml; q=0.9");
+
+	// 0.9 * 0.3 > 1 * 0.2
+	negotiate ("Accept", "application/json; q=0.2, text/xml; q=0.3", (req, res, next, stack, choice) => {
+		assert ("text/xml" == choice);
+	}) (req, res, () => {
+		assert_not_reached ();
+	}, stack);
+
+	// 1 * 0.4 > 0.9 * 0.3
+	negotiate ("Accept", "application/json; q=0.4, text/xml; q=0.3", (req, res, next, stack, choice) => {
+		assert ("application/json" == choice);
+	}) (req, res, () => {
+		assert_not_reached ();
+	}, stack);
+}
+
+/**
+ * @since 0.3
+ */
 public void test_content_negotiation_accept () {
 	var req   = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
 	var res   = new Response (req);

@@ -53,21 +53,43 @@ namespace Valum.ContentNegotiation {
 		NEXT
 	}
 
+	private double _qvalue_for_param (string header, string param) {
+		var param_pos = header.last_index_of (param);
+
+		if (param_pos == -1)
+			return 0;
+
+		var _param = header[param_pos:header.index_of_char (';', param_pos)];
+
+		var @params = Soup.header_parse_semi_param_list (_param);
+
+		double qvalue;
+		if (double.try_parse (@params["q"] ?? "1", out qvalue)) {
+			return qvalue.clamp (0, 1);
+		}
+
+		return 0;
+	}
+
 	/**
-	 * Negotiate a HTTP header against a given expectation.
+	 * Negotiate a HTTP header against a set of expectations.
 	 *
 	 * The header is extracted as a quality list and a lookup is performed to
 	 * see if the expected value is accepted by the user agent.
 	 *
+	 * The expectation is selected such that it maximize the product of the
+	 * quality and user agent preference. For equal values, user agent
+	 * preferences are considered first, then expectations.
+	 *
 	 * If the header is not provided in the request, it is assumed that the user
-	 * agent consider any response as acceptable: the first expectation will be
-	 * forwarded.
+	 * agent consider any response as acceptable: the expectation with the
+	 * highest quality will be forwarded.
 	 *
 	 * @since 0.3
 	 *
 	 * @param header_name  header to negotiate
-	 * @param expectations expected value in the quality list
-	 * @param forward      callback if the expectation is satisfied
+	 * @param expectations expected values, possibly with a qvalue
+	 * @param forward      callback forwarding the best expectation
 	 * @param flags        flags for negociating the header
 	 * @param match        compare the user agent string against an expectation
 	 */
@@ -85,15 +107,23 @@ namespace Valum.ContentNegotiation {
 				forward (req, res, next, stack, _expectations.data);
 				return;
 			}
+
+			string? best_expectation = null;
+			double  best_qvalue      = 0;
 			foreach (var accepted in Soup.header_parse_quality_list (header, null)) {
 				foreach (var expectation in _expectations) {
-					if (match (accepted, expectation)) {
-						forward (req, res, next, stack, expectation);
-						return;
+					var current_qvalue = _qvalue_for_param (header, accepted) * _qvalue_for_param (expectations, expectation);
+					if (match (accepted, expectation) && current_qvalue > best_qvalue) {
+						best_expectation = expectation;
+						best_qvalue      = current_qvalue;
 					}
 				}
 			}
-			if (NegotiateFlags.NEXT in flags) {
+
+			if (best_expectation != null) {
+				forward (req, res, next, stack, best_expectation);
+				return;
+			} else if (NegotiateFlags.NEXT in flags) {
 				next (req, res);
 			} else {
 				throw new ClientError.NOT_ACCEPTABLE ("'%s' is not satisfiable by any of '%s'.",
