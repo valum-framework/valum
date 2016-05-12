@@ -36,14 +36,17 @@ namespace Valum.ContentNegotiation {
 	                                        string        choice) throws Error;
 
 	private double _qvalue_for_param (string header, string param) {
-		var param_pos = header.last_index_of (param);
+		var param_start = header.last_index_of (param);
 
-		if (param_pos == -1)
+		if (param_start == -1)
 			return 0;
 
-		var _param = header[param_pos:header.index_of_char (';', param_pos)];
+		var param_end = header.index_of_char (',', param_start);
 
-		var @params = Soup.header_parse_semi_param_list (_param);
+		if (param_end == -1)
+			param_end = header.length;
+
+		var @params = Soup.header_parse_semi_param_list (header[param_start:param_end]);
 
 		double qvalue;
 		if (double.try_parse (@params["q"] ?? "1", out qvalue)) {
