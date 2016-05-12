@@ -202,6 +202,7 @@ namespace Valum.ContentNegotiation {
 			res.headers.append ("Content-Encoding", encoding);
 			switch (encoding.down ()) {
 				case "gzip":
+				case "x-gzip":
 					forward (req,
 					         new ConvertedResponse (res, new ZlibCompressor (ZlibCompressorFormat.GZIP)),
 					         next,
