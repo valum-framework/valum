@@ -8,7 +8,7 @@ The negotiation process is simple: expectations are provided for a specific
 header, if they are met, the processing is forwarded with the highest quality
 value, otherwise a ``406 Not Acceptable`` status is raised.
 
-.. code:: vala
+::
 
     using Valum.ContentNegotiation;
 
@@ -17,20 +17,54 @@ value, otherwise a ``406 Not Acceptable`` status is raised.
         // produce a response based on 'content_type'
     }));
 
-Typically, one would simply call ``next`` to continue to the next middleware
-following the negotiation and handle possible error upstream.
+Typically, one would mount the middleware with ``use`` and call ``next`` if the
+application is essentially producing resources according to a single
+expectation.
 
-.. code:: vala
+::
+
+    app.use (negotiate ("Accept", "text/html", (req, res, next) => {
+        return next ();
+    }));
+
+    // all route declaration may assume that the user agent accept 'text/html'
+
+Preference and quality
+----------------------
+
+Additionally, the server can state the quality of each expectation. The
+middleware will maximize the product of quality and user agent preference with
+respect to the order of declaration and user agent preferences if it happens to
+be equal.
+
+If, for instance, you would serve a XML document that is just poorly converted
+from a JSON source, you could state it by giving it a low ``q`` value. If the
+user agent as a strong preference the former and a low preference for the
+latter (eg. ``Accept: text/xml; application/json; q=0.1)``), it will be served
+the version with the highest product (eg. ``0.3 * 1 > 1 * 0.3``).
+
+::
+
+    app.get ("/", negotiate ("Accept", "application/json;, text/xml; q=0.3",
+                            (req, res, next, stack, content_type) => {
+        // produce a response based on 'content_type'
+    }));
+
+Error handling
+--------------
+
+The :doc:`status` middleware may be used to handle the possible ``406 Not Acceptable``
+error raised if no expectation can be satisfied.
+
+::
 
     app.use (status (Soup.Status.NOT_ACCEPTABLE, () => {
         // handle '406 Not Acceptable' here
     }));
 
-    app.use (negotiate ("Accept", "text/xhtml", () => {
-        return next ();
+    app.use (negotiate ("Accept", "text/xhtml; text/html", () => {
+        // produce appropriate resource
     }));
-
-    // all the following route assume that 'text/xhtml' is being produced.
 
 Custom comparison
 -----------------
@@ -46,7 +80,7 @@ argument and the expectation is the second.
 
 .. _Soup.str_case_equal: http://valadoc.org/#!api=libsoup-2.4/Soup.str_case_equal
 
-.. code:: vala
+::
 
     app.use (negotiate ("Accept",
                         "text/xhtml",
@@ -77,8 +111,25 @@ For convenience, helpers are provided to handle common headers:
 The ``accept`` middleware will assign the media type and preserve all other
 parameters.
 
+::
+
+    accept ("text/html; text/xhtml", (req, res, next, ctx, content_type) => {
+        switch (content_type) {
+            case "text/html":
+                return produce_html ();
+            case "text/xhtml":
+                return produce_xhtml ();
+        }
+    });
+
 The ``accept_encoding`` middleware will convert the :doc:`../vsgi/response` if
 it's either ``gzip`` or ``deflate``.
+
+::
+
+    accept ("gzip; deflate", (req, res, next, ctx, encoding) => {
+        res.expand_utf8 ("Hello world! (compressed with %s)".printf (encoding));
+    });
 
 The ``accept_charset`` middleware will set the ``charset`` parameter of the
 ``Content-Type`` header, defaulting to ``application/octet-stream`` if
