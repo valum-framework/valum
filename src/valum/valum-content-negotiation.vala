@@ -175,7 +175,6 @@ namespace Valum.ContentNegotiation {
 			res.headers.append ("Content-Encoding", encoding);
 			switch (encoding.down ()) {
 				case "gzip":
-				case "x-gzip":
 					res.convert (new ZlibCompressor (ZlibCompressorFormat.GZIP));
 					return forward (req, res, next, ctx, encoding);
 				case "deflate":
@@ -186,7 +185,11 @@ namespace Valum.ContentNegotiation {
 				default:
 					throw new ServerError.NOT_IMPLEMENTED ("");
 			}
-		}, (a, b) => { return a == "*" || Soup.str_case_equal (a, b); });
+		}, (a, b) => {
+			return a == "*"                   ||
+			       Soup.str_case_equal (a, b) ||
+			       (a.has_prefix ("x-") && Soup.str_case_equal (a[2:a.length], b));
+		});
 	}
 
 	/**

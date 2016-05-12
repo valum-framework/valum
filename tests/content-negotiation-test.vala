@@ -253,5 +253,24 @@ public int main (string[] args) {
 		}
 	});
 
+	Test.add_func ("/content_negotiation/accept_encoding/vendor_prefix", () => {
+		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var res = new Response (req);
+		var ctx = new Context ();
+
+		req.headers.append ("Content-Encoding", "x-gzip");
+
+		try {
+			accept_encoding ("gzip", (req, res, next, ctx, encoding) => {
+				assert ("gzip" == encoding);
+				return true;
+			}) (req, res, () => {
+				assert_not_reached ();
+			}, ctx);
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+	});
+
 	return Test.run ();
 }
