@@ -18,7 +18,6 @@ def build(bld):
                         'decode-test.vala',
                         'fastcgi-test.vala',
                         'http-test.vala',
-                        'negociate-test.vala',
                         'router-test.vala',
                         'route-test.vala',
                         'scgi-test.vala',
@@ -32,6 +31,12 @@ def build(bld):
         features     = 'test',
         target       = 'basepath-test',
         source       = 'basepath-test.vala',
+        use          = 'valum',
+        install_path = None)
+    bld.program(
+        features     = 'test',
+        target       = 'content-negotiation-test',
+        source       = 'content-negotiation-test.vala',
         use          = 'valum',
         install_path = None)
     bld.program(

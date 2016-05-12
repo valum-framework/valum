@@ -16,6 +16,7 @@
  */
 
 using Valum;
+using Valum.ContentNegotiation;
 using Valum.ServerSentEvents;
 using VSGI.HTTP;
 
@@ -336,21 +337,23 @@ app.get ("/server-sent-events", stream_events ((req, send) => {
 	});
 }));
 
-app.get ("/negociate", sequence (
-	accept ("application/json", (req, res) => {
-		res.headers.set_content_type ("application/json", null);
-		return res.expand_utf8 ("{\"a\":\"b\"}", null);
-	}),
-	sequence (
-		accept ("text/xml", (req, res) => {
-			res.headers.set_content_type ("text/xml", null);
-			return res.expand_utf8 ("<a>b</a>", null);
-		}),
-		(req, res) => {
-			res.status = global::Soup.Status.NOT_ACCEPTABLE;
-			return res.expand_utf8 ("Supply the 'Accept' header with either 'application/json' or 'text/xml'.", null);
-		}
-	)
-));
+app.get ("/negotiate", accept ("application/json, text/xml", (req, res, next, ctx, content_type) => {
+	switch (content_type) {
+		case "application/json":
+			return res.expand_utf8 ("{\"a\":\"b\"}");
+		case "text/xml":
+			return res.expand_utf8 ("<a>b</a>");
+		default:
+			assert_not_reached ();
+	}
+}));
+
+app.get ("/negotiate-charset", accept_charset ("utf-8", (req, res) => {
+	return res.expand_utf8 ("Héllo world!");
+}));
+
+app.get ("/negotiate-encoding", accept_encoding ("gzip, deflate", (req, res, next, stack, encoding) => {
+	return res.expand_utf8 ("Hello world! (compressed with %s)".printf (encoding));
+}));
 
 new Server ("org.valum.example.App", app.handle).run ({"app", "--all"});

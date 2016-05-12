@@ -8,6 +8,7 @@ from authentication to the delivery of a static resource.
 
     basepath
     basic
+    content-negotiation
     decode
     sequence
     server-sent-events
