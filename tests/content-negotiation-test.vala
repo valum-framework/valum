@@ -114,30 +114,6 @@ public int main (string[] args) {
 	/**
 	 * @since 0.3
 	 */
-	Test.add_func ("/content_negotiation/negotiate/next", () => {
-		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
-		var res = new Response (req);
-		var ctx = new Context ();
-
-		req.headers.append ("Accept", "text/html; q=0.9, text/xml; q=0");
-
-		var reached = false;
-		try {
-			negotiate ("Accept", "application/octet-stream", () => {
-				assert_not_reached ();
-			}, NegotiateFlags.NEXT) (req, res, () => {
-				reached = true;
-				return true;
-			}, ctx);
-		} catch (Error err) {
-			assert_not_reached ();
-		}
-		assert (reached);
-	});
-
-	/**
-	 * @since 0.3
-	 */
 	Test.add_func ("/content_negotiation/negotiate/quality", () => {
 		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);

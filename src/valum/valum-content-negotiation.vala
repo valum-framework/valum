@@ -35,24 +35,6 @@ namespace Valum.ContentNegotiation {
 	                                        Context       ctx,
 	                                        string        choice) throws Error;
 
-	/**
-	 * @since 0.3
-	 */
-	public enum NegotiateFlags {
-		/**
-		 * @since 0.3
-		 */
-		NONE,
-		/**
-		 * Call the {@link Valum.NextCallback} instead of raising a
-		 * {@link Valum.ClientError.NOT_ACCEPTABLE} if the request cannot be
-		 * satisfied.
-		 *
-		 * @since 0.3
-		 */
-		NEXT
-	}
-
 	private double _qvalue_for_param (string header, string param) {
 		var param_pos = header.last_index_of (param);
 
@@ -90,13 +72,11 @@ namespace Valum.ContentNegotiation {
 	 * @param header_name  header to negotiate
 	 * @param expectations expected values, possibly with a qvalue
 	 * @param forward      callback forwarding the best expectation
-	 * @param flags        flags for negociating the header
 	 * @param match        compare the user agent string against an expectation
 	 */
 	public HandlerCallback negotiate (string                  header_name,
 	                                  string                  expectations,
 	                                  owned NegotiateCallback forward,
-	                                  NegotiateFlags          flags = NegotiateFlags.NONE,
 	                                  EqualFunc<string>       match = (EqualFunc<string>) Soup.str_case_equal) {
 		var _expectations = Soup.header_parse_quality_list (expectations, null);
 		return (req, res, next, ctx) => {
@@ -121,13 +101,11 @@ namespace Valum.ContentNegotiation {
 
 			if (best_expectation != null) {
 				return forward (req, res, next, ctx, best_expectation);
-			} else if (NegotiateFlags.NEXT in flags) {
-				return next ();
-			} else {
-				throw new ClientError.NOT_ACCEPTABLE ("'%s' is not satisfiable by any of '%s'.",
-				                                      header_name,
-				                                      expectations);
 			}
+
+			throw new ClientError.NOT_ACCEPTABLE ("'%s' is not satisfiable by any of '%s'.",
+												  header_name,
+												  expectations);
 		};
 	}
 
@@ -140,14 +118,13 @@ namespace Valum.ContentNegotiation {
 	 * @since 0.3
 	 */
 	public HandlerCallback accept (string                  content_types,
-	                               owned NegotiateCallback forward,
-	                               NegotiateFlags          flags = NegotiateFlags.NONE) {
+	                               owned NegotiateCallback forward) {
 		return negotiate ("Accept", content_types, (req, res, next, ctx, content_type) => {
 			HashTable<string, string>? @params;
 			res.headers.get_content_type (out @params);
 			res.headers.set_content_type (content_type, @params);
 			return forward (req, res, next, ctx, content_type);
-		}, flags, (pattern, @value) => {
+		}, (pattern, @value) => {
 			if (pattern == "*/*")
 				return true;
 			// any subtype
@@ -169,15 +146,14 @@ namespace Valum.ContentNegotiation {
 	 * @since 0.3
 	 */
 	public HandlerCallback accept_charset (string                  charsets,
-	                                       owned NegotiateCallback forward,
-	                                       NegotiateFlags          flags = NegotiateFlags.NONE) {
+	                                       owned NegotiateCallback forward) {
 		return negotiate ("Accept-Charset", charsets, (req, res, next, ctx, charset) => {
 			HashTable<string, string> @params;
 			var content_type   = res.headers.get_content_type (out @params) ?? "application/octet-stream";
 			@params["charset"] = charset;
 			res.headers.set_content_type (content_type, @params);
 			return forward (req, res, next, ctx, charset);
-		}, flags, (a, b) => { return a == "*" || Soup.str_case_equal (a, b); });
+		}, (a, b) => { return a == "*" || Soup.str_case_equal (a, b); });
 	}
 
 	/**
@@ -194,8 +170,7 @@ namespace Valum.ContentNegotiation {
 	 * @since 0.3
 	 */
 	public HandlerCallback accept_encoding (string                  encodings,
-	                                        owned NegotiateCallback forward,
-	                                        NegotiateFlags          flags = NegotiateFlags.NONE) {
+	                                        owned NegotiateCallback forward) {
 		return negotiate ("Accept-Encoding", encodings, (req, res, next, ctx, encoding) => {
 			res.headers.append ("Content-Encoding", encoding);
 			switch (encoding.down ()) {
@@ -211,7 +186,7 @@ namespace Valum.ContentNegotiation {
 				default:
 					throw new ServerError.NOT_IMPLEMENTED ("");
 			}
-		}, flags, (a, b) => { return a == "*" || Soup.str_case_equal (a, b); });
+		}, (a, b) => { return a == "*" || Soup.str_case_equal (a, b); });
 	}
 
 	/**
@@ -223,12 +198,11 @@ namespace Valum.ContentNegotiation {
 	 * @since 0.3
 	 */
 	public HandlerCallback accept_language (string                  languages,
-	                                        owned NegotiateCallback forward,
-	                                        NegotiateFlags          flags = NegotiateFlags.NONE) {
+	                                        owned NegotiateCallback forward) {
 		return negotiate ("Accept-Language", languages, (req, res, next, ctx, language) => {
 			res.headers.replace ("Content-Language", language);
 			return forward (req, res, next, ctx, language);
-		}, flags, (a, b) => {
+		}, (a, b) => {
 			if (a == "*")
 				return true;
 			// exclude the regional part
@@ -246,8 +220,7 @@ namespace Valum.ContentNegotiation {
 	 * @since 0.3
 	 */
 	public HandlerCallback accept_ranges (string                  ranges,
-	                                      owned NegotiateCallback forward,
-	                                      NegotiateFlags          flags = NegotiateFlags.NONE) {
-		return negotiate ("Accept-Ranges", ranges, (owned) forward, flags);
+	                                      owned NegotiateCallback forward) {
+		return negotiate ("Accept-Ranges", ranges, (owned) forward);
 	}
 }

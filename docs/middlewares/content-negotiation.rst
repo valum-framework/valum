@@ -17,15 +17,6 @@ value, otherwise a ``406 Not Acceptable`` status is raised.
         // produce a response based on 'content_type'
     }));
 
-Pass the ``NegotiateFlags.NEXT`` flag to forward with ``next`` instead of
-raising a ``406 Not Acceptable``.
-
-.. code:: vala
-
-    app.get ("/", negotiate ("Accept", "text/html", (req, res) => {
-        // produce 'text/html'
-    }, NegotiateFlags.NEXT);
-
 Typically, one would simply call ``next`` to continue to the next middleware
 following the negotiation and handle possible error upstream.
 
@@ -60,7 +51,6 @@ argument and the expectation is the second.
     app.use (negotiate ("Accept",
                         "text/xhtml",
                         () => { return true; },
-                        NegotiateFlags.NONE,
                         (a, b) => {
         return a == "*" || Soup.str_case_equal (a, b);
     });
