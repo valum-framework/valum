@@ -183,9 +183,7 @@ namespace Valum {
 			} catch (Error err) {
 				if (is_status (err) && err.code == status) {
 						var _err = (owned) err;
-						return forward (req, res, () => {
-							throw _err; // forward the error upstream
-						}, ctx, _err);
+						return forward (req, res, next, ctx, _err);
 				} else {
 					throw err;
 				}

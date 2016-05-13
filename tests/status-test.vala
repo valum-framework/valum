@@ -165,5 +165,31 @@ public int main (string[] args) {
 		}
 	});
 
+	Test.add_func ("/status/try_again_with_next", () => {
+		var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var res = new Response (req);
+
+		var router = new Router ();
+
+		router.use (status (404, () => {
+			res.status = 404;
+			return true;
+		}));
+
+		router.use (status (404, (req, res, next) => {
+			return next ();
+		}));
+
+		router.get ("/", () => {
+			throw new ClientError.NOT_FOUND ("");
+		});
+
+		try {
+			router.handle (req, res);
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+	});
+
 	return Test.run ();
 }

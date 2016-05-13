@@ -17,9 +17,9 @@ provide access to the actual `GLib.Error`_ object.
         var message = err.message;
     });
 
-Similarly to conventional request handling, the ``next`` continuation can be
-invoked to jump to the next status handler, which is found upstream in the
-routing queue.
+To jump to the next status handler found upstream in the routing queue, just
+throw the error. If the error can be resolved, you might want to try ``next``
+once more.
 
 ::
 
@@ -28,11 +28,11 @@ routing queue.
         return res.expand_utf8 ("Not found!");
     });
 
-    app.status (Soup.Status.NOT_FOUND, (req, res, next) => {
-        return next ();
+    app.status (Soup.Status.NOT_FOUND, (req, res, next, ctx, err) => {
+        return next (); // try to route again or jump upstream
     });
 
-    app.get ("/", () => {
+    app.use (() => {
         throw new ClientError.NOT_FOUND ("");
     });
 
