@@ -198,8 +198,8 @@ namespace Valum.ContentNegotiation {
 	/**
 	 * Negotiate a 'Accept-Language' header.
 	 *
-	 * If the user agent does not have regional preferences (eg. 'Accept: en'),
-	 * then any regional variation will be considered acceptable.
+	 * If the user agent have regional preferences (eg. 'Accept: en-GB'),
+	 * then any non-regional variation will be considered acceptable.
 	 *
 	 * @since 0.3
 	 */
@@ -212,9 +212,9 @@ namespace Valum.ContentNegotiation {
 			if (a == "*")
 				return true;
 			// exclude the regional part
-			if (!a.contains ("-"))
-				return Soup.str_case_equal (a, b.split ("-", 2)[0]);
-			return a == "*" || Soup.str_case_equal (a, b);
+			if (a.contains ("-"))
+				return Soup.str_case_equal (a.split ("-", 2)[0], b);
+			return Soup.str_case_equal (a, b);
 		});
 	}
 
