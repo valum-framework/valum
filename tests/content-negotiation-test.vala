@@ -253,16 +253,134 @@ public int main (string[] args) {
 		}
 	});
 
+	Test.add_func ("/content_negotiation/accept_encoding/deflate", () => {
+		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var res = new Response (req);
+		var ctx = new Context ();
+
+		req.headers.append ("Accept-Encoding", "deflate");
+
+		try {
+			accept_encoding ("deflate", (req, res, next, ctx, encoding) => {
+				assert ("deflate" == encoding);
+				assert ("deflate" == res.headers.get_one ("Content-Encoding"));
+				assert (res.body is ConverterOutputStream);
+				assert ((res.body as ConverterOutputStream).converter is ZlibCompressor);
+				return true;
+			}) (req, res, () => {
+				assert_not_reached ();
+			}, ctx);
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+	});
+
+	Test.add_func ("/content_negotiation/accept_encoding318a59a/identity", () => {
+		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var res = new Response (req);
+		var ctx = new Context ();
+
+		req.headers.append ("Accept-Encoding", "identity");
+
+		try {
+			accept_encoding ("identity", (req, res, next, ctx, encoding) => {
+				assert ("identity" == encoding);
+				assert ("identity" == res.headers.get_one ("Content-Encoding"));
+				return true;
+			}) (req, res, () => {
+				assert_not_reached ();
+			}, ctx);
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+	});
 	Test.add_func ("/content_negotiation/accept_encoding/vendor_prefix", () => {
 		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
-		req.headers.append ("Content-Encoding", "x-gzip");
+		req.headers.append ("Accept-Encoding", "x-gzip");
 
 		try {
 			accept_encoding ("gzip", (req, res, next, ctx, encoding) => {
 				assert ("gzip" == encoding);
+				return true;
+			}) (req, res, () => {
+				assert_not_reached ();
+			}, ctx);
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+	});
+
+	Test.add_func ("/content_negotiation/accept_language", () => {
+		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var res = new Response (req);
+		var ctx = new Context ();
+
+		req.headers.append ("Accept-Language", "fr");
+
+		try {
+			accept_language ("fr", (req, res, next, ctx, language) => {
+				assert ("fr" == language);
+				assert ("fr" == res.headers.get_one ("Content-Language"));
+				return true;
+			}) (req, res, () => {
+				assert_not_reached ();
+			}, ctx);
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+	});
+
+	Test.add_func ("/content_negotiation/accept_language/local_variant", () => {
+		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var res = new Response (req);
+		var ctx = new Context ();
+
+		req.headers.append ("Accept-Language", "fr-CA");
+
+		try {
+			accept_language ("fr", () => {
+				assert ("fr" == res.headers.get_one ("Content-Language"));
+				return true;
+			}) (req, res, () => {
+				assert_not_reached ();
+			}, ctx);
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+	});
+
+	Test.add_func ("/content_negotiation/accept_language/wildcard", () => {
+		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var res = new Response (req);
+		var ctx = new Context ();
+
+		req.headers.append ("Accept-Language", "fr-CA");
+
+		try {
+			accept_language ("fr", () => {
+				assert ("fr" == res.headers.get_one ("Content-Language"));
+				return true;
+			}) (req, res, () => {
+				assert_not_reached ();
+			}, ctx);
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+	});
+
+	Test.add_func ("/content_negotiation/accept_range", () => {
+		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var res = new Response (req);
+		var ctx = new Context ();
+
+		req.headers.append ("Accept-Range", "bytes");
+
+		try {
+			accept_ranges ("bytes", (req, res, next, ctx, ranges) => {
+				assert ("bytes" == ranges);
 				return true;
 			}) (req, res, () => {
 				assert_not_reached ();
