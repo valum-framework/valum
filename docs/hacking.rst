@@ -86,21 +86,19 @@ Coverage
 --------
 
 `gcov`_ is used to measure coverage of the tests on the generated C code. The
-results are automatically uploaded to `coveralls.io`_ with `coveralls-cpp`_ on
-a successful build.
+results are automatically uploaded to `Codecov`_ on a successful build.
 
-You can build Valum with gcov if you specify the ``--enable-gcov`` option
-during the configuration.
+You can build Valum with gcov if you specify the appropriate ``CFLAGS`` and
+``VALAFLAGS`` during the configuration step.
 
 .. _gcov: http://gcc.gnu.org/onlinedocs/gcc/Gcov.html
-.. _coveralls.io: https://coveralls.io/r/valum-framework/valum
-.. _coveralls-cpp: https://github.com/eddyxu/cpp-coveralls
+.. _Codecov: https://codecov.io/gh/valum-framework/valum
 
 .. code-block:: bash
 
     ./waf configure CFLAGS='-fprovide-arcs -ftest-coverage' VALAFLAGS='--debug'
     ./waf build
-    ./build/tests/tests
+    ./waf --alltests
 
 During the execution of the tests, some files will be generated and can be
 inspected with the ``gcov`` utility.
@@ -110,8 +108,9 @@ inspected with the ``gcov`` utility.
     cd build
     gcov src/router.c.1.gcda
 
-
 Would output something like:
+
+.. code-block:: text
 
     File 'src/router.c'
     Executed lines: 57.83% of 792
