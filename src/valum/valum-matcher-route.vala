@@ -27,13 +27,19 @@ namespace Valum {
 		public MatcherRoute (Method method, owned MatcherCallback matcher, owned HandlerCallback handler) {
 			Object (method: method);
 			_match = (owned) matcher;
-			set_handler_callback ((owned) handler);
+			_fire  = (owned) handler;
 		}
 
 		private MatcherCallback _match;
 
 		public override bool match (Request req, Context ctx) {
 			return _match (req, ctx);
+		}
+
+		private HandlerCallback _fire;
+
+		public override bool fire (Request req, Response res, NextCallback next, Context ctx) throws Error {
+			return _fire (req, res, next, ctx);
 		}
 	}
 }

@@ -29,11 +29,17 @@ namespace Valum {
 
 		public AsteriskRoute (Method method, owned HandlerCallback handler) {
 			Object (method: method);
-			set_handler_callback ((owned) handler);
+			_fire = (owned) handler;
 		}
 
 		public override bool match (Request req, Context ctx) {
 			return "*" == req.uri.get_path ();
+		}
+
+		private HandlerCallback _fire;
+
+		public override bool fire (Request req, Response res, NextCallback next, Context ctx) throws Error {
+			return _fire (req, res, next, ctx);
 		}
 	}
 }

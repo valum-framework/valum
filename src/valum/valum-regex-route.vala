@@ -46,7 +46,7 @@ namespace Valum {
 		 */
 		public RegexRoute (Method method, Regex regex, owned HandlerCallback handler) {
 			Object (method: method, regex: regex);
-			set_handler_callback ((owned) handler);
+			_fire = (owned) handler;
 		}
 
 		private SList<string> captures = new SList<string> ();
@@ -79,6 +79,12 @@ namespace Valum {
 				return true;
 			}
 			return false;
+		}
+
+		private HandlerCallback _fire;
+
+		public override bool fire (Request req, Response res, NextCallback next, Context ctx) throws Error {
+			return _fire (req, res, next, ctx);
 		}
 	}
 }

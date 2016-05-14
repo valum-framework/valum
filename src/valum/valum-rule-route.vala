@@ -105,7 +105,13 @@ namespace Valum {
 			pattern.append_c ('$');
 
 			Object (method: method, rule: rule, types: types, regex: new Regex (pattern.str, RegexCompileFlags.OPTIMIZE));
-			set_handler_callback ((owned) handler);
+			_fire = (owned) handler;
+		}
+
+		private HandlerCallback _fire;
+
+		public override bool fire (Request req, Response res, NextCallback next, Context ctx) throws Error {
+			return _fire (req, res, next, ctx);
 		}
 	}
 }

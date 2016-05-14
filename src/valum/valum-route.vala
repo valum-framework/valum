@@ -32,8 +32,6 @@ namespace Valum {
 	 */
 	public abstract class Route : Object {
 
-		private HandlerCallback _fire;
-
 		/**
 		 * HTTP method this is matching or 'null' if it does apply.
 		 *
@@ -50,22 +48,15 @@ namespace Valum {
 
 		/**
 		 * Apply the handler on the request and response.
-         *
+		 *
 		 * @since 0.0.1
+		 *
+		 * @return the return value of the callback if set, otherwise 'false'
 		 */
-		public bool fire (Request req, Response res, NextCallback next, Context ctx) throws Success,
-		                                                                                    Redirection,
-		                                                                                    ClientError,
-		                                                                                    ServerError,
-																							Error {
-			return _fire (req, res, next, ctx);
-		}
-
-		/**
-		 * @since 0.3
-		 */
-		public void set_handler_callback (owned HandlerCallback fire) {
-			_fire = (owned) fire;
-		}
+		public abstract bool fire (Request req, Response res, NextCallback next, Context ctx) throws Success,
+		                                                                                             Redirection,
+		                                                                                             ClientError,
+		                                                                                             ServerError,
+		                                                                                             Error;
 	}
 }
