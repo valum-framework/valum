@@ -313,6 +313,24 @@ namespace Valum {
 		 */
 		public bool handle (Request req, Response res) throws Error {
 			return this.perform_routing (this.routes.get_begin_iter (), req, res, () => {
+				if (req.method == Request.TRACE) {
+					var head = new StringBuilder ();
+
+					head.append_printf ("%s %s HTTP/%s\r\n", req.method,
+					                                         req.uri.to_string (true),
+					                                         req.http_version == Soup.HTTPVersion.@1_0 ? "1.0" : "1.1");
+
+					req.headers.@foreach ((name, header) => {
+						head.append_printf ("%s: %s\r\n", name, header);
+					});
+
+					head.append ("\r\n");
+
+					res.status = Soup.Status.OK;
+					res.headers.set_content_type ("message/http", null);
+					return res.expand_utf8 (head.str);
+				}
+
 				// find routes from other methods matching this request
 				var req_method = Method.from_string (req.method);
 
@@ -348,24 +366,6 @@ namespace Valum {
 						res.status = Soup.Status.OK;
 						res.headers.append ("Allow", string.joinv (", ", allowedv));
 						return res.expand_utf8 (""); // result in 'Content-Length: 0' as specified
-					}
-
-					else if (req.method == Request.TRACE) {
-						var head = new StringBuilder ();
-
-						head.append_printf ("%s %s HTTP/%s\r\n", req.method,
-																 req.uri.to_string (true),
-																 req.http_version == Soup.HTTPVersion.@1_0 ? "1.0" : "1.1");
-
-						req.headers.@foreach ((name, header) => {
-							head.append_printf ("%s: %s\r\n", name, header);
-						});
-
-						head.append ("\r\n");
-
-						res.status = Soup.Status.OK;
-						res.headers.set_content_type ("message/http", null);
-						return res.expand_utf8 (head.str);
 					}
 
 					else {
