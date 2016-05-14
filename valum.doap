@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project xmlns="http://usefulinc.com/ns/doap#"
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:foaf="http://xmlns.com/foaf/0.1/">
+
+  <name>Valum</name>
+  <homepage rdf:resource="https://github.com/valum-framework/valum"/>
+  <created>2011-12-07</created>
+  <shortdesc xml:lang="en">Web micro-framework written in Vala</shortdesc>
+
+  <description xml:lang="en">
+      Valum is a web micro-framework written in Vala and licensed under the
+      LGPLv3. Its source code and releases are available on GitHub:
+      valum-framework/valum.
+  </description>
+
+  <release>
+      <version>
+          <name>stable</name>
+          <created>2016-02-25</created>
+          <revision>0.2.15</revision>
+      </version>
+  </release>
+
+  <download-page rdf:resource="https://github.com/valum-framework/valum/releases"/>
+  <bug-database rdf:resource="https://github.com/valum-framework/valum/issues"/>
+
+  <programming-language>Vala</programming-language>
+
+  <license rdf:resource="http://spdx.org/licenses/LGPL-3.0"/>
+
+  <maintainer>
+      <foaf:Person>
+          <foaf:name>Antono Vasiljev</foaf:name>
+          <foaf:homepage>http://antono.info/</foaf:homepage>
+      </foaf:Person>
+  </maintainer>
+
+  <maintainer>
+      <foaf:Person>
+          <foaf:name>Guillaume Poirier-Morency</foaf:name>
+          <foaf:mbox rdf:resource="mailto:guillaumepoiriermorency@gmail.com"/>
+      </foaf:Person>
+  </maintainer>
+
+  <repository>
+      <GitRepository>
+          <location rdf:resource="https://github.com/valum-framework/valum.git"/>
+          <browse rdf:resource="https://github.com/valum-framework/valum"/>
+      </GitRepository>
+  </repository>
+</Project>
