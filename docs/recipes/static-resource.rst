@@ -18,6 +18,9 @@ This only applies to small and static resources as it will grow the size of the
 executable. Also, if the resources are compiled in your executable, changing
 them will require a recompilation.
 
+Middlewares are provided for that purpose, see `../middlewares/static` for more
+details.
+
 Integration
 -----------
 

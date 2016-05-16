@@ -12,6 +12,7 @@ from authentication to the delivery of a static resource.
     decode
     sequence
     server-sent-events
+    static
     status
     subdomain
 
@@ -84,3 +85,4 @@ success (or any other event) like it's the case for the ``accept`` middleware.
     }), (req, res) => {
         throw new ClientError.NOT_ACCEPTABLE ("We're only producing 'text/xml here!");
     });
+

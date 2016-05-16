@@ -292,38 +292,7 @@ app.get ("/ctpl/<foo>/<bar>", (req, res, next, context) => {
 });
 
 // serve static resource using a path route parameter
-app.get ("/static/<path:path>", (req, res, next, context) => {
-	var path = "/static/%s".printf (context["path"].get_string ());
-	bool uncertain;
-
-	try {
-		var lookup = resources_lookup_data (path, ResourceLookupFlags.NONE);
-
-		// set the content-type based on a good guess
-		res.headers.set_content_type (ContentType.guess (path, lookup.get_data (), out uncertain), null);
-
-		if (uncertain)
-			warning ("could not infer content type of file '%s' with certainty".printf (path));
-
-		var file = resources_open_stream (path, ResourceLookupFlags.NONE);
-
-		// transfer the file
-		res.body.splice_async.begin (file,
-			                         OutputStreamSpliceFlags.CLOSE_SOURCE | OutputStreamSpliceFlags.CLOSE_TARGET,
-			                         Priority.DEFAULT,
-			                         null, (obj, result) => {
-			 try {
-				res.body.splice_async.end (result);
-			 } catch (Error err){
-				critical (err.message);
-			 }
-		});
-
-		return true;
-	} catch (Error e) {
-		throw new ClientError.NOT_FOUND (e.message);
-	}
-});
+app.get ("/static/<path:path>", Static.serve_from_file (File.new_for_uri ("resource://static/"), Static.ServeFlags.ENABLE_ETAG));
 
 app.get ("/server-sent-events", stream_events ((req, send) => {
 	send (null, "now!");

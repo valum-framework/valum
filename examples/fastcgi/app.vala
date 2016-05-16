@@ -16,6 +16,7 @@
  */
 
 using Valum;
+using Valum.Static;
 using VSGI.FastCGI;
 
 public static int main (string[] args) {
