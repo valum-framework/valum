@@ -192,7 +192,7 @@ namespace Valum.Static {
 	 * @param serve_flags flags for serving the resources
 	 */
 	public HandlerCallback serve_from_resource (Resource   resource,
-	                                            string     prefix,
+	                                            string     prefix      = "/",
 	                                            ServeFlags serve_flags = ServeFlags.NONE) {
 		// cache for already computed 'ETag' values
 		var etag_cache = new HashTable <string, string> (str_hash, str_equal);
