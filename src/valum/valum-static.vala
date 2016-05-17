@@ -38,15 +38,20 @@ namespace Valum.Static {
 		 */
 		NONE,
 		/**
-		 * Produce a 'ETag' header and raise {@link Valum.Redirection.NOT_MODIFIED}
-		 * if the resource has already been transmitted.
+		 * Produce an 'ETag' header and raise a {@link Valum.Redirection.NOT_MODIFIED}
+		 * if the resource has already been transmitted. If not available, it
+		 * will fallback on either {@link Valum.Static.ServeFlags.ENABLE_LAST_MODIFIED}
+		 * or no caching at all.
 		 *
 		 * @since 0.3
 		 */
 		ENABLE_ETAG,
 		/**
-		 * Produce a 'Last-Modified' header and raise {@link Valum.Redirection.NOT_MODIFIED}
+		 * Produce a 'Last-Modified' header and raise a {@link Valum.Redirection.NOT_MODIFIED}
 		 * if the resource has already been transmitted.
+		 *
+		 * If {@link Valum.ServeFlags.ENABLE_ETAG} is specified and available,
+		 * it will be used instead.
 		 *
 		 * @since 0.3
 		 */
@@ -59,7 +64,7 @@ namespace Valum.Static {
 		 */
 		ENABLE_CACHE_CONTROL_PUBLIC,
 		/**
-		 * Yield a {@link ClientError.FORBIDDEN} if rights are missing on the
+		 * Raise a {@link ClientError.FORBIDDEN} if rights are missing on the
 		 * resource rather than calling 'next'.
 		 *
 		 * @since 0.3
@@ -71,9 +76,8 @@ namespace Valum.Static {
 		 *
 		 * The absolute path as provided by {@link GLib.File.get_path} will be
 		 * produced in the 'X-Sendfile' header. It must therefore be accessible
-		 * for the HTTP server.
-		 *
-		 * If the file is not locally accessible, it will be spliced instead.
+		 * for the HTTP server, otherwise it will silently fallback to serve the
+		 * resource directly.
 		 *
 		 * @since 0.3
 		 */
@@ -173,9 +177,6 @@ namespace Valum.Static {
 	 * Serve files from the provided {@link GLib.Resource} bundle.
 	 *
 	 * The 'ETag' header is obtained from a SHA1 checksum.
-	 *
-	 * To serve the global bundle, use {@link GLib.File.new_for_uri} along with
-	 * the 'resource://' scheme with {@link Valum.Static.serve_from_file}.
 	 *
 	 * [[http://valadoc.org/#!api=gio-2.0/GLib.Resource]]
 	 *
