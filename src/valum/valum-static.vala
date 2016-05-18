@@ -174,6 +174,20 @@ namespace Valum.Static {
 	}
 
 	/**
+	 * @since 0.3
+	 */
+	public HandlerCallback serve_from_path (string path, ServeFlags serve_flags = ServeFlags.NONE) {
+		return serve_from_file (File.new_for_path (path), serve_flags);
+	}
+
+	/**
+	 * @since 0.3
+	 */
+	public HandlerCallback serve_from_uri (string uri, ServeFlags serve_flags = ServeFlags.NONE) {
+		return serve_from_file (File.new_for_uri (uri), serve_flags);
+	}
+
+	/**
 	 * Serve files from the provided {@link GLib.Resource} bundle.
 	 *
 	 * The 'ETag' header is obtained from a SHA1 checksum.
