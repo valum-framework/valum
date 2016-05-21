@@ -221,9 +221,25 @@ namespace VSGI {
 		/**
 		 * Apply a converter to the request body.
 		 *
+		 * If the payload is chunked, (eg. 'Transfer-Encoding: chunked') and the
+		 * new content length is undetermined, it will remain chunked.
+		 *
 		 * @since 0.3
+		 *
+		 * @param content_length resulting value for the 'Content-Length' header,
+		 *                       '0' for a void-like sink or '-1' if the length
+		 *                       is undetermined
 		 */
-		public void convert (Converter converter) {
+		public void convert (Converter converter, int64 content_length = -1) {
+			if (content_length > 0) {
+				headers.set_content_length (content_length);
+			} else if (content_length == 0) {
+				headers.set_encoding (Soup.Encoding.NONE);
+			} else if (headers.get_encoding () == Soup.Encoding.CHUNKED) {
+				// nothing to do
+			} else {
+				headers.set_encoding (Soup.Encoding.EOF);
+			}
 			_body = new ConverterInputStream (_body ?? connection.input_stream, converter);
 		}
 

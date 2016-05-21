@@ -22,19 +22,6 @@ encoding transparently.
 Converters can be applied on both the :doc:`request` and :doc:`response` object
 using the ``convert`` method.
 
-.. warning::
-
-    If the conversion affects the payload size, the ``Content-Length`` header
-    must be modified appropriately. If the new size is indeterminate, set the
-    encoding to `Soup.Encoding.EOF`_.
-
-    Similarly, the ``Content-Encoding`` header must be adapted to reflect the
-    current set of encodings applied (or unapplied) on the payload.
-
-.. _Soup.Encoding.EOF: http://valadoc.org/#!api=libsoup-2.4/Soup.Encoding.EOF
-
-One typical use case would be to apply a ``Content-Encoding: gzip`` header.
-
 ::
 
     new Server ("org.vsgi.App", (req, res) => {
@@ -42,6 +29,23 @@ One typical use case would be to apply a ``Content-Encoding: gzip`` header.
         res.convert (new ZlibCompressor (ZlibCompressorFormat.GZIP));
         return res.expand_utf8 ("Hello world!");
     });
+
+.. warning::
+
+    The ``Content-Encoding`` header must be adapted to reflect the current set
+    of encodings applied (or unapplied) on the payload.
+
+Since conversion typically affect the resulting size of the payload, the
+``Content-Length`` header must be set appropriately. To ease that, the new
+value can be specified as second argument. Note that ``0`` and ``-1`` are
+respectively used to describe a complete sink and an undetermined length.
+
+::
+
+    res.convert (new CharsetConverter ("UTF-8", "ascii"), res.headers.get_content_length ());
+
+The default, which apply in most cases, is to remove the ``Content-Length``
+header and thus describe an undetermined length.
 
 Chunked encoder
 ---------------

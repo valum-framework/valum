@@ -55,11 +55,9 @@ namespace Valum {
 				switch (encoding.data.down ()) {
 					case "gzip":
 					case "x-gzip":
-						req.headers.set_encoding (Soup.Encoding.EOF);
 						req.convert (new ZlibDecompressor (ZlibCompressorFormat.GZIP));
 						break;
 					case "deflate":
-						req.headers.set_encoding (Soup.Encoding.EOF);
 						req.convert (new ZlibDecompressor (ZlibCompressorFormat.RAW));
 						break;
 					case "identity":
