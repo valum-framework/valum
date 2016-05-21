@@ -109,27 +109,24 @@ namespace Valum.Static {
 			var file = root.resolve_relative_path (ctx["path"].get_string ());
 
 			try {
-				if (ServeFlags.ENABLE_ETAG in serve_flags) {
-					var etag = "\"%s\"".printf (file.query_info (FileAttribute.ETAG_VALUE,
-					                                             FileQueryInfoFlags.NONE).get_etag ());
+				var file_info = file.query_info ("%s,%s".printf (FileAttribute.ETAG_VALUE,
+				                                                 FileAttribute.TIME_MODIFIED),
+				                                 FileQueryInfoFlags.NONE);
 
-					if (etag == req.headers.get_one ("If-None-Match"))
+				var etag          = file_info.get_etag ();
+				var last_modified = file_info.get_modification_time ();
+
+				if (etag != null && ServeFlags.ENABLE_ETAG in serve_flags) {
+					if ("\"%s\"".printf (etag) == req.headers.get_one ("If-None-Match"))
 						throw new Redirection.NOT_MODIFIED ("");
-
-					res.headers.replace ("ETag", etag);
+					res.headers.replace ("ETag", "\"%s\"".printf (etag));
 				}
 
-				else if (ServeFlags.ENABLE_LAST_MODIFIED in serve_flags) {
-					var last_modified = file.query_info (FileAttribute.TIME_MODIFIED,
-					                                     FileQueryInfoFlags.NONE).get_modification_time ();
-
+				else if (last_modified.tv_sec > 0 && ServeFlags.ENABLE_LAST_MODIFIED in serve_flags) {
 					var if_modified_since = req.headers.get_one ("If-Modified-Since");
-
 					if (if_modified_since != null && new Soup.Date.from_string (if_modified_since).to_timeval ().tv_sec >= last_modified.tv_sec)
 						throw new Redirection.NOT_MODIFIED ("");
-
-					res.headers.replace ("Last-Modified",
-					                     new Soup.Date.from_time_t (last_modified.tv_sec).to_string (Soup.DateFormat.HTTP));
+					res.headers.replace ("Last-Modified", new Soup.Date.from_time_t (last_modified.tv_sec).to_string (Soup.DateFormat.HTTP));
 				}
 
 				if (ServeFlags.ENABLE_CACHE_CONTROL_PUBLIC in serve_flags)
