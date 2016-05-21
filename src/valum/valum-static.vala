@@ -109,8 +109,9 @@ namespace Valum.Static {
 			var file = root.resolve_relative_path (ctx["path"].get_string ());
 
 			try {
-				var file_info = file.query_info ("%s,%s".printf (FileAttribute.ETAG_VALUE,
-				                                                 FileAttribute.TIME_MODIFIED),
+				var file_info = file.query_info ("%s,%s,%s".printf (FileAttribute.ETAG_VALUE,
+				                                                    FileAttribute.TIME_MODIFIED,
+				                                                    FileAttribute.STANDARD_SIZE),
 				                                 FileQueryInfoFlags.NONE);
 
 				var etag          = file_info.get_etag ();
@@ -143,6 +144,8 @@ namespace Valum.Static {
 
 				bool uncertain;
 				res.headers.set_content_type (ContentType.guess (file.get_basename (), contents, out uncertain), null);
+				if (res.headers.get_list ("Content-Encoding") == null)
+					res.headers.set_content_length (file_info.get_size ());
 
 				if (uncertain)
 					warning ("could not infer content type of file '%s' with certainty", file.get_uri ());
@@ -238,7 +241,8 @@ namespace Valum.Static {
 			// set the content-type based on a good guess
 			bool uncertain;
 			res.headers.set_content_type (ContentType.guess (path, lookup.get_data (), out uncertain), null);
-			res.headers.set_content_length (lookup.get_size ());
+			if (res.headers.get_list ("Content-Encoding") == null)
+				res.headers.set_content_length (lookup.get_size ());
 
 			if (uncertain)
 				warning ("could not infer content type of file '%s' with certainty", path);
