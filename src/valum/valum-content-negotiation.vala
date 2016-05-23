@@ -196,6 +196,32 @@ namespace Valum.ContentNegotiation {
 	}
 
 	/**
+	 * Negotiate a 'TE' header.
+	 *
+	 * Unlike for {@link Valum.ContentNegotiation.accept_encoding}, the transfer
+	 * coding is not applied with a {@link GLib.Converter}, but simply stated in
+	 * the response headers. It's up to the VSGI implementation to perform that
+	 * work.
+	 *
+	 * Note that according to HTTP/1.1 specification, the 'chunked' encoding is
+	 * always considered acceptable.
+	 *
+	 * @since 0.3
+	 */
+	public HandlerCallback accept_transfer_encoding (string                  encodings,
+	                                                 owned NegotiateCallback forward) {
+		return negotiate ("TE", encodings, (req, res, next, ctx, encoding) => {
+			res.headers.append ("Transfer-Encoding", encoding);
+			return forward (req, res, next, ctx, encoding);
+		}, (a, b) => {
+			return a == "*"                            ||
+			       Soup.str_case_equal (a, b)          ||
+			       Soup.str_case_equal ("chunked", b)  || // always acceptable
+			       (a.has_prefix ("x-") && Soup.str_case_equal (a[2:a.length], b));
+		});
+	}
+
+	/**
 	 * Negotiate a 'Accept-Language' header.
 	 *
 	 * If the user agent have regional preferences (eg. 'Accept: en-GB'),
