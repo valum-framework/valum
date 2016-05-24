@@ -148,7 +148,7 @@ namespace Valum.Static {
 					res.headers.set_content_length (file_info.get_size ());
 
 				if (uncertain)
-					warning ("could not infer content type of file '%s' with certainty", file.get_uri ());
+					res.headers.append ("Warning", "The 'Content-Type' header could not be infered with certainty.");
 
 				if (ServeFlags.X_SENDFILE in serve_flags && file.get_path () != null) {
 					res.headers.set_encoding (Soup.Encoding.NONE);
@@ -245,7 +245,7 @@ namespace Valum.Static {
 				res.headers.set_content_length (lookup.get_size ());
 
 			if (uncertain)
-				warning ("could not infer content type of file '%s' with certainty", path);
+				res.headers.append ("Warning", "The 'Content-Type' header could not be infered with certainty.");
 
 			if (req.method == Request.HEAD)
 				return res.end ();
