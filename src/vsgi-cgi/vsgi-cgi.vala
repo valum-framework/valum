@@ -49,6 +49,12 @@ namespace VSGI.CGI {
 			}
 		}
 
+		public override string gateway_interface {
+			owned get {
+				return Environ.get_variable (environment, "GATEWAY_INTERFACE") ?? "CGI/1.1";
+			}
+		}
+
 		public override string method {
 			owned get {
 				return Environ.get_variable (environment, "REQUEST_METHOD") ?? "GET";

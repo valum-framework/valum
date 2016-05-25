@@ -64,6 +64,8 @@ namespace VSGI.Mock {
 
 		public override HTTPVersion http_version { get { return this._http_version; } }
 
+		public override string gateway_interface { owned get { return "Mock/0.3"; } }
+
 		public override string method { owned get { return this._method; } }
 
 		public override URI uri { get { return this._uri; } }

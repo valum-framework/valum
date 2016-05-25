@@ -74,6 +74,16 @@ namespace VSGI {
 		public abstract HTTPVersion http_version { get; }
 
 		/**
+		 * Identifier for the gateway (eg. CGI/1.1).
+		 *
+		 * It is composed of an identifier and a version number separated by a
+		 * slash '/'.
+		 *
+		 * @since 0.3
+		 */
+		public abstract string gateway_interface { owned get; }
+
+		/**
 		 * Request HTTP method
 		 *
 		 * Should be one of OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT

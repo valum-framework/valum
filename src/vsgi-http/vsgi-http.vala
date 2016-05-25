@@ -76,6 +76,8 @@ namespace VSGI.HTTP {
 
 		public override HTTPVersion http_version { get { return this.message.http_version; } }
 
+		public override string gateway_interface { owned get { return "HTTP/1.1"; } }
+
 		public override string method { owned get { return this.message.method ; } }
 
 		public override URI uri { get { return this.message.uri; } }
