@@ -124,6 +124,17 @@ namespace VSGI.CGI {
 				this._query = Form.decode (request_uri.split ("?", 2)[1]);
 			}
 
+			var content_type = Environ.get_variable (environment, "CONTENT_TYPE") ?? "application/octet-stream";
+			var @params = Soup.header_parse_param_list (content_type);
+			headers.set_content_type (content_type.split (";", 2)[0], @params);
+
+			//
+			int64 content_length;
+			if (int64.try_parse (Environ.get_variable (environment, "CONTENT_LENGTH") ?? "0",
+			                     out content_length)) {
+				headers.set_content_length (content_length);
+			}
+
 			// extract HTTP headers, they are prefixed by 'HTTP_' in environment variables
 			foreach (var variable in environment) {
 				var parts = variable.split ("=", 2);

@@ -35,6 +35,7 @@ public static void test_vsgi_cgi_request () {
 	var request    = new Request (connection, environment);
 
 	assert (Soup.HTTPVersion.@1_0 == request.http_version);
+	assert ("CGI/1.1" == request.gateway_interface);
 	assert ("GET" == request.method);
 	assert ("root" == request.uri.get_user ());
 	assert ("0.0.0.0" == request.uri.get_host ());
@@ -45,6 +46,45 @@ public static void test_vsgi_cgi_request () {
 	assert (3003 == request.uri.get_port ());
 	assert ("example.com" == request.headers.get_one ("Host"));
 	assert (connection.input_stream == request.body);
+}
+
+/**
+ * @since 0.3
+ */
+public void test_vsgi_cgi_request_gateway_interface () {
+	var request = new Request (new VSGI.Mock.Connection (), {"GATEWAY_INTERFACE=CGI/1.0"});
+
+	assert ("CGI/1.0" == request.gateway_interface);
+}
+
+/**
+ * @since 0.3
+ */
+public void test_vsgi_cgi_request_content_type () {
+	var request = new Request (new VSGI.Mock.Connection (), {"CONTENT_TYPE=text/html; charset=UTF-8"});
+
+	HashTable<string, string> @params;
+	message (request.headers.get_content_type (out @params));
+	assert ("text/html" == request.headers.get_content_type (out @params));
+	assert ("UTF-8" == @params["charset"]);
+}
+
+/**
+ * @since 0.3
+ */
+public void test_vsgi_cgi_request_content_length () {
+	var request = new Request (new VSGI.Mock.Connection (), {"CONTENT_LENGTH=12"});
+
+	assert (12 == request.headers.get_content_length ());
+}
+
+/**
+ * @since 0.3
+ */
+public void test_vsgi_cgi_request_content_length_malformed () {
+	var request = new Request (new VSGI.Mock.Connection (), {"CONTENT_LENGTH=12a"});
+
+	assert (0 == request.headers.get_content_length ());
 }
 
 /**

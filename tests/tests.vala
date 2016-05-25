@@ -125,6 +125,10 @@ public int main (string[] args) {
 	Test.add_func ("/vsgi/soup/response", test_vsgi_soup_response);
 
 	Test.add_func ("/vsgi/cgi/request", test_vsgi_cgi_request);
+	Test.add_func ("/vsgi/cgi/request/gateway_interface", test_vsgi_cgi_request_gateway_interface);
+	Test.add_func ("/vsgi/cgi/request/content_type", test_vsgi_cgi_request_content_type);
+	Test.add_func ("/vsgi/cgi/request/content_length", test_vsgi_cgi_request_content_length);
+	Test.add_func ("/vsgi/cgi/request/content_length/malformed", test_vsgi_cgi_request_content_length_malformed);
 	Test.add_func ("/vsgi/cgi/request/missing_path_info", test_vsgi_cgi_request_missing_path_info);
 	Test.add_func ("/vsgi/cgi/request/http_1_1", test_vsgi_cgi_request_http_1_1);
 	Test.add_func ("/vsgi/cgi/request/https_detection", test_vsgi_cgi_request_https_detection);
