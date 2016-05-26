@@ -37,8 +37,8 @@ using the ``convert`` method.
 
 Since conversion typically affect the resulting size of the payload, the
 ``Content-Length`` header must be set appropriately. To ease that, the new
-value can be specified as second argument. Note that ``0`` and ``-1`` are
-respectively used to describe a complete sink and an undetermined length.
+value can be specified as second argument. Note that ``-1`` is used to describe
+an undetermined length.
 
 ::
 
