@@ -20,6 +20,8 @@ valum_lib = library('valum', valum_sources,
 valum = declare_dependency(include_directories: include_directories('.'),
                            link_with: valum_lib)
 
+install_headers(meson.current_build_dir() + '/valum.h', subdir: 'valum')
+
 pkgconfig = import('pkgconfig')
 pkgconfig.generate(requires: 'vsgi',
                    libraries: valum_lib,
