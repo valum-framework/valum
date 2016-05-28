@@ -1,5 +1,6 @@
 vsgi_mock_lib = library('vsgi-mock', 'vsgi-mock.vala',
                         dependencies: [glib, gobject, gio, soup, vsgi],
+                        vala_args: ['--target-glib=2.32'] + vala_defines,
                         install: true)
 
 vsgi_mock = declare_dependency(include_directories: include_directories('.'),

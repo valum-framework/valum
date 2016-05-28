@@ -11,7 +11,7 @@ vsgi_sources = [
     'vsgi-server.vala']
 vsgi_lib = library('vsgi', vsgi_sources,
                    dependencies: [glib, gobject, gio, soup],
-                   vala_args: '--pkg=posix',
+                   vala_args: ['--pkg=posix', '--target-glib=2.32'] + vala_defines,
                    install: true)
 
 vsgi = declare_dependency(include_directories: include_directories('.'), link_with: vsgi_lib)

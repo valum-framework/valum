@@ -1,5 +1,6 @@
 vsgi_cgi_lib = library('vsgi-cgi', 'vsgi-cgi.vala',
                        dependencies: [glib, gobject, gio, gio_unix, soup, vsgi],
+                       vala_args: ['--target-glib=2.32'] + vala_defines,
                        install: true)
 
 vsgi_cgi = declare_dependency(include_directories: include_directories('.'), link_with: vsgi_cgi_lib)

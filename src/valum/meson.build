@@ -15,6 +15,7 @@ valum_sources = [
     'valum-subdomain.vala']
 valum_lib = library('valum', valum_sources,
                     dependencies: [glib, gobject, gio, soup, vsgi],
+                    vala_args: ['--target-glib=2.32'] + vala_defines,
                     install: true)
 
 valum = declare_dependency(include_directories: include_directories('.'),

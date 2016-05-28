@@ -1,7 +1,7 @@
 fcgi = meson.get_compiler('c').find_library('fcgi')
 vsgi_fastcgi_lib = library('vsgi-fastcgi', 'vsgi-fastcgi.vala',
                            dependencies: [glib, gobject, gio, gio_unix, soup, vsgi, vsgi_cgi, fcgi],
-                           vala_args: ['--pkg=fcgi', '--vapidir=' + meson.current_source_dir()],
+                           vala_args: ['--pkg=fcgi', '--vapidir=' + meson.current_source_dir(), '--target-glib=2.32'] + vala_defines,
                            install: true)
 
 vsgi_fastcgi = declare_dependency(include_directories: include_directories('.'),
