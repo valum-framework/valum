@@ -25,3 +25,5 @@ pkgconfig.generate(requires: 'glib-2.0 gobject-2.0 gio-2.0 libsoup-2.4',
                    name: 'VSGI',
                    filebase: 'vsgi',
                    description: 'Interface and implementations for various web server technologies')
+
+install_data('vsgi.deps', install_dir: 'share/vala/vapi')

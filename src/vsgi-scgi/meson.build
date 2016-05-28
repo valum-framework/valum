@@ -15,3 +15,5 @@ pkgconfig.generate(requires: 'vsgi-cgi',
                    filebase: 'vsgi-scgi',
                    description: 'Web micro-framework entirely written in Vala',
                    subdirs: 'vsgi')
+
+install_data('vsgi-scgi.deps', install_dir: 'share/vala/vapi')

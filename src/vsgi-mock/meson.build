@@ -15,3 +15,5 @@ pkgconfig.generate(requires: 'vsgi',
                    filebase: 'vsgi-mock',
                    description: 'Web micro-framework entirely written in Vala',
                    subdirs: 'vsgi')
+
+install_data('vsgi-mock.deps', install_dir: 'share/vala/vapi')

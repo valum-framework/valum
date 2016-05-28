@@ -42,6 +42,8 @@ if dependency('libsoup-2.4', version: '>=2.48', required: false).found()
 #add_global_arguments('--define=SOUP_2_48', language: 'vala')
 endif
 
+meson.add_install_script('install.sh')
+
 subdir('data')
 subdir('src')
 subdir('tests')

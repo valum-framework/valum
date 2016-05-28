@@ -28,3 +28,5 @@ pkgconfig.generate(requires: 'vsgi',
                    filebase: 'valum',
                    description: 'Web micro-framework entirely written in Vala',
                    subdirs: 'valum')
+
+install_data('valum.deps', install_dir: 'share/vala/vapi')

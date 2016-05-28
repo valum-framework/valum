@@ -14,3 +14,5 @@ pkgconfig.generate(requires: 'vsgi',
                    filebase: 'vsgi-http',
                    description: 'Web micro-framework entirely written in Vala',
                    subdirs: 'vsgi')
+
+install_data('vsgi-http.deps', install_dir: 'share/vala/vapi')
