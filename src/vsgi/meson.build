@@ -1,4 +1,4 @@
-vsgi_sources = [
+vsgi_sources = files(
     'vsgi.vala',
     'vsgi-authentication.vala',
     'vsgi-authorization.vala',
@@ -9,7 +9,6 @@ vsgi_sources = [
     'vsgi-chunked-encoder.vala',
     'vsgi-connection.vala',
     'vsgi-cookie-utils.vala',
-    'vsgi-cookie-utils.vala',
     'vsgi-mock.vala',
     'vsgi-request.vala',
     'vsgi-response.vala',
@@ -17,9 +16,8 @@ vsgi_sources = [
     'vsgi-server-module.vala',
     'vsgi-server.vala',
     'vsgi-socket-listener-server.vala',
-    'vsgi-socket-listener-server.vala',
     'vsgi-tee-output-stream.vala',
-    'vsgi-worker.vala']
+    'vsgi-worker.vala')
 vsgi_lib = library('vsgi-' + api_version, vsgi_sources,
                    dependencies: [glib, gobject, gio, gio_unix, gmodule, soup],
                    vala_args: ['--pkg=posix'] + vala_defines,

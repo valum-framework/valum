@@ -1,4 +1,4 @@
-valum_sources = [
+valum_sources = files(
     'valum.vala',
     'valum-asterisk-route.vala',
     'valum-authenticate.vala',
@@ -21,7 +21,7 @@ valum_sources = [
     'valum-server-sent-events.vala',
     'valum-static.vala',
     'valum-status.vala',
-    'valum-subdomain.vala']
+    'valum-subdomain.vala')
 valum_lib = library('valum-' + api_version, valum_sources,
                     dependencies: [glib, gobject, gio, soup, vsgi],
                     vala_args: vala_defines,
