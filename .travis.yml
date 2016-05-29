@@ -1,3 +1,5 @@
+dist: trusty
+
 language: c
 
 cache:
@@ -11,15 +13,21 @@ before_install:
     - sudo add-apt-repository --yes ppa:vala-team
     - sudo apt-get update --quiet
     - sudo apt-get install --yes --force-yes valac-0.26 libglib2.0-bin
-      libglib2.0-dev libsoup2.4-dev libfcgi-dev python-pip valadoc
+      libglib2.0-dev libsoup2.4-dev libfcgi-dev valadoc python3-pip gcovr
+      libgee-0.8-dev libctpl-dev libjson-glib-dev libmemcached-dev
+      libmarkdown2-dev liblua5.2-dev
     - sudo pip install sphinx sphinx_rtd_theme PyYAML
+    - sudo pip3 install meson
+    - wget https://github.com/ninja-build/ninja/releases/download/v1.5.1/ninja-linux.zip
+    - sudo unzip ninja-linux.zip -d /usr/local/bin
 
 before_script:
-    - ./waf configure --enable-docs CFLAGS='-fprofile-arcs -ftest-coverage' LINKFLAGS='-lgcov -coverage' VALAFLAGS='--enable-checking --debug'
-    - ./waf build --notests
+    - mkdir build
+    - meson.py -D b_coverage=true -D enable_docs=true -D enable_examples=true . build
+    - ninja -C build -v
 
 script:
-    - ./waf --alltests
+    - ninja -C build -v test
     - valadoc --pkg=glib-2.0 --pkg=gio-2.0 --pkg=gio-unix-2.0 --pkg=libsoup-2.4
       --pkg=fcgi --pkg=posix --target-glib=2.32 --directory=build/apidocs
       --vapidir=/usr/share/vala-0.26/vapi --vapidir=src/vsgi-fastcgi

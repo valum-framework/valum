@@ -1,0 +1,7 @@
+subdir('vsgi')
+subdir('vsgi-http')
+subdir('vsgi-cgi')
+subdir('vsgi-scgi')
+subdir('vsgi-fastcgi')
+subdir('vsgi-mock')
+subdir('valum')
