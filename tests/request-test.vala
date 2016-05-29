@@ -34,7 +34,7 @@ public int main (string[] args) {
 	Test.add_func ("/request/convert/eof_to_fixed_size", () => {
 		var req = new Request (new Connection (), "get", new Soup.URI ("http://localhost/"));
 
-		assert (Soup.Encoding.NONE == req.headers.get_encoding ());
+		req.headers.set_encoding (Soup.Encoding.EOF);
 
 		req.convert (new ZlibCompressor (ZlibCompressorFormat.GZIP), 40);
 
@@ -48,7 +48,8 @@ public int main (string[] args) {
 
 		req.convert (new ZlibCompressor (ZlibCompressorFormat.GZIP), 0);
 
-		assert (Soup.Encoding.NONE == req.headers.get_encoding ());
+		assert (Soup.Encoding.CONTENT_LENGTH == req.headers.get_encoding ());
+		assert (0 == req.headers.get_content_length ());
 	});
 
 	Test.add_func ("/request/convert/chunked", () => {
