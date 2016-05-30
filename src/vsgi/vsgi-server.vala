@@ -70,11 +70,9 @@ namespace VSGI {
 			         ApplicationFlags.SEND_ENVIRONMENT |
 			         ApplicationFlags.NON_UNIQUE;
 #if GIO_2_40
-			const OptionEntry[] entries = {
-				// general options
-				{"forks", 0, 0, OptionArg.INT, null, "Number of fork to create", "0"},
-				{null}
-			};
+			// general options
+			var entries = new OptionEntry[1];
+			entries[0] = {"forks", 0, 0, OptionArg.INT, null, "Number of fork to create", "0"};
 			this.add_main_option_entries (entries);
 #endif
 		}
@@ -100,7 +98,7 @@ namespace VSGI {
 				foreach (var uri in uris) {
 					command_line.printerr ("master:\t\tlistening on '%s'\n", uri.to_string (false)[0:-uri.path.length]);
 				}
-				var remaining = options.lookup_value ("forks", VariantType.INT32).get_int32 ();
+				var remaining = ((!) options.lookup_value ("forks", VariantType.INT32)).get_int32 ();
 				for (var i = 0; i < remaining; i++) {
 					var pid = fork ();
 					if (pid == 0) {
