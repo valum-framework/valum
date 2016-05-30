@@ -184,13 +184,11 @@ namespace VSGI.FastCGI {
 
 		construct {
 #if GIO_2_40
-			const OptionEntry[] options = {
-				{"socket",          's', 0, OptionArg.FILENAME, null, "Listen to the provided UNIX domain socket (or named pipe for WinNT)"},
-				{"port",            'p', 0, OptionArg.INT,      null, "Listen to the provided TCP port"},
-				{"file-descriptor", 'f', 0, OptionArg.INT,      null, "Listen to the provided file descriptor",       "0"},
-				{"backlog",         'b', 0, OptionArg.INT,      null, "Listen queue depth used in the listen() call", "10"},
-				{null}
-			};
+			var options = new OptionEntry[4];
+			options[0] = {"socket",          's', 0, OptionArg.FILENAME, null, "Listen to the provided UNIX domain socket (or named pipe for WinNT)"};
+			options[1] = {"port",            'p', 0, OptionArg.INT,      null, "Listen to the provided TCP port"};
+			options[2] = {"file-descriptor", 'f', 0, OptionArg.INT,      null, "Listen to the provided file descriptor",       "0"};
+			options[3] = {"backlog",         'b', 0, OptionArg.INT,      null, "Listen queue depth used in the listen() call", "10"};
 			this.add_main_option_entries (options);
 #endif
 
@@ -204,12 +202,12 @@ namespace VSGI.FastCGI {
 		}
 
 		public override void listen (Variant options) throws Error {
-			var backlog = options.lookup_value ("backlog", VariantType.INT32) ?? new Variant.@int32 (10);
+			var backlog = (!) (options.lookup_value ("backlog", VariantType.INT32) ?? new Variant.@int32 (10));
 
 			var fd = global::FastCGI.LISTENSOCK_FILENO;
 
 			if (options.lookup_value ("socket", VariantType.BYTESTRING) != null) {
-				var socket_path = options.lookup_value ("socket", VariantType.BYTESTRING).get_bytestring ();
+				var socket_path = ((!) options.lookup_value ("socket", VariantType.BYTESTRING)).get_bytestring ();
 
 				fd = global::FastCGI.open_socket (socket_path, backlog.get_int32 ());
 
@@ -221,7 +219,7 @@ namespace VSGI.FastCGI {
 			}
 
 			else if (options.lookup_value ("port", VariantType.INT32) != null) {
-				var port =  (options.lookup_value ("port", VariantType.INT32).get_int32 ());
+				var port = ((!) options.lookup_value ("port", VariantType.INT32)).get_int32 ();
 
 				fd = global::FastCGI.open_socket (":%d".printf (port), backlog.get_int32 ());
 
@@ -233,7 +231,7 @@ namespace VSGI.FastCGI {
 			}
 
 			else if (options.lookup_value ("file-descriptor", VariantType.INT32) != null) {
-				fd = options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 ();
+				fd = ((!) options.lookup_value ("file-descriptor", VariantType.INT32)).get_int32 ();
 				_uris.append (new Soup.URI ("fcgi+fd://%u/".printf (fd)));
 			}
 
