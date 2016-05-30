@@ -61,15 +61,17 @@ namespace VSGI {
 		 */
 		public SList<Cookie> cookies {
 			owned get {
-				var cookies     = new SList<Cookie> ();
-				var cookie_list = headers.get_list ("Set-Cookie");
+				var cookies	    = new SList<Cookie> ();
+				string? cookie_list = headers.get_list ("Set-Cookie");
 
 				if (cookie_list == null)
 					return cookies;
 
-				foreach (var cookie in header_parse_list (cookie_list))
-					if (cookie != null)
-						cookies.prepend (Cookie.parse (cookie, request.uri));
+				foreach (var cookie in header_parse_list ((!) cookie_list)) {
+					Soup.Cookie? parsed_cookie = Cookie.parse (cookie, request.uri);
+					if (parsed_cookie != null)
+						cookies.prepend ((!) parsed_cookie);
+				}
 
 				cookies.reverse ();
 
@@ -127,7 +129,7 @@ namespace VSGI {
 					warning ("could not write the head in the connection stream: %s", err.message);
 				}
 
-				return _body ?? this.request.connection.output_stream;
+				return (!) (_body ?? this.request.connection.output_stream);
 			}
 		}
 
@@ -168,7 +170,7 @@ namespace VSGI {
 			head.append_printf ("HTTP/%s %u %s\r\n",
 			                    this.request.http_version == HTTPVersion.@1_0 ? "1.0" : "1.1",
 			                    status,
-			                    reason_phrase ?? Status.get_phrase (status));
+			                    (!) (reason_phrase ?? Status.get_phrase (status)));
 
 			// headers
 			this.headers.foreach ((name, header) => {
@@ -263,7 +265,8 @@ namespace VSGI {
 			} else {
 				headers.set_encoding (Soup.Encoding.EOF);
 			}
-			_body = new ConverterOutputStream (_body ?? request.connection.output_stream, converter);
+			_body = new ConverterOutputStream ((!) (_body ?? request.connection.output_stream),
+								converter);
 		}
 
 		/**
@@ -275,7 +278,7 @@ namespace VSGI {
 		 * @since 0.3
 		 */
 		public bool expand (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
-			if (headers.get_list ("Content-Encoding") == null) {
+			if ((string?) headers.get_list ("Content-Encoding") == null) {
 				headers.set_content_length (buffer.length);
 			}
 			size_t bytes_written;
