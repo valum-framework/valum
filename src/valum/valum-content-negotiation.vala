@@ -46,10 +46,10 @@ namespace Valum.ContentNegotiation {
 		if (param_end == -1)
 			param_end = header.length;
 
-		var @params = Soup.header_parse_semi_param_list (header[param_start:param_end]);
+		HashTable<string, string?> @params = Soup.header_parse_semi_param_list (header[param_start:param_end]);
 
 		double qvalue;
-		if (double.try_parse (@params["q"] ?? "1", out qvalue)) {
+		if (double.try_parse ((!) (@params["q"] ?? "1"), out qvalue)) {
 			return qvalue.clamp (0, 1);
 		}
 
@@ -83,7 +83,7 @@ namespace Valum.ContentNegotiation {
 	                                  EqualFunc<string>       match = (EqualFunc<string>) Soup.str_case_equal) {
 		var _expectations = Soup.header_parse_quality_list (expectations, null);
 		return (req, res, next, ctx) => {
-			var header = req.headers.get_list (header_name);
+			string? header = req.headers.get_list (header_name);
 			if (_expectations.length () == 0)
 				throw new ClientError.NOT_ACCEPTABLE ("'%s' cannot be satisfied: nothing is expected", header_name);
 			if (header == null) {
@@ -92,9 +92,9 @@ namespace Valum.ContentNegotiation {
 
 			string? best_expectation = null;
 			double  best_qvalue      = 0;
-			foreach (var accepted in Soup.header_parse_quality_list (header, null)) {
+			foreach (var accepted in Soup.header_parse_quality_list ((!) header, null)) {
 				foreach (var expectation in _expectations) {
-					var current_qvalue = _qvalue_for_param (header, accepted) * _qvalue_for_param (expectations, expectation);
+					var current_qvalue = _qvalue_for_param ((!) header, accepted) * _qvalue_for_param (expectations, expectation);
 					if (match (accepted, expectation) && current_qvalue > best_qvalue) {
 						best_expectation = expectation;
 						best_qvalue      = current_qvalue;
@@ -103,7 +103,7 @@ namespace Valum.ContentNegotiation {
 			}
 
 			if (best_expectation != null) {
-				return forward (req, res, next, ctx, best_expectation);
+				return forward (req, res, next, ctx, (!) best_expectation);
 			}
 
 			throw new ClientError.NOT_ACCEPTABLE ("'%s' is not satisfiable by any of '%s'.",
@@ -152,7 +152,7 @@ namespace Valum.ContentNegotiation {
 	                                       owned NegotiateCallback forward) {
 		return negotiate ("Accept-Charset", charsets, (req, res, next, ctx, charset) => {
 			HashTable<string, string> @params;
-			var content_type   = res.headers.get_content_type (out @params) ?? "application/octet-stream";
+			var content_type   = (!) ((string?) res.headers.get_content_type (out @params) ?? "application/octet-stream");
 			@params["charset"] = charset;
 			res.headers.set_content_type (content_type, @params);
 			return forward (req, res, next, ctx, charset);
