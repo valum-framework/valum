@@ -57,7 +57,8 @@ namespace Valum {
 			if (/\(\?<(\w+)>.+?\)/.match (regex.get_pattern (), 0, out capture_match_info)) {
 				try {
 					do {
-						captures.append (capture_match_info.fetch (1));
+						if (capture_match_info.fetch (1) != null)
+							captures.append ((!) capture_match_info.fetch (1));
 					} while (capture_match_info.next ());
 				} catch (RegexError err) {
 					// ...
