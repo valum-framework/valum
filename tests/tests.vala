@@ -121,9 +121,6 @@ public int main (string[] args) {
 
 	Test.add_func ("/vsgi/chunked_encoder", test_vsgi_chunked_encoder);
 
-	Test.add_func ("/vsgi/soup/request", test_vsgi_soup_request);
-	Test.add_func ("/vsgi/soup/response", test_vsgi_soup_response);
-
 	Test.add_func ("/vsgi/cgi/request", test_vsgi_cgi_request);
 	Test.add_func ("/vsgi/cgi/request/gateway_interface", test_vsgi_cgi_request_gateway_interface);
 	Test.add_func ("/vsgi/cgi/request/content_type", test_vsgi_cgi_request_content_type);
@@ -132,15 +129,9 @@ public int main (string[] args) {
 	Test.add_func ("/vsgi/cgi/request/missing_path_info", test_vsgi_cgi_request_missing_path_info);
 	Test.add_func ("/vsgi/cgi/request/http_1_1", test_vsgi_cgi_request_http_1_1);
 	Test.add_func ("/vsgi/cgi/request/https_detection", test_vsgi_cgi_request_https_detection);
-	Test.add_func ("/vsgi/cgi/response", test_vsgi_cgi_response);
-
-
-	Test.add_func ("/vsgi/fastcgi/request", test_vsgi_fastcgi_request);
-	Test.add_func ("/vsgi/fastcgi/request/https_on", test_vsgi_fastcgi_request_https_on);
-	Test.add_func ("/vsgi/fastcgi/request/uri_with_query", test_vsgi_fastcgi_request_uri_with_query);
-	Test.add_func ("/vsgi/fastcgi/response", test_vsgi_fastcgi_response);
-
-	Test.add_func ("/vsgi/scgi/request/with_request_uri", test_vsgi_scgi_request_with_request_uri);
+	Test.add_func ("/vsgi/cgi/request/https_on", test_vsgi_cgi_request_https_on);
+	Test.add_func ("/vsgi/cgi/request/request_uri", test_vsgi_cgi_request_request_uri);
+	Test.add_func ("/vsgi/cgi/request/uri_with_query", test_vsgi_cgi_request_uri_with_query);
 
 	return Test.run ();
 }

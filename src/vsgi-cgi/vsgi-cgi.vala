@@ -18,6 +18,11 @@
 using GLib;
 using Soup;
 
+[ModuleInit]
+public Type server_init (TypeModule type_module) {
+	return typeof (VSGI.CGI.Server);
+}
+
 /**
  * CGI implementation of VSGI.
  *
@@ -28,154 +33,6 @@ using Soup;
  */
 [CCode (gir_namespace = "VSGI.CGI", gir_version = "0.2")]
 namespace VSGI.CGI {
-
-	public class Request : VSGI.Request {
-
-		/**
-		 * CGI environment variables encoded in 'NAME=VALUE'.
-		 *
-		 * @since 0.2
-		 */
-		public string[] environment { construct; get; }
-
-		private URI _uri                          = new URI (null);
-		private HashTable<string, string>? _query = null;
-		private MessageHeaders _headers           = new MessageHeaders (MessageHeadersType.REQUEST);
-
-		public override HTTPVersion http_version {
-			get {
-				return Environ.get_variable (environment, "SERVER_PROTOCOL") == "HTTP/1.1" ?  HTTPVersion.@1_1 :
-				                                                                              HTTPVersion.@1_0;
-			}
-		}
-
-		public override string gateway_interface {
-			owned get {
-				return Environ.get_variable (environment, "GATEWAY_INTERFACE") ?? "CGI/1.1";
-			}
-		}
-
-		public override string method {
-			owned get {
-				return Environ.get_variable (environment, "REQUEST_METHOD") ?? "GET";
-			}
-		}
-
-		public override URI uri { get { return this._uri; } }
-
-		public override HashTable<string, string>? query {
-			get {
-				return this._query;
-			}
-		}
-
-		public override MessageHeaders headers {
-			get { return this._headers; }
-		}
-
-		/**
-		 * Create a request from the provided environment variables.
-		 *
-		 * Although not part of CGI/1.1 specification, the 'REQUEST_URI' and
-		 * 'HTTPS' environment variables are reckognized.
-		 *
-		 * {@inheritDoc}
-		 *
-		 * @since 0.2
-		 *
-		 * @param environment environment variables
-		 */
-		public Request (IOStream connection, string[] environment) {
-			Object (connection: connection, environment: environment);
-
-			var https           = Environ.get_variable (environment, "HTTPS");
-			var path_translated = Environ.get_variable (environment, "PATH_TRANSLATED");
-			if (https != null && https.length > 0 || path_translated != null && path_translated.has_prefix ("https://"))
-				this._uri.set_scheme ("https");
-			else
-				this._uri.set_scheme ("http");
-
-			this._uri.set_user (Environ.get_variable (environment, "REMOTE_USER"));
-			this._uri.set_host (Environ.get_variable (environment, "SERVER_NAME"));
-
-			var port = Environ.get_variable (environment, "SERVER_PORT");
-			if (port != null)
-				this._uri.set_port (int.parse (port));
-
-			var path_info   = Environ.get_variable (environment, "PATH_INFO");
-			var request_uri = Environ.get_variable (environment, "REQUEST_URI");
-			if (path_info != null && path_info.length > 0)
-				this._uri.set_path (path_info);
-			else if (request_uri != null && request_uri.length > 0)
-				this._uri.set_path (request_uri.split ("?", 2)[0]); // strip the query
-			else
-				this._uri.set_path ("/");
-
-			// raw & parsed HTTP query
-			var query_string = Environ.get_variable (environment, "QUERY_STRING");
-			if (query_string != null && query_string.length > 0) {
-				this._uri.set_query (query_string);
-				this._query = Form.decode (query_string);
-			} else if (path_translated != null && "?" in path_translated) {
-				this._uri.set_query (path_translated.split ("?", 2)[1]);
-				this._query = Form.decode (path_translated.split ("?", 2)[1]);
-			} else if (request_uri != null && "?" in request_uri) {
-				this._uri.set_query (request_uri.split ("?", 2)[1]);
-				this._query = Form.decode (request_uri.split ("?", 2)[1]);
-			}
-
-			var content_type = Environ.get_variable (environment, "CONTENT_TYPE") ?? "application/octet-stream";
-			var @params = Soup.header_parse_param_list (content_type);
-			headers.set_content_type (content_type.split (";", 2)[0], @params);
-
-			//
-			int64 content_length;
-			if (int64.try_parse (Environ.get_variable (environment, "CONTENT_LENGTH") ?? "0",
-			                     out content_length)) {
-				headers.set_content_length (content_length);
-			}
-
-			// extract HTTP headers, they are prefixed by 'HTTP_' in environment variables
-			foreach (var variable in environment) {
-				var parts = variable.split ("=", 2);
-				if (parts[0].has_prefix ("HTTP_")) {
-					this.headers.append (parts[0].substring (5).replace ("_", "-").casefold (), parts[1]);
-				}
-			}
-		}
-	}
-
-	public class Response : VSGI.Response {
-
-		private MessageHeaders _headers = new MessageHeaders (MessageHeadersType.RESPONSE);
-
-		public override MessageHeaders headers { get { return this._headers; } }
-
-		public Response (Request request) {
-			Object (request: request);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 *
-		 * CGI protocols does not have a status line. They use the 'Status'
-		 * header instead.
-		 */
-		protected override uint8[]? build_head () {
-			var head = new StringBuilder ();
-
-			head.append_printf ("Status: %u %s\r\n", status, reason_phrase ?? Status.get_phrase (status));
-
-			this.headers.foreach ((k, v) => {
-				head.append_printf ("%s: %s\r\n", k, v);
-			});
-
-			// newline preceeding the body
-			head.append ("\r\n");
-
-			return head.str.data;
-		}
-	}
 
 	/**
 	 * {@inheritDoc}
@@ -194,10 +51,6 @@ namespace VSGI.CGI {
 			get {
 				return _uris;
 			}
-		}
-
-		public Server (string application_id, owned VSGI.ApplicationCallback application) {
-			base (application_id, (owned) application);
 		}
 
 		public override void listen (Variant options) throws Error {

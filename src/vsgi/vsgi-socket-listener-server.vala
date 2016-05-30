@@ -39,10 +39,6 @@ public abstract class VSGI.SocketListenerServer : Server {
 		get { return _uris; }
 	}
 
-	public SocketListenerServer (string application_id, owned VSGI.ApplicationCallback application) {
-		base (application_id, (owned) application);
-	}
-
 #if GIO_2_40
 		construct {
 			const OptionEntry[] options = {

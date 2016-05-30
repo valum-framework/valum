@@ -43,4 +43,10 @@ namespace VSGI {
 	 * @return true if the request was or will eventually be fully handled
 	 */
 	public delegate bool ApplicationCallback (Request req, Response res) throws Error;
+
+	/**
+	 * @since 0.3
+	 */
+	[CCode (has_target = false)]
+	public delegate Type ServerInitFunc (TypeModule module);
 }

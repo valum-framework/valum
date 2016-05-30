@@ -17,7 +17,7 @@
 
 using Lua;
 using Valum;
-using VSGI.HTTP;
+using VSGI;
 
 var app = new Router ();
 var vm  = new LuaVM ();
@@ -32,4 +32,4 @@ app.get ("/", (req, res) => {
 	return res.expand_utf8 (vm.to_string (-1), null);
 });
 
-new Server ("org.valum.example.Lua", app.handle).run ({"app", "--all"});
+Server.@new ("http", "org.valum.example.Lua", app.handle).run ({"app", "--all"});

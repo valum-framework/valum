@@ -9,10 +9,6 @@ private class MockedSocketListenerServer : SocketListenerServer {
 		}
 	}
 
-	public MockedSocketListenerServer (string application_id, owned ApplicationCallback application) {
-		base (application_id, (owned) application);
-	}
-
 	protected override bool handle_incoming_socket_connection (SocketConnection connection, Object? obj) {
 		return true;
 	}
@@ -22,7 +18,8 @@ public int main (string[] args) {
 	Test.init (ref args);
 
 	Test.add_func ("/socket_listener_server/port", () => {
-		var server = new MockedSocketListenerServer ("org.vsgi.example.Mocked", () => { return true; });
+		var server = new MockedSocketListenerServer ();
+		server.set_application_callback (() => { return true; });
 
 		var options = new VariantBuilder (new VariantType ("a{sv}"));
 
@@ -40,7 +37,8 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/socket_listener_server/any_port", () => {
-		var server = new MockedSocketListenerServer ("org.vsgi.example.Mocked", () => { return true; });
+		var server = new MockedSocketListenerServer ();
+		server.set_application_callback (() => { return true; });
 
 		var options = new VariantBuilder (new VariantType ("a{sv}"));
 
@@ -58,7 +56,8 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/socket_listener_server/file_descriptor", () => {
-		var server = new MockedSocketListenerServer ("org.vsgi.example.Mocked", () => { return true; });
+		var server = new MockedSocketListenerServer ();
+		server.set_application_callback (() => { return true; });
 
 		try {
 			var socket = new Socket (SocketFamily.UNIX, SocketType.STREAM, SocketProtocol.DEFAULT);

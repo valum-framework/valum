@@ -17,7 +17,7 @@
 
 using Valum;
 using Valum.Static;
-using VSGI.FastCGI;
+using VSGI;
 
 public static int main (string[] args) {
 	var app = new Router ();
@@ -39,5 +39,5 @@ public static int main (string[] args) {
 		return true;
 	});
 
-	return new Server ("org.valum.example.FastCGI", app.handle).run (args);
+	return Server.@new ("fastcgi", "org.valum.example.FastCGI", app.handle).run (args);
 }

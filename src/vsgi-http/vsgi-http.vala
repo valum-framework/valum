@@ -18,6 +18,11 @@
 using GLib;
 using Soup;
 
+[ModuleInit]
+public Type server_init (TypeModule type_module) {
+	return typeof (VSGI.HTTP.Server);
+}
+
 /**
  * HTTP implementation of VSGI.
  *
@@ -173,13 +178,6 @@ namespace VSGI.HTTP {
 #endif
 				return _uris;
 			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public Server (string application_id, owned ApplicationCallback application) {
-			base (application_id, (owned) application);
 		}
 
 		construct {

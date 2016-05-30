@@ -17,6 +17,11 @@
 
 using GLib;
 
+[ModuleInit]
+public Type server_init (TypeModule type_module) {
+	return typeof (VSGI.SCGI.Server);
+}
+
 /**
  * SCGI implementation of VSGI.
  *
@@ -94,10 +99,6 @@ namespace VSGI.SCGI {
 	public class Server : VSGI.SocketListenerServer {
 
 		protected override string protocol { get { return "scgi"; } }
-
-		public Server (string application_id, owned VSGI.ApplicationCallback application) {
-			base (application_id, (owned) application);
-		}
 
 		protected override bool handle_incoming_socket_connection (SocketConnection connection, Object? obj) {
 			process_connection.begin (connection, Priority.DEFAULT, null, (obj, result) => {

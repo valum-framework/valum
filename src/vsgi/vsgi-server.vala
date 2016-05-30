@@ -34,27 +34,34 @@ namespace VSGI {
 	 */
 	public abstract class Server : GLib.Application {
 
+		private static ServerModule _server_module;
+
+		/**
+		 * Instantiate a new {@link VSGI.Server} instance.
+		 *
+		 * Calling this more than once will unload the currently loaded
+		 * implementation, which could induce undefined behaviours for existing
+		 * instances.
+		 *
+		 * For a more fine-grained control, use {@link VSGI.ServerModule}.
+		 *
+		 * @since 0.3
+		 */
+		public static new Server? @new (string name, string application_id, owned ApplicationCallback callback) {
+			_server_module = new ServerModule (null, name);
+			if (!_server_module.load ())
+				return null;
+			var server = Object.@new (_server_module.server_type) as Server;
+			server.set_application_callback ((owned) callback);
+			return server;
+		}
+
 		/**
 		 * List of URIs this server is currently listening on.
 		 *
 		 * @since 0.3
 		 */
 		public abstract SList<Soup.URI> uris { get; }
-
-		/**
-		 * Enforces implementation to take the application as a sole argument
-		 * and set the {@link GLib.ApplicationFlags.HANDLES_COMMAND_LINE},
-		 * {@link GLib.ApplicationFlags.SEND_ENVIRONMENT} and
-		 * {@link GLib.ApplicationFlags.NON_UNIQUE} flags.
-		 *
-		 * @param application served application
-		 *
-		 * @since 0.2
-		 */
-		public Server (string application_id, owned ApplicationCallback application) {
-			Object (application_id: application_id);
-			set_application_callback ((owned) application);
-		}
 
 		private ApplicationCallback _application;
 

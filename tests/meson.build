@@ -5,29 +5,26 @@ legacy_test_sources = [
     'chunked-encoder-test.vala',
     'cookies-test.vala',
     'decode-test.vala',
-    'fastcgi-test.vala',
-    'http-test.vala',
     'router-test.vala',
     'route-test.vala',
-    'scgi-test.vala',
     'server-sent-events-test.vala',
     'subdomain-test.vala',
     gnome.compile_resources('tests-resources', 'tests.gresource.xml', source_dir: '.')]
 test('legacy', executable('legacy-test', legacy_test_sources,
-                          dependencies: [glib, gobject, gio, soup, vsgi, vsgi_cgi, vsgi_scgi, vsgi_fastcgi, vsgi_http, vsgi_mock, valum]))
+                          dependencies: [glib, gobject, gio, soup, vsgi, valum]))
 
 # VSGI tests
 test('request', executable('request-test', 'request-test.vala',
-                           dependencies: [glib, gobject, gio, soup, vsgi, vsgi_mock]))
+                           dependencies: [glib, gobject, gio, soup, vsgi]))
 test('socket listener server', executable('socket-listener-server-test', 'socket-listener-server-test.vala',
                                           dependencies: [glib, gobject, gio, gio_unix,  soup, vsgi]))
 test('fastcgi server', executable('fastcgi-server-test', 'fastcgi-server-test.vala',
-                                  dependencies: [glib, gobject, gio, soup, vsgi, vsgi_cgi, vsgi_fastcgi]))
+                                  dependencies: [glib, gobject, gio, soup, vsgi]))
 
 # Valum tests
 test('basepath', executable('basepath-test', ['basepath-test.vala'],
-                            dependencies: [glib, gobject, gio, soup, vsgi, vsgi_mock, valum]))
+                            dependencies: [glib, gobject, gio, soup, vsgi, valum]))
 test('content negotiation', executable('content-negotiation-test', ['content-negotiation-test.vala'],
-                                       dependencies: [glib, gobject, gio, soup, vsgi, vsgi_mock, valum]))
+                                       dependencies: [glib, gobject, gio, soup, vsgi, valum]))
 test('status', executable('status-test', ['status-test.vala'],
-                                       dependencies: [glib, gobject, gio, soup, vsgi, vsgi_mock, valum]))
+                                       dependencies: [glib, gobject, gio, soup, vsgi, valum]))

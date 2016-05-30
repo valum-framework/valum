@@ -16,7 +16,7 @@
  */
 
 using Valum;
-using VSGI.SCGI;
+using VSGI;
 
 public int main (string[] args) {
 	var app = new Router ();
@@ -35,5 +35,5 @@ public int main (string[] args) {
 		return true;
 	});
 
-	return new Server ("org.valum.example.SCGI", app.handle).run (args);
+	return Server.@new ("scgi", "org.valum.example.SCGI", app.handle).run (args);
 }

@@ -16,7 +16,7 @@
  */
 
 using Valum;
-using VSGI.HTTP;
+using VSGI;
 
 var app       = new Router ();
 var memcached = new Memcached.Context.from_configuration ("--SERVER=localhost".data);
@@ -74,4 +74,4 @@ app.delete ("/<key>", (req, res, next, context) => {
 });
 
 
-new Server ("org.valum.example.Memcached", app.handle).run ({"app", "--all"});
+Server.@new ("http", "org.valum.example.Memcached", app.handle).run ({"app", "--all"});

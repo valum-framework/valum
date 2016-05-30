@@ -18,7 +18,7 @@
 using Valum;
 using Valum.ContentNegotiation;
 using Valum.ServerSentEvents;
-using VSGI.HTTP;
+using VSGI;
 
 public async void respond_async (VSGI.Request req, VSGI.Response res) throws Error {
 	size_t bytes_written;
@@ -325,4 +325,4 @@ app.get ("/negotiate-encoding", accept_encoding ("gzip, deflate", (req, res, nex
 	return res.expand_utf8 ("Hello world! (compressed with %s)".printf (encoding));
 }));
 
-new Server ("org.valum.example.App", app.handle).run ({"app", "--all"});
+Server.@new ("http", "org.valum.example.App", app.handle).run ({"app", "--all"});

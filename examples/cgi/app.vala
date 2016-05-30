@@ -16,7 +16,7 @@
  */
 
 using Valum;
-using VSGI.CGI;
+using VSGI;
 
 var app = new Router ();
 
@@ -24,4 +24,4 @@ app.get ("/", (req, res) => {
 	return res.expand_utf8 ("Hello world!", null);
 });
 
-new Server ("org.valum.example.CGI", app.handle).run ();
+Server.@new ("cgi", "org.valum.example.CGI", app.handle).run ();

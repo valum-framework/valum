@@ -20,7 +20,7 @@ using VSGI.CGI;
 /**
  * @since 0.2
  */
-public static void test_vsgi_cgi_request () {
+public void test_vsgi_cgi_request () {
 	string[] environment = {
 		"PATH_INFO=/",
 		"QUERY_STRING=a=b",
@@ -90,7 +90,7 @@ public void test_vsgi_cgi_request_content_length_malformed () {
 /**
  * @since 0.2
  */
-public static void test_vsgi_cgi_request_missing_path_info () {
+public void test_vsgi_cgi_request_missing_path_info () {
 	string[] environment = {};
 	var connection  = new VSGI.Mock.Connection ();
 	var request     = new Request (connection, environment);
@@ -125,6 +125,64 @@ public void test_vsgi_cgi_request_https_detection () {
 /**
  * @since 0.2
  */
+public void test_vsgi_cgi_request_https_on () {
+	string[] environment = {
+		"PATH_INFO=/",
+		"REQUEST_METHOD=GET",
+		"REQUEST_URI=/",
+		"SERVER_NAME=0.0.0.0",
+		"SERVER_PORT=3003",
+		"HTTPS=on"
+	};
+
+	var connection = new VSGI.Mock.Connection ();
+	var request    = new Request (connection, environment);
+
+	assert ("https" == request.uri.scheme);
+}
+
+/**
+ * @since 0.2
+ */
+public void test_vsgi_cgi_request_request_uri () {
+	string[] environment = {
+		"REQUEST_METHOD=GET",
+		"SERVER_NAME=0.0.0.0",
+		"SERVER_PORT=3003",
+		"QUERY_STRING=a=b",
+		"REQUEST_URI=/home?a=b"
+	};
+
+	var connection = new VSGI.Mock.Connection ();
+	var request    = new Request (connection, environment);
+
+	assert ("GET" == request.method);
+	assert ("/home" == request.uri.path);
+	assert ("a" in request.query);
+	assert ("b" == request.query["a"]);
+}
+
+/**
+ * @since 0.2
+ */
+public void test_vsgi_cgi_request_uri_with_query () {
+	string[] environment = {
+		"PATH_INFO=/home",
+		"REQUEST_METHOD=GET",
+		"SERVER_NAME=0.0.0.0",
+		"SERVER_PORT=3003",
+		"REQUEST_URI=/home?a=b"
+	};
+
+	var connection = new VSGI.Mock.Connection ();
+	var request    = new Request (connection, environment);
+
+	assert ("/home" == request.uri.path);
+}
+
+/**
+ * @since 0.2
+ */
 public void test_vsgi_cgi_response () {
 	string[] environment = {};
 	var connection  = new VSGI.Mock.Connection ();
@@ -142,4 +200,3 @@ public void test_vsgi_cgi_response () {
 	assert (18 == bytes_written);
 	assert (response.head_written);
 }
-

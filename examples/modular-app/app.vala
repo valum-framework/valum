@@ -16,7 +16,7 @@
  */
 
 using Valum;
-using VSGI.HTTP;
+using VSGI;
 
 var app = new Router ();
 
@@ -36,4 +36,4 @@ app.get ("/", (req, res) => {
 app.rule (Method.ANY, "/user/*", new UserRouter ().handle);
 app.rule (Method.ANY, "/admin/*", new AdminRouter ().handle);
 
-new Server ("org.valum.example.ModularApp", app.handle).run ();
+Server.@new ("http", "org.valum.example.ModularApp", app.handle).run ();

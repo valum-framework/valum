@@ -1,6 +1,6 @@
 using Markdown;
 using Valum;
-using VSGI.HTTP;
+using VSGI;
 
 var app = new Router ();
 
@@ -12,4 +12,4 @@ app.get ("/", (req, res) => {
 	return res.expand_utf8 (markdown, null);
 });
 
-new Server ("org.valum.example.Markdown", app.handle).run ();
+Server.@new ("http", "org.valum.example.Markdown", app.handle).run ();

@@ -16,7 +16,7 @@
  */
 
 using Valum;
-using VSGI.HTTP;
+using VSGI;
 
 var app = new Router ();
 
@@ -61,4 +61,4 @@ app.get ("/", (req, res, next, ctx) => {
 	return true;
 });
 
-new Server ("org.valum.example.WeatherAPI", app.handle).run ({"app", "--all"});
+Server.@new ("http", "org.valum.example.WeatherAPI", app.handle).run ({"app", "--all"});

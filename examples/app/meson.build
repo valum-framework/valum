@@ -6,6 +6,6 @@ app_sources = [
     gnome.compile_resources('app-resources', 'app.gresource.xml', source_dir: '.')]
 if ctpl.found() and gee.found()
     executable('app', app_sources,
-               dependencies: [glib, gobject, gio, soup, vsgi, vsgi_http, valum, ctpl, gee],
+               dependencies: [glib, gobject, gio, soup, vsgi, valum, ctpl, gee],
                vala_args: ['--vapidir=' + meson.current_source_dir() + '/vapi'])
 endif
