@@ -126,7 +126,7 @@ namespace VSGI.HTTP {
 
 		public override string? reason_phrase {
 			owned get { return this.message.reason_phrase; }
-			set { this.message.reason_phrase = value ?? Status.get_phrase (this.message.status_code); }
+			set { this.message.reason_phrase = (!) (value ?? Status.get_phrase (this.message.status_code)); }
 		}
 
 		public override MessageHeaders headers {
@@ -169,7 +169,7 @@ namespace VSGI.HTTP {
 			get {
 #if SOUP_2_48
 				if (server != null)
-					_uris = server.get_uris ();
+					_uris = ((!) server).get_uris ();
 #endif
 				return _uris;
 			}
@@ -184,35 +184,32 @@ namespace VSGI.HTTP {
 
 		construct {
 #if GIO_2_40
-			const OptionEntry[] entries = {
-				// port options
-				{"port",      'p', 0, OptionArg.INT,  null, "Listen to the provided TCP port", "3003"},
+			var entries = new OptionEntry[
 #if SOUP_2_48
-				{"all",       'a', 0, OptionArg.NONE, null, "Listen on all interfaces '--port'"},
-				{"ipv4-only", '4', 0, OptionArg.NONE, null, "Only listen on IPv4 interfaces"},
-				{"ipv6-only", '6', 0, OptionArg.NONE, null, "Only listen on IPv6 interfaces"},
-
-				// fd options
-				{"file-descriptor", 'f', 0, OptionArg.INT, null, "Listen to the provided file descriptor"},
-
-				// https options
-				{"https",         0, 0, OptionArg.NONE,     null, "Listen for HTTPS connections rather than plain HTTP"},
+				10
+#else
+				5
 #endif
-				{"ssl-cert-file", 0, 0, OptionArg.FILENAME, null, "Path to a file containing a PEM-encoded certificate"},
-				{"ssl-key-file",  0, 0, OptionArg.FILENAME, null, "Path to a file containing a PEM-encoded private key"},
+			];
+			entries[0] = {"port",      'p', 0, OptionArg.INT,  null, "Listen to the provided TCP port", "3003"};
+			entries[1] = {"ssl-cert-file", 0, 0, OptionArg.FILENAME, null, "Path to a file containing a PEM-encoded certificate"};
+			entries[2] = {"ssl-key-file",  0, 0, OptionArg.FILENAME, null, "Path to a file containing a PEM-encoded private key"};
+			entries[3] = {"server-header", 'h', 0, OptionArg.STRING, null, "Value to use for the 'Server' header on Messages processed by this server"};
+			entries[4] = {"raw-paths",     0,   0, OptionArg.NONE,   null, "Percent-encoding in the Request-URI path will not be automatically decoded"};
+#if SOUP_2_4
+			entries[5] = {"all",       'a', 0, OptionArg.NONE, null, "Listen on all interfaces '--port'"};
+			entries[6] = {"ipv4-only", '4', 0, OptionArg.NONE, null, "Only listen on IPv4 interfaces"};
+			entries[7] = {"ipv6-only", '6', 0, OptionArg.NONE, null, "Only listen on IPv6 interfaces"};
+			entries[8] = {"file-descriptor", 'f', 0, OptionArg.INT, null, "Listen to the provided file descriptor"};
+			entries[9] = {"https",         0, 0, OptionArg.NONE,     null, "Listen for HTTPS connections rather than plain HTTP"};
 
-				// headers options
-				{"server-header", 'h', 0, OptionArg.STRING, null, "Value to use for the 'Server' header on Messages processed by this server"},
-				{"raw-paths",     0,   0, OptionArg.NONE,   null, "Percent-encoding in the Request-URI path will not be automatically decoded"},
-
-				{null}
-			};
+#endif
 			this.add_main_option_entries (entries);
 #endif
 		}
 
 		public override void listen (Variant options) throws Error {
-			var port = options.lookup_value ("port", VariantType.INT32) ?? new Variant.@int32 (3003);
+			var port = (!) (options.lookup_value ("port", VariantType.INT32) ?? new Variant.@int32 (3003));
 
 			if (options.lookup_value ("https", VariantType.BOOLEAN) != null) {
 				if (options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING) == null ||
@@ -220,8 +217,8 @@ namespace VSGI.HTTP {
 					throw new HTTPError.FAILED ("both '--ssl-cert-file' and '--ssl-key-file' must be provided");
 				}
 
-				var tls_certificate = new TlsCertificate.from_files (options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING).get_bytestring (),
-				                                                     options.lookup_value ("ssl-key-file", VariantType.BYTESTRING).get_bytestring ());
+				var tls_certificate = new TlsCertificate.from_files (((!) options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING)).get_bytestring (),
+				                                                     ((!) options.lookup_value ("ssl-key-file", VariantType.BYTESTRING)).get_bytestring ());
 
 				this.server = new Soup.Server (
 #if !SOUP_2_48
@@ -240,10 +237,10 @@ namespace VSGI.HTTP {
 			}
 
 			if (options.lookup_value ("server-header", VariantType.STRING) != null)
-				this.server.server_header = options.lookup_value ("server-header", VariantType.STRING).get_string ();
+				((!) this.server).server_header = ((!) options.lookup_value ("server-header", VariantType.STRING)).get_string ();
 
 			// register a catch-all handler
-			this.server.add_handler (null, (server, msg, path, query, client) => {
+			((!) this.server).add_handler (null, (server, msg, path, query, client) => {
 				var connection = new Connection (server, msg);
 
 				msg.set_status (Status.OK);
@@ -271,17 +268,17 @@ namespace VSGI.HTTP {
 				listen_options |= ServerListenOptions.IPV6_ONLY;
 
 			if (options.lookup_value ("file-descriptor", VariantType.INT32) != null) {
-				this.server.listen_fd (options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 (),
+				((!) this.server).listen_fd (((!) options.lookup_value ("file-descriptor", VariantType.INT32)).get_int32 (),
 				                       listen_options);
 			} else if (options.lookup_value ("all", VariantType.BOOLEAN) != null) {
-				this.server.listen_all (port.get_int32 (), listen_options);
+				((!) this.server).listen_all (port.get_int32 (), listen_options);
 			} else {
-				this.server.listen_local (port.get_int32 (), listen_options);
+				((!) this.server).listen_local (port.get_int32 (), listen_options);
 			}
 #else
-			this.server.run_async ();
+			((!) this.server).run_async ();
 			_uris.append (new Soup.URI ("%s://0.0.0.0:%u".printf (options.lookup_value ("https", VariantType.BOOLEAN) == null ? "http" :
-							"https", server.port)));
+							"https", ((!) server).port)));
 #endif
 		}
 
