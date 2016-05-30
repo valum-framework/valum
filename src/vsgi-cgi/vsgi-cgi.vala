@@ -51,13 +51,13 @@ namespace VSGI.CGI {
 
 		public override string gateway_interface {
 			owned get {
-				return Environ.get_variable (environment, "GATEWAY_INTERFACE") ?? "CGI/1.1";
+				return (!) (Environ.get_variable (environment, "GATEWAY_INTERFACE") ?? "CGI/1.1");
 			}
 		}
 
 		public override string method {
 			owned get {
-				return Environ.get_variable (environment, "REQUEST_METHOD") ?? "GET";
+				return (!) (Environ.get_variable (environment, "REQUEST_METHOD") ?? "GET");
 			}
 		}
 
@@ -90,7 +90,7 @@ namespace VSGI.CGI {
 
 			var https           = Environ.get_variable (environment, "HTTPS");
 			var path_translated = Environ.get_variable (environment, "PATH_TRANSLATED");
-			if (https != null && https.length > 0 || path_translated != null && path_translated.has_prefix ("https://"))
+			if (https != null && ((!) https).length > 0 || path_translated != null && ((!) path_translated).has_prefix ("https://"))
 				this._uri.set_scheme ("https");
 			else
 				this._uri.set_scheme ("http");
@@ -100,37 +100,37 @@ namespace VSGI.CGI {
 
 			var port = Environ.get_variable (environment, "SERVER_PORT");
 			if (port != null)
-				this._uri.set_port (int.parse (port));
+				this._uri.set_port (int.parse ((!) port));
 
 			var path_info   = Environ.get_variable (environment, "PATH_INFO");
 			var request_uri = Environ.get_variable (environment, "REQUEST_URI");
-			if (path_info != null && path_info.length > 0)
-				this._uri.set_path (path_info);
-			else if (request_uri != null && request_uri.length > 0)
-				this._uri.set_path (request_uri.split ("?", 2)[0]); // strip the query
+			if (path_info != null && ((!) path_info).length > 0)
+				this._uri.set_path ((!) path_info);
+			else if (request_uri != null && ((!) request_uri).length > 0)
+				this._uri.set_path (((!) request_uri).split ("?", 2)[0]); // strip the query
 			else
 				this._uri.set_path ("/");
 
 			// raw & parsed HTTP query
 			var query_string = Environ.get_variable (environment, "QUERY_STRING");
-			if (query_string != null && query_string.length > 0) {
-				this._uri.set_query (query_string);
-				this._query = Form.decode (query_string);
-			} else if (path_translated != null && "?" in path_translated) {
-				this._uri.set_query (path_translated.split ("?", 2)[1]);
-				this._query = Form.decode (path_translated.split ("?", 2)[1]);
-			} else if (request_uri != null && "?" in request_uri) {
-				this._uri.set_query (request_uri.split ("?", 2)[1]);
-				this._query = Form.decode (request_uri.split ("?", 2)[1]);
+			if (query_string != null && ((!) query_string).length > 0) {
+				this._uri.set_query ((!) query_string);
+				this._query = Form.decode ((!) query_string);
+			} else if (path_translated != null && "?" in (!) path_translated) {
+				this._uri.set_query (((!) path_translated).split ("?", 2)[1]);
+				this._query = Form.decode (((!) path_translated).split ("?", 2)[1]);
+			} else if (request_uri != null && "?" in (!) request_uri) {
+				this._uri.set_query (((!) request_uri).split ("?", 2)[1]);
+				this._query = Form.decode (((!) request_uri).split ("?", 2)[1]);
 			}
 
-			var content_type = Environ.get_variable (environment, "CONTENT_TYPE") ?? "application/octet-stream";
+			var content_type = (!) (Environ.get_variable (environment, "CONTENT_TYPE") ?? "application/octet-stream");
 			var @params = Soup.header_parse_param_list (content_type);
 			headers.set_content_type (content_type.split (";", 2)[0], @params);
 
 			//
 			int64 content_length;
-			if (int64.try_parse (Environ.get_variable (environment, "CONTENT_LENGTH") ?? "0",
+			if (int64.try_parse ((!) (Environ.get_variable (environment, "CONTENT_LENGTH") ?? "0"),
 			                     out content_length)) {
 				headers.set_content_length (content_length);
 			}
@@ -164,7 +164,7 @@ namespace VSGI.CGI {
 		protected override uint8[]? build_head () {
 			var head = new StringBuilder ();
 
-			head.append_printf ("Status: %u %s\r\n", status, reason_phrase ?? Status.get_phrase (status));
+			head.append_printf ("Status: %u %s\r\n", status, (!) (reason_phrase ?? Status.get_phrase (status)));
 
 			this.headers.foreach ((k, v) => {
 				head.append_printf ("%s: %s\r\n", k, v);
