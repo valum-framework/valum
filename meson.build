@@ -13,6 +13,7 @@ add_global_arguments(['-Wall',
                      language: 'c')
 
 add_global_arguments(['--enable-experimental',
+                      '--enable-experimental-non-null',
                       '--enable-deprecated',
                       '--fatal-warnings'],
                      language: 'vala')
