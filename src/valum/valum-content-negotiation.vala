@@ -189,8 +189,9 @@ namespace Valum.ContentNegotiation {
 					throw new ServerError.NOT_IMPLEMENTED ("");
 			}
 		}, (a, b) => {
-			return a == "*"                   ||
-			       Soup.str_case_equal (a, b) ||
+			return a == "*"                            ||
+			       Soup.str_case_equal (a, b)          ||
+			       Soup.str_case_equal ("identity", b) ||
 			       (a.has_prefix ("x-") && Soup.str_case_equal (a[2:a.length], b));
 		});
 	}
@@ -216,6 +217,7 @@ namespace Valum.ContentNegotiation {
 		}, (a, b) => {
 			return a == "*"                            ||
 			       Soup.str_case_equal (a, b)          ||
+			       Soup.str_case_equal ("identity", b) ||
 			       Soup.str_case_equal ("chunked", b)  || // always acceptable
 			       (a.has_prefix ("x-") && Soup.str_case_equal (a[2:a.length], b));
 		});

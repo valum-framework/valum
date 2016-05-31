@@ -313,6 +313,25 @@ public int main (string[] args) {
 		}
 	});
 
+	Test.add_func ("/content_negotiation/identity_always_acceptable", () => {
+		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var res = new Response (req);
+		var ctx = new Context ();
+
+		assert (null == req.headers.get_list ("Accept-Encoding"));
+
+		try {
+			accept_encoding ("identity", (req, res, next, ctx, encoding) => {
+				assert ("identity" == encoding);
+				return true;
+			}) (req, res, () => {
+				assert_not_reached ();
+			}, ctx);
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+	});
+
 	Test.add_func ("/content_negotiation/accept_language", () => {
 		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
