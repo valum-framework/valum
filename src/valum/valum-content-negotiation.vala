@@ -90,14 +90,17 @@ namespace Valum.ContentNegotiation {
 				return forward (req, res, next, ctx, _expectations.data);
 			}
 
-			string? best_expectation = null;
-			double  best_qvalue      = 0;
-			foreach (var accepted in Soup.header_parse_quality_list (header, null)) {
+			string?       best_expectation = null;
+			double        best_qvalue      = 0;
+			SList<string> unacceptable;
+			foreach (var accepted in Soup.header_parse_quality_list (header, out unacceptable)) {
 				foreach (var expectation in _expectations) {
-					var current_qvalue = _qvalue_for_param (header, accepted) * _qvalue_for_param (expectations, expectation);
-					if (match (accepted, expectation) && current_qvalue > best_qvalue) {
-						best_expectation = expectation;
-						best_qvalue      = current_qvalue;
+					if (unacceptable.find_custom (expectation, (a, b) => { return Soup.str_case_equal (a, b) ? 0 : 1; }) == null) {
+						var current_qvalue = _qvalue_for_param (header, accepted) * _qvalue_for_param (expectations, expectation);
+						if (match (accepted, expectation) && current_qvalue > best_qvalue) {
+							best_expectation = expectation;
+							best_qvalue      = current_qvalue;
+						}
 					}
 				}
 			}
