@@ -120,10 +120,11 @@ namespace VSGI.SCGI {
 			// buffer the request
 			yield reader.fill_async (-1, priority, cancellable);
 
+			string size_str;
 			size_t length;
-			var size_str = reader.read_upto (":", 1, out length);
-
-			if (size_str == null) {
+			try {
+				size_str = reader.read_upto (":", 1, out length);
+			} catch {
 				throw new SCGIError.FAILED ("could not read netstring length");
 			}
 
@@ -140,18 +141,22 @@ namespace VSGI.SCGI {
 			// consume and extract the environment
 			size_t read = 0;
 			while (read < size) {
+				string key;
 				size_t key_length;
-				var key = reader.read_upto ("", 1, out key_length);
-				if (key == null) {
+				try {
+					key = reader.read_upto ("", 1, out key_length);
+				} catch {
 					throw new SCGIError.FAILED ("could not read key");
 				}
 				if (reader.read_byte () != '\0') {
 					throw new SCGIError.MALFORMED_NETSTRING ("missing EOF");
 				}
 
+				string @value;
 				size_t value_length;
-				var @value = reader.read_upto ("", 1, out value_length);
-				if (@value == null) {
+				try {
+					@value = reader.read_upto ("", 1, out value_length);
+				} catch {
 					throw new SCGIError.FAILED ("could not read value for key '%s'", key);
 				}
 				if (reader.read_byte () != '\0') {
@@ -177,8 +182,8 @@ namespace VSGI.SCGI {
 			}
 
 			int64 content_length;
-			if (!int64.try_parse (content_length_str, out content_length)) {
-				throw new SCGIError.BAD_CONTENT_LENGTH ("'%s' is not a valid content length", content_length_str);
+			if (!int64.try_parse ((!) content_length_str, out content_length)) {
+				throw new SCGIError.BAD_CONTENT_LENGTH ("'%s' is not a valid content length", (!) content_length_str);
 			}
 
 			// buffer the rest of the body

@@ -103,10 +103,10 @@ namespace Valum.ServerSentEvents {
 					var message = new StringBuilder ();
 
 					if (event != null)
-						message.append_printf ("event: %s\n", event);
+						message.append_printf ("event: %s\n", (!) event);
 
 					if (id != null)
-						message.append_printf ("id: %s\n", id);
+						message.append_printf ("id: %s\n", (!) id);
 
 					if (retry != null)
 						message.append_printf ("retry: %d\n", (int) (retry / 1000));

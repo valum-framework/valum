@@ -127,7 +127,9 @@ namespace VSGI {
 		 * @return the corresponding value if found, otherwise 'null'
 		 */
 		public string? lookup_query (string key) {
-			return query == null ? null : query[key];
+			if (query == null)
+				return null;
+			return ((!) query)[key];
 		}
 
 		/**
@@ -144,15 +146,17 @@ namespace VSGI {
 		 */
 		public SList<Cookie> cookies {
 			owned get {
-				var cookies     = new SList<Cookie> ();
-				var cookie_list = headers.get_list ("Cookie");
+				var cookies	    = new SList<Cookie> ();
+				string? cookie_list = headers.get_list ("Cookie");
 
 				if (cookie_list == null)
 					return cookies;
 
-				foreach (var cookie in header_parse_list (cookie_list))
-					if (cookie != null)
-						cookies.prepend (Cookie.parse (cookie, uri));
+				foreach (var cookie in header_parse_list ((!) cookie_list)) {
+					Soup.Cookie? parsed_cookie = Cookie.parse (cookie, uri);
+					if (parsed_cookie != null)
+						cookies.prepend ((!) parsed_cookie);
+				}
 
 				cookies.reverse ();
 
@@ -224,7 +228,7 @@ namespace VSGI {
 		 */
 		public InputStream body {
 			get {
-				return _body ?? this.connection.input_stream;
+				return (!) (_body ?? this.connection.input_stream);
 			}
 		}
 
@@ -247,7 +251,7 @@ namespace VSGI {
 			} else {
 				headers.set_encoding (Soup.Encoding.EOF);
 			}
-			_body = new ConverterInputStream (_body ?? connection.input_stream, converter);
+			_body = new ConverterInputStream ((!) (_body ?? connection.input_stream), converter);
 		}
 
 		/**

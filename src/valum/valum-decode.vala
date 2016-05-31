@@ -44,15 +44,15 @@ namespace Valum {
 	 */
 	public HandlerCallback decode (DecodeFlags flags = DecodeFlags.NONE) {
 		return (req, res, next, ctx) => {
-			var encodings = Soup.header_parse_list (req.headers.get_list ("Content-Encoding") ?? "");
+			var encodings = Soup.header_parse_list ((!) ((string?) req.headers.get_list ("Content-Encoding") ?? ""));
 
 			// decode is in the opposite order of application
 			encodings.reverse ();
 
 			req.headers.remove ("Content-Encoding");
 
-			for (unowned SList<string> encoding = encodings; encoding != null; encoding = encoding.next) {
-				switch (encoding.data.down ()) {
+			for (unowned SList<string>? encoding = encodings; encoding != null; encoding = ((!) encoding).next) {
+				switch (((!) encoding).data.down ()) {
 					case "gzip":
 					case "x-gzip":
 						req.convert (new ZlibDecompressor (ZlibCompressorFormat.GZIP));
@@ -63,17 +63,18 @@ namespace Valum {
 					case "identity":
 						// nothing to do, let's take a break ;)
 						break;
-					default:
-						// reapply remaining encodings
-						encoding.reverse ();
-						foreach (var remaining in encoding) {
+					default: // reapply remaining encodings
+						// define new var since vala-0.26 chokes on some syntax
+						unowned SList<string> enc = (!) encoding;
+						enc.reverse ();
+						foreach (var remaining in enc) {
 							req.headers.append ("Content-Encoding", remaining);
 						}
 						if (DecodeFlags.FORWARD_REMAINING_ENCODINGS in flags) {
 							return next ();
 						} else {
 							throw new ServerError.NOT_IMPLEMENTED ("The '%s' encoding is not supported.",
-							                                       encoding.data);
+							                                       enc.data);
 						}
 				}
 			}

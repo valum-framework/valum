@@ -47,8 +47,8 @@ namespace Valum {
 				try {
 					return forward (req, res, () => {
 						req.uri.set_path (original_path);
-						var location = res.headers.get_one ("Location");
-						if (!res.head_written && location != null && location[0] == '/')
+						string? location = res.headers.get_one ("Location");
+						if (!res.head_written && location != null && ((!) location)[0] == '/')
 							res.headers.replace ("Location", path + location);
 						return next ();
 					}, context);
@@ -64,8 +64,8 @@ namespace Valum {
 					throw err;
 				} finally {
 					req.uri.set_path (original_path);
-					var location = res.headers.get_one ("Location");
-					if (!res.head_written && location != null && location[0] == '/')
+					string? location = res.headers.get_one ("Location");
+					if (!res.head_written && location != null && ((!) location)[0] == '/')
 						res.headers.replace ("Location", path + location);
 				}
 			} else {

@@ -60,7 +60,7 @@ public class Valum.Context : Object {
 	 * @since 0.3
 	 */
 	public new Value? @get (string key) {
-		return states[key] ?? (parent == null ? null : parent[key]);
+		return states[key] ?? (parent == null ? null : ((!) parent)[key]);
 	}
 
 	/**
@@ -78,6 +78,6 @@ public class Valum.Context : Object {
 	 * @since 0.3
 	 */
 	public bool contains (string key) {
-		return states.contains (key) || (parent != null && parent.contains (key));
+		return states.contains (key) || (parent != null && ((!) parent).contains (key));
 	}
 }

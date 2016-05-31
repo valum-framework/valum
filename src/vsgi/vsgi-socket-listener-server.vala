@@ -45,20 +45,18 @@ public abstract class VSGI.SocketListenerServer : Server {
 
 #if GIO_2_40
 		construct {
-			const OptionEntry[] options = {
-				{"any",             'a', 0, OptionArg.NONE,     null, "Listen on any open TCP port"},
-				{"port",            'p', 0, OptionArg.INT,      null, "Listen to the provided TCP port"},
-				{"file-descriptor", 'f', 0, OptionArg.INT,      null, "Listen to the provided file descriptor",       "0"},
-				{"backlog",         'b', 0, OptionArg.INT,      null, "Listen queue depth used in the listen() call", "10"},
-				{null}
-			};
+			var options = new OptionEntry[4];
+			options[0] = {"any",             'a', 0, OptionArg.NONE,     null, "Listen on any open TCP port"};
+			options[1] = {"port",            'p', 0, OptionArg.INT,      null, "Listen to the provided TCP port"};
+			options[2] = {"file-descriptor", 'f', 0, OptionArg.INT,      null, "Listen to the provided file descriptor",       "0"};
+			options[3] = {"backlog",         'b', 0, OptionArg.INT,      null, "Listen queue depth used in the listen() call", "10"};
 
 			this.add_main_option_entries (options);
 		}
 #endif
 
 	public override void listen (Variant options) throws Error {
-		var backlog = options.lookup_value ("backlog", VariantType.INT32) ?? new Variant.@int32 (10);
+		var backlog = (!) (options.lookup_value ("backlog", VariantType.INT32) ?? new Variant.@int32 (10));
 
 		listener.set_backlog (backlog.get_int32 ());
 
@@ -67,12 +65,12 @@ public abstract class VSGI.SocketListenerServer : Server {
 			_uris.append (new Soup.URI ("%s://0.0.0.0:%u/".printf (protocol, port)));
 			_uris.append (new Soup.URI ("%s://[::]:%u/".printf (protocol, port)));
 		} else if (options.lookup_value ("port", VariantType.INT32) != null) {
-			var port = (uint16) options.lookup_value ("port", VariantType.INT32).get_int32 ();
+			var port = (uint16) ((!) options.lookup_value ("port", VariantType.INT32)).get_int32 ();
 			listener.add_inet_port (port, null);
 			_uris.append (new Soup.URI ("%s://0.0.0.0:%u/".printf (protocol, port)));
 			_uris.append (new Soup.URI ("%s://[::]:%u/".printf (protocol, port)));
 		} else if (options.lookup_value ("file-descriptor", VariantType.INT32) != null) {
-			var file_descriptor = options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 ();
+			var file_descriptor = ((!) options.lookup_value ("file-descriptor", VariantType.INT32)).get_int32 ();
 			listener.add_socket (new Socket.from_fd (file_descriptor), null);
 			_uris.append (new Soup.URI ("%s+fd://%u/".printf (protocol, file_descriptor)));
 		} else {

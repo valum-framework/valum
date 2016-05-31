@@ -90,10 +90,10 @@ namespace Valum {
 					if (types == null) {
 						pattern.append_printf ("(?<%s>\\w+)", key);
 					} else {
-						if (!types.contains (type))
+						if (!((!) types).contains (type))
 							throw new RegexError.COMPILE ("using an undefined type %s", type);
 
-						pattern.append_printf ("(?<%s>%s)", key, types[type].get_pattern ());
+						pattern.append_printf ("(?<%s>%s)", key, ((!) types)[type].get_pattern ());
 					}
 				}
 			}
