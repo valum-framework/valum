@@ -147,8 +147,12 @@ namespace Valum.Static {
 				if (res.headers.get_list ("Content-Encoding") == null)
 					res.headers.set_content_length (file_info.get_size ());
 
-				if (uncertain)
-					res.headers.append ("Warning", "The 'Content-Type' header could not be infered with certainty.");
+				if (uncertain) {
+					res.headers.append ("Warning", "%u, %s, \"%s\", \"%s\"".printf (199,
+					                                                                req.uri.host + (req.uri.uses_default_port () ? "" : ":" + req.uri.port.to_string ()),
+					                                                                "The 'Content-Type' header could not be infered with certainty.",
+					                                                                new Soup.Date.from_now (0).to_string (Soup.DateFormat.HTTP)));
+				}
 
 				if (ServeFlags.X_SENDFILE in serve_flags && file.get_path () != null) {
 					res.headers.set_encoding (Soup.Encoding.NONE);
@@ -244,8 +248,12 @@ namespace Valum.Static {
 			if (res.headers.get_list ("Content-Encoding") == null)
 				res.headers.set_content_length (lookup.get_size ());
 
-			if (uncertain)
-				res.headers.append ("Warning", "The 'Content-Type' header could not be infered with certainty.");
+			if (uncertain) {
+				res.headers.append ("Warning", "%u, %s, \"%s\", \"%s\"".printf (199,
+				                                                                req.uri.host + (req.uri.uses_default_port () ? "" : ":" + req.uri.port.to_string ()),
+				                                                                "The 'Content-Type' header could not be infered with certainty.",
+				                                                                new Soup.Date.from_now (0).to_string (Soup.DateFormat.HTTP)));
+			}
 
 			if (req.method == Request.HEAD)
 				return res.end ();
