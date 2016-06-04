@@ -14,7 +14,7 @@ vsgi_sources = [
 vsgi_lib = library('vsgi', vsgi_sources,
                    dependencies: [glib, gobject, gio, gmodule, soup],
                    vala_args: ['--pkg=posix', '--target-glib=2.32'] + vala_defines,
-                   install_rpath: 'servers',
+                   link_args: '-Wl,-rpath,' + meson.current_build_dir() + '/servers',
                    install: true)
 
 vsgi = declare_dependency(include_directories: include_directories('.'),
