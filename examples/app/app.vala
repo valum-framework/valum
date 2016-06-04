@@ -325,4 +325,4 @@ app.get ("/negotiate-encoding", accept_encoding ("gzip, deflate", (req, res, nex
 	return res.expand_utf8 ("Hello world! (compressed with %s)".printf (encoding));
 }));
 
-Server.@new ("http", "org.valum.example.App", app.handle).run ({"app", "--all"});
+Server.new_with_application ("http", "org.valum.example.App", app.handle).run ({"app", "--all"});

@@ -39,5 +39,5 @@ public static int main (string[] args) {
 		return true;
 	});
 
-	return Server.@new ("fastcgi", "org.valum.example.FastCGI", app.handle).run (args);
+	return Server.new_with_application ("fastcgi", "org.valum.example.FastCGI", app.handle).run (args);
 }

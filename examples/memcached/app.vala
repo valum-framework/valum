@@ -74,4 +74,4 @@ app.delete ("/<key>", (req, res, next, context) => {
 });
 
 
-Server.@new ("http", "org.valum.example.Memcached", app.handle).run ({"app", "--all"});
+Server.new_with_application ("http", "org.valum.example.Memcached", app.handle).run ({"app", "--all"});

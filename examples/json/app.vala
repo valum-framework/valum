@@ -45,4 +45,4 @@ app.get ("/", (req, res) => {
 	return generator.to_stream (res.body);
 });
 
-Server.@new ("http", "org.valum.example.JSON", app.handle).run ({"app", "--all"});
+Server.new_with_application ("http", "org.valum.example.JSON", app.handle).run ({"app", "--all"});

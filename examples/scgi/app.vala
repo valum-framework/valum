@@ -35,5 +35,5 @@ public int main (string[] args) {
 		return true;
 	});
 
-	return Server.@new ("scgi", "org.valum.example.SCGI", app.handle).run (args);
+	return Server.new_with_application ("scgi", "org.valum.example.SCGI", app.handle).run (args);
 }

@@ -12,4 +12,4 @@ app.get ("/", (req, res) => {
 	return res.expand_utf8 (markdown, null);
 });
 
-Server.@new ("http", "org.valum.example.Markdown", app.handle).run ();
+Server.new_with_application ("http", "org.valum.example.Markdown", app.handle).run ();

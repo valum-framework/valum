@@ -61,4 +61,4 @@ app.get ("/", (req, res, next, ctx) => {
 	return true;
 });
 
-Server.@new ("http", "org.valum.example.WeatherAPI", app.handle).run ({"app", "--all"});
+Server.new_with_application ("http", "org.valum.example.WeatherAPI", app.handle).run ({"app", "--all"});

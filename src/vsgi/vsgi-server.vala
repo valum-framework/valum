@@ -45,8 +45,13 @@ namespace VSGI {
 		 * For a more fine-grained control, use {@link VSGI.ServerModule}.
 		 *
 		 * @since 0.3
+		 *
+		 * @param name name of the server implementation to load
+		 *
+		 * @return the server instance of loaded successfully, otherwise 'null'
+		 *         and a warning will be emitted
 		 */
-		public static new Server? @new (string name, string application_id, owned ApplicationCallback callback) {
+		public static new Server? @new (string name, ...) {
 			if (_server_modules == null)
 				_server_modules = new HashTable<string, ServerModule> (str_hash, str_equal);
 			if (_server_modules[name] == null) {
@@ -55,8 +60,27 @@ namespace VSGI {
 					return null;
 				_server_modules[name] = server_module;
 			}
-			var server = Object.@new (_server_modules[name].server_type) as Server;
-			server.set_application_callback ((owned) callback);
+			return Object.@new_valist (_server_modules[name].server_type, null, va_list ()) as Server;
+		}
+
+		/**
+		 * Instantiate a new {@link VSGI.Server} with an initial application
+		 * callback.
+		 *
+		 * @since 0.3
+		 *
+		 * @param application_id application identifier, it must be a valid
+		 *                       {@link GLib.Application} identifier
+		 * @param application    application callback
+		 *
+		 * @return the server instance of loaded successfully, otherwise 'null'
+		 *         and a warning will be emitted
+		 */
+		public static Server? new_with_application (string name, string application_id, owned ApplicationCallback callback) {
+			var server = @new (name, "application-id", application_id);
+			if (server != null) {
+				server.set_application_callback ((owned) callback);
+			}
 			return server;
 		}
 
