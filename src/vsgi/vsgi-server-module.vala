@@ -38,6 +38,11 @@ public class VSGI.ServerModule : TypeModule {
 	public string name { construct; get; }
 
 	/**
+	 * Path from which the module is loaded.
+	 */
+	public string path { get; private set; }
+
+	/**
 	 * Once loaded, this contain the type of the {@link VSGI.Server} provided
 	 * by this.
 	 *
@@ -55,7 +60,7 @@ public class VSGI.ServerModule : TypeModule {
 	}
 
 	public override bool load () {
-		var path = Module.build_path (null, "vsgi-%s".printf (name));
+		path = Module.build_path (directory, "vsgi-%s".printf (name));
 
 		module = Module.open (path, ModuleFlags.BIND_LAZY);
 
