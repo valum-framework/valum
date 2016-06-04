@@ -4,18 +4,6 @@ Application
 This document explains step-by-step the sample presented in the
 :doc:`getting-started` document.
 
-Choosing the VSGI implementation
---------------------------------
-
-VSGI (Vala Server Gateway Interface) offers abstractions for different web
-server technologies. You can choose which implementation you want with
-a ``using`` statement as they all respect a common interface.
-
-::
-
-    using Valum;
-    using VSGI.HTTP; // or VSGI.FastCGI
-
 Many implementations are provided and documented in :doc:`vsgi/server/index`.
 
 Creating an application
@@ -59,13 +47,13 @@ processing. The callback, named handler, receives four arguments:
 Serving the application
 -----------------------
 
-This part is pretty straightforward: you create a server that will serve your
-application at port ``3003`` and since ``using VSGI.HTTP`` was specified,
-``Server`` refers to :doc:`vsgi/server/http`.
+This part is pretty straightforward: you create a server that will serve
+your application at port ``3003`` and since ``http`` was specified, it
+will be served with :doc:`vsgi/server/http`.
 
 ::
 
-    new Server ("org.valum.example.App", app.handle).run ({"app", "--port", "3003"});
+    Server.new_with_application ("http", "org.valum.example.App", app.handle).run ({"app", "--port", "3003"});
 
 :doc:`vsgi/server/index` takes an application identifier and an
 ``ApplicationCallback``, which is respected by the ``handle`` function.
@@ -75,7 +63,7 @@ a :doc:`vsgi/request` and :doc:`vsgi/response`.
 
 ::
 
-    new Server ("org.valum.example.App", (req, res) => {
+    Server.new_with_application ("http", "org.valum.example.App", (req, res) => {
         res.status = 200;
         return res.expand ("Hello world!", null);
     }).run ({"app", "--port", "3003"});
@@ -91,6 +79,6 @@ run with fixed parameters. Options are documented per implementation.
 
         // assume some route declarations...
 
-        new Server ("org.valum.example.App", app.handle).run (args);
+        Server.new_with_application ("http", "org.valum.example.App", app.handle).run (args);
     }
 

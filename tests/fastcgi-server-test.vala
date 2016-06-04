@@ -21,7 +21,7 @@ public int main (string[] args) {
 	Test.init (ref args);
 
 	Test.add_func ("/fastcgi/server/port", () => {
-		var server = Server.new_with_application ("fastcgi", "org.vsgi.FastCGI", () => { return true; });
+		var server = Server.@new ("fastcgi");
 
 		var options = new VariantBuilder (new VariantType ("a{sv}"));
 
@@ -38,7 +38,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/fastcgi/server/socket", () => {
-		var server = Server.new_with_application ("fastcgi", "org.vsgi.FastCGI", () => { return true; });
+		var server = Server.@new ("fastcgi");
 
 		var options = new VariantBuilder (new VariantType ("a{sv}"));
 

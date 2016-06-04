@@ -22,9 +22,9 @@ require the status to be part of the response headers.
 
 .. code::
 
-    using VSGI.HTTP;
+    using VSGI;
 
-    new Server ("org.vsgi.App", (req, res) => {
+    Server.new_with_application ("http", "org.vsgi.App", (req, res) => {
         var message = req.connection.output_stream;
         message.write_all ("200 Success HTTP/1.1\r\n".data. null);
         message.write_all ("Connection: close\r\n");

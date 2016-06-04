@@ -51,7 +51,7 @@ from the ``headers`` property.
 
 ::
 
-    new Server ("org.vsgi.App", (req) => {
+    Server.new_with_application ("http", "org.vsgi.App", (req) => {
         var accept = req.headers.get_one ("Accept");
         return true;
     });
@@ -132,7 +132,7 @@ freeing a file resource.
 
 ::
 
-    new Server ("org.vsgi.App", (req, res) => {
+    Server.new_with_application ("org.vsgi.App", (req, res) => {
         var payload = req.flatten ();
         return true;
     });
@@ -147,7 +147,7 @@ which is submitted by web browsers.
 
 ::
 
-    new Server ("org.vsgi.App", (req, res) => {
+    Server.new_with_application ("org.vsgi.App", (req, res) => {
         var data = Soup.Form.decode (req.flatten_utf8 (out bytes_read));
         return true;
     });

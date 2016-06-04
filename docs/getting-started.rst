@@ -28,7 +28,7 @@ the latest changes in the framework.
 ::
 
     using Valum;
-    using VSGI.HTTP;
+    using VSGI;
 
     var app = new Router ();
 
@@ -36,7 +36,7 @@ the latest changes in the framework.
         return res.expand_utf8 ("Hello world!");
     });
 
-    new Server (app.handle).run ({"app", "--port", "3003"});
+    Server.new_with_application ("http", "org.valum.example.App", app.handle).run ({"app", "--port", "3003"});
 
 Typically, the ``run`` function contains CLI argument to make runtime the
 parametrizable.

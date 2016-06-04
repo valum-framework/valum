@@ -25,7 +25,7 @@ Lua
 ::
 
     using Valum;
-    using VSGI.HTTP;
+    using VSGI;
     using Lua;
 
     var app = new Router ();
@@ -40,7 +40,7 @@ Lua
         return res.expand_utf8 (lua.do_file ("scripts/hello.lua"));
     });
 
-    new Server ("org.valum.example.Lua", app.handle).run ();
+    Server.new_with_application ("http", "org.valum.example.Lua", app.handle).run ();
 
 The sample Lua script contains:
 

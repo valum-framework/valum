@@ -28,6 +28,77 @@ process and a `GLib.MainLoop`_ to process events and asynchronous work.
 .. _DBusConnection: http://valadoc.org/#!api=gio-2.0/GLib.DBusConnection
 .. _GLib.MainLoop: http://valadoc.org/#!api=glib-2.0/GLib.MainLoop
 
+Load an implementation
+----------------------
+
+Server implementations are dynamically loaded using `GLib.Module`_. It makes it
+possible to define its own implementation if necessary.
+
+.. _GLib.Module: http://valadoc.org/#!api=gmodule-2.0/GLib.Module
+
+The shared library name must conform to ``libvsgi-<name>`` with the appropriate
+extension. For instance, on GNU/Linux, the :doc:`cgi` module is stored in
+``${LIBDIR}/vsgi/servers/libvsgi-cgi.so``.
+
+To load an implementation, use the ``Server.new`` factory, which can receive
+GObject-style arguments as well.
+
+::
+
+    var cgi_server = Server.new ("cgi", "application-id", "org.valum.example.CGI");
+
+    if (cgi_server == null) {
+        assert_not_reached ();
+    }
+
+    cgi_server.set_application_callback ((req, res) => {
+        return res.expand_utf8 ("Hello world!");
+    });
+
+For typical case, use ``Server.new_with_application`` to initialize the
+instance with an application identifier and callback:
+
+::
+
+    var cgi_server = Server.new_with_application ("cgi", "org.example.CGI", (req, res) => {
+        return true;
+    });
+
+For more flexibility, the ``ServerModule`` class allow a more fine-grained
+control for loading a server implementation. If non-null, the ``directory``
+property will be used to retrieve the implementation from the given path
+instead of standard locations.
+
+The computed path of the shared library is available from ``path`` property,
+which can be used for debugging purposes.
+
+::
+
+    var directory  = "/usr/lib64/vsgi/servers";
+    var cgi_module = new ServerModule (directory, "cgi");
+
+    if (!cgi_module.load ()) {
+        error ("could not load 'cgi' from '%s'", cgi_module.path);
+    }
+
+    var server = Object.new (cgi_module.server_type);
+
+Unloading a module is not necessary: once initially loaded, a use count is kept
+so that it can be loaded on need or unloaded if not used.
+
+.. warning::
+
+    Since a ``ServerModule`` cannot be disposed (see `GLib.TypeModule`_), one
+    must be careful of how its reference is being handled. For instance,
+    ``Server.new`` keeps track of requested implementations and persist them
+    forever.
+
+.. _GLib.TypeModule: http://valadoc.org/#!api=gobject-2.0/GLib.TypeModule
+
+Mixing direct usages of ``ServerModule`` and ``Server.@new`` (and the likes) is
+not recommended and will result in undefined behaviours if an implementation is
+loaded more than once.
+
 DBus connection
 ---------------
 
@@ -64,7 +135,7 @@ written in a usual ``main`` function.
 .. code:: vala
 
     public static int main (string[] args) {
-        return new Server ("org.vsgi.App", (req, res) => {
+        Server.new ("http", "org.vsgi.App", (req, res) => {
             res.status = Soup.Status.OK;
             return res.body.write_all ("Hello world!".data, null);
         }).run (args);

@@ -30,7 +30,7 @@ maintained in nemequ/vala-extra-vapis GitHub repository.
 ::
 
     using Valum;
-    using VSGI.HTTP;
+    using VSGI;
 
     var app       = new Router ();
     var memcached = new Memcached.Context ();
@@ -58,3 +58,5 @@ maintained in nemequ/vala-extra-vapis GitHub repository.
 
         return res.expand (value, null);
     });
+
+    Server.new_with_application ("http", "org.valum.example.Memcached", app.handle);
