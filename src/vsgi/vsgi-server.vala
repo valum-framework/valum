@@ -34,24 +34,25 @@ namespace VSGI {
 	 */
 	public abstract class Server : GLib.Application {
 
-		private static ServerModule _server_module;
+		private static HashTable<string, ServerModule>? _server_modules = null;
 
 		/**
 		 * Instantiate a new {@link VSGI.Server} instance.
-		 *
-		 * Calling this more than once will unload the currently loaded
-		 * implementation, which could induce undefined behaviours for existing
-		 * instances.
 		 *
 		 * For a more fine-grained control, use {@link VSGI.ServerModule}.
 		 *
 		 * @since 0.3
 		 */
 		public static new Server? @new (string name, string application_id, owned ApplicationCallback callback) {
-			_server_module = new ServerModule (null, name);
-			if (!_server_module.load ())
-				return null;
-			var server = Object.@new (_server_module.server_type) as Server;
+			if (_server_modules == null)
+				_server_modules = new HashTable<string, ServerModule> (str_hash, str_equal);
+			if (_server_modules[name] == null) {
+				var server_module = new ServerModule (null, name);
+				if (!server_module.load ())
+					return null;
+				_server_modules[name] = server_module;
+			}
+			var server = Object.@new (_server_modules[name].server_type) as Server;
 			server.set_application_callback ((owned) callback);
 			return server;
 		}
