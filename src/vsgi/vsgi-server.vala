@@ -39,6 +39,9 @@ namespace VSGI {
 		/**
 		 * Instantiate a new {@link VSGI.Server} instance.
 		 *
+		 * If the 'VSGI_SERVER_PATH' environment variable is set, it will used
+		 * instead of the default system path.
+		 *
 		 * For a more fine-grained control, use {@link VSGI.ServerModule}.
 		 *
 		 * @since 0.3
@@ -47,7 +50,7 @@ namespace VSGI {
 			if (_server_modules == null)
 				_server_modules = new HashTable<string, ServerModule> (str_hash, str_equal);
 			if (_server_modules[name] == null) {
-				var server_module = new ServerModule (null, name);
+				var server_module = new ServerModule (Environment.get_variable ("VSGI_SERVER_PATH"), name);
 				if (!server_module.load ())
 					return null;
 				_server_modules[name] = server_module;
