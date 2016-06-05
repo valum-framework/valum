@@ -31,22 +31,30 @@ namespace VSGI.Mock {
 	 */
 	public class Connection : VSGI.Connection {
 
-		/**
-		 * @since 0.2.4
-		 */
-		public MemoryInputStream memory_input_stream { construct; get; }
+		private MemoryInputStream _memory_input_stream   = new MemoryInputStream ();
+		private MemoryOutputStream _memory_output_stream = new MemoryOutputStream (null, realloc, free);
 
-		/**
-		 * @since 0.2.4
-		 */
-		public MemoryOutputStream memory_output_stream { construct; get; }
+		public override InputStream input_stream { get { return _memory_input_stream; } }
 
-		public override InputStream input_stream { get { return memory_input_stream; } }
-
-		public override OutputStream output_stream { get { return memory_output_stream; } }
+		public override OutputStream output_stream { get { return _memory_output_stream; } }
 
 		public Connection (Server server) {
-			Object (server: server, memory_input_stream: new MemoryInputStream (), memory_output_stream: new MemoryOutputStream (null, realloc, free));
+			Object (server: server);
+		}
+
+		/**
+		 * @since 0.2.4
+		 */
+		public MemoryInputStream get_memory_input_stream ()
+		{
+			return _memory_input_stream;
+		}
+
+		/**
+		 * @since 0.2.4
+		 */
+		public MemoryOutputStream get_memory_output_stream () {
+			return _memory_output_stream;
 		}
 	}
 

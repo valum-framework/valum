@@ -91,7 +91,9 @@ namespace VSGI.CGI {
 		 */
 		public Request (Connection connection, string[] environment) {
 			Object (connection: connection, environment: environment);
+		}
 
+		construct {
 			var https           = Environ.get_variable (environment, "HTTPS");
 			var path_translated = Environ.get_variable (environment, "PATH_TRANSLATED");
 			if (https != null && https.length > 0 || path_translated != null && path_translated.has_prefix ("https://"))

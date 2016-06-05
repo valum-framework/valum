@@ -34,6 +34,13 @@ namespace Valum {
 
 		private MatcherCallback _match;
 
+		/**
+		 * @since 0.3
+		 */
+		public void set_matcher_callback (owned MatcherCallback callback) {
+			_match = (owned) callback;
+		}
+
 		public override bool match (Request req, Context ctx) {
 			return _match (req, ctx);
 		}

@@ -41,6 +41,11 @@ namespace Valum {
 		public Regex regex { construct; get; }
 
 		/**
+		 * @since 0.3
+		 */
+		public SList<string> captures { owned construct; get; }
+
+		/**
 		 *
 		 * @since 0.1
 		 */
@@ -49,20 +54,20 @@ namespace Valum {
 			_fire = (owned) handler;
 		}
 
-		private SList<string> captures = new SList<string> ();
-
 		construct {
 			// extract the captures from the regular expression
+			var _captures = new SList<string> ();
 			MatchInfo capture_match_info;
 			if (/\(\?<(\w+)>.+?\)/.match (regex.get_pattern (), 0, out capture_match_info)) {
 				try {
 					do {
-						captures.append (capture_match_info.fetch (1));
+						_captures.append (capture_match_info.fetch (1));
 					} while (capture_match_info.next ());
 				} catch (RegexError err) {
 					// ...
 				}
 			}
+			captures = (owned) _captures;
 		}
 
 		public override bool match (Request req, Context context) {

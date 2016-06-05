@@ -32,7 +32,7 @@ namespace Valum {
 		 *
 		 * @since 0.3
 		 */
-		public Context context { get; construct; default = new Context (); }
+		public Context context { get; construct; }
 
 		/**
 		 * Sequence of {@link Valum.Route} object defining this.
@@ -44,9 +44,12 @@ namespace Valum {
 		private HashTable<string, Regex> types  = new HashTable<string, Regex> (str_hash, str_equal);
 		private Queue<string>            scopes = new Queue<string>   ();
 
+		public Router () {
+			Object (context: new Context ());
+			routes = new Sequence<Route> (); // FIXME: the GObject construction style cannot be used here
+		}
+
 		construct {
-			context = new Context (); // FIXME: the property should only be initialized in 'default'
-			routes  = new Sequence<Route> ();
 			// initialize default types
 			register_type ("int",    /\d+/);
 			register_type ("string", /\w+/);
