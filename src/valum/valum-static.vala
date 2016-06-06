@@ -171,6 +171,9 @@ namespace Valum.Static {
 				} else {
 					return next ();
 				}
+
+			} catch (IOError.NOT_FOUND ioe) {
+				return next ();
 			} catch (FileError.NOENT fe) {
 				return next ();
 			}
