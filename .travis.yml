@@ -17,7 +17,7 @@ before_install:
       libgee-0.8-dev libctpl-dev libjson-glib-dev libmemcached-dev
       libmarkdown2-dev liblua5.2-dev
     - sudo pip install sphinx sphinx_rtd_theme PyYAML
-    - sudo pip3 install meson
+    - sudo pip3 install meson==0.31
     - wget https://github.com/ninja-build/ninja/releases/download/v1.5.1/ninja-linux.zip
     - sudo unzip ninja-linux.zip -d /usr/local/bin
 
