@@ -76,8 +76,6 @@ namespace Valum.ServerSentEvents {
 	 * If the user agent uses HTTP/1.0, messages are sent directly in the
 	 * response, otherwise chunked encoding is used.
 	 *
-	 * Any error thrown in the context is handled as a warning.
-	 *
 	 * @since 0.3
 	 *
 	 * @param context context for sending events
@@ -90,40 +88,36 @@ namespace Valum.ServerSentEvents {
 			res.headers.get_content_type (out @params);
 			res.headers.set_content_type ("text/event-stream", @params);
 
-			try {
-				// write headers right away
-				size_t bytes_size;
-				res.write_head (out bytes_size);
+			// write headers right away
+			size_t bytes_size;
+			res.write_head (out bytes_size);
 
-				// don't hang the user agent on a 'HEAD' request
-				if (req.method == Request.HEAD)
-					return true;
+			// don't hang the user agent on a 'HEAD' request
+			if (req.method == Request.HEAD)
+				return true;
 
-				context (req, (event, data, id, retry) => {
-					var message = new StringBuilder ();
+			context (req, (event, data, id, retry) => {
+				var message = new StringBuilder ();
 
-					if (event != null)
-						message.append_printf ("event: %s\n", event);
+				if (event != null)
+					message.append_printf ("event: %s\n", event);
 
-					if (id != null)
-						message.append_printf ("id: %s\n", id);
+				if (id != null)
+					message.append_printf ("id: %s\n", id);
 
-					if (retry != null)
-						message.append_printf ("retry: %d\n", (int) (retry / 1000));
+				if (retry != null)
+					message.append_printf ("retry: %d\n", (int) (retry / 1000));
 
-					// split multi-line data in multiple 'data:' fields
-					foreach (var line in data.split ("\n"))
-						message.append_printf ("data: %s\n", line);
+				// split multi-line data in multiple 'data:' fields
+				foreach (var line in data.split ("\n"))
+					message.append_printf ("data: %s\n", line);
 
-					// final newline that concludes the message
-					message.append_c ('\n');
+				// final newline that concludes the message
+				message.append_c ('\n');
 
-					res.body.write_all (message.str.data, null);
-					res.body.flush ();
-				}, _context);
-			} catch (Error err) {
-				warning (err.message);
-			}
+				res.body.write_all (message.str.data, null);
+				res.body.flush ();
+			}, _context);
 
 			return true;
 		};
