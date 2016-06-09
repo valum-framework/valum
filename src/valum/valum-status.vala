@@ -158,17 +158,6 @@ namespace Valum {
 	}
 
 	/**
-	 * Provide a context for handling a thrown status code.
-	 *
-	 * @since 0.3
-	 */
-	public delegate bool StatusHandlerCallback (VSGI.Request  req,
-	                                            VSGI.Response res,
-	                                            NextCallback  next,
-	                                            Context       ctx,
-	                                            owned         Error err) throws Error;
-
-	/**
 	 * Handle any corresponding error thrown by the following handler.
 	 *
 	 * If {@link Soup.Status.INTERNAL_SERVER_ERROR} is specified, other errors
@@ -176,7 +165,7 @@ namespace Valum {
 	 *
 	 * @since 0.3
 	 */
-	public HandlerCallback status (uint status, owned StatusHandlerCallback forward) {
+	public HandlerCallback status (uint status, owned ForwardCallback<Error> forward) {
 		return (req, res, next, ctx) => {
 			try {
 				return next ();

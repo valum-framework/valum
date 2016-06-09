@@ -75,6 +75,18 @@ namespace Valum {
 	                                                              Error;
 
 	/**
+	 * Define a type of {@link Valum.HandlerCallback} that forward a generic
+	 * value.
+	 *
+	 * @since 0.3
+	 */
+	public delegate bool ForwardCallback<T> (Request      req,
+	                                         Response     res,
+	                                         NextCallback next,
+	                                         Context      context,
+	                                         T            @value) throws Error;
+
+	/**
 	 * Continuation passed in a {@link Valum.HandlerCallback} to *keep routing*
 	 * both {@link VSGI.Request} and {@link VSGI.Response}.
 	 *

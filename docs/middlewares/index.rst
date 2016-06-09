@@ -76,14 +76,37 @@ a ``Route``, the processing will happen in a ``NextCallback``.
 Forward
 ~~~~~~~
 
-One typical pattern is to supply a ``HandlerCallback`` that is forwarded on
-success (or any other event) like it's the case for the ``accept`` middleware.
+.. versionadded:: 0.3
 
-.. code:: vala
+One typical middleware pattern is to take a continuation that is forwarded on
+success (or any other event) with a single value like it's the case for the
+:doc:`content-negotiation` middlewares.
 
-    app.get ("", accept ("text/xml", (req, res) => {
-        res.body.write_all ("<a>b</a>".data, null);
-    }), (req, res) => {
-        throw new ClientError.NOT_ACCEPTABLE ("We're only producing 'text/xml here!");
-    });
+This can be easily done with ``ForwardCallback<T>``. The generic parameter
+specify the type of the forwarded value.
+
+::
+
+    public HandlerCallback accept (string content_types, ForwardCallback<string> forward) {
+        return (req, res, next, ctx) => {
+            // perform content negotiation and determine 'chosen_content_type'...
+            return forward (req, res, next, ctx, chosen_content_type);
+        };
+    }
+
+    app.get ("/", accept ("text/xml; application/json", (req, res, next, ctx, content_type) => {
+        // produce a response according to 'content_type'...
+    }));
+
+To pass multiple values, it is preferable to explicitly declare them using
+a delegate.
+
+::
+
+    public delegate bool ComplexForwardCallback (Request      req,
+                                                 Response     res,
+                                                 NextCallback next,
+                                                 Context      ctx,
+                                                 int          a,
+                                                 int          b) throws Error;
 
