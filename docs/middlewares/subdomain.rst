@@ -23,6 +23,14 @@ which specify that any supplied label satisfy that position.
         // is exactly 'user'
     }));
 
+The matched subdomain labels are extracted and passed by parameter.
+
+::
+
+    app.use (subdomain ("api", (req, res, next, ctx, subdomains) => {
+        // 'subdomains' could be 'api' or 'v1.api'
+    }));
+
 This middleware can be used along with subrouting to mount any :doc:`../router`
 on a specific domain pattern.
 

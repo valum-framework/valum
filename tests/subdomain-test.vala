@@ -44,7 +44,10 @@ public void test_subdomain_joker () {
 		var res   = new Response (req);
 
 		try {
-			subdomain("*", () => { return true; }) (req, res, () => {
+			subdomain ("*", (req, res, next, ctx, subdomains) => {
+				assert ("api" == subdomains);
+				return true;
+			}) (req, res, () => {
 				assert_not_reached ();
 			}, new Context ());
 		} catch (Error err) {
@@ -57,7 +60,7 @@ public void test_subdomain_joker () {
 		var res   = new Response (req);
 
 		try {
-			subdomain("*", () => {
+			subdomain ("*", () => {
 				assert_not_reached ();
 			}) (req, res, () => { return true; }, new Context ());
 		} catch (Error err) {
@@ -74,10 +77,19 @@ public void test_subdomain_strict () {
 	var res   = new Response (req);
 
 	try {
-		subdomain ("api", () => { return true; }) (req, res, () => { assert_not_reached (); }, new Context ());
-		subdomain ("dev.api", () => { return true; }) (req, res, () => { assert_not_reached (); }, new Context ());
+		subdomain ("api", (req, res, next, ctx, subdomains) => {
+			assert ("dev.api" == subdomains);
+			return true;
+		}) (req, res, () => { assert_not_reached (); }, new Context ());
+		subdomain ("dev.api", (req, res, next, ctx, subdomains) => {
+			assert ("dev.api" == subdomains);
+			return true;
+		}) (req, res, () => { assert_not_reached (); }, new Context ());
 		subdomain ("api", () => { assert_not_reached (); }, SubdomainFlags.STRICT) (req, res, () => { return true; }, new Context ());
-		subdomain ("dev.api.example.com", () => { return true; }, SubdomainFlags.STRICT, 0) (req, res, () => { assert_not_reached (); }, new Context ());
+		subdomain ("dev.api.example.com", (req, res, next, ctx, subdomains) => {
+			assert ("dev.api.example.com" == subdomains);
+			return true;
+		}, SubdomainFlags.STRICT, 0) (req, res, () => { assert_not_reached (); }, new Context ());
 	} catch (Error err) {
 		assert_not_reached ();
 	}

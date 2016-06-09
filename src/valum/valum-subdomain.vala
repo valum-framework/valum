@@ -70,10 +70,10 @@ namespace Valum {
 	 * @param flags              see {@link Valum.SubdomainFlags}
 	 * @param skip               see {@link Valum.extract_subdomains}
 	 */
-	public HandlerCallback subdomain (string expected_subdomain,
-	                                  owned HandlerCallback forward,
-	                                  SubdomainFlags flags = SubdomainFlags.NONE,
-	                                  uint skip            = 2) {
+	public HandlerCallback subdomain (string                        expected_subdomain,
+	                                  owned ForwardCallback<string> forward,
+	                                  SubdomainFlags                flags = SubdomainFlags.NONE,
+	                                  uint                          skip  = 2) {
 		return (req, res, next, stack) => {
 			var expected_labels = expected_subdomain.split (".");
 			var labels          = extract_subdomains (req.uri.host, skip);
@@ -89,7 +89,7 @@ namespace Valum {
 					return next ();
 				}
 			}
-			return forward (req, res, next, stack);
+			return forward (req, res, next, stack, string.joinv (".", labels));
 		};
 	}
 }
