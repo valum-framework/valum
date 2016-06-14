@@ -285,6 +285,15 @@ namespace VSGI {
 		}
 
 		/**
+		 * Expand a {@link GLib.Bytes} buffer into the response body.
+		 *
+		 * @since 0.3
+		 */
+		public bool expand_bytes (Bytes bytes, Cancellable? cancellable = null) throws IOError {
+			return expand (bytes.get_data (), cancellable);
+		}
+
+		/**
 		 * Expand a UTF-8 string into the response body.
 		 *
 		 * If not set already, the 'charset' parameter of the 'Content-Type'
@@ -321,6 +330,15 @@ namespace VSGI {
 #else
 			return expand (buffer, cancellable);
 #endif
+		}
+
+		/**
+		 * @since 0.3
+		 */
+		public async bool expand_bytes_async (Bytes        bytes,
+		                                      int          priority    = GLib.Priority.DEFAULT,
+		                                      Cancellable? cancellable = null) throws Error {
+			return yield expand_async (bytes.get_data (), priority, cancellable);
 		}
 
 		/**

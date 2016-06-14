@@ -14,6 +14,17 @@ public int main (string[] args) {
 		assert (12 == res.headers.get_content_length ());
 	});
 
+	Test.add_func ("/response/expand_bytes", () => {
+		var res = new Response (new Request (new Connection (), "GET", new Soup.URI ("http://localhost:3003/")));
+		try {
+			res.expand_bytes (new Bytes.take ("Hello world!".data));
+		} catch (IOError err) {
+			assert_not_reached ();
+		}
+		assert (Soup.Encoding.CONTENT_LENGTH == res.headers.get_encoding ());
+		assert (12 == res.headers.get_content_length ());
+	});
+
 	Test.add_func ("/response/expand_utf8", () => {
 		var res = new Response (new Request (new Connection (), "GET", new Soup.URI ("http://localhost:3003/")));
 		try {
