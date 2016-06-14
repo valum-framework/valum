@@ -1,5 +1,5 @@
 coverage:
     ignore:
-        - src/vsgi-.*
+        - src/vsgi/servers/.*
         - examples/.*
         - tests/.*
