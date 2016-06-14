@@ -16,6 +16,8 @@ test('legacy', executable('legacy-test', legacy_test_sources,
 # VSGI tests
 test('request', executable('request-test', 'request-test.vala',
                            dependencies: [glib, gobject, gio, soup, vsgi]))
+test('response', executable('response-test', 'response-test.vala',
+                           dependencies: [glib, gobject, gio, soup, vsgi]))
 test('server', executable('server-test', 'server-test.vala',
                            dependencies: [glib, gobject, gio, soup, vsgi]))
 test('socket listener server', executable('socket-listener-server-test', 'socket-listener-server-test.vala',

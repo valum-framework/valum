@@ -287,18 +287,22 @@ namespace VSGI {
 		/**
 		 * Expand a UTF-8 string into the response body.
 		 *
-		 * The 'charset' parameter of the 'Content-Type' header will be set to
-		 * 'UTF-8', the media type defaulting to 'application/octet-stream' if
-		 * not set already. Use {@link VSGI.Response.expand} to write data with
-		 * arbitrairy charset.
+		 * If not set already, the 'charset' parameter of the 'Content-Type'
+		 * header will be set to 'UTF-8'. The media type will default to
+		 * 'application/octet-stream' if not set already. Use {@link VSGI.Response.expand}
+		 * to write data with arbitrairy charset.
 		 *
 		 * @since 0.3
 		 */
 		public bool expand_utf8 (string body, Cancellable? cancellable = null) throws IOError {
 			HashTable<string, string> @params;
 			var content_type = headers.get_content_type (out @params);
-			@params["charset"] = "UTF-8";
-			headers.set_content_type (content_type ?? "application/octet-stream", @params);
+			if (content_type == null) {
+				headers.set_content_type ("application/octet-stream", Soup.header_parse_param_list ("charset=UTF-8"));
+			} else if (@params["charset"] == null) {
+				@params["charset"] = "UTF-8";
+				headers.set_content_type (content_type, @params);
+			}
 			return expand (body.data, cancellable);
 		}
 
