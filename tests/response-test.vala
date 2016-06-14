@@ -3,6 +3,34 @@ using VSGI.Mock;
 public int main (string[] args) {
 	Test.init (ref args);
 
+	Test.add_func ("/response/write_head", () => {
+		var res = new Response (new Request (new Connection (), "GET", new Soup.URI ("http://localhost:3003/")));
+
+		var wrote_status_line_emitted = false;
+		var wrote_headers_emitted     = false;
+
+		res.wrote_status_line.connect ((status, reason_phrase) => {
+			assert (Soup.Status.OK == status);
+			assert ("OK" == reason_phrase);
+			wrote_status_line_emitted = true;
+		});
+
+		res.wrote_headers.connect ((headers) => {
+			assert (res.headers != headers);
+			wrote_headers_emitted = true;
+		});
+
+		try {
+			size_t bytes_written;
+			assert (res.write_head (out bytes_written));
+		} catch (IOError err) {
+			assert_not_reached ();
+		}
+
+		assert (wrote_status_line_emitted);
+		assert (wrote_headers_emitted);
+	});
+
 	Test.add_func ("/response/expand", () => {
 		var res = new Response (new Request (new Connection (), "GET", new Soup.URI ("http://localhost:3003/")));
 		try {

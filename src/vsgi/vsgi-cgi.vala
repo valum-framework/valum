@@ -164,25 +164,66 @@ namespace VSGI.CGI {
 			Object (request: request);
 		}
 
-		/**
-		 * {@inheritDoc}
-		 *
-		 * CGI protocols does not have a status line. They use the 'Status'
-		 * header instead.
-		 */
-		protected override uint8[]? build_head () {
+		protected override bool write_status_line (HTTPVersion  http_version,
+		                                           uint         status,
+		                                           string       reason_phrase,
+		                                           out size_t   bytes_written,
+		                                           Cancellable? cancellable = null) throws IOError {
+			return request.connection.output_stream.write_all ("Status: HTTP/%s %u %s\r\n".printf (http_version == HTTPVersion.@1_0 ? "1.0" : "1.1", status, reason_phrase).data,
+			                                                   out bytes_written,
+			                                                   cancellable);
+		}
+
+#if GIO_2_44
+		protected override async bool write_status_line_async (HTTPVersion  http_version,
+		                                                       uint         status,
+		                                                       string       reason_phrase,
+		                                                       int          priority    = GLib.Priority.DEFAULT,
+		                                                       Cancellable? cancellable = null,
+		                                                       out size_t   bytes_written) throws Error {
+			return yield request.connection.output_stream.write_all_async ("Status: HTTP/%s %u %s\r\n".printf (http_version == HTTPVersion.@1_0 ? "1.0" : "1.1", status, reason_phrase).data,
+			                                                               priority,
+			                                                               cancellable,
+			                                                               out bytes_written);
+		}
+#endif
+
+		protected override bool write_headers (MessageHeaders headers,
+		                                       out size_t     bytes_written,
+		                                       Cancellable?   cancellable = null) throws IOError {
 			var head = new StringBuilder ();
 
-			head.append_printf ("Status: %u %s\r\n", status, reason_phrase ?? Status.get_phrase (status));
-
-			this.headers.foreach ((k, v) => {
-				head.append_printf ("%s: %s\r\n", k, v);
+			// headers
+			headers.@foreach ((name, header) => {
+				head.append_printf ("%s: %s\r\n", name, header);
 			});
 
 			// newline preceeding the body
 			head.append ("\r\n");
 
-			return head.str.data;
+			return request.connection.output_stream.write_all (head.str.data, out bytes_written, cancellable);
 		}
+
+#if GIO_2_44
+		protected override async bool write_headers_async (MessageHeaders headers,
+		                                                   int            priority    = GLib.Priority.DEFAULT,
+		                                                   Cancellable?   cancellable = null,
+		                                                   out size_t     bytes_written) throws Error {
+			var head = new StringBuilder ();
+
+			// headers
+			headers.@foreach ((name, header) => {
+				head.append_printf ("%s: %s\r\n", name, header);
+			});
+
+			// newline preceeding the body
+			head.append ("\r\n");
+
+			return yield request.connection.output_stream.write_all_async (head.str.data,
+			                                                               priority,
+			                                                               cancellable,
+			                                                               out bytes_written);
+		}
+#endif
 	}
 }

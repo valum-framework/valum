@@ -153,10 +153,23 @@ namespace VSGI.HTTP {
 		 * {@inheritDoc}
 		 *
 		 * Implementation based on {@link Soup.Message} already handles the
-		 * writing of the status line and headers, so an empty buffer is
-		 * returned.
+		 * writing of the status line.
 		 */
-		protected override uint8[]? build_head () { return null; }
+		protected override bool write_status_line (HTTPVersion http_version, uint status, string reason_phrase, out size_t bytes_written, Cancellable? cancellable = null) {
+			bytes_written = 0;
+			return true;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 *
+		 * Implementation based on {@link Soup.Message} already handles the
+		 * writing of the headers.
+		 */
+		protected override bool write_headers (MessageHeaders headers, out size_t bytes_written, Cancellable? cancellable = null) {
+			bytes_written= 0;
+			return true;
+		}
 	}
 
 	/**
