@@ -121,9 +121,6 @@ namespace VSGI {
 			var options = new Variant ("a{sv}");
 #endif
 
-			// keep the process (and workers) alive
-			hold ();
-
 			try {
 				listen (options);
 			} catch (Error err) {
@@ -157,6 +154,9 @@ namespace VSGI {
 					command_line.printerr ("listening on '%s'\n", uri.to_string (false)[0:-uri.path.length]);
 				}
 			}
+
+			// keep the process (and workers) alive
+			hold ();
 
 			return 0;
 		}
