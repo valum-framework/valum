@@ -25,13 +25,16 @@ using GLib;
 public abstract class VSGI.SocketListenerServer : Server {
 
 	/**
+	 * @since 0.3
+	 */
+	public SocketService socket_service { construct; get; }
+
+	/**
 	 * Identifier used to represent the protocol in URL scheme.
 	 *
 	 * @since 0.3
 	 */
 	protected abstract string protocol { get; }
-
-	private SocketService listener = new SocketService ();
 
 	private SList<Soup.URI> _uris = new SList<Soup.URI> ();
 
@@ -39,49 +42,51 @@ public abstract class VSGI.SocketListenerServer : Server {
 		get { return _uris; }
 	}
 
+	construct {
 #if GIO_2_40
-		construct {
-			const OptionEntry[] options = {
-				{"any",             'a', 0, OptionArg.NONE,     null, "Listen on any open TCP port"},
-				{"port",            'p', 0, OptionArg.INT,      null, "Listen to the provided TCP port"},
-				{"file-descriptor", 'f', 0, OptionArg.INT,      null, "Listen to the provided file descriptor",       "0"},
-				{"backlog",         'b', 0, OptionArg.INT,      null, "Listen queue depth used in the listen() call", "10"},
-				{null}
-			};
+		const OptionEntry[] options = {
+			{"any",             'a', 0, OptionArg.NONE,     null, "Listen on any open TCP port"},
+			{"port",            'p', 0, OptionArg.INT,      null, "Listen to the provided TCP port"},
+			{"file-descriptor", 'f', 0, OptionArg.INT,      null, "Listen to the provided file descriptor",       "0"},
+			{"backlog",         'b', 0, OptionArg.INT,      null, "Listen queue depth used in the listen() call", "10"},
+			{null}
+		};
 
-			this.add_main_option_entries (options);
-		}
+		this.add_main_option_entries (options);
 #endif
 
+		socket_service = new SocketService ();
+
+		socket_service.incoming.connect (handle_incoming_socket_connection);
+
+		socket_service.start ();
+
+		// gracefully stop accepting new connections
+		shutdown.connect (socket_service.stop);
+	}
+
 	public override void listen (Variant options) throws Error {
-		var backlog = options.lookup_value ("backlog", VariantType.INT32) ?? new Variant.@int32 (10);
-
-		listener.set_backlog (backlog.get_int32 ());
-
 		if (options.lookup_value ("any", VariantType.BOOLEAN) != null) {
-			var port = listener.add_any_inet_port (null);
+			var port = socket_service.add_any_inet_port (null);
 			_uris.append (new Soup.URI ("%s://0.0.0.0:%u/".printf (protocol, port)));
 			_uris.append (new Soup.URI ("%s://[::]:%u/".printf (protocol, port)));
 		} else if (options.lookup_value ("port", VariantType.INT32) != null) {
 			var port = (uint16) options.lookup_value ("port", VariantType.INT32).get_int32 ();
-			listener.add_inet_port (port, null);
+			socket_service.add_inet_port (port, null);
 			_uris.append (new Soup.URI ("%s://0.0.0.0:%u/".printf (protocol, port)));
 			_uris.append (new Soup.URI ("%s://[::]:%u/".printf (protocol, port)));
 		} else if (options.lookup_value ("file-descriptor", VariantType.INT32) != null) {
 			var file_descriptor = options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 ();
-			listener.add_socket (new Socket.from_fd (file_descriptor), null);
+			socket_service.add_socket (new Socket.from_fd (file_descriptor), null);
 			_uris.append (new Soup.URI ("%s+fd://%u/".printf (protocol, file_descriptor)));
 		} else {
-			listener.add_socket (new Socket.from_fd (0), null);
+			socket_service.add_socket (new Socket.from_fd (0), null);
 			_uris.append (new Soup.URI ("%s+fd://0/".printf (protocol)));
 		}
 
-		listener.incoming.connect (handle_incoming_socket_connection);
-
-		listener.start ();
-
-		// gracefully stop accepting new connections
-		shutdown.connect (listener.stop);
+		if (options.lookup_value ("backlog", VariantType.INT32) != null) {
+			socket_service.set_backlog (options.lookup_value ("backlog", VariantType.INT32).get_int32 ());
+		}
 	}
 
 	/**

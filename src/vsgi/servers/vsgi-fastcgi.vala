@@ -34,7 +34,7 @@ public Type server_init (TypeModule type_module) {
 [CCode (gir_namespace = "VSGI.FastCGI", gir_version = "0.2")]
 namespace VSGI.FastCGI {
 
-	private errordomain FastCGIError {
+	private errordomain Error {
 		FAILED
 	}
 
@@ -198,7 +198,11 @@ namespace VSGI.FastCGI {
 			this.shutdown.connect (global::FastCGI.shutdown_pending);
 		}
 
-		public override void listen (Variant options) throws Error {
+		public override void listen (Variant options) throws GLib.Error {
+			if (_uris.length () > 0) {
+				throw new Error.FAILED ("this server is already listening from '%s'", _uris.data.to_string (false));
+			}
+
 			var backlog = options.lookup_value ("backlog", VariantType.INT32) ?? new Variant.@int32 (10);
 
 			var fd = global::FastCGI.LISTENSOCK_FILENO;
@@ -209,7 +213,7 @@ namespace VSGI.FastCGI {
 				fd = global::FastCGI.open_socket (socket_path, backlog.get_int32 ());
 
 				if (fd == -1) {
-					throw new FastCGIError.FAILED ("could not open socket path %s", socket_path);
+					throw new Error.FAILED ("could not open socket path %s", socket_path);
 				}
 
 				_uris.append (new Soup.URI ("fcgi+unix://%s/".printf (socket_path)));
@@ -221,7 +225,7 @@ namespace VSGI.FastCGI {
 				fd = global::FastCGI.open_socket (":%d".printf (port), backlog.get_int32 ());
 
 				if (fd == -1) {
-					throw new FastCGIError.FAILED ("could not open TCP port '%d'", port);
+					throw new Error.FAILED ("could not open TCP port '%d'", port);
 				}
 
 				_uris.append (new Soup.URI ("fcgi://0.0.0.0:%d/".printf (port)));
@@ -249,7 +253,7 @@ namespace VSGI.FastCGI {
 				try {
 					if (!yield connection.init_async (Priority.DEFAULT, null))
 						break;
-				} catch (Error err) {
+				} catch (GLib.Error err) {
 					critical (err.message);
 					break;
 				}
@@ -259,7 +263,7 @@ namespace VSGI.FastCGI {
 
 				try {
 					dispatch (req, res);
-				} catch (Error err) {
+				} catch (GLib.Error err) {
 					critical (err.message);
 				}
 			} while (true);
@@ -305,7 +309,7 @@ namespace VSGI.FastCGI {
 			/**
 			 * @since 0.3
 			 */
-			public async bool init_async (int priority = Priority.DEFAULT, Cancellable? cancellable = null) throws Error {
+			public async bool init_async (int priority = Priority.DEFAULT, Cancellable? cancellable = null) throws GLib.Error {
 				// accept a request
 				var request_status = global::FastCGI.request.init (out request, fd);
 

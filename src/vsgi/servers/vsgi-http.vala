@@ -31,7 +31,7 @@ public Type server_init (TypeModule type_module) {
 [CCode (gir_namespace = "VSGI.HTTP", gir_version = "0.2")]
 namespace VSGI.HTTP {
 
-	private errordomain HTTPError {
+	private errordomain Error {
 		FAILED
 	}
 
@@ -209,57 +209,67 @@ namespace VSGI.HTTP {
 #endif
 		}
 
-		public override void listen (Variant options) throws Error {
-			var port = options.lookup_value ("port", VariantType.INT32) ?? new Variant.@int32 (3003);
+		public override void listen (Variant options) throws GLib.Error {
+			var port          = options.lookup_value ("port", VariantType.INT32) ?? new Variant.@int32 (3003);
+			var https         = options.lookup_value ("https", VariantType.BOOLEAN) ?? new Variant.boolean (false);
+			var ssl_cert_file = options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING);
+			var ssl_key_file  = options.lookup_value ("ssl-key-file", VariantType.BYTESTRING);
 
-			if (options.lookup_value ("https", VariantType.BOOLEAN) != null) {
-				if (options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING) == null ||
-				    options.lookup_value ("ssl-key-file", VariantType.BYTESTRING) == null) {
-					throw new HTTPError.FAILED ("both '--ssl-cert-file' and '--ssl-key-file' must be provided");
+			if (server == null) {
+				TlsCertificate? tls_certificate = null;
+				if (ssl_cert_file != null && ssl_key_file != null) {
+					tls_certificate = new TlsCertificate.from_files (options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING).get_bytestring (),
+																	 options.lookup_value ("ssl-key-file", VariantType.BYTESTRING).get_bytestring ());
+				} else if (https.get_boolean ()) {
+					throw new Error.FAILED ("both '--ssl-cert-file' and '--ssl-key-file' must be provided with 'https' option on first 'listen' call");
 				}
 
-				var tls_certificate = new TlsCertificate.from_files (options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING).get_bytestring (),
-				                                                     options.lookup_value ("ssl-key-file", VariantType.BYTESTRING).get_bytestring ());
+				if (https.get_boolean ()) {
+					this.server = new Soup.Server (
+#if !SOUP_2_48
+						SERVER_PORT,            port.get_int32 (),
+#endif
+						SERVER_RAW_PATHS,       options.lookup_value ("raw-paths", VariantType.BOOLEAN) != null,
+						SERVER_TLS_CERTIFICATE, tls_certificate);
+				} else {
+					this.server = new Soup.Server (
+#if !SOUP_2_48
+						SERVER_PORT,          port.get_int32 (),
+#endif
+						SERVER_RAW_PATHS,     options.lookup_value ("raw-paths", VariantType.BOOLEAN) != null,
+						SERVER_TLS_CERTIFICATE, tls_certificate);
+				}
 
-				this.server = new Soup.Server (
-#if !SOUP_2_48
-					SERVER_PORT,            port.get_int32 (),
-#endif
-					SERVER_RAW_PATHS,       options.lookup_value ("raw-paths", VariantType.BOOLEAN) != null,
-					SERVER_TLS_CERTIFICATE, tls_certificate,
-					SERVER_SERVER_HEADER,   null);
-			} else {
-				this.server = new Soup.Server (
-#if !SOUP_2_48
-					SERVER_PORT,          port.get_int32 (),
-#endif
-					SERVER_RAW_PATHS,     options.lookup_value ("raw-paths", VariantType.BOOLEAN) != null,
-					SERVER_SERVER_HEADER, null);
+				// register a catch-all handler
+				this.server.add_handler (null, (server, msg, path, query, client) => {
+					var connection = new Connection (server, msg);
+
+					msg.set_status (Status.OK);
+
+					var req = new Request (connection, msg, query);
+					var res = new Response (req, msg);
+
+					try {
+						dispatch (req, res);
+					} catch (GLib.Error err) {
+						critical ("%s", err.message);
+					}
+				});
+			} else if (options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING) != null) {
+				throw new Error.FAILED ("The 'ssl-cert-file' option can only be set during the first 'listen' call.");
+			} else if (options.lookup_value ("ssl-key-file", VariantType.BYTESTRING) != null) {
+				throw new Error.FAILED ("The 'ssl-key-file' option can only be set during the first 'listen' call.");
+			} else if (options.lookup_value ("raw-paths", VariantType.BOOLEAN) != null) {
+				throw new Error.FAILED ("The 'raw-paths' option can only be set during the first 'listen' call.");
 			}
 
 			if (options.lookup_value ("server-header", VariantType.STRING) != null)
 				this.server.server_header = options.lookup_value ("server-header", VariantType.STRING).get_string ();
 
-			// register a catch-all handler
-			this.server.add_handler (null, (server, msg, path, query, client) => {
-				var connection = new Connection (server, msg);
-
-				msg.set_status (Status.OK);
-
-				var req = new Request (connection, msg, query);
-				var res = new Response (req, msg);
-
-				try {
-					dispatch (req, res);
-				} catch (Error err) {
-					critical ("%s", err.message);
-				}
-			});
-
 #if SOUP_2_48
 			ServerListenOptions listen_options = 0;
 
-			if (options.lookup_value ("https", VariantType.BOOLEAN) != null)
+			if (https.get_boolean ())
 				listen_options |= ServerListenOptions.HTTPS;
 
 			if (options.lookup_value ("ipv4-only", VariantType.BOOLEAN) != null)
@@ -278,8 +288,7 @@ namespace VSGI.HTTP {
 			}
 #else
 			this.server.run_async ();
-			_uris.append (new Soup.URI ("%s://0.0.0.0:%u".printf (options.lookup_value ("https", VariantType.BOOLEAN) == null ? "http" :
-							"https", server.port)));
+			_uris.append (new Soup.URI ("%s://0.0.0.0:%u".printf (https.get_boolean () ? "http" : "https", server.port)));
 #endif
 		}
 

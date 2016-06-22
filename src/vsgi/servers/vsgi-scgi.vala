@@ -40,7 +40,7 @@ namespace VSGI.SCGI {
 	/**
 	 * @since 0.3
 	 */
-	private errordomain SCGIError {
+	private errordomain Error {
 		/**
 		 *
 		 */
@@ -104,7 +104,7 @@ namespace VSGI.SCGI {
 			process_connection.begin (connection, Priority.DEFAULT, null, (obj, result) => {
 				try {
 					process_connection.end (result);
-				} catch (Error err) {
+				} catch (GLib.Error err) {
 					critical ("%s", err.message);
 				}
 			});
@@ -112,8 +112,8 @@ namespace VSGI.SCGI {
 		}
 
 		private async void process_connection (SocketConnection connection,
-		                                       int priority = GLib.Priority.DEFAULT,
-		                                       Cancellable? cancellable = null) throws Error {
+		                                       int              priority    = GLib.Priority.DEFAULT,
+		                                       Cancellable?     cancellable = null) throws GLib.Error {
 			// consume the environment from the stream
 			string[] environment = {};
 			var reader           = new DataInputStream (connection.input_stream);
@@ -125,17 +125,17 @@ namespace VSGI.SCGI {
 			var size_str = reader.read_upto (":", 1, out length);
 
 			if (size_str == null) {
-				throw new SCGIError.FAILED ("could not read netstring length");
+				throw new Error.FAILED ("could not read netstring length");
 			}
 
 			int64 size;
 			if (!int64.try_parse (size_str, out size)) {
-				throw new SCGIError.MALFORMED_NETSTRING ("'%s' is not a valid netstring length", size_str);
+				throw new Error.MALFORMED_NETSTRING ("'%s' is not a valid netstring length", size_str);
 			}
 
 			// consume the semi-colon
 			if (reader.read_byte () != ':') {
-				throw new SCGIError.MALFORMED_NETSTRING ("missing ':'");
+				throw new Error.MALFORMED_NETSTRING ("missing ':'");
 			}
 
 			// consume and extract the environment
@@ -144,19 +144,19 @@ namespace VSGI.SCGI {
 				size_t key_length;
 				var key = reader.read_upto ("", 1, out key_length);
 				if (key == null) {
-					throw new SCGIError.FAILED ("could not read key");
+					throw new Error.FAILED ("could not read key");
 				}
 				if (reader.read_byte () != '\0') {
-					throw new SCGIError.MALFORMED_NETSTRING ("missing EOF");
+					throw new Error.MALFORMED_NETSTRING ("missing EOF");
 				}
 
 				size_t value_length;
 				var @value = reader.read_upto ("", 1, out value_length);
 				if (@value == null) {
-					throw new SCGIError.FAILED ("could not read value for key '%s'", key);
+					throw new Error.FAILED ("could not read value for key '%s'", key);
 				}
 				if (reader.read_byte () != '\0') {
-					throw new SCGIError.MALFORMED_NETSTRING ("missing EOF");
+					throw new Error.MALFORMED_NETSTRING ("missing EOF");
 				}
 
 				read += key_length + 1 + value_length + 1;
@@ -168,24 +168,24 @@ namespace VSGI.SCGI {
 
 			// consume the comma following a chunk
 			if (reader.read_byte () != ',') {
-				throw new SCGIError.MALFORMED_NETSTRING ("missing ','");
+				throw new Error.MALFORMED_NETSTRING ("missing ','");
 			}
 
 			var content_length_str = Environ.get_variable (environment, "CONTENT_LENGTH");
 
 			if (content_length_str == null) {
-				throw new SCGIError.MISSING_CONTENT_LENGTH ("the content length is a mandatory field");
+				throw new Error.MISSING_CONTENT_LENGTH ("the content length is a mandatory field");
 			}
 
 			int64 content_length;
 			if (!int64.try_parse (content_length_str, out content_length)) {
-				throw new SCGIError.BAD_CONTENT_LENGTH ("'%s' is not a valid content length", content_length_str);
+				throw new Error.BAD_CONTENT_LENGTH ("'%s' is not a valid content length", content_length_str);
 			}
 
 			// buffer the rest of the body
 			if (content_length > 0) {
 				if (sizeof (size_t) < sizeof (int64) && content_length > size_t.MAX) {
-					throw new SCGIError.FAILED ("request body is too big (%sB) to be held in a buffer",
+					throw new Error.FAILED ("request body is too big (%sB) to be held in a buffer",
 					                            content_length.to_string ());
 				}
 
@@ -199,7 +199,7 @@ namespace VSGI.SCGI {
 				}
 
 				if (content_length < reader.get_available ()) {
-					throw new SCGIError.FAILED ("request body (%sB) could not be buffered",
+					throw new Error.FAILED ("request body (%sB) could not be buffered",
 					                            content_length.to_string ());
 				}
 			}

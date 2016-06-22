@@ -56,5 +56,28 @@ public int main (string[] args) {
 		assert ("fcgi+unix://some-socket.sock/" == server.uris.data.to_string (false));
 	});
 
+	Test.add_func ("/fastcgi/server/multiple_listen", () => {
+		var server  = Server.@new ("fastcgi");
+
+		try {
+			var options = new VariantBuilder (new VariantType ("a{sv}"));
+			options.add ("{sv}", "socket", new Variant.bytestring ("some-socket.sock"));
+			server.listen (options.end ());
+		} catch (Error err) {
+			assert_not_reached ();
+		} finally {
+			FileUtils.unlink ("some-socket.sock");
+		}
+
+		try {
+			var options = new VariantBuilder (new VariantType ("a{sv}"));
+			options.add ("{sv}", "socket", new Variant.bytestring ("some-socket.sock"));
+			server.listen (options.end ());
+			assert_not_reached ();
+		} catch (Error err) {
+			assert (1 == server.uris.length ());
+		}
+	});
+
 	return Test.run ();
 }

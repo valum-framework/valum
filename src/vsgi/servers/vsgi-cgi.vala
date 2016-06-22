@@ -34,6 +34,10 @@ public Type server_init (TypeModule type_module) {
 [CCode (gir_namespace = "VSGI.CGI", gir_version = "0.2")]
 namespace VSGI.CGI {
 
+	private errordomain Error {
+		FAILED
+	}
+
 	/**
 	 * {@inheritDoc}
 	 *
@@ -53,18 +57,27 @@ namespace VSGI.CGI {
 			}
 		}
 
-		public override void listen (Variant options) throws Error {
+
+		public override void listen (Variant options) throws GLib.Error {
+			if (_uris.length () > 0) {
+				throw new Error.FAILED ("this server is already listening from '%s'", _uris.data.to_string (false));
+			}
+
+			_uris.append (new Soup.URI ("cgi+fd://%u/".printf (stdin.fileno ())));
+
 			var connection = new Connection (this,
 			                                 new UnixInputStream (stdin.fileno (), true),
 			                                 new UnixOutputStream (stdout.fileno (), true));
-
-			_uris.append (new Soup.URI ("cgi+fd://%u/".printf (stdin.fileno ())));
 
 			var req = new Request (connection, Environ.@get ());
 			var res = new Response (req);
 
 			// handle a single request and quit
-			dispatch (req, res);
+			try {
+				dispatch (req, res);
+			} catch (GLib.Error err) {
+				critical (err.message);
+			}
 		}
 
 		/**
