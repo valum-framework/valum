@@ -123,7 +123,7 @@ namespace VSGI {
 
 			// per-worker logging
 			if (Posix.isatty (stderr.fileno ())) {
-				Log.set_handler_full (null, LogLevelFlags.LEVEL_MASK, (domain, level, message) => {
+				Log.set_handler (null, LogLevelFlags.LEVEL_MASK, (domain, level, message) => {
 					stderr.printf ("%s%s\t%s%s%s%s%s\n",
 					               "\x1b[33m",
 					               "worker %d:".printf (Posix.getpid ()),
