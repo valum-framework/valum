@@ -145,7 +145,7 @@ namespace VSGI.FastCGI {
 		 *
 		 * Initialize FastCGI-specific environment variables.
 		 */
-		public Request (IOStream connection, string[] environment) {
+		public Request (Connection connection, string[] environment) {
 			base (connection, environment);
 		}
 	}
@@ -248,7 +248,7 @@ namespace VSGI.FastCGI {
 
 		private async void accept_loop_async (int fd) {
 			do {
-				var connection = new Connection (fd);
+				var connection = new Connection (this, fd);
 
 				try {
 					if (!yield connection.init_async (Priority.DEFAULT, null))
@@ -272,7 +272,7 @@ namespace VSGI.FastCGI {
 		/**
 		 * {@inheritDoc}
 		 */
-		private class Connection : IOStream, AsyncInitable {
+		private class Connection : VSGI.Connection, AsyncInitable {
 
 			/**
 			 * @since 0.2
@@ -302,8 +302,8 @@ namespace VSGI.FastCGI {
 			/**
 			 * @since 0.2
 			 */
-			public Connection (int fd) {
-				Object (fd: fd);
+			public Connection (Server server, int fd) {
+				Object (server: server, fd: fd);
 			}
 
 			/**

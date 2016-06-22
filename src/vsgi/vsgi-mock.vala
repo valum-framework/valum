@@ -30,7 +30,7 @@ namespace VSGI.Mock {
 	 * stubbed connection so that the produced and consumed messages can be
 	 * easily inspected.
 	 */
-	public class Connection : IOStream {
+	public class Connection : VSGI.Connection {
 
 		/**
 		 * @since 0.2.4

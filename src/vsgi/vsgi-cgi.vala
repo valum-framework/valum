@@ -89,7 +89,7 @@ namespace VSGI.CGI {
 		 *
 		 * @param environment environment variables
 		 */
-		public Request (IOStream connection, string[] environment) {
+		public Request (Connection connection, string[] environment) {
 			Object (connection: connection, environment: environment);
 
 			var https           = Environ.get_variable (environment, "HTTPS");

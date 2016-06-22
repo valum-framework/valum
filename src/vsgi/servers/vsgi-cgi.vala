@@ -38,6 +38,26 @@ namespace VSGI.CGI {
 		FAILED
 	}
 
+	private class Connection : VSGI.Connection {
+
+		private InputStream _input_stream;
+		private OutputStream _output_stream;
+
+		public override InputStream input_stream { get { return this._input_stream; } }
+
+		public override OutputStream output_stream { get { return this._output_stream; } }
+
+		public Connection (Server server, InputStream input_stream, OutputStream output_stream) {
+			Object (server: server);
+			this._input_stream  = input_stream;
+			this._output_stream = output_stream;
+		}
+
+		public override void dispose () {
+			this.server.release ();
+		}
+	}
+
 	/**
 	 * {@inheritDoc}
 	 *
@@ -85,28 +105,6 @@ namespace VSGI.CGI {
 		 */
 		public override Pid fork () {
 			return 0;
-		}
-
-		private class Connection : IOStream {
-
-			private InputStream _input_stream;
-			private OutputStream _output_stream;
-
-			public Server server { construct; get; }
-
-			public override InputStream input_stream { get { return this._input_stream; } }
-
-			public override OutputStream output_stream { get { return this._output_stream; } }
-
-			public Connection (Server server, InputStream input_stream, OutputStream output_stream) {
-				Object (server: server);
-				this._input_stream  = input_stream;
-				this._output_stream = output_stream;
-			}
-
-			public override void dispose () {
-				this.server.release ();
-			}
 		}
 	}
 }

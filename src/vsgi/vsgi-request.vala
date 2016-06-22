@@ -16,7 +16,6 @@
  */
 
 using GLib;
-using Soup;
 
 namespace VSGI {
 	/**
@@ -66,12 +65,12 @@ namespace VSGI {
 		 *
 		 * @since 0.2
 		 */
-		public IOStream connection { construct; get; }
+		public Connection connection { construct; get; }
 
 		/**
 		 * Request HTTP version.
 		 */
-		public abstract HTTPVersion http_version { get; }
+		public abstract Soup.HTTPVersion http_version { get; }
 
 		/**
 		 * Identifier for the gateway (eg. CGI/1.1).
@@ -104,7 +103,7 @@ namespace VSGI {
 		 *
 		 * @since 0.1
 		 */
-		public abstract URI uri { get; }
+		public abstract Soup.URI uri { get; }
 
 		/**
 		 * HTTP query.
@@ -135,24 +134,24 @@ namespace VSGI {
 		 *
 		 * @since 0.0.1
 		 */
-		public abstract MessageHeaders headers { get; }
+		public abstract Soup.MessageHeaders headers { get; }
 
 		/**
 		 * Request cookies extracted from the 'Cookie' header.
 		 *
 		 * @since 0.3
 		 */
-		public SList<Cookie> cookies {
+		public SList<Soup.Cookie> cookies {
 			owned get {
-				var cookies     = new SList<Cookie> ();
+				var cookies     = new SList<Soup.Cookie> ();
 				var cookie_list = headers.get_list ("Cookie");
 
 				if (cookie_list == null)
 					return cookies;
 
-				foreach (var cookie in header_parse_list (cookie_list))
+				foreach (var cookie in Soup.header_parse_list (cookie_list))
 					if (cookie != null)
-						cookies.prepend (Cookie.parse (cookie, uri));
+						cookies.prepend (Soup.Cookie.parse (cookie, uri));
 
 				cookies.reverse ();
 
@@ -170,8 +169,8 @@ namespace VSGI {
 		 * @param name name of the cookie to lookup
 		 * @return the cookie if found, otherwise 'null'
 		 */
-		public Cookie? lookup_cookie (string name) {
-			Cookie? found = null;
+		public Soup.Cookie? lookup_cookie (string name) {
+			Soup.Cookie? found = null;
 
 			foreach (var cookie in cookies)
 				if (cookie.name == name)
@@ -191,11 +190,11 @@ namespace VSGI {
 		 * @since 0.3
 		 * @return the signed cookie if found, otherwise 'null'
 		 */
-		public Cookie? lookup_signed_cookie (string       name,
+		public Soup.Cookie? lookup_signed_cookie (string       name,
 		                                     ChecksumType checksum_type,
 		                                     uint8[]      key,
 		                                     out string?  @value) {
-			Cookie? found = null;
+			Soup.Cookie? found = null;
 			@value        = null;
 
 			foreach (var cookie in cookies)
@@ -264,7 +263,7 @@ namespace VSGI {
 		 * @return buffer containing the stream data
 		 */
 		public uint8[] flatten (Cancellable? cancellable = null) throws IOError {
-			var buffer = this.headers.get_encoding () == Encoding.CONTENT_LENGTH ?
+			var buffer = this.headers.get_encoding () == Soup.Encoding.CONTENT_LENGTH ?
 				new MemoryOutputStream (new uint8[this.headers.get_content_length ()], null, free) :
 				new MemoryOutputStream (null, realloc, free);
 
@@ -301,7 +300,7 @@ namespace VSGI {
 		 */
 		public async uint8[] flatten_async (int io_priority = GLib.Priority.DEFAULT,
 		                                    Cancellable? cancellable = null) throws IOError {
-			var buffer = this.headers.get_encoding () == Encoding.CONTENT_LENGTH ?
+			var buffer = this.headers.get_encoding () == Soup.Encoding.CONTENT_LENGTH ?
 				new MemoryOutputStream (new uint8[this.headers.get_content_length ()], null, free) :
 				new MemoryOutputStream (null, realloc, free);
 

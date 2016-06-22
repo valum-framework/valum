@@ -1,6 +1,7 @@
 vsgi_sources = [
     'vsgi.vala',
     'vsgi-bounded-input-stream.vala',
+    'vsgi-connection.vala',
     'vsgi-cgi.vala',
     'vsgi-chunked-encoder.vala',
     'vsgi-cookie-utils.vala',

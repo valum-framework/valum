@@ -106,7 +106,7 @@ namespace VSGI.HTTP {
 		 * @param msg        message underlying this request
 		 * @param query      parsed HTTP query provided by {@link Soup.ServerCallback}
 		 */
-		public Request (IOStream connection, Message msg, HashTable<string, string>? query) {
+		public Request (Connection connection, Message msg, HashTable<string, string>? query) {
 			Object (connection: connection, message: msg);
 			this._query = query;
 		}
@@ -157,6 +157,49 @@ namespace VSGI.HTTP {
 		 * returned.
 		 */
 		protected override uint8[]? build_head () { return null; }
+	}
+
+	/**
+	 * @since 0.2
+	 */
+	public class Connection : VSGI.Connection {
+
+		public Soup.Server soup_server { construct; get; }
+
+		public Message message { construct; get; }
+
+		private InputStream _input_stream;
+
+		public override InputStream input_stream {
+			get {
+				return this._input_stream;
+			}
+		}
+
+		private OutputStream _output_stream;
+
+		public override OutputStream output_stream {
+			get {
+				return this._output_stream;
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @param server  used to pause and unpause the message from and
+		 *                until the connection lives
+		 * @param message message wrapped to provide the IOStream
+		 */
+		public Connection (Server server, Soup.Server soup_server, Message message) {
+			Object (server: server, soup_server: soup_server, message: message);
+
+			this._input_stream  = new MemoryInputStream.from_data (message.request_body.flatten ().data, null);
+			this._output_stream = new MessageBodyOutputStream (soup_server, message);
+
+			// prevent the server from completing the message
+			soup_server.pause_message (message);
+		}
 	}
 
 	/**
@@ -242,7 +285,7 @@ namespace VSGI.HTTP {
 
 				// register a catch-all handler
 				this.server.add_handler (null, (server, msg, path, query, client) => {
-					var connection = new Connection (server, msg);
+					var connection = new Connection (this, server, msg);
 
 					msg.set_status (Status.OK);
 
@@ -290,48 +333,6 @@ namespace VSGI.HTTP {
 			this.server.run_async ();
 			_uris.append (new Soup.URI ("%s://0.0.0.0:%u".printf (https.get_boolean () ? "http" : "https", server.port)));
 #endif
-		}
-
-		/**
-		 * @since 0.2
-		 */
-		private class Connection : IOStream {
-
-			private InputStream _input_stream;
-			private OutputStream _output_stream;
-
-			public Soup.Server server { construct; get; }
-
-			public Message message { construct; get; }
-
-			public override InputStream input_stream {
-				get {
-					return this._input_stream;
-				}
-			}
-
-			public override OutputStream output_stream {
-				get {
-					return this._output_stream;
-				}
-			}
-
-			/**
-			 * {@inheritDoc}
-			 *
-			 * @param server  used to pause and unpause the message from and
-			 *                until the connection lives
-			 * @param message message wrapped to provide the IOStream
-			 */
-			public Connection (Soup.Server server, Message message) {
-				Object (server: server, message: message);
-
-				this._input_stream  = new MemoryInputStream.from_data (message.request_body.flatten ().data, null);
-				this._output_stream = new MessageBodyOutputStream (server, message);
-
-				// prevent the server from completing the message
-				this.server.pause_message (message);
-			}
 		}
 	}
 }
