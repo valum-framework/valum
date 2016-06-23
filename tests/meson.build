@@ -32,5 +32,7 @@ test('basepath', executable('basepath-test', ['basepath-test.vala'],
                             dependencies: [glib, gobject, gio, soup, vsgi, valum]))
 test('content negotiation', executable('content-negotiation-test', ['content-negotiation-test.vala'],
                                        dependencies: [glib, gobject, gio, soup, vsgi, valum]))
+test('context', executable('context-test', ['context-test.vala'],
+                                       dependencies: [glib, gobject, gio, soup, vsgi, valum]))
 test('status', executable('status-test', ['status-test.vala'],
                                        dependencies: [glib, gobject, gio, soup, vsgi, valum]))
