@@ -64,10 +64,8 @@ namespace Valum {
 		 * @param name             name by which types are identified in the
 		 *                         rule pattern
 		 * @param pattern          matches instance of the type in a path
-		 * @param destination_type type into which the extracted value will be
-		 *                         converted
 		 */
-		public void register_type (string name, Regex pattern, Type destination_type = typeof (string)) {
+		public void register_type (string name, Regex pattern) {
 			types[name] = pattern;
 		}
 

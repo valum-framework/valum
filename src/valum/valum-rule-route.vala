@@ -52,6 +52,11 @@ namespace Valum {
 		public string rule { construct; get; }
 
 		/**
+		 * @since 0.3
+		 */
+		public HashTable<string, Regex> types { construct; get; }
+
+		/**
 		 * Create a Route for a given callback from a rule.
 		 *
 		 * @since 0.0.1
@@ -61,10 +66,10 @@ namespace Valum {
 		 * @param types type mapping to figure out types in rule or 'null' to
 		 *              prevent any form of typing
 		 */
-		public RuleRoute (Method                    method,
-		                  string                    rule,
-		                  HashTable<string, Regex>? types,
-		                  owned HandlerCallback     handler) throws RegexError {
+		public RuleRoute (Method                   method,
+		                  string                   rule,
+		                  HashTable<string, Regex> types,
+		                  owned HandlerCallback    handler) throws RegexError {
 			var pattern = new StringBuilder ();
 
 			var @params = /([\*\?\(\)]|<(?:\w+:)?\w+>)/.split_full (rule);
@@ -87,20 +92,19 @@ namespace Valum {
 					var type = cap.length == 1 ? "string" : cap[0];
 					var key  = cap.length == 1 ? cap[0] : cap[1];
 
-					if (types == null) {
+					if (types.contains (type)) {
+						pattern.append_printf ("(?<%s>%s)", key, types[type].get_pattern ());
+					} else if (type == "string") {
 						pattern.append_printf ("(?<%s>\\w+)", key);
 					} else {
-						if (!types.contains (type))
-							throw new RegexError.COMPILE ("using an undefined type %s", type);
-
-						pattern.append_printf ("(?<%s>%s)", key, types[type].get_pattern ());
+						throw new RegexError.COMPILE ("using an undefined type '%s' for capture '%s'", type, key);
 					}
 				}
 			}
 
 			pattern.append_c ('$');
 
-			Object (method: method, rule: rule, regex: new Regex (pattern.str, RegexCompileFlags.OPTIMIZE));
+			Object (method: method, rule: rule, types: types, regex: new Regex (pattern.str, RegexCompileFlags.OPTIMIZE));
 			set_handler_callback ((owned) handler);
 		}
 	}
