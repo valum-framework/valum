@@ -35,27 +35,19 @@ namespace Valum {
 		public Context context { get; construct; default = new Context (); }
 
 		/**
-		 * Registered types used to extract {@link VSGI.Request} parameters.
-         *
-		 * @since 0.1
-		 */
-		private HashTable<string, Regex> types = new HashTable<string, Regex> (str_hash, str_equal);
-
-		/**
-		 * Registered routes by HTTP method.
-		 */
-		private Sequence<Route> routes = new Sequence<Route> ();
-
-		/**
-		 * Stack of scopes.
+		 * Sequence of {@link Valum.Route} object defining this.
 		 *
-		 * @since 0.1
+		 * @since 0.3
 		 */
-		private Queue<string> scopes = new Queue<string> ();
+		public Sequence<Route> routes { get; owned construct; }
+
+		private HashTable<string, Regex> types  = new HashTable<string, Regex> (str_hash, str_equal);
+		private Queue<string>            scopes = new Queue<string>   ();
 
 		construct {
-			// initialize default types
 			context = new Context (); // FIXME: the property should only be initialized in 'default'
+			routes  = new Sequence<Route> ();
+			// initialize default types
 			register_type ("int",    /\d+/);
 			register_type ("string", /\w+/);
 			register_type ("path",   /(?:\.?[\w-\s\/])+/);
@@ -82,8 +74,8 @@ namespace Valum {
 		 *
 		 * @since 0.3
 		 */
-		public Route use (owned HandlerCallback cb) {
-			return route (new MatcherRoute (Method.ANY, () => { return true; }, (owned) cb));
+		public void use (owned HandlerCallback cb) {
+			route (new MatcherRoute (Method.ANY, () => { return true; }, (owned) cb));
 		}
 
 		/**
@@ -94,64 +86,64 @@ namespace Valum {
 		 *
 		 * @since 0.3
 		 */
-		public Route asterisk (Method method, owned HandlerCallback cb) {
-			return this.route (new AsteriskRoute (method, (owned) cb));
+		public void asterisk (Method method, owned HandlerCallback cb) {
+			route (new AsteriskRoute (method, (owned) cb));
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public new Route get (string rule, owned HandlerCallback cb) {
-			return this.rule (Method.GET, rule, (owned) cb);
+		public new void @get (string rule, owned HandlerCallback cb) {
+			this.rule (Method.GET, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public Route post (string rule, owned HandlerCallback cb) {
-			return this.rule (Method.POST, rule, (owned) cb);
+		public void post (string rule, owned HandlerCallback cb) {
+			this.rule (Method.POST, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public Route put (string rule, owned HandlerCallback cb) {
-			return this.rule (Method.PUT, rule, (owned) cb);
+		public void put (string rule, owned HandlerCallback cb) {
+			this.rule (Method.PUT, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public Route delete (string rule, owned HandlerCallback cb) {
-			return this.rule (Method.DELETE, rule, (owned) cb);
+		public void @delete (string rule, owned HandlerCallback cb) {
+			this.rule (Method.DELETE, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public Route head (string rule, owned HandlerCallback cb) {
-			return this.rule (Method.HEAD, rule, (owned) cb);
+		public void head (string rule, owned HandlerCallback cb) {
+			this.rule (Method.HEAD, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public Route options (string rule, owned HandlerCallback cb) {
-			return this.rule (Method.OPTIONS, rule, (owned) cb);
+		public void options (string rule, owned HandlerCallback cb) {
+			this.rule (Method.OPTIONS, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public Route trace (string rule, owned HandlerCallback cb) {
-			return this.rule (Method.TRACE, rule, (owned) cb);
+		public void trace (string rule, owned HandlerCallback cb) {
+			this.rule (Method.TRACE, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public new Route connect (string rule, owned HandlerCallback cb) {
-			return this.rule (Method.CONNECT, rule, (owned) cb);
+		public new void connect (string rule, owned HandlerCallback cb) {
+			this.rule (Method.CONNECT, rule, (owned) cb);
 		}
 
 		/**
@@ -159,8 +151,8 @@ namespace Valum {
 		 *
 		 * @since 0.0.1
 		 */
-		public Route patch (string rule, owned HandlerCallback cb) {
-			return this.rule (Method.PATCH, rule, (owned) cb);
+		public void patch (string rule, owned HandlerCallback cb) {
+			this.rule (Method.PATCH, rule, (owned) cb);
 		}
 
 		/**
@@ -175,7 +167,7 @@ namespace Valum {
 		 * @param rule   rule
 		 * @param cb     callback used to process the pair of request and response.
 		 */
-		public Route rule (Method method, string rule, owned HandlerCallback cb) {
+		public void rule (Method method, string rule, owned HandlerCallback cb) {
 			var pattern = new StringBuilder ();
 
 			// scope the route
@@ -186,7 +178,7 @@ namespace Valum {
 			pattern.append (rule);
 
 			try {
-				return this.route (new RuleRoute (method | Method.PROVIDED, pattern.str, types, (owned) cb));
+				route (new RuleRoute (method | Method.PROVIDED, pattern.str, types, (owned) cb));
 			} catch (RegexError err) {
 				error (err.message);
 			}
@@ -206,7 +198,7 @@ namespace Valum {
 		 * @param regex  regular expression matching the request path.
 		 * @param cb     callback used to process the pair of request and response.
 		 */
-		public Route regex (Method method, Regex regex, owned HandlerCallback cb) {
+		public void regex (Method method, Regex regex, owned HandlerCallback cb) {
 			var pattern = new StringBuilder ();
 
 			pattern.append ("^");
@@ -221,7 +213,7 @@ namespace Valum {
 			pattern.append ("$");
 
 			try {
-				return route (new RegexRoute (method | Method.PROVIDED, new Regex (pattern.str, RegexCompileFlags.OPTIMIZE), (owned) cb));
+				route (new RegexRoute (method | Method.PROVIDED, new Regex (pattern.str, RegexCompileFlags.OPTIMIZE), (owned) cb));
 			} catch (RegexError err) {
 				error (err.message);
 			}
@@ -236,8 +228,8 @@ namespace Valum {
 		 * @param matcher callback used to match the request
 		 * @param cb      callback used to process the pair of request and response.
 		 */
-		public Route matcher (Method method, owned MatcherCallback matcher, owned HandlerCallback cb) {
-			return this.route (new MatcherRoute (method | Method.PROVIDED, (owned) matcher, (owned) cb));
+		public void matcher (Method method, owned MatcherCallback matcher, owned HandlerCallback cb) {
+			route (new MatcherRoute (method | Method.PROVIDED, (owned) matcher, (owned) cb));
 		}
 
 		/**
@@ -248,9 +240,9 @@ namespace Valum {
 		 * @param route an instance of Route defining the matching process and
 		 *              the callback.
 		 */
-		public Route route (Route route) {
+		public void route (Route route) {
 			this.routes.append (route);
-			return route;
+
 		}
 
 		/**
@@ -318,7 +310,7 @@ namespace Valum {
 		 * @since 0.1
 		 */
 		public bool handle (Request req, Response res) throws Error {
-			return this.perform_routing (this.routes.get_begin_iter (), req, res, () => {
+			return perform_routing (this.routes.get_begin_iter (), req, res, () => {
 				if (req.method == Request.TRACE) {
 					var head = new StringBuilder ();
 
