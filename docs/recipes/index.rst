@@ -11,3 +11,4 @@ their potential integration with Valum.
     persistence
     static-resource
     scripting
+    templating
