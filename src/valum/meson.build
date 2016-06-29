@@ -12,6 +12,7 @@ valum_sources = [
     'valum-route.vala',
     'valum-router.vala',
     'valum-rule-route.vala',
+    'valum-safely.vala',
     'valum-sequence.vala',
     'valum-server-sent-events.vala',
     'valum-static.vala',

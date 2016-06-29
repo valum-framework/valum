@@ -10,6 +10,7 @@ from authentication to the delivery of a static resource.
     basic
     content-negotiation
     decode
+    safely
     sequence
     server-sent-events
     static
