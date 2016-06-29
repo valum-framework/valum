@@ -52,12 +52,12 @@ namespace Valum {
 	 *
 	 * @since 0.0.1
 	 *
-	 * @throws Informational
-	 * @throws Success
-	 * @throws Redirection perform a 3xx HTTP redirection
-	 * @throws ClientError trigger a 4xx client error
-	 * @throws ServerError trigger a 5xx server error
-	 * @throws Error       any other error which will be handled as a {@link Valum.ServerError.INTERNAL}
+	 * @throws Informational trigger a 1xx informational status
+	 * @throws Success       trigger a 2xx success status
+	 * @throws Redirection   perform a 3xx HTTP redirection
+	 * @throws ClientError   trigger a 4xx client error
+	 * @throws ServerError   trigger a 5xx server error
+	 * @throws Error         any other error which will be handled as a {@link Valum.ServerError.INTERNAL_SERVER_ERROR}
 	 *
 	 * @param req   request being handled
 	 * @param res   response to send back to the requester
@@ -83,9 +83,7 @@ namespace Valum {
 	 * code or invoke processing in the {@link Valum.Router} context.
 	 *
 	 * The passed {@link VSGI.Request} and {@link VSGI.Response} objects can be
-	 * optionally filtered using {@link VSGI.RequestFilter} and {@link VSGI.ResponseFilter}.
-	 *
-	 * @see Valum.HandlerCallback for details on thrown error domains
+	 * optionally filtered using {@link VSGI.FilteredRequest} and {@link VSGI.FilteredResponse}.
 	 *
 	 * @since 0.1
 	 *
