@@ -272,6 +272,9 @@ namespace VSGI {
 		 * If the content length can be determine reliably (eg. no
 		 * 'Content-Encoding' applied), it will be set as well.
 		 *
+		 * This function accept empty buffers, which result in an explicit
+		 * 'Content-Length: 0' header and an empty payload.
+		 *
 		 * @since 0.3
 		 */
 		public bool expand (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
@@ -280,7 +283,7 @@ namespace VSGI {
 			}
 			size_t bytes_written;
 			return write_head (out bytes_written, cancellable) &&
-			       body.write_all (buffer, out bytes_written, cancellable) &&
+			       (buffer.length == 0 || body.write_all (buffer, out bytes_written, cancellable)) &&
 			       body.close (cancellable);
 		}
 
