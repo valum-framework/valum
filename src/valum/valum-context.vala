@@ -103,11 +103,11 @@ public class Valum.Context : Object {
 	}
 
 	/**
-	 * Lookup if this context or its parent has a key.
+	 * Test if this context or its parent has a key.
 	 *
 	 * @since 0.3
 	 *
-	 * @param key
+	 * @param key the key used to test
 	 *
 	 * @return 'true' if the key is found in the context tree, 'false' otherwise
 	 */
