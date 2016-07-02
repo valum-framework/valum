@@ -38,7 +38,7 @@ namespace Valum {
 	 * @param path    path prefix stripped on forwarded requests
 	 * @param forward callback used to forward the request
 	 */
-	public HandlerCallback basepath (string path, owned HandlerCallback forward) {
+	public HandlerCallback basepath (string path, owned HandlerCallback forward = forward) {
 		return (req, res, next, context) => {
 			if (req.uri.get_path ().has_prefix (path)) {
 				var original_path = req.uri.get_path ();

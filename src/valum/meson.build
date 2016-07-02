@@ -5,6 +5,7 @@ valum_sources = [
     'valum-basic.vala',
     'valum-context.vala',
     'valum-decode.vala',
+    'valum-forward.vala',
     'valum-matcher-route.vala',
     'valum-method.vala',
     'valum-content-negotiation.vala',

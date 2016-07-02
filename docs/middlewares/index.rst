@@ -98,6 +98,21 @@ specify the type of the forwarded value.
         // produce a response according to 'content_type'...
     }));
 
+Often, one would simply call the ``next`` continuation, so a ``forward``
+definition is provided to do that. It is used as a default value for various
+middlewares such that all the following examples are equivalent:
+
+::
+
+    app.use (accept ("text/html" () => {
+        return next ();
+    }));
+
+    app.use (accept ("text/html", forward));
+
+    app.use (accept ("text/html"));
+
+
 To pass multiple values, it is preferable to explicitly declare them using
 a delegate.
 

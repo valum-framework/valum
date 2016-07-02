@@ -17,15 +17,11 @@ value, otherwise a ``406 Not Acceptable`` status is raised.
         // produce a response based on 'content_type'
     }));
 
-Typically, one would mount the middleware with ``use`` and call ``next`` if the
-application is essentially producing resources according to a single
-expectation.
+Or directly by using the default forward callback:
 
 ::
 
-    app.use (negotiate ("Accept", "text/html", (req, res, next) => {
-        return next ();
-    }));
+    app.use (negotiate ("Accept", "text/html"));
 
     // all route declaration may assume that the user agent accept 'text/html'
 
