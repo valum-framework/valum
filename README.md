@@ -10,14 +10,16 @@ Valum is a Web micro-framework entirely written in the
 
 ```vala
 using Valum;
+using Valum.ContentNegotiation;
 using VSGI;
 
 var app = new Router ();
 
 app.use (basic ());
+app.use (accept ("text/plain"));
+app.use (accept_charset ("UTF-8"));
 
 app.get ("/", (req, res) => {
-    res.headers.set_content_type ("text/plain", null);
     return res.extend_utf8 ("Hello world!");
 });
 
