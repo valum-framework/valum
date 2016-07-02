@@ -253,6 +253,26 @@ public int main (string[] args) {
 		}
 	});
 
+	Test.add_func ("/content_negotiation/accept/compound_subtype", () => {
+		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var res = new Response (req);
+		var ctx = new Context ();
+
+		req.headers.append ("Accept", "application/json");
+
+		try {
+			accept ("application/vnd.api+json", (req, res, next, ctx, content_type) => {
+				assert ("application/vnd.api+json" == content_type);
+				return true;
+			}) (req, res, () => {
+				//assert_not_reached ();
+				return true;
+			}, ctx);
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+	});
+
 	Test.add_func ("/content_negotiation/accept_encoding/deflate", () => {
 		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);

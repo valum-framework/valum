@@ -90,22 +90,27 @@ Helpers
 
 For convenience, helpers are provided to handle common headers:
 
-+---------------------+----------------------+------------------------+
-| Middleware          | Header               | Edge cases             |
-+=====================+======================+========================+
-| ``accept``          | ``Content-Type``     | ``*/*`` and ``type/*`` |
-+---------------------+----------------------+------------------------+
-| ``accept_charset``  | ``Content-Type``     | ``*``                  |
-+---------------------+----------------------+------------------------+
-| ``accept_encoding`` | ``Content-Encoding`` | ``*``                  |
-+---------------------+----------------------+------------------------+
-| ``accept_language`` | ``Content-Language`` | missing language type  |
-+---------------------+----------------------+------------------------+
-| ``accept_ranges``   | ``Content-Ranges``   | none                   |
-+---------------------+----------------------+------------------------+
++---------------------+----------------------+----------------------------------------------------+
+| Middleware          | Header               | Edge cases                                         |
++=====================+======================+====================================================+
+| ``accept``          | ``Content-Type``     | ``*/*``, ``type/*`` and ``type/subtype1+subtype2`` |
++---------------------+----------------------+----------------------------------------------------+
+| ``accept_charset``  | ``Content-Type``     | ``*``                                              |
++---------------------+----------------------+----------------------------------------------------+
+| ``accept_encoding`` | ``Content-Encoding`` | ``*``                                              |
++---------------------+----------------------+----------------------------------------------------+
+| ``accept_language`` | ``Content-Language`` | missing language type                              |
++---------------------+----------------------+----------------------------------------------------+
+| ``accept_ranges``   | ``Content-Ranges``   | none                                               |
++---------------------+----------------------+----------------------------------------------------+
 
 The ``accept`` middleware will assign the media type and preserve all other
 parameters.
+
+If multiple subtypes are specified (e.g. ``application/vnd.api+json``), the
+middleware will check if the subtypes accepted by the user agent form a subset.
+This is useful if you serve a specified JSON document format to a client which
+only state to accept JSON and does not care about the specification itself.
 
 ::
 

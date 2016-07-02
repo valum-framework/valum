@@ -109,8 +109,12 @@ namespace Valum.ContentNegotiation {
 	/**
 	 * Negotiate a 'Accept' header.
 	 *
-	 * It understands patterns that match all types (eg. '*\/*') or subtypes
-	 * (eg. 'text\/*').
+	 * It understands patterns that match all types (eg. '*\/*'), subtypes
+	 * (eg. 'text\/*') and compound subtypes (eg. 'application/vnd.api+json')
+	 *
+	 * For compound subtypes, it checks if the accepted subtypes by the user
+	 * agent form a subset of the proposed ones. Note that the '*' subtype is
+	 * always considered acceptable.
 	 *
 	 * @since 0.3
 	 */
@@ -122,13 +126,33 @@ namespace Valum.ContentNegotiation {
 			res.headers.set_content_type (content_type, @params);
 			return forward (req, res, next, ctx, content_type);
 		}, (pattern, @value) => {
-			if (pattern == "*/*")
-				return true;
-			// any subtype
-			if (pattern.has_suffix ("/*")) {
-				return Soup.str_case_equal (pattern[0:-2], @value.split ("/", 2)[0]);
+			var pattern_type = pattern.slice (0, pattern.index_of_char ('/'));
+			var type         = @value.slice (0, @value.index_of_char ('/'));
+
+			// check the type
+			if (pattern_type != "*" && !Soup.str_case_equal (pattern_type, type)) {
+				return false;
 			}
-			return Soup.str_case_equal (pattern, @value);
+
+			var pattern_subtypes = pattern.slice (pattern.index_of_char ('/') + 1, pattern.length).split ("+");
+			var subtypes         = @value.slice (@value.index_of_char ('/') + 1, @value.length).split ("+");
+
+			// check the subtypes, which can be compound: it has to form a subset
+			// of the proposed types
+			foreach (var pattern_subtype in pattern_subtypes) {
+				var accepted = false;
+
+				foreach (var subtype in subtypes) {
+					accepted |= pattern_subtype == "*" || Soup.str_case_equal (pattern_subtype, subtype);
+				}
+
+				// one accepted subtype could not be satisfied
+				if (!accepted) {
+					return false;
+				}
+			}
+
+			return true;
 		});
 	}
 
