@@ -70,7 +70,7 @@ namespace Valum.ContentNegotiation {
 	 */
 	public HandlerCallback negotiate (string                        header_name,
 	                                  string                        expectations,
-	                                  owned ForwardCallback<string> forward = forward,
+	                                  owned ForwardCallback<string> forward = Valum.forward,
 	                                  EqualFunc<string>             match   = (EqualFunc<string>) Soup.str_case_equal) {
 		var _expectations = Soup.header_parse_quality_list (expectations, null);
 		return (req, res, next, ctx) => {
@@ -119,7 +119,7 @@ namespace Valum.ContentNegotiation {
 	 * @since 0.3
 	 */
 	public HandlerCallback accept (string                        content_types,
-	                               owned ForwardCallback<string> forward = forward) {
+	                               owned ForwardCallback<string> forward = Valum.forward) {
 		return negotiate ("Accept", content_types, (req, res, next, ctx, content_type) => {
 			HashTable<string, string>? @params;
 			res.headers.get_content_type (out @params);
@@ -167,7 +167,7 @@ namespace Valum.ContentNegotiation {
 	 * @since 0.3
 	 */
 	public HandlerCallback accept_charset (string                        charsets,
-	                                       owned ForwardCallback<string> forward = forward) {
+	                                       owned ForwardCallback<string> forward = Valum.forward) {
 		return negotiate ("Accept-Charset", charsets, (req, res, next, ctx, charset) => {
 			HashTable<string, string> @params;
 			var content_type   = res.headers.get_content_type (out @params) ?? "application/octet-stream";
@@ -191,7 +191,7 @@ namespace Valum.ContentNegotiation {
 	 * @since 0.3
 	 */
 	public HandlerCallback accept_encoding (string                        encodings,
-	                                        owned ForwardCallback<string> forward = forward) {
+	                                        owned ForwardCallback<string> forward = Valum.forward) {
 		return negotiate ("Accept-Encoding", encodings, (req, res, next, ctx, encoding) => {
 			res.headers.append ("Content-Encoding", encoding);
 			switch (encoding.down ()) {
@@ -228,7 +228,7 @@ namespace Valum.ContentNegotiation {
 	 * @since 0.3
 	 */
 	public HandlerCallback accept_transfer_encoding (string                        encodings,
-	                                                 owned ForwardCallback<string> forward = forward) {
+	                                                 owned ForwardCallback<string> forward = Valum.forward) {
 		return negotiate ("TE", encodings, (req, res, next, ctx, encoding) => {
 			res.headers.append ("Transfer-Encoding", encoding);
 			return forward (req, res, next, ctx, encoding);
@@ -250,7 +250,7 @@ namespace Valum.ContentNegotiation {
 	 * @since 0.3
 	 */
 	public HandlerCallback accept_language (string                        languages,
-	                                        owned ForwardCallback<string> forward = forward) {
+	                                        owned ForwardCallback<string> forward = Valum.forward) {
 		return negotiate ("Accept-Language", languages, (req, res, next, ctx, language) => {
 			res.headers.replace ("Content-Language", language);
 			return forward (req, res, next, ctx, language);
@@ -272,7 +272,7 @@ namespace Valum.ContentNegotiation {
 	 * @since 0.3
 	 */
 	public HandlerCallback accept_ranges (string                        ranges,
-	                                      owned ForwardCallback<string> forward = forward) {
+	                                      owned ForwardCallback<string> forward = Valum.forward) {
 		return negotiate ("Accept-Ranges", ranges, (owned) forward);
 	}
 }
