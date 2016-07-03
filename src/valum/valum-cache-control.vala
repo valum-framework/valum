@@ -56,7 +56,7 @@ namespace Valum {
 				case CacheControlDirective.NO_TRANSFORM:
 				case CacheControlDirective.MUST_REVALIDATE:
 				case CacheControlDirective.PROXY_REVALIDATE:
-					cache_control_header.append (directive.to_string ().replace ("_", "-").down ()[30:directive.to_string ().length]);
+					cache_control_header.append (directive.to_string ().replace ("_", "-").down ().substring (30));
 					if (max_age > 0) {
 						cache_control_header.append_printf (", max-age=%" + int64.FORMAT, max_age / TimeSpan.SECOND);
 					}

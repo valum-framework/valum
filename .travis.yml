@@ -23,7 +23,7 @@ before_install:
 
 before_script:
     - mkdir build
-    - meson.py -D b_coverage=true -D enable_docs=true -D enable_examples=true . build
+    - meson.py -D b_coverage=true -D enable_docs=true -D enable_examples=true --werror . build
     - ninja -C build -v
 
 script:

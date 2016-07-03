@@ -7,11 +7,13 @@ api_version = '0.3'
 
 if not meson.is_subproject()
 add_global_arguments(['-Wall',
-                      '-Wno-pointer-sign',
                       '-Wno-deprecated-declarations',
-                      '-Wno-unused',
+                      '-Wno-discarded-qualifiers',
+                      '-Wno-implicit-function-declaration',
                       '-Wno-incompatible-pointer-types',
-                      '-Wno-discarded-qualifiers'],
+                      '-Wno-int-to-pointer-cast',
+                      '-Wno-pointer-sign',
+                      '-Wno-unused'],
                      language: 'c')
 
 add_global_arguments(['--enable-experimental',

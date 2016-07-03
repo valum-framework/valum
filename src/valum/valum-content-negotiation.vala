@@ -123,8 +123,8 @@ namespace Valum.ContentNegotiation {
 	/**
 	 * Negotiate a 'Accept' header.
 	 *
-	 * It understands patterns that match all types (eg. '*\/*'), subtypes
-	 * (eg. 'text\/*') and compound subtypes (eg. 'application/vnd.api+json')
+	 * It understands patterns that match all types (eg. '* / *'), subtypes
+	 * (eg. 'text / *') and compound subtypes (eg. 'application/vnd.api+json').
 	 *
 	 * For compound subtypes, it checks if the accepted subtypes by the user
 	 * agent form a subset of the proposed ones. Note that the '*' subtype is
