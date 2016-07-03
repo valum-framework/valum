@@ -328,7 +328,7 @@ namespace VSGI {
 			headers.set_content_length (buffer.length);
 			size_t bytes_written;
 			return (yield write_head_async (priority, cancellable, out bytes_written)) &&
-			       (yield body.write_all_async (buffer, priority, cancellable, out bytes_written)) &&
+			       (buffer.length == 0 || yield body.write_all_async (buffer, priority, cancellable, out bytes_written)) &&
 			       (yield body.close_async (priority, cancellable));
 #else
 			return expand (buffer, cancellable);
