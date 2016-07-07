@@ -309,6 +309,7 @@ public static void test_router_connect () {
 
 	assert (418 == response.status);
 }
+
 /**
  * @since 0.1
  */
@@ -322,6 +323,31 @@ public static void test_router_patch () {
 
 	var request  = new Request.with_method (VSGI.Request.PATCH, new Soup.URI ("http://localhost/"));
 	var response = new Response (request);
+
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
+
+	assert (418 == response.status);
+}
+
+/**
+ * @since 0.3
+ */
+public static void test_router_method_override () {
+	var router = new Router ();
+
+	router.patch ("/", (req, res) => {
+		res.status = 418;
+		return true;
+	});
+
+	var request  = new Request.with_method (VSGI.Request.POST, new Soup.URI ("http://localhost/"));
+	var response = new Response (request);
+
+	request.headers.append ("X-Http-Method-Override", "PATCH");
 
 	try {
 		router.handle (request, response);
