@@ -96,6 +96,15 @@ namespace Valum.ServerSentEvents {
 			if (req.method == Request.HEAD)
 				return true;
 
+			Timeout.add_seconds (15, () => {
+				try {
+					return res.ref_count > 1 && res.body.write_all (":\n".data, null) && res.body.flush ();
+				} catch (Error err) {
+					critical (err.message);
+					return false;
+				}
+			});
+
 			context (req, (event, data, id, retry) => {
 				var message = new StringBuilder ();
 
