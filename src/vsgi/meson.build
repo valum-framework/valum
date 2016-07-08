@@ -17,7 +17,7 @@ vsgi_sources = [
     'vsgi-worker.vala']
 vsgi_lib = library('vsgi', vsgi_sources,
                    dependencies: [glib, gobject, gio, gio_unix, gmodule, soup],
-                   vala_args: ['--pkg=posix', '--target-glib=2.32'] + vala_defines,
+                   vala_args: ['--pkg=posix'] + vala_defines,
                    link_args: '-Wl,-rpath,$$ORIGIN/servers',
                    install: true,
                    install_rpath: '$ORIGIN/vsgi/servers')
