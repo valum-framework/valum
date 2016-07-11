@@ -115,7 +115,7 @@ namespace Valum.ServerSentEvents {
 					message.append_printf ("id: %s\n", id);
 
 				if (retry != null)
-					message.append_printf ("retry: %d\n", (int) (retry / 1000));
+					message.append_printf ("retry: %" + int64.FORMAT + "\n", retry / 1000);
 
 				// split multi-line data in multiple 'data:' fields
 				foreach (var line in data.split ("\n"))
