@@ -3,6 +3,7 @@ valum_sources = [
     'valum-asterisk-route.vala',
     'valum-basepath.vala',
     'valum-basic.vala',
+    'valum-cache-control.vala',
     'valum-context.vala',
     'valum-decode.vala',
     'valum-forward.vala',
