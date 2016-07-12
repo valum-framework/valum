@@ -121,12 +121,10 @@ namespace VSGI {
 			get {
 				try {
 					// write head synchronously
-					if (!this.head_written) {
-						size_t bytes_written;
-						this.write_head (out bytes_written);
-					}
+					size_t bytes_written;
+					write_head (out bytes_written);
 				} catch (IOError err) {
-					warning ("could not write the head in the connection stream: %s", err.message);
+					critical ("could not write the head in the connection stream: %s", err.message);
 				}
 
 				return _body ?? this.request.connection.output_stream;
@@ -210,7 +208,7 @@ namespace VSGI {
 		 * 'wrote-status-line' and 'wrote-headers' signals in the process.
 		 *
 		 * This is invoked automatically when accessing the response body for
-		 * the first time.
+		 * the first time and when the response is disposed.
 		 *
 		 * Once the 'wrote-status-line' has been emmitted, its handler is free
 		 * to modify the response headers accordingly.
@@ -218,16 +216,19 @@ namespace VSGI {
 		 * Once the 'wrote-headers' has been emmited, its handler may still
 		 * apply converter on the body.
 		 *
-		 * @since 0.2
+		 * {@link GLib.Once} is used to ensure that this is called only once:
+		 * additionnal calls will be simply ignored and 'true' will be returned.
 		 *
+		 * Even if the write process fails or is cancelled, the head will be
+		 * marked as written since further calls cannot save the response.
+		 *
+		 * @since 0.2
 		 *
 		 * @param bytes_written number of bytes written in the stream see
 		 *                      {@link GLib.OutputStream.write_all}
 		 * @return wether the head was effectively written
 		 */
-		public bool write_head (out size_t bytes_written, Cancellable? cancellable = null) throws IOError
-			requires (!this.head_written)
-		{
+		public bool write_head (out size_t bytes_written, Cancellable? cancellable = null) throws IOError {
 			if (Once.init_enter (&_head_written)) {
 				try {
 					write_status_line (request.http_version,
@@ -260,9 +261,7 @@ namespace VSGI {
 		 */
 		public async bool write_head_async (int          priority    = GLib.Priority.DEFAULT,
 		                                    Cancellable? cancellable = null,
-		                                    out size_t   bytes_written) throws Error
-			requires (!this.head_written)
-		{
+											out size_t   bytes_written) throws Error {
 			if (Once.init_enter (&_head_written)) {
 				try {
 					yield write_status_line_async (request.http_version,
@@ -409,7 +408,7 @@ namespace VSGI {
 		 */
 		public bool end (Cancellable? cancellable = null) throws IOError {
 			size_t bytes_written;
-			return (head_written || write_head (out bytes_written, cancellable)) && body.close (cancellable);
+			return write_head (out bytes_written, cancellable) && body.close (cancellable);
 		}
 
 		/**
@@ -418,8 +417,8 @@ namespace VSGI {
 		public async bool end_async (int          priority    = GLib.Priority.DEFAULT,
 		                             Cancellable? cancellable = null) throws Error {
 			size_t bytes_written;
-			return (head_written || yield write_head_async (priority, cancellable, out bytes_written)) &&
-			       yield body.close_async (priority, cancellable);
+			return (yield write_head_async (priority, cancellable, out bytes_written)) &&
+			       (yield body.close_async (priority, cancellable));
 		}
 
 		/**
@@ -427,12 +426,10 @@ namespace VSGI {
 		 */
 		public override void dispose () {
 			try {
-				if (!head_written) {
-					size_t bytes_written;
-					write_head (out bytes_written);
-				}
+				size_t bytes_written;
+				write_head (out bytes_written);
 			} catch (IOError err) {
-				warning ("could not write the head in the connection stream: %s", err.message);
+				critical ("could not write the head in the connection stream: %s", err.message);
 			} finally {
 				base.dispose ();
 			}
