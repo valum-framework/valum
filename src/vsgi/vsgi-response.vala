@@ -99,11 +99,6 @@ namespace VSGI {
 		/**
 		 * Response body.
 		 *
-		 * On the first attempt to access the response body stream, the status
-		 * line and headers will be written synchronously in the response
-		 * stream. 'write_head_async' have to be used explicitly to perform a
-		 * non-blocking operation.
-		 *
 		 * The provided stream is safe for transfer encoding and will filter
 		 * the stream properly if it's chunked.
 		 *
@@ -117,38 +112,10 @@ namespace VSGI {
 		 *
 		 * @since 0.2
 		 */
-		public OutputStream body {
+		public virtual OutputStream body {
 			get {
-				try {
-					// write head synchronously
-					size_t bytes_written;
-					write_head (out bytes_written);
-				} catch (IOError err) {
-					critical ("could not write the head in the connection stream: %s", err.message);
-				}
-
 				return _body ?? this.request.connection.output_stream;
 			}
-		}
-
-		/**
-		 * Obtain the body stream asynchronously.
-		 *
-		 * Unlike the {@link VSGI.Request.body} property, this allow you to
-		 * asynchronously obtain the body when the head has been written in
-		 * a single call.
-		 *
-		 * @since 0.3
-		 */
-		public async OutputStream get_body_async (int priority             = GLib.Priority.DEFAULT,
-		                                          Cancellable? cancellable = null,
-		                                          out size_t   bytes_written) throws Error {
-			if (head_written) {
-				bytes_written = 0;
-			} else {
-				yield write_head_async (priority, cancellable, out bytes_written);
-			}
-			return body;
 		}
 
 		/**

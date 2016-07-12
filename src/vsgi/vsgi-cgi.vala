@@ -164,6 +164,25 @@ namespace VSGI.CGI {
 			Object (request: request);
 		}
 
+		/**
+		 * On the first attempt to access the response body stream, the status
+		 * line and headers will be written synchronously in the response
+		 * stream. 'write_head_async' have to be used explicitly to perform a
+		 * non-blocking operation.
+		 */
+		public override OutputStream body {
+			get {
+				try {
+					// write head synchronously
+					size_t bytes_written;
+					write_head (out bytes_written);
+				} catch (IOError err) {
+					critical ("could not write the head in the connection stream: %s", err.message);
+				}
+				return base.body;
+			}
+		}
+
 		protected override bool write_status_line (HTTPVersion  http_version,
 		                                           uint         status,
 		                                           string       reason_phrase,

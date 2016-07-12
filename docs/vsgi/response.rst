@@ -112,16 +112,6 @@ The body of a response is accessed through the ``body`` property. It inherits
 from `GLib.OutputStream`_ and provides synchronous and asynchronous streaming
 capabilities.
 
-It's also possible to obtain the body asynchronously as it might trigger
-a blocking call call to ``write_head``.
-
-::
-
-    res.get_body_async.begin (Priority.DEFAULT, null, (obj, result) => {
-        var body = res.get_body_async.end (result);
-        body.write_all ("Hello world!".data, null);
-    });
-
 The response body is automatically closed following a RAII pattern whenever the
 ``Response`` object is disposed.
 
