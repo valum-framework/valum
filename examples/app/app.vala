@@ -146,6 +146,17 @@ app.scope ("/urlencoded-data", (inner) => {
 	});
 });
 
+app.get ("/tee", (req, res) => {
+	var buffer = new MemoryOutputStream (null, realloc, free);
+	res.tee (buffer);
+	try {
+		return res.expand_utf8 ("Hello world!");
+	} finally {
+		message ("Produced '%s'.", (string) buffer.data);
+	}
+});
+
+
 // hello world! (compare with Node.js!)
 app.get ("/hello", (req, res) => {
 	return res.expand_utf8 ("Hello world!", null);

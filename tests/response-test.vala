@@ -82,5 +82,17 @@ public int main (string[] args) {
 		assert ("US-ASCII" == @params["charset"]);
 	});
 
+	Test.add_func ("/response/tee", () => {
+		var res    = new Response (new Request (new Connection (), "GET", new Soup.URI ("http://localhost:3003/")));
+		var buffer = new MemoryOutputStream (null, realloc, free);
+		res.tee (buffer);
+		try {
+			res.expand_utf8 ("Hello world!");
+		} catch (IOError err) {
+			assert_not_reached ();
+		}
+		assert ("Hello world!" == (string) buffer.data);
+	});
+
 	return Test.run ();
 }

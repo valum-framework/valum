@@ -184,6 +184,31 @@ Conversion
 
 The body may be converted, see :doc:`converters` for more details.
 
+Tee
+---
+
+.. versionadded:: 0.3
+
+The response body can be splitted pretty much like how the ``tee`` UNIX utility
+works. All further write operations will be performed as well on the passed
+stream, making it possible to process the payload sent to the user agent.
+
+The typical use case would be to implement a file-based cache that would tee
+the produced response body into a key-based storage.
+
+::
+
+    var cache_key   = Checksum.compute_for_string (ChecksumType.SHA256, req.uri.to_string ());
+    var cache_entry = File.new_for_path ("cache/%s".printf (cache_key));
+
+    if (cache_entry.query_exists ()) {
+        return res.body.splice (cache_entry.read ());
+    } else {
+        res.tee (cache_entry.create (FileCreateFlags.PRIVATE));
+    }
+
+    res.exand_utf8 ("Hello world!");
+
 End
 ---
 

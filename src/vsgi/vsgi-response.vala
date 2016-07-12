@@ -282,6 +282,16 @@ namespace VSGI {
 		}
 
 		/**
+		 * Split the body stream such that anything written to it are written
+		 * both in the base stream and the tee stream.
+		 *
+		 * @since 0.3
+		 */
+		public void tee (OutputStream tee_stream) {
+			_body = new TeeOutputStream (_body ?? request.connection.output_stream, tee_stream);
+		}
+
+		/**
 		 * Expand a buffer into the response body.
 		 *
 		 * If the content length can be determine reliably (eg. no
