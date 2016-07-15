@@ -124,5 +124,26 @@ namespace VSGI.Mock {
 		public Response.with_status (Request req, uint status) {
 			Object (request: req, status: status);
 		}
+
+		protected override bool write_status_line (HTTPVersion http_version, uint status, string reason_phrase, out size_t bytes_written, Cancellable? cancellable = null)  throws IOError {
+			return request.connection.output_stream.write_all ("HTTP/%s %u %s\r\n".printf (http_version == HTTPVersion.@1_0 ? "1.0" : "1.1", status, reason_phrase).data,
+			                                                   out bytes_written,
+			                                                   cancellable);
+		}
+
+		protected override bool write_headers (MessageHeaders headers, out size_t bytes_written, Cancellable?
+				cancellable = null) throws IOError {
+			var head = new StringBuilder ();
+
+			// headers
+			headers.@foreach ((name, header) => {
+				head.append_printf ("%s: %s\r\n", name, header);
+			});
+
+			// newline preceeding the body
+			head.append ("\r\n");
+
+			return request.connection.output_stream.write_all (head.str.data, out bytes_written, cancellable);
+		}
 	}
 }

@@ -44,6 +44,17 @@ The reason phrase provide a textual description for the status code. If
 
 .. _Soup.Status.get_phrase: http://valadoc.org/#!api=libsoup-2.4/Soup.Status.get_phrase
 
+To obtain final status line sent to the user agent, use the ``wrote_status_line``
+signal.
+
+::
+
+    res.wrote_status_line.connect ((http_version, status, reason_phrase) => {
+        if (200 <= status < 300) {
+            // assuming a success
+        }
+    });
+
 Headers
 -------
 
@@ -83,17 +94,14 @@ even though a well written application should assume that already.
         res.headers.set_content_type ("text/html", null);
     }
 
-Since ``head_written`` is a property, it's possible to capture it's change
-using the ``notify`` signal.
-
-Since status, reason phrase and headers cannot be modified once written, this
-event can be used to trigger work that would assume a successful response.
+Since headers can still be modified once written, the ``wrote_headers`` signal
+can be used to obtain definitive values.
 
 ::
 
-    res.notify["head-written"].connect (() => {
-        if (res.head_written && res.status == 200) {
-            // perform some work assuming a '200 OK' response
+    res.wrote_headers (() => {
+        foreach (var cookie in res.cookies) {
+            message (cookie.to_set_cookie_header ());
         }
     });
 
@@ -103,16 +111,6 @@ Body
 The body of a response is accessed through the ``body`` property. It inherits
 from `GLib.OutputStream`_ and provides synchronous and asynchronous streaming
 capabilities.
-
-It's also possible to obtain the body asynchronously as it might trigger
-a blocking call call to ``write_head``.
-
-::
-
-    res.get_body_async.begin (Priority.DEFAULT, null, (obj, result) => {
-        var body = res.get_body_async.end (result);
-        body.write_all ("Hello world!".data, null);
-    });
 
 The response body is automatically closed following a RAII pattern whenever the
 ``Response`` object is disposed.
