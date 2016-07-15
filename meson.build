@@ -1,7 +1,7 @@
 project('Valum', ['vala', 'c'],
         version: '0.3.0-dev',
         license: 'LGPL',
-        meson_version: '>=0.31')
+        meson_version: '>=0.32')
 
 if not meson.is_subproject()
 add_global_arguments(['-Wall',
@@ -18,32 +18,34 @@ add_global_arguments(['--enable-experimental',
                      language: 'vala')
 endif
 
-vala_defines = []
-
-# provide 'OutputStream.write_all_async'
-if dependency('gio-2.0', version: '>=2.44', required: false).found()
-  vala_defines += ['--define=GIO_2_44', '--define=GIO_2_40', '--define=GIO_2_34']
-
-# support parsing of CLI arguments
-elif dependency('gio-2.0', version: '>=2.40', required: false).found()
-  vala_defines += ['--define=GIO_2_40', '--define=GIO_2_34']
-
-# provide 'GLib.ApplicationCommandLine.get_stdin'
-elif dependency('gio-2.0', version: '>=2.34', required: false).found()
-  vala_defines += ['--define=GIO_2_34']
-endif
-
-# new 'Soup.Server' API
-if dependency('libsoup-2.4', version: '>=2.48', required: false).found()
-    vala_defines += '--define=SOUP_2_48'
-endif
-
 glib = dependency('glib-2.0', version: '>=2.32')
 gobject = dependency('gobject-2.0', version: '>=2.32')
 gio = dependency('gio-2.0', version: '>=2.32')
 gio_unix = dependency('gio-unix-2.0', version: '>=2.32')
 gmodule = dependency('gmodule-2.0')
 soup = dependency('libsoup-2.4', version: '>=2.38')
+
+vala_defines = []
+
+# provide 'OutputStream.write_all_async'
+if gio.version().version_compare('>=2.44')
+    vala_defines += '--define=GIO_2_44'
+endif
+
+# support parsing of CLI arguments
+if gio.version().version_compare('>=2.40')
+    vala_defines += '--define=GIO_2_40'
+endif
+
+# provide 'GLib.ApplicationCommandLine.get_stdin'
+if gio.version().version_compare('>=2.34')
+    vala_defines += '--define=GIO_2_34'
+endif
+
+# new 'Soup.Server' API
+if soup.version().version_compare('>=2.48')
+    vala_defines += '--define=SOUP_2_48'
+endif
 
 meson.add_install_script('install.sh')
 
