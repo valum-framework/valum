@@ -69,6 +69,10 @@ namespace Valum {
 						res.headers.replace ("Location", err.message);
 						break;
 
+					case global::Soup.Status.ACCEPTED:
+						res.headers.replace ("Content-Location", err.message);
+						break;
+
 					// no content
 					case global::Soup.Status.NO_CONTENT:
 					case global::Soup.Status.RESET_CONTENT:
