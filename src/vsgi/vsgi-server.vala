@@ -92,6 +92,13 @@ namespace VSGI {
 		public abstract SList<Soup.URI> uris { get; }
 
 		/**
+		 * Consumable part of the pipe if this is a worker.
+		 *
+		 * @since 0.3
+		 */
+		public InputStream? pipe { get; private set; default = null; }
+
+		/**
 		 * List of worker process identifiers issued when {@link VSGI.Server.fork}
 		 * is invoked.
 		 *
@@ -100,7 +107,7 @@ namespace VSGI {
 		 *
 		 * @since 0.3
 		 */
-		public SList<Pid> workers { get; protected owned set; default = new SList<Pid> (); }
+		public SList<Worker> workers { get; protected owned set; default = new SList<Worker> (); }
 
 		private ApplicationCallback _application;
 
@@ -227,11 +234,19 @@ namespace VSGI {
 		 * @since 0.3
 		 */
 		public virtual Pid fork () {
+			int _pipe[2];
+			try {
+				GLib.Unix.open_pipe (_pipe, Posix.FD_CLOEXEC);
+			} catch (Error err) {
+				critical (err.message);
+				return -1;
+			}
 			var pid = Posix.fork ();
 			if (pid == 0){
-				workers = new SList<Pid> ();
+				pipe    = new UnixInputStream (_pipe[0], true);
+				workers = new SList<Worker> ();
 			} else if (pid > 0) {
-				workers.append (pid);
+				workers.append (new Worker (pid, new UnixOutputStream (_pipe[1], true)));
 			}
 			return pid;
 		}
