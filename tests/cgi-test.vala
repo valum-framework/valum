@@ -199,4 +199,5 @@ public void test_vsgi_cgi_response () {
 	}
 	assert (18 == bytes_written);
 	assert (response.head_written);
+	assert ("200 OK" == response.headers.get_one ("Status"));
 }

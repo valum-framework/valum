@@ -188,7 +188,7 @@ namespace VSGI.CGI {
 		                                           string       reason_phrase,
 		                                           out size_t   bytes_written,
 		                                           Cancellable? cancellable = null) throws IOError {
-			return request.connection.output_stream.write_all ("Status: HTTP/%s %u %s\r\n".printf (http_version == HTTPVersion.@1_0 ? "1.0" : "1.1", status, reason_phrase).data,
+			return request.connection.output_stream.write_all ("Status: %u %s\r\n".printf (status, reason_phrase).data,
 			                                                   out bytes_written,
 			                                                   cancellable);
 		}
@@ -200,7 +200,7 @@ namespace VSGI.CGI {
 		                                                       int          priority    = GLib.Priority.DEFAULT,
 		                                                       Cancellable? cancellable = null,
 		                                                       out size_t   bytes_written) throws Error {
-			return yield request.connection.output_stream.write_all_async ("Status: HTTP/%s %u %s\r\n".printf (http_version == HTTPVersion.@1_0 ? "1.0" : "1.1", status, reason_phrase).data,
+			return yield request.connection.output_stream.write_all_async ("Status: %u %s\r\n".printf (status, reason_phrase).data,
 			                                                               priority,
 			                                                               cancellable,
 			                                                               out bytes_written);
