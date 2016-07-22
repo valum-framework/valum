@@ -57,13 +57,6 @@ namespace Valum.Static {
 		 */
 		ENABLE_LAST_MODIFIED,
 		/**
-		 * Indicate that the delivered resource can be cached by anyone using
-		 * the 'Cache-Control: public' header.
-		 *
-		 * @since 0.3
-		 */
-		ENABLE_CACHE_CONTROL_PUBLIC,
-		/**
 		 * Raise a {@link ClientError.FORBIDDEN} if rights are missing on the
 		 * resource rather than calling 'next'.
 		 *
@@ -129,9 +122,6 @@ namespace Valum.Static {
 						throw new Redirection.NOT_MODIFIED ("");
 					res.headers.replace ("Last-Modified", new Soup.Date.from_time_t (last_modified.tv_sec).to_string (Soup.DateFormat.HTTP));
 				}
-
-				if (ServeFlags.ENABLE_CACHE_CONTROL_PUBLIC in serve_flags)
-					res.headers.append ("Cache-Control", "public");
 
 				var file_read_stream = file.read ();
 
@@ -241,9 +231,6 @@ namespace Valum.Static {
 
 				res.headers.replace ("ETag", etag);
 			}
-
-			if (ServeFlags.ENABLE_CACHE_CONTROL_PUBLIC in serve_flags)
-				res.headers.append ("Cache-Control", "public");
 
 			// set the content-type based on a good guess
 			bool uncertain;
