@@ -207,6 +207,10 @@ app.regex (Method.GET, /\/custom-regular-expression/, (req, res) => {
 	return res.expand_utf8 ("This route was matched using a custom regular expression.", null);
 });
 
+app.path (Method.GET, "/exact-path", (req, res) => {
+	return res.expand_utf8 ("This route was matched using a path.");
+});
+
 app.matcher (Method.GET, (req) => { return req.uri.get_path () == "/custom-matcher"; }, (req, res) => {
 	return res.expand_utf8 ("This route was matched using a custom matcher.", null);
 });

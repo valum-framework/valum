@@ -480,6 +480,62 @@ public static void test_router_regex () {
 }
 
 /**
+ * @since 0.3
+ */
+public void test_router_path () {
+	var router = new Router ();
+
+	router.path (Method.GET, "/home", (req, res) => {
+		res.status = 418;
+		return true;
+	});
+
+	var route = router.routes.get_end_iter ().prev ().@get () as PathRoute;
+
+	assert ("/home" == route.path);
+
+	var request  = new Request.with_uri (new Soup.URI ("http://localhost/home"));
+	var response = new Response (request);
+
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
+
+	assert (418 == response.status);
+}
+
+/**
+ * @since 0.3
+ */
+public void test_router_path_with_scope () {
+	var router = new Router ();
+
+	router.scope ("/admin", (admin) => {
+		router.path (Method.GET, "/home", (req, res) => {
+			res.status = 418;
+			return true;
+		});
+	});
+
+	var route = router.routes.get_end_iter ().prev ().@get () as PathRoute;
+
+	assert ("/admin/home" == route.path);
+
+	var request  = new Request.with_uri (new Soup.URI ("http://localhost/admin/home"));
+	var response = new Response (request);
+
+	try {
+		router.handle (request, response);
+	} catch (Error err) {
+		assert_not_reached ();
+	}
+
+	assert (418 == response.status);
+}
+
+/**
  * @since 0.1
  */
 public static void test_router_matcher () {

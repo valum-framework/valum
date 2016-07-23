@@ -12,6 +12,7 @@ valum_sources = files(
     'valum-matcher-route.vala',
     'valum-method.vala',
     'valum-content-negotiation.vala',
+    'valum-path-route.vala',
     'valum-regex-route.vala',
     'valum-route.vala',
     'valum-router.vala',

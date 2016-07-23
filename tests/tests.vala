@@ -65,6 +65,8 @@ public int main (string[] args) {
 	Test.add_func ("/router/rule/any", test_router_rule_any);
 
 	Test.add_func ("/router/regex", test_router_regex);
+	Test.add_func ("/router/path", test_router_path);
+	Test.add_func ("/router/path/with_scope", test_router_path_with_scope);
 	Test.add_func ("/router/matcher", test_router_matcher);
 
 	Test.add_func ("/router/subrouting", test_router_subrouting);

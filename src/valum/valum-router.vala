@@ -220,7 +220,36 @@ namespace Valum {
 		}
 
 		/**
-		 * Bind a callback with a custom HTTP method and a matcher callback.
+		 * Bind a callback to a given method and path.
+		 *
+		 * While {@link Valum.Router.rule} can be as well used for exact path
+		 * matches, this helper is more efficient as it does rely on regex
+		 * matching under the hood.
+		 *
+		 * @since 0.3
+		 *
+		 * @param method  flag for allowed HTTP methods
+		 * @param path    the path which must be satisfied by the request
+		 * @param handler callback applied on the pair of request and response
+		 *                objects if the method and path are satisfied
+		 */
+		public void path (Method method, string path, owned HandlerCallback handler) {
+			var path_builder = new StringBuilder ();
+
+			foreach (var scope in scopes.head) {
+				path_builder.append (scope);
+			}
+
+			path_builder.append (path);
+
+			route (new PathRoute (method | Method.PROVIDED, path_builder.str, (owned) handler));
+		}
+
+		/**
+		 * Bind a callback to a given method and a matcher callback.
+		 *
+		 * The method will be marked as provided with the {@link Valum.Method.PROVIDED}
+		 * flag.
 		 *
 		 * @since 0.1
 		 *
