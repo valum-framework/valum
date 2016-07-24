@@ -97,7 +97,7 @@ namespace Valum {
 					} else if (type == "string") {
 						pattern.append_printf ("(?<%s>\\w+)", key);
 					} else {
-						throw new RegexError.COMPILE ("using an undefined type '%s' for capture '%s'", type, key);
+						throw new RegexError.COMPILE ("Using an undefined type '%s' for capture '%s'.", type, key);
 					}
 				}
 			}

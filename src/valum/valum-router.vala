@@ -186,7 +186,7 @@ namespace Valum {
 			try {
 				route (new RuleRoute (method | Method.PROVIDED, pattern.str, types, (owned) cb), name);
 			} catch (RegexError err) {
-				error (err.message);
+				error ("%s (%s, %d)", err.message, err.domain.to_string (), err.code);
 			}
 		}
 
@@ -224,7 +224,7 @@ namespace Valum {
 			try {
 				route (new RegexRoute (method | Method.PROVIDED, new Regex (pattern.str, RegexCompileFlags.OPTIMIZE), (owned) cb));
 			} catch (RegexError err) {
-				error (err.message);
+				error ("%s (%s, %d)", err.message, err.domain.to_string (), err.code);
 			}
 		}
 

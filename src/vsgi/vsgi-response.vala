@@ -543,7 +543,9 @@ namespace VSGI {
 				size_t bytes_written;
 				write_head (out bytes_written);
 			} catch (IOError err) {
-				critical ("could not write the head in the connection stream: %s", err.message);
+				critical ("Could not write the head in the connection stream: %s (%s, %d).", err.message,
+				                                                                             err.domain.to_string (),
+				                                                                             err.code);
 			} finally {
 				base.dispose ();
 			}

@@ -201,7 +201,7 @@ public class VSGI.Application : GLib.Application {
 					else {
 						// monitor child process
 						ChildWatch.add (pid, (pid, status) => {
-							warning ("worker %d exited with status '%d'", pid, status);
+							warning ("Worker %d exited with status '%d'.", pid, status);
 						});
 					}
 				}
@@ -212,7 +212,7 @@ public class VSGI.Application : GLib.Application {
 		}
 
 		foreach (var uri in server.uris) {
-			message ("listening on '%s'", uri.to_string (false)[0:-uri.path.length]);
+			message ("Listening on '%s'.", uri.to_string (false)[0:-uri.path.length]);
 		}
 
 		// keep the process (and workers) alive

@@ -163,17 +163,17 @@ namespace VSGI.SCGI {
 			var size_str = reader.read_upto (":", 1, out length);
 
 			if (size_str == null) {
-				throw new Error.FAILED ("could not read netstring length");
+				throw new Error.FAILED ("Could not read the netstring length.");
 			}
 
 			int64 size;
 			if (!int64.try_parse (size_str, out size)) {
-				throw new Error.MALFORMED_NETSTRING ("'%s' is not a valid netstring length", size_str);
+				throw new Error.MALFORMED_NETSTRING ("The provided netstring length is invalid.");
 			}
 
 			// consume the semi-colon
 			if (reader.read_byte () != ':') {
-				throw new Error.MALFORMED_NETSTRING ("missing ':'");
+				throw new Error.MALFORMED_NETSTRING ("Missing ':' following the netstring length.");
 			}
 
 			// consume and extract the environment
@@ -182,22 +182,28 @@ namespace VSGI.SCGI {
 				size_t key_length;
 				var key = reader.read_upto ("", 1, out key_length);
 				if (key == null) {
-					throw new Error.FAILED ("could not read key");
+					throw new Error.FAILED ("Could not read key at position '%" + size_t.FORMAT + "' in the netstring.",
+					                        read);
 				}
 				if (reader.read_byte () != '\0') {
-					throw new Error.MALFORMED_NETSTRING ("missing EOF");
+					throw new Error.MALFORMED_NETSTRING ("Missing EOF following a key at position '%" + size_t.FORMAT + "' in the netstring.",
+					                                     read);
 				}
+
+				read += key_length + 1;
 
 				size_t value_length;
 				var @value = reader.read_upto ("", 1, out value_length);
 				if (@value == null) {
-					throw new Error.FAILED ("could not read value for key '%s'", key);
+					throw new Error.FAILED ("Could not read value at position '%" + size_t.FORMAT + "' in the netstring.",
+					                        read);
 				}
 				if (reader.read_byte () != '\0') {
-					throw new Error.MALFORMED_NETSTRING ("missing EOF");
+					throw new Error.MALFORMED_NETSTRING ("Missing EOF following a value at position '%" + size_t.FORMAT + "' in the netstring.",
+					                                     read);
 				}
 
-				read += key_length + 1 + value_length + 1;
+				read += value_length + 1;
 
 				environment = Environ.set_variable (environment, key, @value);
 			}
@@ -206,25 +212,26 @@ namespace VSGI.SCGI {
 
 			// consume the comma following a chunk
 			if (reader.read_byte () != ',') {
-				throw new Error.MALFORMED_NETSTRING ("missing ','");
+				throw new Error.MALFORMED_NETSTRING ("Missing ',' at position '%" + size_t.FORMAT + "' in the netstring.",
+				                                     read);
 			}
 
 			var content_length_str = Environ.get_variable (environment, "CONTENT_LENGTH");
 
 			if (content_length_str == null) {
-				throw new Error.MISSING_CONTENT_LENGTH ("the content length is a mandatory field");
+				throw new Error.MISSING_CONTENT_LENGTH ("The content length is a mandatory field.");
 			}
 
 			int64 content_length;
 			if (!int64.try_parse (content_length_str, out content_length)) {
-				throw new Error.BAD_CONTENT_LENGTH ("'%s' is not a valid content length", content_length_str);
+				throw new Error.BAD_CONTENT_LENGTH ("The provided content length is not valid.");
 			}
 
 			// buffer the rest of the body
 			if (content_length > 0) {
 				if (sizeof (size_t) < sizeof (int64) && content_length > size_t.MAX) {
-					throw new Error.FAILED ("request body is too big (%sB) to be held in a buffer",
-					                            content_length.to_string ());
+					throw new Error.FAILED ("The request body is too big (%sB) to be held in a buffer.",
+					                        content_length.to_string ());
 				}
 
 				// resize the buffer onlf if needed
@@ -237,8 +244,8 @@ namespace VSGI.SCGI {
 				}
 
 				if (content_length < reader.get_available ()) {
-					throw new Error.FAILED ("request body (%sB) could not be buffered",
-					                            content_length.to_string ());
+					throw new Error.FAILED ("The request body (%sB) could not be buffered.",
+					                        content_length.to_string ());
 				}
 			}
 

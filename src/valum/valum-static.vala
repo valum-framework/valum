@@ -158,7 +158,7 @@ namespace Valum.Static {
 				}, ctx, file);
 			} catch (FileError.ACCES fe) {
 				if (ServeFlags.FORBID_ON_MISSING_RIGHTS in serve_flags) {
-					throw new ClientError.FORBIDDEN ("You are cannot access this resource.");
+					throw new ClientError.FORBIDDEN ("You cannot access this resource.");
 				} else {
 					return next ();
 				}
