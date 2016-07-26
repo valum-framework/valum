@@ -449,6 +449,14 @@ namespace VSGI {
 		public async bool expand_utf8_async (string       body,
 		                                     int          priority    = GLib.Priority.DEFAULT,
 		                                     Cancellable? cancellable = null) throws Error {
+			HashTable<string, string> @params;
+			var content_type = headers.get_content_type (out @params);
+			if (content_type == null) {
+				headers.set_content_type ("application/octet-stream", Soup.header_parse_param_list ("charset=UTF-8"));
+			} else if (@params["charset"] == null) {
+				@params["charset"] = "UTF-8";
+				headers.set_content_type (content_type, @params);
+			}
 			return yield expand_async (body.data, priority, cancellable);
 		}
 
