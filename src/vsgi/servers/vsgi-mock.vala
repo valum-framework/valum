@@ -40,5 +40,9 @@ namespace VSGI.Mock {
 		public override void listen (Variant options) throws Error {
 			_uris.append (new Soup.URI ("mock://"));
 		}
+
+		public override void stop () {
+			// nothing to stop
+		}
 	}
 }

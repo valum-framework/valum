@@ -203,8 +203,9 @@ namespace VSGI {
 			// release on 'SIGTERM'
 			Unix.signal_add (ProcessSignal.TERM, () => {
 				release ();
+				stop ();
 				return Source.REMOVE;
-			});
+			}, Priority.LOW);
 
 			return 0;
 		}
@@ -219,6 +220,13 @@ namespace VSGI {
 		 *               {@link VSGI.ServerError} for general errors
 		 */
 		public abstract void listen (Variant options) throws Error;
+
+		/**
+		 * Stop accepting new connections.
+		 *
+		 * @since 0.3
+		 */
+		public abstract void stop ();
 
 		/**
 		 * Fork the execution.

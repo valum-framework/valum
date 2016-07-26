@@ -347,5 +347,9 @@ namespace VSGI.HTTP {
 			_uris.append (new Soup.URI ("%s://0.0.0.0:%u".printf (https.get_boolean () ? "http" : "https", server.port)));
 #endif
 		}
+
+		public override void stop () {
+			server.disconnect ();
+		}
 	}
 }

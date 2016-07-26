@@ -52,10 +52,6 @@ namespace VSGI.CGI {
 			this._input_stream  = input_stream;
 			this._output_stream = output_stream;
 		}
-
-		public override void dispose () {
-			this.server.release ();
-		}
 	}
 
 	/**
@@ -85,19 +81,27 @@ namespace VSGI.CGI {
 
 			_uris.append (new Soup.URI ("cgi+fd://%u/".printf (stdin.fileno ())));
 
-			var connection = new Connection (this,
-			                                 new UnixInputStream (stdin.fileno (), true),
-			                                 new UnixOutputStream (stdout.fileno (), true));
+			Idle.add (() => {
+				var connection = new Connection (this,
+												 new UnixInputStream (stdin.fileno (), true),
+												 new UnixOutputStream (stdout.fileno (), true));
 
-			var req = new Request (connection, Environ.@get ());
-			var res = new Response (req);
+				var req = new Request (connection, Environ.@get ());
+				var res = new Response (req);
 
-			// handle a single request and quit
-			try {
-				dispatch (req, res);
-			} catch (GLib.Error err) {
-				critical (err.message);
-			}
+				// handle a single request and quit
+				try {
+					dispatch (req, res);
+				} catch (GLib.Error err) {
+					critical (err.message);
+				}
+
+				return Source.REMOVE;
+			});
+		}
+
+		public override void stop () {
+			// CGI handle a single connection
 		}
 
 		/**

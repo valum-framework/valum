@@ -194,8 +194,6 @@ namespace VSGI.FastCGI {
 			};
 			this.add_main_option_entries (options);
 #endif
-
-			this.shutdown.connect (global::FastCGI.shutdown_pending);
 		}
 
 		public override void listen (Variant options) throws GLib.Error {
@@ -244,6 +242,10 @@ namespace VSGI.FastCGI {
 				accept_loop_async.end (result);
 				release ();
 			});
+		}
+
+		public override void stop () {
+			global::FastCGI.shutdown_pending ();
 		}
 
 		private async void accept_loop_async (int fd) {

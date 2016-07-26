@@ -27,7 +27,7 @@ public abstract class VSGI.SocketListenerServer : Server {
 	/**
 	 * @since 0.3
 	 */
-	public SocketService socket_service { construct; get; }
+	public SocketService socket_service { construct; get; default = new SocketService (); }
 
 	/**
 	 * Identifier used to represent the protocol in URL scheme.
@@ -54,15 +54,6 @@ public abstract class VSGI.SocketListenerServer : Server {
 
 		this.add_main_option_entries (options);
 #endif
-
-		socket_service = new SocketService ();
-
-		socket_service.incoming.connect (handle_incoming_socket_connection);
-
-		socket_service.start ();
-
-		// gracefully stop accepting new connections
-		shutdown.connect (socket_service.stop);
 	}
 
 	public override void listen (Variant options) throws Error {
@@ -87,6 +78,14 @@ public abstract class VSGI.SocketListenerServer : Server {
 		if (options.lookup_value ("backlog", VariantType.INT32) != null) {
 			socket_service.set_backlog (options.lookup_value ("backlog", VariantType.INT32).get_int32 ());
 		}
+
+		socket_service.incoming.connect (handle_incoming_socket_connection);
+
+		socket_service.start ();
+	}
+
+	public override void stop () {
+		socket_service.stop ();
 	}
 
 	/**
