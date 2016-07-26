@@ -332,8 +332,8 @@ namespace VSGI {
 		                                Cancellable? cancellable = null) throws Error {
 #if GIO_2_44
 			size_t bytes_written;
-			return (yield write_head (out bytes_written, cancellable)) &&
-			       (yield body.write_all (buffer.data, out bytes_written, cancellable));
+			return (yield write_head_async (priority, cancellable, out bytes_written)) &&
+			       (yield body.write_all_async (buffer, priority, cancellable, out bytes_written));
 #else
 			return append (buffer, cancellable);
 #endif
