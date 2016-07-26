@@ -292,6 +292,80 @@ namespace VSGI {
 		}
 
 		/**
+		 * Append a buffer into the response body, writting the head beforehand.
+		 *
+		 * @since 0.3
+		 */
+		public bool append (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
+			size_t bytes_written;
+			return write_head (out bytes_written, cancellable) &&
+			       body.write_all (buffer, out bytes_written, cancellable);
+		}
+
+		/**
+		 * @since 0.3
+		 */
+		public bool append_bytes (Bytes buffer, Cancellable? cancellable = null) throws IOError {
+			return append (buffer.get_data (), cancellable);
+		}
+
+		/**
+		 * @since 0.3
+		 */
+		public bool append_utf8 (string buffer, Cancellable? cancellable = null) throws IOError {
+			HashTable<string, string> @params;
+			var content_type = headers.get_content_type (out @params);
+			if (content_type == null) {
+				headers.set_content_type ("application/octet-stream", Soup.header_parse_param_list ("charset=UTF-8"));
+			} else if (@params["charset"] == null) {
+				@params["charset"] = "UTF-8";
+				headers.set_content_type (content_type, @params);
+			}
+			return append (buffer.data, cancellable);
+		}
+
+		/**
+		 * @since 0.3
+		 */
+		public async bool append_async (uint8[]      buffer,
+		                                int          priority    = GLib.Priority.DEFAULT,
+		                                Cancellable? cancellable = null) throws Error {
+#if GIO_2_44
+			size_t bytes_written;
+			return (yield write_head (out bytes_written, cancellable)) &&
+			       (yield body.write_all (buffer.data, out bytes_written, cancellable));
+#else
+			return append (buffer, cancellable);
+#endif
+		}
+
+		/**
+		 * @since 0.3
+		 */
+		public async bool append_bytes_async (Bytes        buffer,
+		                                      int          priority    = GLib.Priority.DEFAULT,
+		                                      Cancellable? cancellable = null) throws Error {
+			return yield append_async (buffer.get_data (), priority, cancellable);
+		}
+
+		/**
+		 * @since 0.3
+		 */
+		public async bool append_utf8_async (string       buffer,
+		                                     int          priority    = GLib.Priority.DEFAULT,
+		                                     Cancellable? cancellable = null) throws Error {
+			HashTable<string, string> @params;
+			var content_type = headers.get_content_type (out @params);
+			if (content_type == null) {
+				headers.set_content_type ("application/octet-stream", Soup.header_parse_param_list ("charset=UTF-8"));
+			} else if (@params["charset"] == null) {
+				@params["charset"] = "UTF-8";
+				headers.set_content_type (content_type, @params);
+			}
+			return yield append_async (buffer.data, priority, cancellable);
+		}
+
+		/**
 		 * Expand a buffer into the response body.
 		 *
 		 * If the content length can be determine reliably (eg. no
