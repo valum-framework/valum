@@ -115,8 +115,8 @@ namespace VSGI.SCGI {
 			}
 		}
 
-		public Connection (IOStream base_connection) {
-			Object (base_connection: base_connection);
+		public Connection (Server server, IOStream base_connection) {
+			Object (server: server, base_connection: base_connection);
 		}
 
 		~Connection ()  {
@@ -235,7 +235,7 @@ namespace VSGI.SCGI {
 				}
 			}
 
-			var req = new Request (new Connection (connection), new BoundedInputStream (reader, content_length), environment);
+			var req = new Request (new Connection (this, connection), new BoundedInputStream (reader, content_length), environment);
 			var res = new Response (req);
 
 			dispatch (req, res);
