@@ -61,6 +61,10 @@ namespace Valum.ContentNegotiation {
 	 * agent consider any response as acceptable: the expectation with the
 	 * highest quality will be forwarded.
 	 *
+	 * The 'Vary' header with the negotiated header name will be appended to the
+	 * response headers to indicate that the resource has been generated based
+	 * on its value.
+	 *
 	 * @since 0.3
 	 *
 	 * @param header_name  header to negotiate
@@ -75,8 +79,16 @@ namespace Valum.ContentNegotiation {
 		var _expectations = Soup.header_parse_quality_list (expectations, null);
 		return (req, res, next, ctx) => {
 			var header = req.headers.get_list (header_name);
-			if (_expectations.length () == 0)
+
+			if (_expectations.length () == 0) {
 				throw new ClientError.NOT_ACCEPTABLE ("'%s' cannot be satisfied: nothing is expected", header_name);
+			}
+
+			var vary = res.headers.get_list ("Vary") ??  "";
+			if (Soup.header_parse_list (vary).find_custom (header_name, (a, b) => { return Soup.str_case_equal (a, b) ? 0 : 1; }) == null) {
+				res.headers.append ("Vary", header_name);
+			}
+
 			if (header == null) {
 				return forward (req, res, next, ctx, _expectations.data);
 			}

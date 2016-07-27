@@ -20,6 +20,7 @@ public int main (string[] args) {
 			negotiate ("Accept", "text/html", (req, res, next, ctx, content_type) => {
 				reached = true;
 				assert ("text/html" == content_type);
+				assert ("Accept" == res.headers.get_one ("Vary"));
 				return true;
 			}) (req, res, () => {
 				assert_not_reached ();
