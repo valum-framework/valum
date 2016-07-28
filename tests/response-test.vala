@@ -4,7 +4,7 @@ public int main (string[] args) {
 	Test.init (ref args);
 
 	Test.add_func ("/response/write_head", () => {
-		var res = new Response (new Request (new Connection (), "GET", new Soup.URI ("http://localhost:3003/")));
+		var res = new Response (new Request.with_method ("GET", new Soup.URI ("http://localhost:3003/")));
 
 		var wrote_status_line_emitted = false;
 		var wrote_headers_emitted     = false;
@@ -32,7 +32,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/response/expand", () => {
-		var res = new Response (new Request (new Connection (), "GET", new Soup.URI ("http://localhost:3003/")));
+		var res = new Response (new Request.with_method ("GET", new Soup.URI ("http://localhost:3003/")));
 		try {
 			res.expand ("Hello world!".data);
 		} catch (IOError err) {
@@ -43,7 +43,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/response/expand_bytes", () => {
-		var res = new Response (new Request (new Connection (), "GET", new Soup.URI ("http://localhost:3003/")));
+		var res = new Response (new Request.with_method ("GET", new Soup.URI ("http://localhost:3003/")));
 		try {
 			res.expand_bytes (new Bytes.take ("Hello world!".data));
 		} catch (IOError err) {
@@ -54,7 +54,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/response/expand_utf8", () => {
-		var res = new Response (new Request (new Connection (), "GET", new Soup.URI ("http://localhost:3003/")));
+		var res = new Response (new Request.with_method ("GET", new Soup.URI ("http://localhost:3003/")));
 		try {
 			res.expand_utf8 ("Hello world!");
 		} catch (IOError err) {
@@ -68,7 +68,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/response/expand_utf8/preserve_existing_charset_attribute", () => {
-		var res = new Response (new Request (new Connection (), "GET", new Soup.URI ("http://localhost:3003/")));
+		var res = new Response (new Request.with_method ("GET", new Soup.URI ("http://localhost:3003/")));
 		res.headers.set_content_type ("text/plain", Soup.header_parse_param_list ("charset=US-ASCII"));
 		try {
 			res.expand_utf8 ("Hello world!");
@@ -83,7 +83,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/response/tee", () => {
-		var res    = new Response (new Request (new Connection (), "GET", new Soup.URI ("http://localhost:3003/")));
+		var res    = new Response (new Request.with_method ("GET", new Soup.URI ("http://localhost:3003/")));
 		var buffer = new MemoryOutputStream (null, realloc, free);
 		res.tee (buffer);
 		try {

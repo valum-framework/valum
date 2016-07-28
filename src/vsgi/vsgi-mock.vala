@@ -46,8 +46,8 @@ namespace VSGI.Mock {
 
 		public override OutputStream output_stream { get { return memory_output_stream; } }
 
-		public Connection () {
-			Object (memory_input_stream: new MemoryInputStream (), memory_output_stream: new MemoryOutputStream (null, realloc, free));
+		public Connection (Server server) {
+			Object (server: server, memory_input_stream: new MemoryInputStream (), memory_output_stream: new MemoryOutputStream (null, realloc, free));
 		}
 	}
 
@@ -88,19 +88,25 @@ namespace VSGI.Mock {
 			this._query  = query;
 		}
 
+		/**
+		 * @since 0.3
+		 */
 		public Request.with_method (string method, URI uri, HashTable<string, string>? query = null) {
-			this (new Connection (), method, uri, query);
+			this (new Connection (new Server ()), method, uri, query);
 		}
 
+		/**
+		 * @since 0.3
+		 */
 		public Request.with_uri (URI uri, HashTable<string, string>? query = null) {
-			Object (connection: new Connection ());
-			this._uri   = uri;
-			this._query = query;
+			this (new Connection (new Server ()), "GET", uri, query);
 		}
 
+		/**
+		 * @since 0.3
+		 */
 		public Request.with_query (HashTable<string, string>? query) {
-			Object (connection: new Connection ());
-			this._query = query;
+			this (new Connection (new Server ()), "GET", new Soup.URI ("http://localhost/"), query);
 		}
 	}
 
@@ -144,6 +150,24 @@ namespace VSGI.Mock {
 			head.append ("\r\n");
 
 			return request.connection.output_stream.write_all (head.str.data, out bytes_written, cancellable);
+		}
+	}
+
+	/**
+	 *
+	 */
+	public class Server : VSGI.Server {
+
+		private SList<Soup.URI> _uris;
+
+		public override SList<Soup.URI> uris { get { return _uris; } }
+
+		public override void listen (Variant options) throws Error {
+			_uris.append (new Soup.URI ("mock://"));
+		}
+
+		public override void stop () {
+			// nothing to stop
 		}
 	}
 }

@@ -30,7 +30,7 @@ public void test_server_sent_events_send () {
 		send ("important", "some event", "1234", TimeSpan.MILLISECOND);
 	}));
 
-	var connection = new Connection ();
+	var connection = new Connection (new Server ());
 	var req = new Request (connection, "GET", new Soup.URI ("http://127.0.0.1:3003/"));
 	var res = new Response (req);
 
@@ -66,7 +66,7 @@ public void test_server_sent_events_send_multiline () {
 		send (null, "some event\nmore details");
 	}));
 
-	var connection = new Connection ();
+	var connection = new Connection (new Server ());
 	var req = new Request (connection, "GET", new Soup.URI ("http://127.0.0.1:3003/"));
 	var res = new Response (req);
 
@@ -102,7 +102,7 @@ public void test_server_sent_events_skip_on_head () {
 		assert_not_reached ();
 	}));
 
-	var connection = new Connection ();
+	var connection = new Connection (new Server ());
 	var req = new Request (connection, "HEAD", new Soup.URI ("http://127.0.0.1:3003/"));
 	var res = new Response (req);
 

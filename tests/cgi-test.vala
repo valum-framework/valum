@@ -31,7 +31,7 @@ public void test_vsgi_cgi_request () {
 		"HTTP_HOST=example.com"
 	};
 
-	var connection = new VSGI.Mock.Connection ();
+	var connection = new VSGI.Mock.Connection (new VSGI.Mock.Server ());
 	var request    = new Request (connection, environment);
 
 	assert (Soup.HTTPVersion.@1_0 == request.http_version);
@@ -52,7 +52,7 @@ public void test_vsgi_cgi_request () {
  * @since 0.3
  */
 public void test_vsgi_cgi_request_gateway_interface () {
-	var request = new Request (new VSGI.Mock.Connection (), {"GATEWAY_INTERFACE=CGI/1.0"});
+	var request = new Request (new VSGI.Mock.Connection (new VSGI.Mock.Server ()), {"GATEWAY_INTERFACE=CGI/1.0"});
 
 	assert ("CGI/1.0" == request.gateway_interface);
 }
@@ -61,7 +61,7 @@ public void test_vsgi_cgi_request_gateway_interface () {
  * @since 0.3
  */
 public void test_vsgi_cgi_request_content_type () {
-	var request = new Request (new VSGI.Mock.Connection (), {"CONTENT_TYPE=text/html; charset=UTF-8"});
+	var request = new Request (new VSGI.Mock.Connection (new VSGI.Mock.Server ()), {"CONTENT_TYPE=text/html; charset=UTF-8"});
 
 	HashTable<string, string> @params;
 	message (request.headers.get_content_type (out @params));
@@ -73,7 +73,7 @@ public void test_vsgi_cgi_request_content_type () {
  * @since 0.3
  */
 public void test_vsgi_cgi_request_content_length () {
-	var request = new Request (new VSGI.Mock.Connection (), {"CONTENT_LENGTH=12"});
+	var request = new Request (new VSGI.Mock.Connection (new VSGI.Mock.Server ()), {"CONTENT_LENGTH=12"});
 
 	assert (12 == request.headers.get_content_length ());
 }
@@ -82,7 +82,7 @@ public void test_vsgi_cgi_request_content_length () {
  * @since 0.3
  */
 public void test_vsgi_cgi_request_content_length_malformed () {
-	var request = new Request (new VSGI.Mock.Connection (), {"CONTENT_LENGTH=12a"});
+	var request = new Request (new VSGI.Mock.Connection (new VSGI.Mock.Server ()), {"CONTENT_LENGTH=12a"});
 
 	assert (0 == request.headers.get_content_length ());
 }
@@ -92,7 +92,7 @@ public void test_vsgi_cgi_request_content_length_malformed () {
  */
 public void test_vsgi_cgi_request_missing_path_info () {
 	string[] environment = {};
-	var connection  = new VSGI.Mock.Connection ();
+	var connection  = new VSGI.Mock.Connection (new VSGI.Mock.Server ());
 	var request     = new Request (connection, environment);
 
 	assert ("/" == request.uri.get_path ());
@@ -102,7 +102,7 @@ public void test_vsgi_cgi_request_missing_path_info () {
  * @since 0.2
  */
 public void test_vsgi_cgi_request_http_1_1 () {
-	var connection  = new VSGI.Mock.Connection ();
+	var connection  = new VSGI.Mock.Connection (new VSGI.Mock.Server ());
 	string[] environment = {"SERVER_PROTOCOL=HTTP/1.1"};
 
 	var request = new Request (connection, environment);
@@ -114,7 +114,7 @@ public void test_vsgi_cgi_request_http_1_1 () {
  * @since 0.2.4
  */
 public void test_vsgi_cgi_request_https_detection () {
-	var connection       = new VSGI.Mock.Connection ();
+	var connection       = new VSGI.Mock.Connection (new VSGI.Mock.Server ());
 	string[] environment = {"PATH_TRANSLATED=https://example.com:80/"};
 
 	var request = new Request (connection, environment);
@@ -135,7 +135,7 @@ public void test_vsgi_cgi_request_https_on () {
 		"HTTPS=on"
 	};
 
-	var connection = new VSGI.Mock.Connection ();
+	var connection = new VSGI.Mock.Connection (new VSGI.Mock.Server ());
 	var request    = new Request (connection, environment);
 
 	assert ("https" == request.uri.scheme);
@@ -153,7 +153,7 @@ public void test_vsgi_cgi_request_request_uri () {
 		"REQUEST_URI=/home?a=b"
 	};
 
-	var connection = new VSGI.Mock.Connection ();
+	var connection = new VSGI.Mock.Connection (new VSGI.Mock.Server ());
 	var request    = new Request (connection, environment);
 
 	assert ("GET" == request.method);
@@ -174,7 +174,7 @@ public void test_vsgi_cgi_request_uri_with_query () {
 		"REQUEST_URI=/home?a=b"
 	};
 
-	var connection = new VSGI.Mock.Connection ();
+	var connection = new VSGI.Mock.Connection (new VSGI.Mock.Server ());
 	var request    = new Request (connection, environment);
 
 	assert ("/home" == request.uri.path);
@@ -185,7 +185,7 @@ public void test_vsgi_cgi_request_uri_with_query () {
  */
 public void test_vsgi_cgi_response () {
 	string[] environment = {};
-	var connection  = new VSGI.Mock.Connection ();
+	var connection  = new VSGI.Mock.Connection (new VSGI.Mock.Server ());
 	var request     = new Request (connection, environment);
 	var response    = new Response (request);
 

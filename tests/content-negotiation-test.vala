@@ -9,7 +9,7 @@ public int main (string[] args) {
 	 * @since 0.3
 	 */
 	Test.add_func ("/content_negotiation/negotiate", () => {
-		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var req = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -94,7 +94,7 @@ public int main (string[] args) {
 	 * @since 0.3
 	 */
 	Test.add_func ("/content_negotiation/negotiate/multiple", () => {
-		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var req = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -116,7 +116,7 @@ public int main (string[] args) {
 	 * @since 0.3
 	 */
 	Test.add_func ("/content_negotiation/negotiate/quality", () => {
-		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var req = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -151,7 +151,7 @@ public int main (string[] args) {
 	 * @since 0.3
 	 */
 	Test.add_func ("/content_negotiation/accept", () => {
-		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var req = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -188,7 +188,7 @@ public int main (string[] args) {
 	 * @since 0.3
 	 */
 	Test.add_func ("/content_negotiation/accept/any", () => {
-		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var req = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -211,7 +211,7 @@ public int main (string[] args) {
 	 * @since 0.3
 	 */
 	Test.add_func ("/content_negotiation/accept/any_subtype", () => {
-		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var req = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -255,7 +255,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/content_negotiation/accept/compound_subtype", () => {
-		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var req = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -275,7 +275,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/content_negotiation/accept_encoding/deflate", () => {
-		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var req = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -297,7 +297,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/content_negotiation/accept_encoding318a59a/identity", () => {
-		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var req = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -316,7 +316,7 @@ public int main (string[] args) {
 		}
 	});
 	Test.add_func ("/content_negotiation/accept_encoding/vendor_prefix", () => {
-		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var req = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -335,7 +335,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/content_negotiation/identity_always_acceptable", () => {
-		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var req = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -354,7 +354,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/content_negotiation/identity_explicitly_unacceptable", () => {
-		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var req = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -374,7 +374,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/content_negotiation/accept_language", () => {
-		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var req = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -394,7 +394,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/content_negotiation/accept_language/local_variant", () => {
-		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var req = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -413,7 +413,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/content_negotiation/accept_language/wildcard", () => {
-		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var req = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -432,7 +432,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/content_negotiation/accept_range", () => {
-		var req = new Request (new Connection (), "GET", new Soup.URI ("http://localhost/"));
+		var req = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 		var ctx = new Context ();
 

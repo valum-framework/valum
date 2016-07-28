@@ -22,7 +22,7 @@ public int main (string[] args) {
 	Test.init (ref args);
 
 	Test.add_func ("/request/convert/new_content_length", () => {
-		var req = new Request (new Connection (), "get", new Soup.URI ("http://localhost/"));
+		var req = new Request.with_method ("get", new Soup.URI ("http://localhost/"));
 
 		req.headers.set_content_length (50);
 
@@ -32,7 +32,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/request/convert/eof_to_fixed_size", () => {
-		var req = new Request (new Connection (), "get", new Soup.URI ("http://localhost/"));
+		var req = new Request.with_method ("get", new Soup.URI ("http://localhost/"));
 
 		req.headers.set_encoding (Soup.Encoding.EOF);
 
@@ -42,7 +42,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/request/convert/complete_sink", () => {
-		var req = new Request (new Connection (), "get", new Soup.URI ("http://localhost/"));
+		var req = new Request.with_method ("get", new Soup.URI ("http://localhost/"));
 
 		req.headers.set_content_length (50);
 
@@ -53,7 +53,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/request/convert/chunked", () => {
-		var req = new Request (new Connection (), "get", new Soup.URI ("http://localhost/"));
+		var req = new Request.with_method ("get", new Soup.URI ("http://localhost/"));
 
 		req.headers.set_encoding (Soup.Encoding.CHUNKED);
 

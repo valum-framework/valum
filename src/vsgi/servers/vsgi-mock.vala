@@ -22,27 +22,3 @@ using Soup;
 public Type server_init (TypeModule type_module) {
 	return typeof (VSGI.Mock.Server);
 }
-
-/**
- * Mock implementation of VSGI used for testing purposes.
- */
-namespace VSGI.Mock {
-
-	/**
-	 *
-	 */
-	public class Server : VSGI.Server {
-
-		private SList<Soup.URI> _uris;
-
-		public override SList<Soup.URI> uris { get { return _uris; } }
-
-		public override void listen (Variant options) throws Error {
-			_uris.append (new Soup.URI ("mock://"));
-		}
-
-		public override void stop () {
-			// nothing to stop
-		}
-	}
-}
