@@ -54,6 +54,8 @@ public abstract class VSGI.SocketListenerServer : Server {
 
 		this.add_main_option_entries (options);
 #endif
+		// FIXME: probably a compiler bug with default property not being initialized
+		socket_service = new SocketService ();
 	}
 
 	public override void listen (Variant options) throws Error {
