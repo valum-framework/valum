@@ -1,7 +1,9 @@
 project('Valum', ['vala', 'c'],
         version: '0.3.0-dev',
         license: 'LGPL',
-        meson_version: '>=0.32')
+        meson_version: '>=0.33')
+
+api_version = '0.3'
 
 if not meson.is_subproject()
 add_global_arguments(['-Wall',

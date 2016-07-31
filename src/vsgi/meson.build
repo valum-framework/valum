@@ -15,7 +15,7 @@ vsgi_sources = [
     'vsgi-socket-listener-server.vala',
     'vsgi-tee-output-stream.vala',
     'vsgi-worker.vala']
-vsgi_lib = library('vsgi', vsgi_sources,
+vsgi_lib = library('vsgi-' + api_version, vsgi_sources,
                    dependencies: [glib, gobject, gio, gio_unix, gmodule, soup],
                    vala_args: ['--pkg=posix'] + vala_defines,
                    link_args: '-Wl,-rpath,$$ORIGIN/servers',
@@ -25,7 +25,7 @@ vsgi_lib = library('vsgi', vsgi_sources,
 vsgi = declare_dependency(include_directories: include_directories('.'),
                           link_with: vsgi_lib)
 
-install_headers(meson.current_build_dir() + '/vsgi.h', subdir: 'vsgi')
+install_headers(meson.current_build_dir() + '/vsgi.h', subdir: 'vsgi-' + api_version)
 
 pkgconfig = import('pkgconfig')
 pkgconfig.generate(requires: 'glib-2.0 gobject-2.0 gio-2.0 libsoup-2.4',
@@ -33,9 +33,9 @@ pkgconfig.generate(requires: 'glib-2.0 gobject-2.0 gio-2.0 libsoup-2.4',
                    libraries: vsgi_lib,
                    version: meson.project_version(),
                    name: 'VSGI',
-                   filebase: 'vsgi',
+                   filebase: 'vsgi-' + api_version,
                    description: 'Interface and implementations for various web server technologies')
 
-install_data('vsgi.deps', install_dir: 'share/vala/vapi')
+install_data('vsgi-@0@.deps'.format(api_version), install_dir: 'share/vala/vapi')
 
 subdir('servers')
