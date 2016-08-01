@@ -28,6 +28,13 @@ namespace Valum {
 	public class Router : Object {
 
 		/**
+		 * Global routing context.
+		 *
+		 * @since 0.3
+		 */
+		public Context context { get; construct; default = new Context (); }
+
+		/**
 		 * Registered types used to extract {@link VSGI.Request} parameters.
          *
 		 * @since 0.1
@@ -48,6 +55,7 @@ namespace Valum {
 
 		construct {
 			// initialize default types
+			context = new Context (); // FIXME: the property should only be initialized in 'default'
 			register_type ("int",    /\d+/);
 			register_type ("string", /\w+/);
 			register_type ("path",   /(?:\.?[\w-\s\/])+/);
@@ -372,7 +380,7 @@ namespace Valum {
 				}
 
 				throw new ClientError.NOT_FOUND ("The request URI '%s' was not found.", req.uri.to_string (true));
-			}, new Context ());
+			}, new Context.with_parent (context));
 		}
 	}
 }
