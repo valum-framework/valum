@@ -49,8 +49,6 @@ if soup.version().version_compare('>=2.48')
     vala_defines += '--define=SOUP_2_48'
 endif
 
-meson.add_install_script('install.sh')
-
 subdir('data')
 subdir('src')
 subdir('tests')

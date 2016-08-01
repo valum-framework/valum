@@ -29,6 +29,7 @@ valum = declare_dependency(include_directories: include_directories('.'),
                            link_with: valum_lib)
 
 install_headers(meson.current_build_dir() + '/valum.h', subdir: 'valum-' + api_version)
+install_data(meson.current_build_dir() + '/valum-@0@.vapi'.format(api_version), install_dir: 'share/vala/vapi')
 
 pkgconfig = import('pkgconfig')
 pkgconfig.generate(requires: 'vsgi-' + api_version,
