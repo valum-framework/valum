@@ -16,6 +16,7 @@
  */
 
 using GLib;
+using Valum.ContentNegotiation;
 using VSGI;
 
 /**
@@ -81,12 +82,8 @@ namespace Valum.ServerSentEvents {
 	 * @param context context for sending events
 	 */
 	public HandlerCallback stream_events (owned EventStreamCallback context) {
-		return (req, res, next, _context) => {
+		return accept ("text/event-stream", (req, res, next, _context) => {
 			res.headers.set_encoding (Soup.Encoding.EOF);
-
-			HashTable<string, string> @params;
-			res.headers.get_content_type (out @params);
-			res.headers.set_content_type ("text/event-stream", @params);
 
 			// write headers right away
 			size_t bytes_size;
@@ -129,7 +126,7 @@ namespace Valum.ServerSentEvents {
 			}, _context);
 
 			return true;
-		};
+		});
 	}
 }
 
