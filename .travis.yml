@@ -18,7 +18,7 @@ before_install:
       libmarkdown2-dev liblua5.2-dev
     - sudo pip install sphinx sphinx_rtd_theme PyYAML
     - sudo pip3 install meson
-    - wget https://github.com/ninja-build/ninja/releases/download/v1.5.1/ninja-linux.zip
+    - wget https://github.com/ninja-build/ninja/releases/download/v1.6.0/ninja-linux.zip
     - sudo unzip ninja-linux.zip -d /usr/local/bin
 
 before_script:
