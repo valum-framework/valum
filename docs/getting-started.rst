@@ -57,14 +57,14 @@ Simple applications can be built directly with ``valac``:
 
 .. code-block:: bash
 
-    valac --pkg=valum --pkg=vsgi-http -o build/app src/app.vala
+    valac --pkg=valum-0.3 -o build/app src/app.vala
 
 The ``vala`` program will build and run the produced binary, which is
 convenient for testing:
 
 .. code-block:: bash
 
-    vala --pkg=valum --pkg=vsgi-http src/app.vala
+    vala --pkg=valum-0.3 src/app.vala
 
 Building with waf
 -----------------
@@ -82,16 +82,15 @@ at the root of your project.
 
     def configure(cfg):
         cfg.load('compiler_c vala')
-        cfg.check_cfg(package='valum', uselib_store='VALUM', args='--libs --cflags')
-        cfg.check_cfg(package='vsgi-http', uselib_store='VSGI_HTTP', args='--libs --cflags')
+        cfg.check_cfg(package='valum-0.3', uselib_store='VALUM', args='--libs --cflags')
 
     def build(bld):
         bld.load('compiler_c vala')
         bld.program(
-            packages = 'valum vsgi-http',
+            packages = 'valum-0.3',
             target   = 'app',
             source   = 'src/app.vala',
-            use      = 'VALUM VSGI_HTTP')
+            use      = 'VALUM')
 
 You should now be able to build by issuing the following commands:
 
@@ -112,10 +111,9 @@ as flexible as waf, but it will handle most projects very well.
 
     project('example', 'c', 'vala')
 
-    valum = dependency('valum')
-    vsgi_http = dependency('vsgi-http')
+    valum = dependency('valum-0.3')
 
-    executable('app', sources: ['src/app.vala'], dependencies: [valum, vsgi_http])
+    executable('app', sources: ['src/app.vala'], dependencies: valum)
 
 .. code-block:: bash
 
