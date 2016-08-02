@@ -91,7 +91,7 @@ namespace Valum.ServerSentEvents {
 
 			// don't hang the user agent on a 'HEAD' request
 			if (req.method == Request.HEAD)
-				return true;
+				return res.end ();
 
 			Timeout.add_seconds (15, () => {
 				try {
@@ -121,8 +121,7 @@ namespace Valum.ServerSentEvents {
 				// final newline that concludes the message
 				message.append_c ('\n');
 
-				res.body.write_all (message.str.data, null);
-				res.body.flush ();
+				res.append_utf8 (message.str);
 			}, _context);
 
 			return true;
