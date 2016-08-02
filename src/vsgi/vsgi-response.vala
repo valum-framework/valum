@@ -292,27 +292,37 @@ namespace VSGI {
 		}
 
 		/**
-		 * Append a buffer into the response body, writting the head beforehand.
+		 * Append a buffer into the response body, writting the head beforehand
+		 * and flushing data immediatly.
+		 *
+		 * Unless the 'Transport-Encoding' header is explicitly set to 'chunked',
+		 * the response encoding is marked with {@link Soup.Encoding.EOF}.
 		 *
 		 * @since 0.3
 		 */
-		public bool append (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
+		public bool append (uint8[] buffer, Cancellable? cancellable = null) throws Error {
+			if (headers.get_encoding () == Soup.Encoding.CHUNKED) {
+				// nothing to do
+			} else {
+				headers.set_encoding (Soup.Encoding.EOF);
+			}
 			size_t bytes_written;
-			return write_head (out bytes_written, cancellable) &&
-			       body.write_all (buffer, out bytes_written, cancellable);
+			return write_head (out bytes_written, cancellable)             &&
+			       body.write_all (buffer, out bytes_written, cancellable) &&
+			       body.flush (cancellable);
 		}
 
 		/**
 		 * @since 0.3
 		 */
-		public bool append_bytes (Bytes buffer, Cancellable? cancellable = null) throws IOError {
+		public bool append_bytes (Bytes buffer, Cancellable? cancellable = null) throws Error {
 			return append (buffer.get_data (), cancellable);
 		}
 
 		/**
 		 * @since 0.3
 		 */
-		public bool append_utf8 (string buffer, Cancellable? cancellable = null) throws IOError {
+		public bool append_utf8 (string buffer, Cancellable? cancellable = null) throws Error {
 			HashTable<string, string> @params;
 			var content_type = headers.get_content_type (out @params);
 			if (content_type == null) {
@@ -330,10 +340,16 @@ namespace VSGI {
 		public async bool append_async (uint8[]      buffer,
 		                                int          priority    = GLib.Priority.DEFAULT,
 		                                Cancellable? cancellable = null) throws Error {
+			if (headers.get_encoding () == Soup.Encoding.CHUNKED) {
+				// nothing to do
+			} else {
+				headers.set_encoding (Soup.Encoding.EOF);
+			}
 #if GIO_2_44
 			size_t bytes_written;
 			return (yield write_head_async (priority, cancellable, out bytes_written)) &&
-			       (yield body.write_all_async (buffer, priority, cancellable, out bytes_written));
+			       (yield body.write_all_async (buffer, priority, cancellable, out bytes_written)) &&
+			       (yield body.flush_async (priority, cancellable));
 #else
 			return append (buffer, cancellable);
 #endif
