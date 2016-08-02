@@ -272,11 +272,9 @@ namespace VSGI {
 		 */
 		public void convert (Converter converter, int64 content_length = -1) {
 			if (content_length >= 0) {
-				headers.set_content_length (content_length);
-			} else if (headers.get_encoding () == Soup.Encoding.CHUNKED) {
-				// nothing to do
+				_mark_content_length_as_fixed (content_length);
 			} else {
-				headers.set_encoding (Soup.Encoding.EOF);
+				_mark_content_length_as_undetermined ();
 			}
 			_body = new ConverterOutputStream (_body ?? request.connection.output_stream, converter);
 		}
@@ -291,6 +289,40 @@ namespace VSGI {
 			_body = new TeeOutputStream (_body ?? request.connection.output_stream, tee_stream);
 		}
 
+		private inline void _mark_content_as_utf8 () {
+			if (head_written) {
+				return;
+			}
+			HashTable<string, string> @params;
+			var content_type = headers.get_content_type (out @params);
+			if (content_type == null) {
+				headers.set_content_type ("application/octet-stream", Soup.header_parse_param_list ("charset=UTF-8"));
+			} else if (@params["charset"] == null) {
+				@params["charset"] = "UTF-8";
+				headers.set_content_type (content_type, @params);
+			}
+		}
+
+		private inline void _mark_content_length_as_undetermined () {
+			if (head_written) {
+				return;
+			}
+			if (headers.get_encoding () == Soup.Encoding.CHUNKED) {
+				// nothing to do
+			} else {
+				headers.set_encoding (Soup.Encoding.EOF);
+			}
+		}
+
+		private inline void _mark_content_length_as_fixed (int64 content_length) {
+			if (head_written) {
+				return;
+			}
+			if (headers.get_list ("Content-Encoding") == null) {
+				headers.set_content_length (content_length);
+			}
+		}
+
 		/**
 		 * Append a buffer into the response body, writting the head beforehand
 		 * and flushing data immediatly.
@@ -301,11 +333,7 @@ namespace VSGI {
 		 * @since 0.3
 		 */
 		public bool append (uint8[] buffer, Cancellable? cancellable = null) throws Error {
-			if (headers.get_encoding () == Soup.Encoding.CHUNKED) {
-				// nothing to do
-			} else {
-				headers.set_encoding (Soup.Encoding.EOF);
-			}
+			_mark_content_length_as_undetermined ();
 			size_t bytes_written;
 			return write_head (out bytes_written, cancellable)             &&
 			       body.write_all (buffer, out bytes_written, cancellable) &&
@@ -323,14 +351,7 @@ namespace VSGI {
 		 * @since 0.3
 		 */
 		public bool append_utf8 (string buffer, Cancellable? cancellable = null) throws Error {
-			HashTable<string, string> @params;
-			var content_type = headers.get_content_type (out @params);
-			if (content_type == null) {
-				headers.set_content_type ("application/octet-stream", Soup.header_parse_param_list ("charset=UTF-8"));
-			} else if (@params["charset"] == null) {
-				@params["charset"] = "UTF-8";
-				headers.set_content_type (content_type, @params);
-			}
+			_mark_content_as_utf8 ();
 			return append (buffer.data, cancellable);
 		}
 
@@ -340,11 +361,7 @@ namespace VSGI {
 		public async bool append_async (uint8[]      buffer,
 		                                int          priority    = GLib.Priority.DEFAULT,
 		                                Cancellable? cancellable = null) throws Error {
-			if (headers.get_encoding () == Soup.Encoding.CHUNKED) {
-				// nothing to do
-			} else {
-				headers.set_encoding (Soup.Encoding.EOF);
-			}
+			_mark_content_length_as_undetermined ();
 #if GIO_2_44
 			size_t bytes_written;
 			return (yield write_head_async (priority, cancellable, out bytes_written)) &&
@@ -370,14 +387,7 @@ namespace VSGI {
 		public async bool append_utf8_async (string       buffer,
 		                                     int          priority    = GLib.Priority.DEFAULT,
 		                                     Cancellable? cancellable = null) throws Error {
-			HashTable<string, string> @params;
-			var content_type = headers.get_content_type (out @params);
-			if (content_type == null) {
-				headers.set_content_type ("application/octet-stream", Soup.header_parse_param_list ("charset=UTF-8"));
-			} else if (@params["charset"] == null) {
-				@params["charset"] = "UTF-8";
-				headers.set_content_type (content_type, @params);
-			}
+			_mark_content_as_utf8 ();
 			return yield append_async (buffer.data, priority, cancellable);
 		}
 
@@ -393,9 +403,7 @@ namespace VSGI {
 		 * @since 0.3
 		 */
 		public bool expand (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
-			if (headers.get_list ("Content-Encoding") == null) {
-				headers.set_content_length (buffer.length);
-			}
+			_mark_content_length_as_fixed (buffer.length);
 			size_t bytes_written;
 			return write_head (out bytes_written, cancellable) &&
 			       (buffer.length == 0 || body.write_all (buffer, out bytes_written, cancellable)) &&
@@ -422,14 +430,7 @@ namespace VSGI {
 		 * @since 0.3
 		 */
 		public bool expand_utf8 (string body, Cancellable? cancellable = null) throws IOError {
-			HashTable<string, string> @params;
-			var content_type = headers.get_content_type (out @params);
-			if (content_type == null) {
-				headers.set_content_type ("application/octet-stream", Soup.header_parse_param_list ("charset=UTF-8"));
-			} else if (@params["charset"] == null) {
-				@params["charset"] = "UTF-8";
-				headers.set_content_type (content_type, @params);
-			}
+			_mark_content_as_utf8 ();
 			return expand (body.data, cancellable);
 		}
 
@@ -439,8 +440,8 @@ namespace VSGI {
 		public async bool expand_async (uint8[]      buffer,
 		                                int          priority    = GLib.Priority.DEFAULT,
 		                                Cancellable? cancellable = null) throws Error {
+			_mark_content_length_as_fixed (buffer.length);
 #if GIO_2_44
-			headers.set_content_length (buffer.length);
 			size_t bytes_written;
 			return (yield write_head_async (priority, cancellable, out bytes_written)) &&
 			       (buffer.length == 0 || yield body.write_all_async (buffer, priority, cancellable, out bytes_written)) &&
@@ -465,14 +466,7 @@ namespace VSGI {
 		public async bool expand_utf8_async (string       body,
 		                                     int          priority    = GLib.Priority.DEFAULT,
 		                                     Cancellable? cancellable = null) throws Error {
-			HashTable<string, string> @params;
-			var content_type = headers.get_content_type (out @params);
-			if (content_type == null) {
-				headers.set_content_type ("application/octet-stream", Soup.header_parse_param_list ("charset=UTF-8"));
-			} else if (@params["charset"] == null) {
-				@params["charset"] = "UTF-8";
-				headers.set_content_type (content_type, @params);
-			}
+			_mark_content_as_utf8 ();
 			return yield expand_async (body.data, priority, cancellable);
 		}
 
