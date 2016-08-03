@@ -22,7 +22,7 @@ using GLib;
  *
  * @since 0.3
  */
-public abstract class VSGI.SocketListenerServer : Server {
+public abstract class VSGI.SocketServer : Server {
 
 	/**
 	 * @since 0.3
@@ -49,11 +49,10 @@ public abstract class VSGI.SocketListenerServer : Server {
 
 	public override OptionEntry[] get_listen_options () {
 		const OptionEntry[] options = {
-			{"any",             'a', 0, OptionArg.NONE,     null, "Listen on any open TCP port"},
-			{"port",            'p', 0, OptionArg.INT,      null, "Listen to the provided TCP port"},
-			{"file-descriptor", 'f', 0, OptionArg.INT,      null, "Listen to the provided file descriptor",       "0"},
-			{"backlog",         'b', 0, OptionArg.INT,      null, "Listen queue depth used in the listen() call", "10"},
-			{null}
+			{"any",             'a', 0, OptionArg.NONE, null, "Listen on any open TCP port"},
+			{"port",            'p', 0, OptionArg.INT,  null, "Listen to the provided TCP port"},
+			{"file-descriptor", 'f', 0, OptionArg.INT,  null, "Listen to the provided file descriptor",       "0"},
+			{"backlog",         'b', 0, OptionArg.INT,  null, "Listen queue depth used in the listen() call", "10"},
 		};
 		return options;
 	}
@@ -81,7 +80,7 @@ public abstract class VSGI.SocketListenerServer : Server {
 			socket_service.set_backlog (options.lookup_value ("backlog", VariantType.INT32).get_int32 ());
 		}
 
-		socket_service.incoming.connect (handle_incoming_socket_connection);
+		socket_service.incoming.connect (incoming);
 
 		socket_service.start ();
 	}
@@ -95,5 +94,5 @@ public abstract class VSGI.SocketListenerServer : Server {
 	 *
 	 * @since 0.3
 	 */
-	public abstract bool handle_incoming_socket_connection (SocketConnection connection, Object? obj);
+	public abstract bool incoming (SocketConnection connection);
 }

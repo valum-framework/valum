@@ -2,14 +2,14 @@
 using GLib;
 using VSGI;
 
-private class MockedSocketListenerServer : SocketListenerServer {
+private class MockedSocketServer : SocketServer {
 	protected override string protocol {
 		get {
 			return "mock";
 		}
 	}
 
-	protected override bool handle_incoming_socket_connection (SocketConnection connection, Object? obj) {
+	protected override bool incoming (SocketConnection connection) {
 		return true;
 	}
 }
@@ -17,8 +17,8 @@ private class MockedSocketListenerServer : SocketListenerServer {
 public int main (string[] args) {
 	Test.init (ref args);
 
-	Test.add_func ("/socket_listener_server/port", () => {
-		var server = new MockedSocketListenerServer ();
+	Test.add_func ("/socket_server/port", () => {
+		var server = new MockedSocketServer ();
 		var port   = Random.int_range (1024, 32768);
 		server.set_application_callback (() => { return true; });
 
@@ -37,8 +37,8 @@ public int main (string[] args) {
 		assert ("mock://[::]:%d/".printf (port) == server.uris.next.data.to_string (false));
 	});
 
-	Test.add_func ("/socket_listener_server/any_port", () => {
-		var server = new MockedSocketListenerServer ();
+	Test.add_func ("/socket_server/any_port", () => {
+		var server = new MockedSocketServer ();
 		server.set_application_callback (() => { return true; });
 
 		var options = new VariantBuilder (new VariantType ("a{sv}"));
@@ -56,8 +56,8 @@ public int main (string[] args) {
 		assert (server.uris.next.data.to_string (false).has_prefix ("mock://[::]:"));
 	});
 
-	Test.add_func ("/socket_listener_server/file_descriptor", () => {
-		var server = new MockedSocketListenerServer ();
+	Test.add_func ("/socket_server/file_descriptor", () => {
+		var server = new MockedSocketServer ();
 		server.set_application_callback (() => { return true; });
 
 		try {

@@ -127,11 +127,11 @@ namespace VSGI.SCGI {
 	/**
 	 * {@inheritDoc}
 	 */
-	public class Server : VSGI.SocketListenerServer {
+	public class Server : VSGI.SocketServer {
 
 		protected override string protocol { get { return "scgi"; } }
 
-		protected override bool handle_incoming_socket_connection (SocketConnection connection, Object? obj) {
+		protected override bool incoming (SocketConnection connection) {
 			process_connection.begin (connection, Priority.DEFAULT, null, (obj, result) => {
 				try {
 					process_connection.end (result);
