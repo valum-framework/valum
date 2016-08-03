@@ -33,6 +33,7 @@ development. If you think that this document could be improved,
     redirection-and-error
     middlewares/index
     recipes/index
+    guidelines
     hacking
     about/gnu-lgpl-v3.0
 
