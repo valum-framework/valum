@@ -97,7 +97,7 @@ namespace Valum.Static {
 	 * @param root        path from which resources are resolved
 	 * @param serve_flags flags for serving the resources
 	 */
-	public HandlerCallback serve_from_file (File root, ServeFlags serve_flags = ServeFlags.NONE) {
+	public HandlerCallback serve_from_file (File root, ServeFlags serve_flags = ServeFlags.NONE, ForwardCallback<GLib.File> forward = Valum.forward) {
 		return (req, res, next, ctx) => {
 			var file = root.resolve_relative_path (ctx["path"].get_string ());
 
@@ -144,17 +144,18 @@ namespace Valum.Static {
 					                                                                new Soup.Date.from_now (0).to_string (Soup.DateFormat.HTTP)));
 				}
 
-				if (ServeFlags.X_SENDFILE in serve_flags && file.get_path () != null) {
-					res.headers.set_encoding (Soup.Encoding.NONE);
-					res.headers.replace ("X-Sendfile", file.get_path ());
-					return res.end ();
-				}
+				return forward (req, res, () => {
+					if (ServeFlags.X_SENDFILE in serve_flags && file.get_path () != null) {
+						res.headers.set_encoding (Soup.Encoding.NONE);
+						res.headers.replace ("X-Sendfile", file.get_path ());
+						return res.end ();
+					}
 
-				if (req.method == Request.HEAD)
-					return res.end ();
+					if (req.method == Request.HEAD)
+						return res.end ();
 
-				res.body.splice (file_read_stream, OutputStreamSpliceFlags.CLOSE_SOURCE);
-				return true;
+					return res.body.splice (file_read_stream, OutputStreamSpliceFlags.CLOSE_SOURCE) > 0;
+				}, ctx, file);
 			} catch (FileError.ACCES fe) {
 				if (ServeFlags.FORBID_ON_MISSING_RIGHTS in serve_flags) {
 					throw new ClientError.FORBIDDEN ("You are cannot access this resource.");
@@ -173,15 +174,19 @@ namespace Valum.Static {
 	/**
 	 * @since 0.3
 	 */
-	public HandlerCallback serve_from_path (string path, ServeFlags serve_flags = ServeFlags.NONE) {
-		return serve_from_file (File.new_for_path (path), serve_flags);
+	public HandlerCallback serve_from_path (string                      path,
+	                                        ServeFlags                  serve_flags = ServeFlags.NONE,
+	                                        owned ForwardCallback<File> forward     = Valum.forward) {
+		return serve_from_file (File.new_for_path (path), serve_flags, (owned) forward);
 	}
 
 	/**
 	 * @since 0.3
 	 */
-	public HandlerCallback serve_from_uri (string uri, ServeFlags serve_flags = ServeFlags.NONE) {
-		return serve_from_file (File.new_for_uri (uri), serve_flags);
+	public HandlerCallback serve_from_uri (string                      uri,
+	                                       ServeFlags                  serve_flags = ServeFlags.NONE,
+	                                       owned ForwardCallback<File> forward     = Valum.forward) {
+		return serve_from_file (File.new_for_uri (uri), serve_flags, (owned) forward);
 	}
 
 	/**
@@ -203,9 +208,10 @@ namespace Valum.Static {
 	 *                    '/' character
 	 * @param serve_flags flags for serving the resources
 	 */
-	public HandlerCallback serve_from_resource (Resource   resource,
-	                                            string     prefix      = "/",
-	                                            ServeFlags serve_flags = ServeFlags.NONE) {
+	public HandlerCallback serve_from_resource (Resource              resource,
+	                                            string                prefix      = "/",
+	                                            ServeFlags            serve_flags = ServeFlags.NONE,
+	                                            owned ForwardCallback forward     = Valum.forward) {
 		// cache for already computed 'ETag' values
 		var etag_cache = new HashTable <string, string> (str_hash, str_equal);
 

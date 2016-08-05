@@ -51,6 +51,23 @@ To deliver from the global resources, use the ``resource://`` scheme.
 
     app.get ("/static/<path:path>", serve_from_file (File.new_for_uri ("resource://static")));
 
+Before being served, each file is forwarded to make it possible to modify
+headers more specifically or raise a last-minute error.
+
+Once done, invoke the ``next`` continuation to send over the content.
+
+::
+
+    app.get ("/static/<path:path>", serve_from_file (File.new_for_path ("static"),
+                                                     ServeFlags.NONE,
+                                                     (req, res, next, ctx, file) => {
+        var user = ctx["user"] as User;
+        if (!user.can_access (file)) {
+            throw new ClientError.FORBIDDEN ("You cannot access this file.")
+        }
+        return next ();
+    }));
+
 The ``ServeFlags.X_SENDFILE`` will only work for locally available files,
 meaning that `GLib.File.get_path`_ is non-null.
 
