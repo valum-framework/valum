@@ -97,7 +97,7 @@ namespace Valum.ServerSentEvents {
 				try {
 					return res.ref_count > 1 && res.body.write_all (":\n".data, null) && res.body.flush ();
 				} catch (Error err) {
-					critical (err.message);
+					critical ("%s (%s, %d)", err.message, err.domain.to_string (), err.code);
 					return false;
 				}
 			});

@@ -39,7 +39,7 @@ namespace Valum {
 				 * too late to perform any kind of status handling.
 				 */
 				if (res.head_written) {
-					critical ("%s", err.message);
+					critical ("%s (%s, %d)", err.message, err.domain.to_string (), err.code);
 					return true;
 				}
 
@@ -120,11 +120,11 @@ namespace Valum {
 							if (is_status (err)) {
 								return res.expand_utf8 (err.message);
 							} else {
-								critical (err.message);
+								critical ("%s (%s, %d)", err.message, err.domain.to_string (), err.code);
 								return res.expand_utf8 ("The server encountered an unexpected condition which prevented it from fulfilling the request.");
 							}
 						} catch (IOError io_err) {
-							critical (io_err.message);
+							critical ("%s (%s, %d)", io_err.message, io_err.domain.to_string (), io_err.code);
 						}
 						break;
 				}
@@ -132,7 +132,7 @@ namespace Valum {
 				try {
 					return res.end ();
 				} catch (IOError io_err) {
-					critical (io_err.message);
+					critical ("%s (%s, %d)", io_err.message, io_err.domain.to_string (), io_err.code);
 					return true;
 				}
 			}

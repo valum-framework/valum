@@ -163,7 +163,7 @@ namespace VSGI {
 			try {
 				listen (options);
 			} catch (Error err) {
-				critical ("%s", err.message);
+				critical ("%s (%s, %d)", err.message, err.domain.to_string (), err.code);
 				return 1;
 			}
 
@@ -246,7 +246,7 @@ namespace VSGI {
 			try {
 				GLib.Unix.open_pipe (_pipe, Posix.FD_CLOEXEC);
 			} catch (Error err) {
-				critical (err.message);
+				critical ("%s (%s, %d)", err.message, err.domain.to_string (), err.code);
 				return -1;
 			}
 			var pid = Posix.fork ();
