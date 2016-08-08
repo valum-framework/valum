@@ -10,6 +10,7 @@ library.
 
 .. toctree::
 
+    authentication
     connection
     request
     response

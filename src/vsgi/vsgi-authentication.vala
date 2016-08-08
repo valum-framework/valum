@@ -40,14 +40,16 @@ public abstract class VSGI.Authentication : Object {
 	public string? charset { get; construct; default = null; }
 
 	/**
-	 * Check and extract the credentials fields from an 'Authorization' header.
+	 * Check and extract the fields from an 'Authorization' header.
 	 *
 	 * @since 0.3
 	 *
-	 * @param credentials
+	 * @param authorization_header 'Authorization' header value
+	 * @param authorization        extracted {@link VSGI.Authorization} object
+	 *                             containing the fields from the header
 	 *
-	 * @return 'true' on success, otherwise 'false' and both 'credentials' is
-	 *         set to 'null'
+	 * @return 'true' on success, otherwise 'false' and 'authorization' is set
+	 *         to 'null'
 	 */
 	public abstract bool parse_authorization_header (string authorization_header, out Authorization? authorization);
 

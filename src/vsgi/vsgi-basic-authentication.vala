@@ -18,7 +18,9 @@
 using GLib;
 
 /**
- * RFC7617
+ * Parse and generate basic authentication headers according to RFC 7617.
+ *
+ * [[https://tools.ietf.org/html/rfc7617]]
  *
  * @since 0.3
  */
