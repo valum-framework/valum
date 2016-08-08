@@ -40,24 +40,16 @@ public abstract class VSGI.Authentication : Object {
 	public string? charset { get; construct; default = null; }
 
 	/**
-	 * Hash the provided plain text password according to this.
-	 *
-	 * @since 0.3
-	 */
-	public abstract string hash_password (string password);
-
-	/**
-	 * Check and extract the username and password fields from an 'Authorization'
-	 * header.
+	 * Check and extract the credentials fields from an 'Authorization' header.
 	 *
 	 * @since 0.3
 	 *
-	 * @return 'true' on success, otherwise 'false' and both 'username' and
-	 *         'password' parameters are set to 'null'
+	 * @param credentials
+	 *
+	 * @return 'true' on success, otherwise 'false' and both 'credentials' is
+	 *         set to 'null'
 	 */
-	public abstract bool parse_authorization_header (string      authorization_header,
-	                                                 out string? username,
-	                                                 out string? password);
+	public abstract bool parse_authorization_header (string authorization_header, out Authorization? authorization);
 
 	/**
 	 * Produce a 'WWW-Authenticate' (or 'Proxy-Authenticate') header for this.

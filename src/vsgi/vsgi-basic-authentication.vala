@@ -31,13 +31,8 @@ public class VSGI.BasicAuthentication : Authentication {
 		Object (realm: realm, charset: charset);
 	}
 
-	public override string hash_password (string password) {
-		return password;
-	}
-
-	public override bool parse_authorization_header (string header, out string? username, out string? password) {
-		username = null;
-		password = null;
+	public override bool parse_authorization_header (string header, out Authorization? authorization) {
+		authorization = null;
 
 		if (header.length < 6) {
 			return false;
@@ -47,24 +42,24 @@ public class VSGI.BasicAuthentication : Authentication {
 			return false;
 		}
 
-		var credentials = (string) Base64.decode (header.substring (6));
+		var authorization_data = (string) Base64.decode (header.substring (6));
 
 		if (charset != null && !Soup.str_case_equal (charset, "UTF-8")) {
 			try {
-				credentials = convert (credentials, credentials.length, "UTF-8", charset);
+				authorization_data = convert (authorization_data, authorization_data.length, "UTF-8", charset);
 			} catch (ConvertError err) {
 				return false;
 			}
 		}
 
-		var sep_index = credentials.index_of_char (':');
+		var sep_index = authorization_data.index_of_char (':');
 
 		if (sep_index == -1) {
 			return false;
 		}
 
-		username = credentials.slice (0, sep_index);
-		password = credentials.substring (sep_index + 1);
+		authorization = new BasicAuthorization (authorization_data.slice (0, sep_index),
+		                                        authorization_data.substring (sep_index + 1));
 
 		return true;
 	}

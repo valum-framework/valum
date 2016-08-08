@@ -1,7 +1,9 @@
 vsgi_sources = [
     'vsgi.vala',
     'vsgi-authentication.vala',
+    'vsgi-authorization.vala',
     'vsgi-basic-authentication.vala',
+    'vsgi-basic-authorization.vala',
     'vsgi-bounded-input-stream.vala',
     'vsgi-cgi.vala',
     'vsgi-chunked-encoder.vala',
