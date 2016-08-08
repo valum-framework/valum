@@ -211,7 +211,7 @@ namespace Valum.Static {
 	public HandlerCallback serve_from_resource (Resource              resource,
 	                                            string                prefix      = "/",
 	                                            ServeFlags            serve_flags = ServeFlags.NONE,
-	                                            owned ForwardCallback forward     = Valum.forward) {
+	                                            owned HandlerCallback forward     = Valum.forward) {
 		// cache for already computed 'ETag' values
 		var etag_cache = new HashTable <string, string> (str_hash, str_equal);
 
@@ -251,14 +251,15 @@ namespace Valum.Static {
 				                                                                new Soup.Date.from_now (0).to_string (Soup.DateFormat.HTTP)));
 			}
 
-			if (req.method == Request.HEAD)
-				return res.end ();
+			return forward (req, res, () => {
+				if (req.method == Request.HEAD)
+					return res.end ();
 
-			var file = resource.open_stream (path, ResourceLookupFlags.NONE);
+				var file = resource.open_stream (path, ResourceLookupFlags.NONE);
 
-			// transfer the file
-			res.body.splice (file, OutputStreamSpliceFlags.CLOSE_SOURCE);
-			return true;
+				// transfer the file
+				return res.body.splice (file, OutputStreamSpliceFlags.CLOSE_SOURCE) > 0;
+			}, ctx);
 		};
 	}
 }
