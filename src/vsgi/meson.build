@@ -13,6 +13,7 @@ vsgi_sources = [
     'vsgi-mock.vala',
     'vsgi-request.vala',
     'vsgi-response.vala',
+    'vsgi-security-utils.vala',
     'vsgi-server-module.vala',
     'vsgi-server.vala',
     'vsgi-socket-listener-server.vala',

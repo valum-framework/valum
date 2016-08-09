@@ -35,6 +35,6 @@ public class VSGI.BasicAuthorization : Authorization {
 	}
 
 	public override bool challenge (string password) {
-		return this.password == password;
+		return str_const_equal (password, this.password);
 	}
 }
