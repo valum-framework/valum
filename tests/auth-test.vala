@@ -28,8 +28,9 @@ public int main (string[] args) {
 
 		Authorization authorization;
 		assert (!authentication.parse_authorization_header ("Basic", out authorization));
-		assert (!authentication.parse_authorization_header ("Basic MTIzNA==", out authorization));
+		assert (!authentication.parse_authorization_header ("Basic " + Base64.encode ({'t', 'e', 's', 't'}), out authorization));
 		assert (!authentication.parse_authorization_header ("Digest dGVzdDoxMjM0", out authorization));
+		assert (!authentication.parse_authorization_header ("Basic " + Base64.encode ({'t', 'e', 's', 't', ':', 0x7}), out authorization));
 
 		assert (authentication.parse_authorization_header ("Basic dGVzdDoxMjM0", out authorization));
 

@@ -55,6 +55,11 @@ public class VSGI.BasicAuthentication : Authentication {
 			}
 		}
 
+		// check for control characters as defined in Appendix B.1 of RFC 5235
+		if (/[\x00-\x1f\x7f]/.match (authorization_data)) {
+			return false;
+		}
+
 		var sep_index = authorization_data.index_of_char (':');
 
 		if (sep_index == -1) {
