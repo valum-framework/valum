@@ -50,6 +50,7 @@ public class VSGI.BasicAuthentication : Authentication {
 			try {
 				authorization_data = convert (authorization_data, authorization_data.length, "UTF-8", charset);
 			} catch (ConvertError err) {
+				critical (err.message);
 				return false;
 			}
 		}
