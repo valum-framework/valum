@@ -325,7 +325,7 @@ app.get ("/negotiate-encoding", accept_encoding ("gzip, deflate", (req, res, nex
 }));
 
 app.get ("/auth", authenticate (new BasicAuthentication (""), (a) => {
-	return a.challenge ("1234");
+	return a.challenge_with_password ("1234");
 }, (req, res, next, ctx, username) => {
 	return res.expand_utf8 ("Hello %s!".printf (username));
 }));

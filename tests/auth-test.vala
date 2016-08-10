@@ -34,8 +34,8 @@ public int main (string[] args) {
 
 		assert (authentication.parse_authorization_header ("Basic dGVzdDoxMjM0", out authorization));
 
-		assert (authorization.challenge ("1234"));
-		assert (!authorization.challenge ("123"));
+		assert (authorization.challenge_with_password ("1234"));
+		assert (!authorization.challenge_with_password ("123"));
 	});
 
 	Test.add_func ("/auth/basic/charset", () => {
@@ -45,7 +45,7 @@ public int main (string[] args) {
 
 		Authorization authorization;
 		assert (authentication.parse_authorization_header ("Basic " + Base64.encode ({'t', 'e', 's', 't', ':', '1', '2', '3', '4'}), out authorization));
-		assert (authorization.challenge ("1234"));
+		assert (authorization.challenge_with_password ("1234"));
 	});
 
 	return Test.run ();

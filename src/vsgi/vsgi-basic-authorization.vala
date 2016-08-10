@@ -34,7 +34,7 @@ public class VSGI.BasicAuthorization : Authorization {
 		Object (username: username, password: password);
 	}
 
-	public override bool challenge (string password) {
+	public override bool challenge_with_password (string password) {
 		return str_const_equal (password, this.password);
 	}
 }

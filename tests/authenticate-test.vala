@@ -30,7 +30,7 @@ public int main (string[] args) {
 
 		try {
 			assert (authenticate (new VSGI.BasicAuthentication ("realm"), (authorization) => {
-				return authorization.challenge ("1234");
+				return authorization.challenge_with_password ("1234");
 			}) (req, res, () => {
 				return true;
 			}, new Context ()));
@@ -47,7 +47,7 @@ public int main (string[] args) {
 
 		try {
 			authenticate (new VSGI.BasicAuthentication ("realm"), (authorization) => {
-				return authorization.challenge ("1234");
+				return authorization.challenge_with_password ("1234");
 			}) (req, res, () => {
 				assert_not_reached ();
 			}, new Context ());
@@ -66,7 +66,7 @@ public int main (string[] args) {
 
 		try {
 			authenticate (new VSGI.BasicAuthentication ("realm"), (authorization) => {
-				return authorization.challenge ("1234");
+				return authorization.challenge_with_password ("1234");
 			}) (req, res, () => {
 				assert_not_reached ();
 			}, new Context ());
@@ -85,7 +85,7 @@ public int main (string[] args) {
 
 		try {
 			authenticate (new VSGI.BasicAuthentication ("realm"), (authorization) => {
-				return authorization.challenge ("1234");
+				return authorization.challenge_with_password ("1234");
 			}) (req, res, () => {
 				assert_not_reached ();
 			}, new Context ());
