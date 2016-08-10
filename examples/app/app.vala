@@ -324,4 +324,10 @@ app.get ("/negotiate-encoding", accept_encoding ("gzip, deflate", (req, res, nex
 	return res.expand_utf8 ("Hello world! (compressed with %s)".printf (encoding));
 }));
 
+app.get ("/auth", authenticate (new BasicAuthentication (""), (a) => {
+	return a.challenge ("1234");
+}, (req, res, next, ctx, username) => {
+	return res.expand_utf8 ("Hello %s!".printf (username));
+}));
+
 Server.new_with_application ("http", "org.valum.example.App", app.handle).run ({"app", "--all"});

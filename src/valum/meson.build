@@ -1,6 +1,7 @@
 valum_sources = [
     'valum.vala',
     'valum-asterisk-route.vala',
+    'valum-authenticate.vala',
     'valum-basepath.vala',
     'valum-basic.vala',
     'valum-cache-control.vala',

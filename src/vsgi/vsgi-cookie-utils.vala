@@ -71,19 +71,15 @@ namespace VSGI.CookieUtils {
 
 		var checksum = Hmac.compute_for_string (checksum_type,
 		                                        key,
-												Hmac.compute_for_string (checksum_type, key, cookie.@value.substring (checksum_length)) + cookie.name);
+		                                        Hmac.compute_for_string (checksum_type, key, cookie.@value.substring (checksum_length)) + cookie.name);
 
 		assert (checksum_length == checksum.length);
 
-		var match = 0;
-
-		// constant-time equal to avoid time-based attacks
-		for (int i = 0; i < checksum.length; i++)
-			match |= checksum[i] ^ cookie.@value[i];
-
-		if (match == 0)
+		if (str_const_equal (checksum, cookie.@value.substring (0, checksum_length))) {
 			@value = cookie.@value.substring (checksum_length);
-
-		return match == 0;
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

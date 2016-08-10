@@ -14,6 +14,8 @@ test('legacy', executable('legacy-test', legacy_test_sources,
                           dependencies: [glib, gobject, gio, soup, vsgi, valum]))
 
 # VSGI tests
+test('auth', executable('auth-test', 'auth-test.vala',
+                        dependencies: [glib, gobject, gio, soup, vsgi]))
 test('request', executable('request-test', 'request-test.vala',
                            dependencies: [glib, gobject, gio, soup, vsgi]))
 test('response', executable('response-test', 'response-test.vala',
@@ -28,6 +30,8 @@ if fcgi.found()
 endif
 
 # Valum tests
+test('authenticate', executable('authenticate-test', ['authenticate-test.vala'],
+                            dependencies: [glib, gobject, gio, soup, vsgi, valum]))
 test('basepath', executable('basepath-test', ['basepath-test.vala'],
                             dependencies: [glib, gobject, gio, soup, vsgi, valum]))
 test('content negotiation', executable('content-negotiation-test', ['content-negotiation-test.vala'],

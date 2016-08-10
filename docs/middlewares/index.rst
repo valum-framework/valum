@@ -6,6 +6,7 @@ from authentication to the delivery of a static resource.
 
 .. toctree::
 
+    authenticate
     basepath
     basic
     content-negotiation
