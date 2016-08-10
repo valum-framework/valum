@@ -48,7 +48,7 @@ The following dependencies are minimal to build the framework under Ubuntu
 +--------------+----------+
 | Package      | Version  |
 +==============+==========+
-| vala         | >=0.30   |
+| vala         | >=0.26   |
 +--------------+----------+
 | python       | >=3.4    |
 +--------------+----------+
