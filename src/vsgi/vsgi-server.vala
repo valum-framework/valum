@@ -243,12 +243,19 @@ namespace VSGI {
 		 */
 		public virtual Pid fork () {
 			int _pipe[2];
+#if VALA_0_30
 			try {
 				GLib.Unix.open_pipe (_pipe, Posix.FD_CLOEXEC);
 			} catch (Error err) {
 				critical ("%s (%s, %d)", err.message, err.domain.to_string (), err.code);
 				return -1;
 			}
+#else
+			if (Posix.pipe (_pipe) == -1) {
+				critical ("%s (%d)", Posix.strerror (Posix.errno), Posix.errno);
+				return -1;
+			}
+#endif
 			var pid = Posix.fork ();
 			if (pid == 0){
 				pipe    = new UnixInputStream (_pipe[0], true);
