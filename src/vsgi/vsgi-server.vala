@@ -209,7 +209,7 @@ namespace VSGI {
 			Unix.signal_add (ProcessSignal.TERM, () => {
 				release ();
 				stop ();
-				return Source.REMOVE;
+				return false;
 			}, Priority.LOW);
 
 			return 0;

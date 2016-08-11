@@ -96,7 +96,7 @@ namespace VSGI.CGI {
 					critical (err.message);
 				}
 
-				return Source.REMOVE;
+				return false;
 			});
 		}
 
