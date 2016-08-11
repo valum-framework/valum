@@ -305,6 +305,19 @@ namespace VSGI.HTTP {
 					var req = new Request (connection, msg, query);
 					var res = new Response (req, msg);
 
+					var auth = req.headers.get_one ("Authorization");
+					if (auth != null) {
+						if (str_case_equal (auth.slice (0, 6), "Basic ")) {
+							var auth_data = (string) Base64.decode (auth.substring (6));
+							if (auth_data.index_of_char (':') != -1) {
+								req.uri.set_user (auth_data.slice (0, auth.index_of_char (':')));
+							}
+						} else if (str_case_equal (auth.slice (0, 7), "Digest ")) {
+							var auth_data = header_parse_param_list (auth.substring (7));
+							req.uri.set_user (auth_data["username"]);
+						}
+					}
+
 					try {
 						dispatch (req, res);
 					} catch (GLib.Error err) {
