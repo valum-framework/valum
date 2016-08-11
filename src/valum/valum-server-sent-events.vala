@@ -89,6 +89,9 @@ namespace Valum.ServerSentEvents {
 			size_t bytes_size;
 			res.write_head (out bytes_size);
 
+			// flush headers right away
+			req.connection.output_stream.flush ();
+
 			// don't hang the user agent on a 'HEAD' request
 			if (req.method == Request.HEAD)
 				return res.end ();

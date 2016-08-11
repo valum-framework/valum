@@ -189,6 +189,10 @@ namespace VSGI {
 		 * Even if the write process fails or is cancelled, the head will be
 		 * marked as written since further calls cannot save the response.
 		 *
+		 * Note that even if the head has been written into the connection
+		 * stream, it has not been flushed. This is designed to avoid the number
+		 * of I/O operations necessary to send the response.
+		 *
 		 * @since 0.2
 		 *
 		 * @param bytes_written number of bytes written in the stream see
