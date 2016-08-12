@@ -142,7 +142,8 @@ namespace VSGI {
 			// per-worker logging
 			if (Posix.isatty (stderr.fileno ())) {
 				Log.set_handler (null, LogLevelFlags.LEVEL_MASK, (domain, level, message) => {
-					stderr.printf ("%s%s\t%s%s%s%s%s\n",
+					stderr.printf ("[%s]\t%s%s\t%s%s%s%s%s\n",
+					               new DateTime.now_utc ().format ("%FT%H:%M:%S.000Z"),
 					               "\x1b[33m",
 					               workers.length () > 0 ? "master:\t" : "worker %d:".printf (Posix.getpid ()),
 					               "\x1b[0m",
@@ -157,6 +158,10 @@ namespace VSGI {
 					               LogLevelFlags.LEVEL_DEBUG    in level ? "\x1b[36m" : "",
 					               message.replace ("\n", "\n\t\t"),
 					               "\x1b[0m");
+				});
+			} else {
+				Log.set_handler (null, LogLevelFlags.LEVEL_MASK, (domain, level, message) => {
+					Log.default_handler (domain, level, "[%s] %s".printf (new DateTime.now_utc ().format ("%FT%H:%M:%S.000Z"), message));
 				});
 			}
 
