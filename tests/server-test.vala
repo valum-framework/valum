@@ -36,11 +36,6 @@ public int main (string[] args) {
 		assert ("VSGISCGIServer" == server.get_type ().name ());
 	});
 
-	Test.add_func ("/server/new/fastcgi", () => {
-		var server = Server.@new ("fastcgi");
-		assert ("VSGIFastCGIServer" == server.get_type ().name ());
-	});
-
 	Test.add_func ("/server/new/mock", () => {
 		var server = Server.@new ("mock");
 		assert ("VSGIMockServer" == server.get_type ().name ());
