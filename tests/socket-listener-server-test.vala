@@ -19,11 +19,12 @@ public int main (string[] args) {
 
 	Test.add_func ("/socket_listener_server/port", () => {
 		var server = new MockedSocketListenerServer ();
+		var port   = Random.int_range (1024, 32768);
 		server.set_application_callback (() => { return true; });
 
 		var options = new VariantBuilder (new VariantType ("a{sv}"));
 
-		options.add ("{sv}", "port", new Variant.@int32 (3003));
+		options.add ("{sv}", "port", new Variant.@int32 (port));
 
 		try {
 			server.listen (options.end ());
@@ -32,8 +33,8 @@ public int main (string[] args) {
 			assert_not_reached ();
 		}
 
-		assert ("mock://0.0.0.0:3003/" == server.uris.data.to_string (false));
-		assert ("mock://[::]:3003/" == server.uris.next.data.to_string (false));
+		assert ("mock://0.0.0.0:%d/".printf (port) == server.uris.data.to_string (false));
+		assert ("mock://[::]:%d/".printf (port) == server.uris.next.data.to_string (false));
 	});
 
 	Test.add_func ("/socket_listener_server/any_port", () => {

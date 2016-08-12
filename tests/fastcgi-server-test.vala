@@ -22,10 +22,12 @@ public int main (string[] args) {
 
 	Test.add_func ("/fastcgi/server/port", () => {
 		var server = Server.@new ("fastcgi");
+		var port   = Random.int_range (1024, 32768);
 
 		var options = new VariantBuilder (new VariantType ("a{sv}"));
 
-		options.add ("{sv}", "port", new Variant.@int32 (3003));
+
+		options.add ("{sv}", "port", new Variant.@int32 (port));
 
 		try {
 			server.listen (options.end ());
@@ -34,7 +36,7 @@ public int main (string[] args) {
 		}
 
 		assert (1 == server.uris.length ());
-		assert ("fcgi://0.0.0.0:3003/" == server.uris.data.to_string (false));
+		assert ("fcgi://0.0.0.0:%d/".printf (port) == server.uris.data.to_string (false));
 	});
 
 	Test.add_func ("/fastcgi/server/socket", () => {
