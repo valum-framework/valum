@@ -43,9 +43,9 @@ namespace Valum.ServerSentEvents {
 	 * @throws Error errors are handled as warnings to avoid breaking the
 	 *               `text/event-stream` content
 	 */
-	public delegate void SendEventCallback (string? event,
-	                                        string data,
-	                                        string? id = null,
+	public delegate void SendEventCallback (string?   event,
+	                                        string    data,
+	                                        string?   id    = null,
 	                                        TimeSpan? retry = null) throws Error;
 
 	/**
@@ -61,9 +61,9 @@ namespace Valum.ServerSentEvents {
 	 *
 	 * @throws GLib.Error thrown errors are suppressed with {@link GLib.warning}
 	 */
-	public delegate void EventStreamCallback (Request request,
+	public delegate void EventStreamCallback (Request                 request,
 	                                          owned SendEventCallback send_event,
-	                                          Context context) throws Error;
+	                                          Context                 context) throws Error;
 
 	/**
 	 * Middleware that create a context for sending Server-Sent Events.
@@ -98,7 +98,7 @@ namespace Valum.ServerSentEvents {
 
 			Timeout.add_seconds (15, () => {
 				try {
-					return res.ref_count > 1 && res.body.write_all (":\n".data, null) && res.body.flush ();
+					return res.ref_count > 1 && res.append_utf8 (":\n");
 				} catch (Error err) {
 					critical ("%s (%s, %d)", err.message, err.domain.to_string (), err.code);
 					return false;
