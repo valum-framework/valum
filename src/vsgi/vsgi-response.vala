@@ -475,6 +475,34 @@ namespace VSGI {
 		}
 
 		/**
+		 * Expand the content of a file into the response body.
+		 *
+		 * @since 0.3
+		 */
+		public bool expand_file (File file, Cancellable? cancellable = null) throws Error {
+			_mark_content_length_as_fixed (file.query_info (FileAttribute.STANDARD_SIZE,
+			                                                FileQueryInfoFlags.NONE,
+			                                                cancellable).get_size ());
+			return body.splice (file.read (), OutputStreamSpliceFlags.NONE, cancellable) != -1;
+		}
+
+		/**
+		 * @since 0.3
+		 */
+		public async bool expand_file_async (File         file,
+		                                     int          priority    = GLib.Priority.DEFAULT,
+		                                     Cancellable? cancellable = null) throws Error {
+			_mark_content_length_as_fixed ((yield file.query_info_async (FileAttribute.STANDARD_SIZE,
+			                                                             FileQueryInfoFlags.NONE,
+			                                                             priority,
+			                                                             cancellable)).get_size ());
+			return (yield body.splice_async (yield file.read_async (),
+			                                 OutputStreamSpliceFlags.NONE,
+			                                 priority,
+			                                 cancellable)) != -1;
+		}
+
+		/**
 		 * End the response properly, writting the head if missing.
 		 *
 		 * @since 0.3
