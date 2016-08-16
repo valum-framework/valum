@@ -38,5 +38,7 @@ test('content negotiation', executable('content-negotiation-test', ['content-neg
                                        dependencies: [glib, gobject, gio, soup, vsgi, valum]))
 test('context', executable('context-test', ['context-test.vala'],
                                        dependencies: [glib, gobject, gio, soup, vsgi, valum]))
+test('safely', executable('safely-test', 'safely-test.vala',
+                          dependencies: [glib, gobject, gio, soup, vsgi, valum]))
 test('status', executable('status-test', ['status-test.vala'],
                                        dependencies: [glib, gobject, gio, soup, vsgi, valum]))
