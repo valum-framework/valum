@@ -8,6 +8,7 @@ valum_sources = [
     'valum-context.vala',
     'valum-decode.vala',
     'valum-forward.vala',
+    'valum-forward-with.vala',
     'valum-matcher-route.vala',
     'valum-method.vala',
     'valum-content-negotiation.vala',
