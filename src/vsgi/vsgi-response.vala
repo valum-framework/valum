@@ -483,7 +483,7 @@ namespace VSGI {
 			_mark_content_length_as_fixed (file.query_info (FileAttribute.STANDARD_SIZE,
 			                                                FileQueryInfoFlags.NONE,
 			                                                cancellable).get_size ());
-			return body.splice (file.read (), OutputStreamSpliceFlags.NONE, cancellable) != -1;
+			return body.splice (file.read (), OutputStreamSpliceFlags.CLOSE_TARGET, cancellable) != -1;
 		}
 
 		/**
@@ -497,7 +497,7 @@ namespace VSGI {
 			                                                             priority,
 			                                                             cancellable)).get_size ());
 			return (yield body.splice_async (yield file.read_async (),
-			                                 OutputStreamSpliceFlags.NONE,
+			                                 OutputStreamSpliceFlags.CLOSE_TARGET,
 			                                 priority,
 			                                 cancellable)) != -1;
 		}
