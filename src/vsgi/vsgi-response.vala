@@ -475,6 +475,22 @@ namespace VSGI {
 		}
 
 		/**
+		 * @since 0.3
+		 */
+		public bool expand_stream (InputStream @in, Cancellable? cancellable = null) throws Error {
+			return body.splice (@in, OutputStreamSpliceFlags.CLOSE_TARGET, cancellable) != -1;
+		}
+
+		/**
+		 * @since 0.3
+		 */
+		public async bool expand_stream_async (InputStream  @in,
+		                                       int          priority    = GLib.Priority.DEFAULT,
+		                                       Cancellable? cancellable = null) throws Error {
+			return (yield body.splice_async (@in, OutputStreamSpliceFlags.CLOSE_TARGET, priority, cancellable)) != -1;
+		}
+
+		/**
 		 * Expand the content of a file into the response body.
 		 *
 		 * @since 0.3
@@ -483,7 +499,7 @@ namespace VSGI {
 			_mark_content_length_as_fixed (file.query_info (FileAttribute.STANDARD_SIZE,
 			                                                FileQueryInfoFlags.NONE,
 			                                                cancellable).get_size ());
-			return body.splice (file.read (), OutputStreamSpliceFlags.CLOSE_TARGET, cancellable) != -1;
+			return expand_stream (file.read (), cancellable);
 		}
 
 		/**
@@ -496,10 +512,7 @@ namespace VSGI {
 			                                                             FileQueryInfoFlags.NONE,
 			                                                             priority,
 			                                                             cancellable)).get_size ());
-			return (yield body.splice_async (yield file.read_async (),
-			                                 OutputStreamSpliceFlags.CLOSE_TARGET,
-			                                 priority,
-			                                 cancellable)) != -1;
+			return yield expand_stream_async (yield file.read_async (), priority, cancellable);
 		}
 
 		/**
