@@ -37,23 +37,59 @@ namespace Valum {
 		TRACE,
 		CONNECT,
 		PATCH,
+
 		/**
+		 * HTTP methods considered safe according to RFC 7231.
 		 *
+		 * @since 0.3
+		 */
+		SAFE = OPTIONS | HEAD | ONLY_GET | TRACE,
+
+		/**
+		 * HTTP methods considered idempotent according to RFC 7231.
+		 *
+		 * @since 0.3
+		 */
+		ITEMPOTENT = SAFE | PUT | DELETE,
+
+		/**
+		 * HTTP methods considered cacheable according to RFC 7231.
+		 *
+		 * POST is considered cacheable because it completely replaces the
+		 * resources. The second call does not change the state of the resource.
+		 *
+		 * @since 0.3
+		 */
+		CACHEABLE = GET | HEAD | POST,
+
+		/**
+		 * Mask for all standard HTTP methods.
+		 *
+		 * @since 0.3
 		 */
 		ALL = OPTIONS | GET | HEAD | PUT | POST | DELETE | TRACE | CONNECT | PATCH,
+
 		/**
 		 * If this is used, the {@link Valum.Route} object must perform its own
 		 * method matching.
+		 *
+		 * @since 0.3
 		 */
 		OTHER,
+
 		/**
+		 * Mask for all methods, including non-standard ones.
 		 *
+		 * @since 0.3
 		 */
 		ANY = ALL | OTHER,
 
 		/**
 		 * Indicate that the method literally provided by the {@link Valum.Route}
 		 * object which declared it.
+		 *
+		 * This has an impact on introspected routes to build the 'Allow'
+		 * header.
 		 */
 		PROVIDED,
 

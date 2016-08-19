@@ -31,15 +31,24 @@ Method
 The ``Method`` flag provide a list of HTTP methods and some useful masks used
 into route definitions.
 
-==================== =================================================
-Flag                  Description
-==================== =================================================
+====================  =======================================================
+Flag                   Description
+====================  =======================================================
+``Method.SAFE``       safe methods
+``Method.IDEMPOTENT`` idempotent methods (e.g. ``SAFE`` and ``PUT``)
+``Method.CACHEABLE``  cacheable methods (e.g. ``HEAD``, ``GET`` and ``POST``)
 ``Method.ALL``        all standard HTTP methods
 ``Method.OTHER``      any non-standard HTTP methods
 ``Method.ANY``        anything, including non-standard methods
 ``Method.PROVIDED``   indicate that the route provide its methods
 ``Method.META``       mask for all meta flags like ``Method.PROVIDED``
-==================== =================================================
+====================  =======================================================
+
+.. note::
+
+    Safe, idempotent and cacheable methods are defined in section 4.2 of `RFC 7231`_.
+
+.. _RFC 7231: https://tools.ietf.org/html/rfc7231#section-4.2
 
 Using a flag makes it really convenient to capture multiple methods with the
 ``|`` binary operator.
@@ -69,7 +78,17 @@ To provide only the ``GET`` part, use ``Method.ONLY_GET``.
 
 ::
 
-    app.rule (Method.ONLY_GET, () => {
+    app.rule (Method.ONLY_GET, "/", () => {
+        res.headers.set_content_type ("text/plain", null);
+        return res.expand_utf8 ("Hello world!");
+    });
+
+Per definition, ``POST`` is considered cacheable, but if it's not desirable, it
+may be removed from the mask with the unary ``~`` operator.
+
+::
+
+    app.rule (Method.CACHEABLE & ~Method.POST, "/", () => {
         res.headers.set_content_type ("text/plain", null);
         return res.expand_utf8 ("Hello world!");
     });
