@@ -115,11 +115,11 @@ namespace VSGI.HTTP {
 
 		public override uint status {
 			get { return this.message.status_code; }
-			set { this.message.set_status (value); }
+			set { this.message.status_code = value; }
 		}
 
 		public override string? reason_phrase {
-			owned get { return this.message.reason_phrase; }
+			owned get { return this.message.reason_phrase == "Unknown Error" ? null : this.message.reason_phrase; }
 			set { this.message.reason_phrase = value ?? Status.get_phrase (this.message.status_code); }
 		}
 
