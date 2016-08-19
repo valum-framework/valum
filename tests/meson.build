@@ -35,6 +35,8 @@ test('authenticate', executable('authenticate-test', ['authenticate-test.vala'],
                             dependencies: [glib, gobject, gio, soup, vsgi, valum]))
 test('basepath', executable('basepath-test', ['basepath-test.vala'],
                             dependencies: [glib, gobject, gio, soup, vsgi, valum]))
+test('basic', executable('basic-test', 'basic-test.vala',
+                            dependencies: [glib, gobject, gio, soup, vsgi, valum]))
 test('content negotiation', executable('content-negotiation-test', ['content-negotiation-test.vala'],
                                        dependencies: [glib, gobject, gio, soup, vsgi, valum]))
 test('context', executable('context-test', ['context-test.vala'],

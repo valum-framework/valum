@@ -49,6 +49,53 @@ namespace Valum {
 				res.status = is_status (err) ? err.code : 500;
 
 				/*
+				 * Set the reason phrase for unsupported status.
+				 */
+				if (res.reason_phrase == null) {
+					switch (res.status) {
+						case 208:
+							res.reason_phrase = "Already Reported";
+							break;
+						case 226:
+							res.reason_phrase = "IM Used";
+							break;
+						case 308:
+							res.reason_phrase = "Permanent Redirect";
+							break;
+						case 418:
+							res.reason_phrase = "I'm a teapot";
+							break;
+						case 419:
+							res.reason_phrase = "Authentication Timeout";
+							break;
+						case 421:
+							res.reason_phrase = "Misdirected Request";
+							break;
+						case 426:
+							res.reason_phrase = "Upgrade Required";
+							break;
+						case 428:
+							res.reason_phrase = "Precondition Required";
+							break;
+						case 429:
+							res.reason_phrase = "Too Many Requests";
+							break;
+						case 431:
+							res.reason_phrase = "Request Header Fields Too Large";
+							break;
+						case 506:
+							res.reason_phrase = "Variants Also Negotiate";
+							break;
+						case 508:
+							res.reason_phrase = "Loop Detected";
+							break;
+						case 511:
+							res.reason_phrase = "Network Authentication Required";
+							break;
+					}
+				}
+
+				/*
 				 * The error message is used as a header if the HTTP/1.1
 				 * specification indicate that it MUST be provided.
 				 *
