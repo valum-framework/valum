@@ -44,10 +44,12 @@ public int main (string[] args) {
 	Test.add_func ("/server/fork", () => {
 		var server = Server.@new ("mock");
 		assert (null == server.pipe);
-		var pid = server.fork ();
-
-		assert (pid != -1);
-
+		Pid pid;
+		try {
+			pid = server.fork ();
+		} catch (Error err) {
+			assert_not_reached ();
+		}
 		if (pid == 0) {
 			// worker
 			assert (0 == server.workers.length ());

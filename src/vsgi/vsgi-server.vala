@@ -173,28 +173,45 @@ namespace VSGI {
 			}
 
 			if (options.lookup_value ("forks", VariantType.INT32) != null) {
-				var remaining = options.lookup_value ("forks", VariantType.INT32).get_int32 ();
-				for (var i = 0; i < remaining; i++) {
-					var pid = fork ();
+				var forks = options.lookup_value ("forks", VariantType.INT32).get_int32 ();
+				try {
+					var _workers = new SList<Worker> ();
 
-					// worker
-					if (pid == 0) {
-						break;
+					for (var i = 0; i < forks; i++) {
+						int _pipe[2];
+#if VALA_0_30
+						GLib.Unix.open_pipe (_pipe, Posix.FD_CLOEXEC);
+#else
+						if (Posix.pipe (_pipe) == -1) {
+							throw new IOError.from_errno (errno);
+						}
+#endif
+
+						var pid = fork ();
+
+						// worker
+						if (pid == 0) {
+							pipe = new UnixInputStream (_pipe[0], true);
+							break;
+						}
+
+						// parent
+						else {
+							// monitor child process
+							_workers.append (new Worker (pid, new UnixOutputStream (_pipe[1], true)));
+						}
 					}
 
-					// parent
-					else if (pid > 0) {
-						// monitor child process
-						ChildWatch.add (pid, (pid, status) => {
+					workers = (owned) _workers;
+
+					foreach (var worker in workers) {
+						ChildWatch.add (worker.pid, (pid, status) => {
 							warning ("worker %d exited with status '%d'", pid, status);
 						});
 					}
-
-					// fork failed
-					else {
-						critical ("could not fork worker: %s (errno %u)", strerror (errno), errno);
-						return 1;
-					}
+				} catch (Error err) {
+					critical ("%s (%s, %d)", err.message, err.domain.to_string (), err.code);
+					return 1;
 				}
 			}
 
@@ -245,28 +262,16 @@ namespace VSGI {
 		 * To disable forking, simply override this and return '0'.
 		 *
 		 * @since 0.3
+		 *
+		 * @throws SpawnError.FORK if the {@link Posix.fork} call fails
+		 *
+		 * @return the forked process pid if this is the parent process,
+		 *         otherwise '0'
 		 */
-		public virtual Pid fork () {
-			int _pipe[2];
-#if VALA_0_30
-			try {
-				GLib.Unix.open_pipe (_pipe, Posix.FD_CLOEXEC);
-			} catch (Error err) {
-				critical ("%s (%s, %d)", err.message, err.domain.to_string (), err.code);
-				return -1;
-			}
-#else
-			if (Posix.pipe (_pipe) == -1) {
-				critical ("%s (%d)", Posix.strerror (Posix.errno), Posix.errno);
-				return -1;
-			}
-#endif
+		public virtual Pid fork () throws SpawnError {
 			var pid = Posix.fork ();
-			if (pid == 0){
-				pipe    = new UnixInputStream (_pipe[0], true);
-				workers = new SList<Worker> ();
-			} else if (pid > 0) {
-				workers.append (new Worker (pid, new UnixOutputStream (_pipe[1], true)));
+			if (pid == -1) {
+				throw new SpawnError.FORK (strerror (errno));
 			}
 			return pid;
 		}
