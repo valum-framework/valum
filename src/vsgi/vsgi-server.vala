@@ -182,8 +182,10 @@ namespace VSGI {
 #if VALA_0_30
 						GLib.Unix.open_pipe (_pipe, Posix.FD_CLOEXEC);
 #else
-						if (Posix.pipe (_pipe) == -1) {
-							throw new IOError.from_errno (errno);
+						if (Posix.pipe (_pipe) == -1                          ||
+						    Posix.fcntl (_pipe[0], Posix.FD_CLOEXEC, 1) == -1 ||
+						    Posix.fcntl (_pipe[1], Posix.FD_CLOEXEC, 1) == -1) {
+							throw new IOError.FAILED (strerror (errno));
 						}
 #endif
 
@@ -268,7 +270,7 @@ namespace VSGI {
 		 * @return the forked process pid if this is the parent process,
 		 *         otherwise '0'
 		 */
-		public virtual Pid fork () throws SpawnError {
+		public virtual Pid fork () throws Error {
 			var pid = Posix.fork ();
 			if (pid == -1) {
 				throw new SpawnError.FORK (strerror (errno));
