@@ -1015,13 +1015,39 @@ public int main (string[] args) {
 		var request = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var response = new Response (request, Soup.Status.NOT_FOUND);
 
+		assert (router.handle (request, response));
+	});
+
+	Test.add_func ("/router/next_in_thread", () => {
+		var router = new Router ();
+		Thread<bool>? thread = null;
+
+		router.get ("/", (req, res, next) => {
+			thread = new Thread<bool> (null, () => {
+				try {
+					return next ();
+				} catch (Error err) {
+					assert_not_reached ();
+				}
+			});
+			return true;
+		});
+
+		router.get ("/", (req, res) => {
+			return true;
+		});
+
+		var request = new Request (null, "GET", new Soup.URI ("http://localhost/"));
+		var response = new Response (request, Soup.Status.NOT_FOUND);
+
 		try {
-			router.handle (request, response);
+			assert (router.handle (request, response));
 		} catch (Error err) {
 			assert_not_reached ();
 		}
 
-		assert (418 == response.status);
+		assert (thread != null);
+		assert (thread.join ());
 	});
 
 	Test.add_func ("/router/next/not_found", () => {

@@ -28,7 +28,7 @@ public class AdminRouter : Router {
 	/**
 	 * Verify the user credentials and perform an authentication.
 	 */
-	public bool authenticate (Request req, Response res, NextCallback next) throws Error {
+	public bool authenticate (Request req, Response res, owned NextCallback next) throws Error {
 		string @value;
 		req.lookup_signed_cookie ("session", ChecksumType.SHA256, "impossible to break".data, out @value);
 		if (@value == "admin") {
@@ -65,7 +65,7 @@ public class AdminRouter : Router {
 	/**
 	 * Restricted content.
 	 */
-	public bool view (Request req, Response res, NextCallback next, Context ctx) throws Error {
+	public bool view (Request req, Response res, owned NextCallback next, Context ctx) throws Error {
 		res.headers.set_content_type ("text/plain", null);
 		return res.expand_utf8 ("Hello admin!");
 	}

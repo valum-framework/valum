@@ -346,7 +346,7 @@ namespace Valum {
 		private bool perform_routing (SequenceIter<Route> routes,
 		                              Request req,
 		                              Response res,
-		                              NextCallback next,
+		                              owned NextCallback next,
 		                              Context context) throws Informational,
 		                                                      Success,
 		                                                      Redirection,
@@ -362,7 +362,7 @@ namespace Valum {
 						if (node.next ().is_end ()) {
 							return next ();
 						} else {
-							return perform_routing (node.next (), req, res, next, local_context);
+							return perform_routing (node.next (), req, res, (owned) next, local_context);
 						}
 					}, local_context);
 				}
