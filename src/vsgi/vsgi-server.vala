@@ -91,24 +91,6 @@ namespace VSGI {
 		 */
 		public abstract SList<Soup.URI> uris { get; }
 
-		/**
-		 * Consumable part of the pipe if this is a worker.
-		 *
-		 * @since 0.3
-		 */
-		public InputStream? pipe { get; private set; default = null; }
-
-		/**
-		 * List of worker process identifiers issued when {@link VSGI.Server.fork}
-		 * is invoked.
-		 *
-		 * The list is only available to the master process and will be empty on
-		 * the workers (unless they fork as well).
-		 *
-		 * @since 0.3
-		 */
-		public SList<Worker> workers { get; protected owned set; default = new SList<Worker> (); }
-
 		private ApplicationCallback _application;
 
 		/**
@@ -145,7 +127,7 @@ namespace VSGI {
 					stderr.printf ("[%s] %s%s:%s %s%s%s%s\n",
 					               new DateTime.now_utc ().format ("%FT%H:%M:%S.000Z"),
 					               "\x1b[33m",
-					               workers.length () > 0 ? "master" : "worker %d".printf (Posix.getpid ()),
+					               "worker %d:".printf (Posix.getpid ()),
 					               "\x1b[0m",
 					               domain == null ? "" : "%s: ".printf (domain),
 					               LogLevelFlags.LEVEL_ERROR    in level ? "\x1b[31m" :
@@ -175,41 +157,21 @@ namespace VSGI {
 			if (options.lookup_value ("forks", VariantType.INT32) != null) {
 				var forks = options.lookup_value ("forks", VariantType.INT32).get_int32 ();
 				try {
-					var _workers = new SList<Worker> ();
-
 					for (var i = 0; i < forks; i++) {
-						int _pipe[2];
-#if VALA_0_30
-						GLib.Unix.open_pipe (_pipe, Posix.FD_CLOEXEC);
-#else
-						if (Posix.pipe (_pipe) == -1                          ||
-						    Posix.fcntl (_pipe[0], Posix.FD_CLOEXEC, 1) == -1 ||
-						    Posix.fcntl (_pipe[1], Posix.FD_CLOEXEC, 1) == -1) {
-							throw new IOError.FAILED (strerror (errno));
-						}
-#endif
-
 						var pid = fork ();
 
 						// worker
 						if (pid == 0) {
-							pipe = new UnixInputStream (_pipe[0], true);
 							break;
 						}
 
 						// parent
 						else {
 							// monitor child process
-							_workers.append (new Worker (pid, new UnixOutputStream (_pipe[1], true)));
+							ChildWatch.add (pid, (pid, status) => {
+								warning ("worker %d exited with status '%d'", pid, status);
+							});
 						}
-					}
-
-					workers = (owned) _workers;
-
-					foreach (var worker in workers) {
-						ChildWatch.add (worker.pid, (pid, status) => {
-							warning ("worker %d exited with status '%d'", pid, status);
-						});
 					}
 				} catch (Error err) {
 					critical ("%s (%s, %d)", err.message, err.domain.to_string (), err.code);
@@ -255,19 +217,18 @@ namespace VSGI {
 		/**
 		 * Fork the execution.
 		 *
-		 * This is called after {@link VSGI.Server.listen} such that workers can
-		 * share listening interfaces and descriptors.
+		 * This is typically called after {@link VSGI.Server.listen} such that
+		 * workers can share listening interfaces and descriptors.
 		 *
-		 * The default implementation invoke {@link Posix.fork}, register the
-		 * worker pid to the master's list and cleanup the worker's list.
-		 *
-		 * To disable forking, simply override this and return '0'.
+		 * The default implementation wraps {@link Posix.fork} and check its
+		 * return value. To disable forking, simply override this and return
+		 * '0'.
 		 *
 		 * @since 0.3
 		 *
 		 * @throws SpawnError.FORK if the {@link Posix.fork} call fails
 		 *
-		 * @return the forked process pid if this is the parent process,
+		 * @return the process pid if this is the parent process,
 		 *         otherwise '0'
 		 */
 		public virtual Pid fork () throws Error {

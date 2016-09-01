@@ -43,37 +43,11 @@ public int main (string[] args) {
 
 	Test.add_func ("/server/fork", () => {
 		var server = Server.@new ("mock");
-		assert (null == server.pipe);
 		Pid pid;
 		try {
 			pid = server.fork ();
 		} catch (Error err) {
 			assert_not_reached ();
-		}
-		if (pid == 0) {
-			// worker
-			assert (0 == server.workers.length ());
-			uint8 buffer[12];
-			size_t bytes_read;
-			try {
-				server.pipe.read_all (buffer, out bytes_read);
-			} catch (IOError err) {
-				assert_not_reached ();
-			}
-			assert (12 == bytes_read);
-			assert ("Hello world!" == (string) buffer);
-			Process.abort ();
-		} else {
-			// master
-			assert (1 == server.workers.length ());
-			assert (pid == server.workers.data.pid);
-			size_t bytes_written;
-			try {
-				server.workers.data.pipe.write_all ("Hello world!".data, out bytes_written);
-			} catch (IOError err) {
-				assert_not_reached ();
-			}
-			assert (12 == bytes_written);
 		}
 	});
 

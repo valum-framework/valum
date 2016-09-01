@@ -203,37 +203,6 @@ It's also possible to fork manually via the ``fork`` call.
 It is recommended to fork only through that call since implementations such as
 :doc:`cgi` are not guaranteed to support it.
 
-Workers
-~~~~~~~
-
-.. versionadded:: 0.3
-
-Once forked, the ``workers`` property will be populated on the master with
-a list of worker objects.
-
-The object combine a process identifier and a writable pipe to communicate with
-the worker. There is no specific protocol to send messages, but using
-serialized `GLib.Variant`_ is recommended. This is described in-depth in
-`GVariant Streaming`_ from the GNOME Wiki.
-
-.. _GLib.Variant: http://valadoc.org/#!api=glib-2.0/GLib.Variant
-.. _GVariant Streaming: https://wiki.gnome.org/Projects/GLib/GVariant/Streaming
-
-::
-
-    if (server.fork () == 0) {
-        uint8 buffer[12];
-        size_t bytes_read;
-        server.pipe.read_all (buffer, out bytes_read);
-        assert ("Hello world!" == (string) buffer);
-    } else {
-        foreach (var worker in server.workers) {
-            message ("%d", worker.pid);
-            size_t bytes_written;
-            worker.pipe.write_all ("Hello world!".data, out bytes_written);
-        }
-    }
-
 Listen on distinct interfaces
 -----------------------------
 
