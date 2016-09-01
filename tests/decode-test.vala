@@ -116,7 +116,7 @@ public void test_decode_unknown_encoding () {
 			assert_not_reached ();
 		}, new Context ());
 		assert_not_reached ();
-	} catch (ServerError.NOT_IMPLEMENTED err) {
+	} catch (ClientError.UNSUPPORTED_MEDIA_TYPE err) {
 		assert ("br" == req.headers.get_list ("Content-Encoding"));
 	} catch (Error err) {
 		assert_not_reached ();
