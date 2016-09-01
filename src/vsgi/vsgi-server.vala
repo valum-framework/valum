@@ -127,7 +127,7 @@ namespace VSGI {
 					stderr.printf ("[%s] %s%s:%s %s%s%s%s\n",
 					               new DateTime.now_utc ().format ("%FT%H:%M:%S.000Z"),
 					               "\x1b[33m",
-					               "worker %d:".printf (Posix.getpid ()),
+					               "worker %d".printf (Posix.getpid ()),
 					               "\x1b[0m",
 					               domain == null ? "" : "%s: ".printf (domain),
 					               LogLevelFlags.LEVEL_ERROR    in level ? "\x1b[31m" :
