@@ -49,6 +49,7 @@ public abstract class VSGI.SocketListenerServer : Server {
 			{"port",            'p', 0, OptionArg.INT,      null, "Listen to the provided TCP port"},
 			{"file-descriptor", 'f', 0, OptionArg.INT,      null, "Listen to the provided file descriptor",       "0"},
 			{"backlog",         'b', 0, OptionArg.INT,      null, "Listen queue depth used in the listen() call", "10"},
+			{"uri",             'u', 0, OptionArg.STRING,   null, "Listen to the specified URI"},
 			{null}
 		};
 
@@ -72,6 +73,21 @@ public abstract class VSGI.SocketListenerServer : Server {
 			var file_descriptor = options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 ();
 			socket_service.add_socket (new Socket.from_fd (file_descriptor), null);
 			_uris.append (new Soup.URI ("%s+fd://%u/".printf (protocol, file_descriptor)));
+		} else if (options.lookup_value ("uri", VariantType.STRING) != null) {
+			var uri = new Soup.URI (options.lookup_value ("uri", VariantType.STRING).get_string ());
+			if (uri == null) {
+				throw new Soup.RequestError.BAD_URI ("Cannot parse URI '%s'.",
+				                                     options.lookup_value ("uri", VariantType.STRING).get_string ());
+			}
+			socket_service.add_address (SocketUtils.socket_address_from_uri (uri),
+			                            SocketType.STREAM,
+			                            SocketProtocol.DEFAULT,
+			                            null,
+			                            null);
+			if (!(protocol in uri.scheme.split ("+"))) {
+				uri.set_scheme ("%s+%s".printf (protocol, uri.scheme));
+			}
+			_uris.append (uri);
 		} else {
 			socket_service.add_socket (new Socket.from_fd (0), null);
 			_uris.append (new Soup.URI ("%s+fd://0/".printf (protocol)));

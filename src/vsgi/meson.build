@@ -18,6 +18,7 @@ vsgi_sources = [
     'vsgi-server.vala',
     'vsgi-socket-listener-server.vala',
     'vsgi-socket-listener-server.vala',
+    'vsgi-socket-utils.vala',
     'vsgi-tee-output-stream.vala',
     'vsgi-worker.vala']
 vsgi_lib = library('vsgi-' + api_version, vsgi_sources,

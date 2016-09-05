@@ -180,7 +180,7 @@ namespace VSGI {
 			}
 
 			foreach (var uri in uris) {
-				message ("listening on '%s'", uri.to_string (false)[0:-uri.path.length]);
+				message ("listening on '%s'", uri.to_string (false));
 			}
 
 			// keep the process (and workers) alive

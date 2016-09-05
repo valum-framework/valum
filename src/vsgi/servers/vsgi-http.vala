@@ -249,6 +249,8 @@ namespace VSGI.HTTP {
 				// fd options
 				{"file-descriptor", 'f', 0, OptionArg.INT, null, "Listen to the provided file descriptor"},
 
+				{"uri",             'u', 0, OptionArg.STRING, null, "Listen to the provided URI"},
+
 				// https options
 				{"https",         0, 0, OptionArg.NONE,     null, "Listen for HTTPS connections rather than plain HTTP"},
 #endif
@@ -350,6 +352,13 @@ namespace VSGI.HTTP {
 			if (options.lookup_value ("file-descriptor", VariantType.INT32) != null) {
 				this.server.listen_fd (options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 (),
 				                       listen_options);
+			} else if (options.lookup_value ("uri", VariantType.STRING) != null) {
+				var uri = new Soup.URI (options.lookup_value ("uri", VariantType.STRING).get_string ());
+				if (uri == null) {
+					throw new Soup.RequestError.BAD_URI ("Cannot parse URI '%s'.",
+					                                     options.lookup_value ("uri", VariantType.STRING).get_string ());
+				}
+				server.listen (SocketUtils.socket_address_from_uri (uri), listen_options);
 			} else if (options.lookup_value ("all", VariantType.BOOLEAN) != null) {
 				this.server.listen_all (port.get_int32 (), listen_options);
 			} else {
