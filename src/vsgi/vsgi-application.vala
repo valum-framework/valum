@@ -41,12 +41,19 @@ public class VSGI.Application : GLib.Application {
 #if GIO_2_40
 		const OptionEntry[] entries = {
 			// general options
-			{"forks", 0, 0, OptionArg.INT, null, "Number of fork to create", "0"},
+			{"forks",           0,   0, OptionArg.INT,            null, "Number of forks to create",            "0"},
+			// port
+			{"port",            'p', 0, OptionArg.STRING_ARRAY,   null, "Listen on each ports, '0' for random", "[]"},
+			{"any",             'a', 0, OptionArg.NONE,           null, "Listen on any address instead of only from the loopback interface"},
+			{"ipv4-only",       '4', 0, OptionArg.NONE,           null, "Listen only to IPv4 interfaces"},
+			{"ipv6-only",       '6', 0, OptionArg.NONE,           null, "Listen only to IPv6 interfaces"},
+			// socket
+			{"socket",          's', 0, OptionArg.FILENAME_ARRAY, null, "Listen on each UNIX socket paths",     "[]"},
+			// file descriptor
+			{"file-descriptor", 'f', 0, OptionArg.STRING_ARRAY,   null, "Listen on each file descriptors",      "[]"},
 			{null}
 		};
 		add_main_option_entries (entries);
-		if (server.get_listen_options ().length > 0)
-			add_main_option_entries (server.get_listen_options ());
 #endif
 	}
 
@@ -84,7 +91,76 @@ public class VSGI.Application : GLib.Application {
 		}
 
 		try {
-			server.listen (options);
+			var ports     = options.lookup_value ("port",            VariantType.STRING_ARRAY);
+			var any       = options.lookup_value ("any",             VariantType.BOOLEAN);
+			var ipv4_only = options.lookup_value ("ipv4-only",       VariantType.BOOLEAN);
+			var ipv6_only = options.lookup_value ("ipv6-only",       VariantType.BOOLEAN);
+			var sockets   = options.lookup_value ("socket",          VariantType.BYTESTRING_ARRAY);
+			var fds       = options.lookup_value ("file-descriptor", VariantType.STRING_ARRAY);
+
+			if (ports != null) {
+				foreach (var _port in ports) {
+					uint64 port;
+					if (!uint64.try_parse (_port.get_string (), out port)) {
+						critical ("Malformed port number '%s'.", _port.get_string ());
+						return 1;
+					}
+					InetAddress address;
+					InetAddress? extra_address = null;
+					if (any != null) {
+						if (ipv4_only != null) {
+							address = new InetAddress.any (SocketFamily.IPV4);
+						} else if (ipv6_only != null) {
+							address = new InetAddress.any (SocketFamily.IPV6);
+						} else {
+							address       = new InetAddress.any (SocketFamily.IPV4);
+							extra_address = new InetAddress.any (SocketFamily.IPV6);
+						}
+					} else {
+						if (ipv4_only != null) {
+							address = new InetAddress.loopback (SocketFamily.IPV4);
+						} else if (ipv6_only != null) {
+							address = new InetAddress.loopback (SocketFamily.IPV6);
+						} else {
+							address       = new InetAddress.loopback (SocketFamily.IPV4);
+							extra_address = new InetAddress.loopback (SocketFamily.IPV6);
+						}
+					}
+					server.listen (new InetSocketAddress (address, (uint16) port));
+					if (extra_address != null) {
+						try {
+							server.listen (new InetSocketAddress (extra_address, (uint16) port));
+						} catch (IOError.NOT_SUPPORTED err) {
+							// ignore extra address if not supported
+						}
+					}
+				}
+			}
+
+			// socket path
+			if (sockets != null) {
+				foreach (var socket in sockets.get_bytestring_array ()) {
+					server.listen (new UnixSocketAddress (socket));
+				}
+			}
+
+			// file descriptor
+			if (fds != null) {
+				foreach (var _fd in fds) {
+					int64 fd;
+					if (!int64.try_parse (_fd.get_string (), out fd)) {
+						critical ("Malformed file descriptor '%s'.", _fd.get_string ());
+						return 1;
+					}
+					server.listen_socket (new Socket.from_fd ((int) fd));
+				}
+			}
+
+			// default listening interface
+			if (ports == null && sockets == null && fds == null) {
+				server.listen ();
+			}
+
 		} catch (Error err) {
 			critical ("%s (%s, %d)", err.message, err.domain.to_string (), err.code);
 			return 1;

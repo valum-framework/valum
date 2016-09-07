@@ -27,62 +27,67 @@ public abstract class VSGI.SocketServer : Server {
 	/**
 	 * @since 0.3
 	 */
-	public SocketService socket_service { construct; get; default = new SocketService (); }
+	[Description (blurb = "Listen queue depth used in the listen() call")]
+	public int backlog { construct; get; default = 10; }
 
 	/**
-	 * Identifier used to represent the protocol in URL scheme.
+	 * Scheme used for generated listening {@link Soup.URI}.
 	 *
 	 * @since 0.3
 	 */
-	protected abstract string protocol { get; }
+	protected abstract string scheme { get; }
 
 	private SList<Soup.URI> _uris = new SList<Soup.URI> ();
 
 	public override SList<Soup.URI> uris {
-		get { return _uris; }
+		owned get {
+			var copy_uris = new SList<Soup.URI> ();
+			foreach (var uri in _uris) {
+				copy_uris.append (uri.copy ());
+			}
+			return copy_uris;
+		}
 	}
+
+	private SocketService socket_service = new SocketService ();
 
 	construct {
-		// FIXME: probably a compiler bug with default property not being initialized
-		socket_service = new SocketService ();
-	}
-
-	public override OptionEntry[] get_listen_options () {
-		const OptionEntry[] options = {
-			{"any",             'a', 0, OptionArg.NONE, null, "Listen on any open TCP port"},
-			{"port",            'p', 0, OptionArg.INT,  null, "Listen to the provided TCP port"},
-			{"file-descriptor", 'f', 0, OptionArg.INT,  null, "Listen to the provided file descriptor",       "0"},
-			{"backlog",         'b', 0, OptionArg.INT,  null, "Listen queue depth used in the listen() call", "10"},
-		};
-		return options;
-	}
-
-	public override void listen (Variant options) throws Error {
-		if (options.lookup_value ("any", VariantType.BOOLEAN) != null) {
-			var port = socket_service.add_any_inet_port (null);
-			_uris.append (new Soup.URI ("%s://0.0.0.0:%u/".printf (protocol, port)));
-			_uris.append (new Soup.URI ("%s://[::]:%u/".printf (protocol, port)));
-		} else if (options.lookup_value ("port", VariantType.INT32) != null) {
-			var port = (uint16) options.lookup_value ("port", VariantType.INT32).get_int32 ();
-			socket_service.add_inet_port (port, null);
-			_uris.append (new Soup.URI ("%s://0.0.0.0:%u/".printf (protocol, port)));
-			_uris.append (new Soup.URI ("%s://[::]:%u/".printf (protocol, port)));
-		} else if (options.lookup_value ("file-descriptor", VariantType.INT32) != null) {
-			var file_descriptor = options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 ();
-			socket_service.add_socket (new Socket.from_fd (file_descriptor), null);
-			_uris.append (new Soup.URI ("%s+fd://%u/".printf (protocol, file_descriptor)));
-		} else {
-			socket_service.add_socket (new Socket.from_fd (0), null);
-			_uris.append (new Soup.URI ("%s+fd://0/".printf (protocol)));
-		}
-
-		if (options.lookup_value ("backlog", VariantType.INT32) != null) {
-			socket_service.set_backlog (options.lookup_value ("backlog", VariantType.INT32).get_int32 ());
-		}
-
 		socket_service.incoming.connect (incoming);
-
+		socket_service.set_backlog (backlog);
 		socket_service.start ();
+	}
+
+	public override void listen (SocketAddress? address = null) throws Error {
+		if (address == null) {
+			throw new IOError.NOT_SUPPORTED ("The implementation does not support a default listening interface.");
+		} else {
+			SocketAddress effective_address;
+			socket_service.add_address (address,
+			                            SocketType.STREAM,
+			                            SocketProtocol.DEFAULT,
+			                            null,
+			                            out effective_address);
+			if (effective_address is InetSocketAddress) {
+				var effective_inet_address = effective_address as InetSocketAddress;
+				if (effective_inet_address.get_family () == SocketFamily.IPV4) {
+					_uris.append (new Soup.URI ("%s://%s:%u/".printf (scheme,
+					                                                  effective_inet_address.get_address ().to_string (),
+					                                                  effective_inet_address.get_port ())));
+				} else if (effective_inet_address.get_family () == SocketFamily.IPV6) {
+					_uris.append (new Soup.URI ("%s://[%s]:%u/".printf (scheme,
+					                                                    effective_inet_address.get_address ().to_string (),
+					                                                    effective_inet_address.get_port ())));
+				}
+			} else if (effective_address is UnixSocketAddress) {
+				var effective_unix_address = effective_address as UnixSocketAddress;
+				_uris.append (new Soup.URI ("%s+unix://%s/".printf (scheme, effective_unix_address.get_path ())));
+			}
+		}
+	}
+
+	public override void listen_socket (Socket socket) throws Error {
+		socket_service.add_socket (socket, null);
+		_uris.append (new Soup.URI ("%s+fd://%d/".printf (scheme, socket.get_fd ())));
 	}
 
 	public override void stop () {

@@ -25,7 +25,7 @@ test('socket server', executable('socket-server-test', 'socket-server-test.vala'
                                           dependencies: [glib, gobject, gio, gio_unix,  soup, vsgi]))
 if fcgi.found()
     test('fastcgi server', executable('fastcgi-server-test', 'fastcgi-server-test.vala',
-                                      dependencies: [glib, gobject, gio, soup, vsgi]))
+                                      dependencies: [glib, gobject, gio, gio_unix, soup, vsgi]))
 endif
 
 # Valum tests

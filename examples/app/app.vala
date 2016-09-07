@@ -334,4 +334,4 @@ app.get ("/auth", authenticate (new BasicAuthentication (""), (a) => {
 	return res.expand_utf8 ("Hello %s!".printf (username));
 }));
 
-Server.new_with_application ("http", app.handle).run ({"app", "--all"});
+Server.new_with_application ("http", app.handle).run ();

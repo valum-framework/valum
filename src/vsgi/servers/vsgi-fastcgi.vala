@@ -16,7 +16,6 @@
  */
 
 using GLib;
-using Soup;
 
 [ModuleInit]
 public Type server_init (TypeModule type_module) {
@@ -31,7 +30,6 @@ public Type server_init (TypeModule type_module) {
  *
  * @since 0.1
  */
-[CCode (gir_namespace = "VSGI.FastCGI", gir_version = "0.2")]
 namespace VSGI.FastCGI {
 
 	private errordomain Error {
@@ -177,66 +175,67 @@ namespace VSGI.FastCGI {
 	 */
 	public class Server : VSGI.Server {
 
+		/**
+		 * @since 0.3
+		 */
+		[Description (blurb = "Listen queue depth used in the listen() call")]
+		public int backlog { get; construct; default = 10; }
+
 		private SList<Soup.URI> _uris = new SList<Soup.URI> ();
 
-		public override unowned SList<Soup.URI> uris {
-			get { return _uris; }
+		public override SList<Soup.URI> uris {
+			owned get {
+				var copy_uris = new SList<Soup.URI> ();
+				foreach (var uri in _uris) {
+					copy_uris.append (uri.copy ());
+				}
+				return copy_uris;
+			}
 		}
 
-		public override OptionEntry[] get_listen_options () {
-			const OptionEntry[] options = {
-				{"socket",          's', 0, OptionArg.FILENAME, null, "Listen to the provided UNIX domain socket (or named pipe for WinNT)"},
-				{"port",            'p', 0, OptionArg.INT,      null, "Listen to the provided TCP port"},
-				{"file-descriptor", 'f', 0, OptionArg.INT,      null, "Listen to the provided file descriptor",       "0"},
-				{"backlog",         'b', 0, OptionArg.INT,      null, "Listen queue depth used in the listen() call", "10"},
-				{null}
-			};
-			return options;
-		}
+		public override void listen (SocketAddress? address = null) throws GLib.Error {
+			int fd;
 
-		public override void listen (Variant options) throws GLib.Error {
-			if (_uris.length () > 0) {
-				throw new Error.FAILED ("this server is already listening from '%s'", _uris.data.to_string (false));
-			}
+			if (address == null) {
+				fd = global::FastCGI.LISTENSOCK_FILENO;
+				_uris.append (new Soup.URI ("fcgi+fd://%d/".printf (fd)));
+			} else if (address is UnixSocketAddress) {
+				var socket_address = address as UnixSocketAddress;
 
-			var backlog = options.lookup_value ("backlog", VariantType.INT32) ?? new Variant.@int32 (10);
-
-			var fd = global::FastCGI.LISTENSOCK_FILENO;
-
-			if (options.lookup_value ("socket", VariantType.BYTESTRING) != null) {
-				var socket_path = options.lookup_value ("socket", VariantType.BYTESTRING).get_bytestring ();
-
-				fd = global::FastCGI.open_socket (socket_path, backlog.get_int32 ());
+				fd = global::FastCGI.open_socket (socket_address.path, backlog);
 
 				if (fd == -1) {
-					throw new Error.FAILED ("could not open socket path %s", socket_path);
+					throw new Error.FAILED ("Could not open socket path '%s'.", socket_address.path);
 				}
 
-				_uris.append (new Soup.URI ("fcgi+unix://%s/".printf (socket_path)));
-			}
+				_uris.append (new Soup.URI ("fcgi+unix://%s/".printf (socket_address.path)));
+			} else if (address is InetSocketAddress) {
+				var inet_address = address as InetSocketAddress;
 
-			else if (options.lookup_value ("port", VariantType.INT32) != null) {
-				var port =  (options.lookup_value ("port", VariantType.INT32).get_int32 ());
+				if (inet_address.get_family () == SocketFamily.IPV6) {
+					throw new IOError.NOT_SUPPORTED ("The FastCGI backend does not support listening on IPv6 address.");
+				}
 
-				fd = global::FastCGI.open_socket (":%d".printf (port), backlog.get_int32 ());
+				if (!inet_address.get_address ().is_loopback) {
+					throw new IOError.NOT_SUPPORTED ("The FastCGI backend only listen to the loopback interface.");
+				}
+
+				fd = global::FastCGI.open_socket ((":%" + uint16.FORMAT).printf (inet_address.get_port ()), backlog);
 
 				if (fd == -1) {
-					throw new Error.FAILED ("could not open TCP port '%d'", port);
+					throw new Error.FAILED ("Could not open TCP port '%" + uint16.FORMAT + "'.", inet_address.get_port ());
 				}
 
-				_uris.append (new Soup.URI ("fcgi://0.0.0.0:%d/".printf (port)));
-			}
-
-			else if (options.lookup_value ("file-descriptor", VariantType.INT32) != null) {
-				fd = options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 ();
-				_uris.append (new Soup.URI ("fcgi+fd://%u/".printf (fd)));
-			}
-
-			else {
-				_uris.append (new Soup.URI ("fcgi+fd://%u/".printf (global::FastCGI.LISTENSOCK_FILENO)));
+				_uris.append (new Soup.URI ("fcgi://127.0.0.1:%u/".printf (inet_address.get_port ())));
+			} else {
+				throw new IOError.NOT_SUPPORTED ("The FastCGI backend only support listening from 'InetSocketAddress' and 'UnixSocketAddress'.");
 			}
 
 			accept_loop_async.begin (fd);
+		}
+
+		public override void listen_socket (Socket socket) {
+			accept_loop_async.begin (socket.get_fd ());
 		}
 
 		public override void stop () {

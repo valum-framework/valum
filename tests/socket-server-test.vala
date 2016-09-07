@@ -3,11 +3,8 @@ using GLib;
 using VSGI;
 
 private class MockedSocketServer : SocketServer {
-	protected override string protocol {
-		get {
-			return "mock";
-		}
-	}
+
+	protected override string scheme { get { return "mock"; } }
 
 	protected override bool incoming (SocketConnection connection) {
 		return true;
@@ -17,38 +14,27 @@ private class MockedSocketServer : SocketServer {
 public int main (string[] args) {
 	Test.init (ref args);
 
-	Test.add_func ("/socket_server/port", () => {
+	Test.add_func ("/socket_server/listen/loopback", () => {
 		var server = new MockedSocketServer ();
-		var port   = Random.int_range (1024, 32768);
-		server.set_application_callback (() => { return true; });
-
-		var options = new VariantBuilder (new VariantType ("a{sv}"));
-
-		options.add ("{sv}", "port", new Variant.@int32 (port));
 
 		try {
-			server.listen (options.end ());
+			server.listen (new InetSocketAddress (new InetAddress.loopback (SocketFamily.IPV4), 0));
+			server.listen (new InetSocketAddress (new InetAddress.loopback (SocketFamily.IPV6), 0));
 		} catch (Error err) {
-		message (err.message);
 			assert_not_reached ();
 		}
 
-		assert ("mock://0.0.0.0:%d/".printf (port) == server.uris.data.to_string (false));
-		assert ("mock://[::]:%d/".printf (port) == server.uris.next.data.to_string (false));
+		assert (server.uris.data.to_string (false).has_prefix ("mock://127.0.0.1:"));
+		assert (server.uris.next.data.to_string (false).has_prefix ("mock://[::1]:"));
 	});
 
-	Test.add_func ("/socket_server/any_port", () => {
+	Test.add_func ("/socket_server/listen/any", () => {
 		var server = new MockedSocketServer ();
-		server.set_application_callback (() => { return true; });
-
-		var options = new VariantBuilder (new VariantType ("a{sv}"));
-
-		options.add ("{sv}", "any", new Variant.boolean (true));
 
 		try {
-			server.listen (options.end ());
+			server.listen (new InetSocketAddress (new InetAddress.any (SocketFamily.IPV4), 0));
+			server.listen (new InetSocketAddress (new InetAddress.any (SocketFamily.IPV6), 0));
 		} catch (Error err) {
-		message (err.message);
 			assert_not_reached ();
 		}
 
@@ -56,23 +42,42 @@ public int main (string[] args) {
 		assert (server.uris.next.data.to_string (false).has_prefix ("mock://[::]:"));
 	});
 
-	Test.add_func ("/socket_server/file_descriptor", () => {
+	Test.add_func ("/socket_server/listen/default", () => {
 		var server = new MockedSocketServer ();
-		server.set_application_callback (() => { return true; });
+
+		try {
+			server.listen ();
+		} catch (IOError.NOT_SUPPORTED err) {
+
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+
+		assert (0 == server.uris.length ());
+	});
+
+	Test.add_func ("/socket_server/listen/unix_socket", () => {
+		var server = new MockedSocketServer ();
+
+		try {
+			server.listen (new UnixSocketAddress ("some-socket.sock"));
+		} catch (Error err) {
+			assert_not_reached ();
+		} finally {
+			FileUtils.unlink ("some-socket.sock");
+		}
+
+		assert ("mock+unix://some-socket.sock/" == server.uris.data.to_string (false));
+	});
+
+	Test.add_func ("/socket_server/listen_socket", () => {
+		var server = new MockedSocketServer ();
 
 		try {
 			var socket = new Socket (SocketFamily.UNIX, SocketType.STREAM, SocketProtocol.DEFAULT);
-			socket.bind (new UnixSocketAddress ("some-socket.sock"), false);
-
-			var options = new VariantBuilder (new VariantType ("a{sv}"));
-
-			options.add ("{sv}", "file-descriptor", new Variant.@int32 (socket.get_fd ()));
-
-			server.listen (options.end ());
-
+			server.listen_socket (socket);
 			assert ("mock+fd://%d/".printf (socket.fd) == server.uris.data.to_string (false));
 		} catch (Error err) {
-			message (err.message);
 			assert_not_reached ();
 		} finally {
 			FileUtils.unlink ("some-socket.sock");

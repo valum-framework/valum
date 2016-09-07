@@ -34,7 +34,6 @@ public Type server_init (TypeModule type_module) {
  *
  * @since 0.2
  */
-[CCode (gir_namespace = "VSGI.SCGI", gir_version = "0.2")]
 namespace VSGI.SCGI {
 
 	/**
@@ -129,7 +128,15 @@ namespace VSGI.SCGI {
 	 */
 	public class Server : VSGI.SocketServer {
 
-		protected override string protocol { get { return "scgi"; } }
+		protected override string scheme { get { return "scgi"; } }
+
+		public override void listen (SocketAddress? socket_address = null) throws GLib.Error {
+			if (socket_address == null) {
+				listen_socket (new Socket.from_fd (0));
+			} else {
+				base.listen (socket_address);
+			}
+		}
 
 		protected override bool incoming (SocketConnection connection) {
 			process_connection.begin (connection, Priority.DEFAULT, null, (obj, result) => {
