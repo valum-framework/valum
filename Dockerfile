@@ -1,15 +1,24 @@
-FROM ubuntu-debootstrap:latest
+FROM ubuntu:latest
 
-MAINTAINER Anton Vasiljev <antono.vasiljev@gmail.com>
+MAINTAINER Guillaume Poirier-Morency <guillaumepoiriermorency@gmail.com>
 
-RUN apt-get update --quiet && apt-get install --yes software-properties-common
-RUN add-apt-repository ppa:vala-team && apt-get update --quiet
-RUN apt-get install --yes valac libglib2.0-bin libglib2.0-dev libsoup2.4-dev \
-                          libgee-0.8-dev libfcgi-dev libctpl-dev
+RUN apt-get update && apt-get install -y \
+    libfcgi-dev                          \
+    libglib2.0-dev                       \
+    libsoup2.4-dev                       \
+    python3-pip                          \
+    unzip                                \
+    valac                                \
+    && rm -rf /var/lib/apt/lists/*
 
-COPY . /valum
+# Meson
+RUN pip3 install meson
+
+# Ninja
+ADD https://github.com/ninja-build/ninja/releases/download/v1.6.0/ninja-linux.zip /tmp
+RUN unzip /tmp/ninja-linux.zip -d /usr/local/bin
+
 WORKDIR /valum
+ADD . .
 
-RUN ./waf configure --prefix=/usr
-RUN ./waf build
-RUN ./waf install
+RUN mkdir build && meson.py --prefix=/usr --buildtype=release . build && ninja -C build && ninja -C build install
