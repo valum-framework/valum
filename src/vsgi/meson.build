@@ -25,7 +25,7 @@ vsgi_lib = library('vsgi-' + api_version, vsgi_sources,
                    vala_args: ['--pkg=posix'] + vala_defines,
                    link_args: '-Wl,-rpath,$$ORIGIN/servers',
                    install: true,
-                   install_rpath: '$ORIGIN/vsgi/servers')
+                   install_rpath: '$ORIGIN/vsgi-@0@/servers'.format(api_version))
 
 vsgi = declare_dependency(include_directories: include_directories('.'),
                           link_with: vsgi_lib)
@@ -40,7 +40,8 @@ pkgconfig.generate(requires: 'glib-2.0 gobject-2.0 gio-2.0 libsoup-2.4',
                    version: meson.project_version(),
                    name: 'VSGI',
                    filebase: 'vsgi-' + api_version,
-                   description: 'Interface and implementations for various web server technologies')
+                   description: 'Interface and implementations for various web server technologies',
+                   subdirs: 'vsgi-' + api_version)
 
 install_data('vsgi-@0@.deps'.format(api_version), install_dir: 'share/vala/vapi')
 

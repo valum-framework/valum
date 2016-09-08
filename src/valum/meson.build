@@ -40,6 +40,6 @@ pkgconfig.generate(requires: 'vsgi-' + api_version,
                    name: 'Valum',
                    filebase: 'valum-' + api_version,
                    description: 'Web micro-framework entirely written in Vala',
-                   subdirs: 'valum')
+                   subdirs: 'valum-' + api_version)
 
 install_data('valum-@0@.deps'.format(api_version), install_dir: 'share/vala/vapi')
