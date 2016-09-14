@@ -31,9 +31,9 @@ Method
 The ``Method`` flag provide a list of HTTP methods and some useful masks used
 into route definitions.
 
-====================  =======================================================
+===================== =======================================================
 Flag                   Description
-====================  =======================================================
+===================== =======================================================
 ``Method.SAFE``       safe methods
 ``Method.IDEMPOTENT`` idempotent methods (e.g. ``SAFE`` and ``PUT``)
 ``Method.CACHEABLE``  cacheable methods (e.g. ``HEAD``, ``GET`` and ``POST``)
@@ -42,7 +42,7 @@ Flag                   Description
 ``Method.ANY``        anything, including non-standard methods
 ``Method.PROVIDED``   indicate that the route provide its methods
 ``Method.META``       mask for all meta flags like ``Method.PROVIDED``
-====================  =======================================================
+===================== =======================================================
 
 .. note::
 
