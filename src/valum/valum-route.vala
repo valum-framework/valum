@@ -58,5 +58,46 @@ namespace Valum {
 		                                                                                             ClientError,
 		                                                                                             ServerError,
 		                                                                                             Error;
+
+		/**
+		 * Reverse the route into an URL.
+		 *
+		 * @since 0.3
+		 *
+		 * @param params parameters which are typically extract from the
+		 *               {@link VSGI.Request.uri} property
+		 *
+		 * @return the corresponding URL if supported, otherwise 'null'
+		 */
+		public abstract string to_url_from_hash (HashTable<string, string>? @params = null);
+
+		/**
+		 * Reverse the route into an URL by building from a varidic arguments
+		 * list.
+		 *
+		 * @since 0.3
+		 */
+		public string to_url_from_valist (va_list list) {
+			var hash = new HashTable<string, string> (str_hash, str_equal);
+			// potential compiler bug here: SEGFAULT if 'var' is used instead of 'unowned string'
+			for (unowned string key = list.arg<string> (), val = list.arg<string> ();
+			     key != null && val != null;
+			     key = list.arg<string> (), val = list.arg<string> ()) {
+				hash.insert (key, val);
+			}
+			return to_url_from_hash (hash);
+		}
+
+		/**
+		 * Reverse the route into an URL using varidic arguments.
+		 *
+		 * Arguments alternate between keys and values, all assumed to be
+		 * {@link string}.
+		 *
+		 * @since 0.3
+		 */
+		public string to_url (...) {
+			return to_url_from_valist (va_list ());
+		}
 	}
 }

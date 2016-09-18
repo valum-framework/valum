@@ -113,5 +113,24 @@ namespace Valum {
 		public override bool fire (Request req, Response res, NextCallback next, Context ctx) throws Error {
 			return _fire (req, res, next, ctx);
 		}
+
+		public override string to_url_from_hash (HashTable<string, string>? @params = null) {
+			var url    = new StringBuilder ();
+			var pieces = /(<(?:\w+:)?\w+>)/.split (rule);
+			foreach (var piece in pieces) {
+				if (piece[0] == '<') {
+					var cap  = piece.slice (1, piece.length - 1).split (":", 2);
+					var key  = cap.length == 1 ? cap[0] : cap[1];
+					if (@params != null && @params.contains (key)) {
+						url.append (@params[key]);
+					} else {
+						error ("The parameter '%s' was not provided.", key);
+					}
+				} else {
+					url.append (piece);
+				}
+			}
+			return url.str;
+		}
 	}
 }

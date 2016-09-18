@@ -106,6 +106,16 @@ explicit check.
             return next ();
     });
 
+Reverse
+~~~~~~~
+
+.. versionadded:: 0.3
+
+Some route implementations can be reversed into URLs by calling
+``Route.to_url`` or the alternative ``Route.to_urlv`` and
+``Route.to_url_from_hash``. It may optionally take parameters which, in the
+case of the rule-based route, correspond to the named captures.
+
 Introspection
 ~~~~~~~~~~~~~
 

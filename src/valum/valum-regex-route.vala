@@ -86,5 +86,9 @@ namespace Valum {
 		public override bool fire (Request req, Response res, NextCallback next, Context ctx) throws Error {
 			return _fire (req, res, next, ctx);
 		}
+
+		public override string to_url_from_hash (HashTable<string, string>? @params = null) {
+			error ("'RegexRoute' does not support reversing URLs.");
+		}
 	}
 }

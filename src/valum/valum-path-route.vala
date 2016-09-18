@@ -31,4 +31,8 @@ public class Valum.PathRoute : Valum.Route {
 	public override bool fire (Request req, Response res, NextCallback next, Context ctx) throws Error {
 		return _fire (req, res, next, ctx);
 	}
+
+	public override string to_url_from_hash (HashTable<string, string>? @params = null) {
+		return path;
+	}
 }
