@@ -32,6 +32,7 @@ valum = declare_dependency(include_directories: include_directories('.'),
 
 install_headers(meson.current_build_dir() + '/valum-@0@.h'.format(api_version), subdir: 'valum-' + api_version)
 install_data(meson.current_build_dir() + '/valum-@0@.vapi'.format(api_version), install_dir: 'share/vala/vapi')
+install_data('valum-@0@.deps'.format(api_version), install_dir: 'share/vala/vapi')
 
 pkgconfig = import('pkgconfig')
 pkgconfig.generate(requires: 'vsgi-' + api_version,
@@ -41,5 +42,3 @@ pkgconfig.generate(requires: 'vsgi-' + api_version,
                    filebase: 'valum-' + api_version,
                    description: 'Web micro-framework entirely written in Vala',
                    subdirs: 'valum-' + api_version)
-
-install_data('valum-@0@.deps'.format(api_version), install_dir: 'share/vala/vapi')
