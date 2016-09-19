@@ -14,7 +14,7 @@ namespace VSGI {
 	 * @return 'true' if the strings are byte-per-byte equal in the order of
 	 *         'b.length'
 	 */
-	public bool str_const_equal (string a, string b) {
+	internal bool str_const_equal (string a, string b) {
 		var match = 0;
 
 		for (var i = 0; i < b.data.length; i++)
