@@ -6,7 +6,6 @@ vsgi_sources = files(
     'vsgi-basic-authorization.vala',
     'vsgi-bounded-input-stream.vala',
     'vsgi-cgi.vala',
-    'vsgi-chunked-encoder.vala',
     'vsgi-connection.vala',
     'vsgi-cookie-utils.vala',
     'vsgi-mock.vala',

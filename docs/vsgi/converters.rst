@@ -46,12 +46,3 @@ an undetermined length.
 
 The default, which apply in most cases, is to remove the ``Content-Length``
 header and thus describe an undetermined length.
-
-Chunked encoder
----------------
-
-The ``ChunkedEncoder`` will convert written data into chunks according to
-`RFC2126 section 3.6.1`_.
-
-.. _RFC2126 section 3.6.1: http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.6.1
-
