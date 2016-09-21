@@ -325,9 +325,9 @@ namespace Valum {
 		 */
 		[Version (since = "0.1")]
 		public void scope (string fragment, owned LoaderCallback loader) {
-			this.scopes.push_tail (fragment);
+			scopes.push_tail (fragment);
 			loader (this);
-			this.scopes.pop_tail ();
+			scopes.pop_tail ();
 		}
 
 		/**
@@ -388,7 +388,7 @@ namespace Valum {
 		 */
 		[Version (since = "0.1")]
 		public override bool handle (Request req, Response res) throws Error {
-			return perform_routing (this.routes.get_begin_iter (), req, res, () => {
+			return perform_routing (routes.get_begin_iter (), req, res, () => {
 				if (req.method == Request.TRACE) {
 					var head = new StringBuilder ();
 
@@ -418,7 +418,7 @@ namespace Valum {
 				req_method |= Method.META;
 
 				Method allowed = 0;
-				this.routes.@foreach ((route) => {
+				routes.@foreach ((route) => {
 					if (Method.PROVIDED in route.method && route.match (req, new Context ())) {
 						allowed |= route.method & ~req_method;
 					}
