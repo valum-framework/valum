@@ -93,57 +93,57 @@ namespace Valum {
 		/**
 		 * @since 0.0.1
 		 */
-		public new void @get (string rule, owned HandlerCallback cb) {
-			this.rule (Method.GET, rule, (owned) cb);
+		public new void @get (string rule, owned HandlerCallback cb, string? name = null) {
+			this.rule (Method.GET, rule, (owned) cb, name);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void post (string rule, owned HandlerCallback cb) {
-			this.rule (Method.POST, rule, (owned) cb);
+		public void post (string rule, owned HandlerCallback cb, string? name = null) {
+			this.rule (Method.POST, rule, (owned) cb, name);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void put (string rule, owned HandlerCallback cb) {
-			this.rule (Method.PUT, rule, (owned) cb);
+		public void put (string rule, owned HandlerCallback cb, string? name = null) {
+			this.rule (Method.PUT, rule, (owned) cb, name);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void @delete (string rule, owned HandlerCallback cb) {
-			this.rule (Method.DELETE, rule, (owned) cb);
+		public void @delete (string rule, owned HandlerCallback cb, string? name = null) {
+			this.rule (Method.DELETE, rule, (owned) cb, name);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void head (string rule, owned HandlerCallback cb) {
-			this.rule (Method.HEAD, rule, (owned) cb);
+		public void head (string rule, owned HandlerCallback cb, string? name = null) {
+			this.rule (Method.HEAD, rule, (owned) cb, name);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void options (string rule, owned HandlerCallback cb) {
+		public void options (string rule, owned HandlerCallback cb, string? name = null) {
 			this.rule (Method.OPTIONS, rule, (owned) cb);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public void trace (string rule, owned HandlerCallback cb) {
-			this.rule (Method.TRACE, rule, (owned) cb);
+		public void trace (string rule, owned HandlerCallback cb, string? name = null) {
+			this.rule (Method.TRACE, rule, (owned) cb, name);
 		}
 
 		/**
 		 * @since 0.0.1
 		 */
-		public new void connect (string rule, owned HandlerCallback cb) {
-			this.rule (Method.CONNECT, rule, (owned) cb);
+		public new void connect (string rule, owned HandlerCallback cb, string? name = null) {
+			this.rule (Method.CONNECT, rule, (owned) cb, name);
 		}
 
 		/**
@@ -151,8 +151,8 @@ namespace Valum {
 		 *
 		 * @since 0.0.1
 		 */
-		public void patch (string rule, owned HandlerCallback cb) {
-			this.rule (Method.PATCH, rule, (owned) cb);
+		public void patch (string rule, owned HandlerCallback cb, string? name = null) {
+			this.rule (Method.PATCH, rule, (owned) cb, name);
 		}
 
 		/**
@@ -167,7 +167,7 @@ namespace Valum {
 		 * @param rule   rule
 		 * @param cb     callback used to process the pair of request and response.
 		 */
-		public void rule (Method method, string rule, owned HandlerCallback cb) {
+		public void rule (Method method, string rule, owned HandlerCallback cb, string? name = null) {
 			var pattern = new StringBuilder ();
 
 			// scope the route
@@ -178,7 +178,7 @@ namespace Valum {
 			pattern.append (rule);
 
 			try {
-				route (new RuleRoute (method | Method.PROVIDED, pattern.str, types, (owned) cb));
+				route (new RuleRoute (method | Method.PROVIDED, pattern.str, types, (owned) cb), name);
 			} catch (RegexError err) {
 				error (err.message);
 			}
@@ -233,7 +233,7 @@ namespace Valum {
 		 * @param handler callback applied on the pair of request and response
 		 *                objects if the method and path are satisfied
 		 */
-		public void path (Method method, string path, owned HandlerCallback handler) {
+		public void path (Method method, string path, owned HandlerCallback handler, string? name = null) {
 			var path_builder = new StringBuilder ();
 
 			foreach (var scope in scopes.head) {
@@ -242,7 +242,7 @@ namespace Valum {
 
 			path_builder.append (path);
 
-			route (new PathRoute (method | Method.PROVIDED, path_builder.str, (owned) handler));
+			route (new PathRoute (method | Method.PROVIDED, path_builder.str, (owned) handler), name);
 		}
 
 		/**
@@ -261,6 +261,8 @@ namespace Valum {
 			route (new MatcherRoute (method | Method.PROVIDED, (owned) matcher, (owned) cb));
 		}
 
+		private HashTable<string, Route> _named_routes = new HashTable<string, Route> (str_hash, str_equal);
+
 		/**
 		 * Bind a {@link Route} to a custom HTTP method.
 		 *
@@ -269,9 +271,52 @@ namespace Valum {
 		 * @param route an instance of Route defining the matching process and
 		 *              the callback.
 		 */
-		public void route (Route route) {
-			this.routes.append (route);
+		public void route (Route route, string? name = null) {
+			routes.append (route);
+			if (name != null) {
+				_named_routes.insert (name, route);
+			}
+		}
 
+		/**
+		 * Reverse an URL for a named {@link Valum.Route}.
+		 *
+		 * @since 0.3
+		 *
+		 * @param name
+		 * @param ...  parameters for the {@link Valum.Route.to_url} call
+		 *
+		 * @return 'null' if the route is not found otherwise the return value
+		 *         of {@link Valum.Route.to_url}
+		 */
+		public string url_for_hash (string name, HashTable<string, string>? @params = null) {
+			if (!_named_routes.contains (name)) {
+				error ("No such route named '%s'.", name);
+			}
+			return _named_routes.lookup (name).to_url_from_hash (@params);
+		}
+
+		/**
+		 * Reverse an URL for a named {@link Valum.Route} using a varidic
+		 * arguments list.
+		 *
+		 * @since 0.3
+		 */
+		public string url_for_valist (string name, va_list list) {
+			if (!_named_routes.contains (name)) {
+				error ("No such route named '%s'.", name);
+			}
+			return _named_routes.lookup (name).to_url_from_valist (list);
+		}
+
+		/**
+		 * Reverse an URL for a named {@link Valum.Route} using varidic
+		 * arguments.
+		 *
+		 * @since 0.3
+		 */
+		public string url_for (string name, ...) {
+			return url_for_valist (name, va_list ());
 		}
 
 		/**

@@ -359,6 +359,19 @@ public static void test_router_method_override () {
 }
 
 /**
+ * @since 0.3
+ */
+public void test_router_named_route () {
+	var router = new Router ();
+
+	router.get ("/", (req, res, next, ctx) => { return true; }, "home");
+	router.get ("/<int:i>", (req, res, next, ctx) => { return true; }, "foo");
+
+	assert ("/" == router.url_for ("home"));
+	assert ("/5" == router.url_for ("foo", "i", "5"));
+}
+
+/**
  * @since 0.1
  */
 public void test_router_rule_wildcard () {

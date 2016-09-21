@@ -128,6 +128,58 @@ Additionally, the ``OPTIONS`` and ``TRACE`` are automatically handled if not
 specified for a path. The ``OPTIONS`` will produce a ``Allow`` header and
 ``TRACE`` will feedback the request into the response payload.
 
+Named route
+-----------
+
+.. versionadded:: 0.3
+
+Few of the helpers provided by the router also accept an additional parameter
+to name the created route object. This can then be used to generate reverse
+URLs with ``Router.url_for``.
+
+.. note::
+
+    This feature is only support for the rule-based and path-based route
+    implementations.
+
+::
+
+    var app = new Router ();
+
+    app.get ("/", (req, res) => {
+        return res.expand_utf8 ("Hello world! %s".printf (app.url_for ("home")));
+    }, "home");
+
+Likewise to ``to_url``, it's possible to pass additional parameters as varidic
+arguments. The following example show how one can serve relocatable static
+resources and generate URLs in a `Compose`_ template.
+
+.. _Compose: https://github.com/arteymix/compose
+
+::
+
+    using Compose.HTML5;
+    using Valum;
+    using Valum.Static;
+
+    var app = new Router ();
+
+    app.get ("/", () => {
+        return res.expand_utf8 (
+            html (
+                head (
+                    title ("Hello world!"),
+                    link ("stylesheet",
+                          app.url_for ("static",
+                                       "path", "bootstrap/dist/css/bootstrap.min.css"))),
+                body ()));
+    });
+
+    app.get ("/static/<path>", serve_from_path ("static"), "static");
+
+Other helpers are provided to pass a ``GLib.HashTable`` via ``Router.url_for_hash``
+or explicit varidic arguments via ``Router.url_for_valist``.
+
 Use
 ---
 
