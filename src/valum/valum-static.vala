@@ -111,9 +111,9 @@ namespace Valum.Static {
 				var last_modified = file_info.get_modification_time ();
 
 				if (etag != null && ServeFlags.ENABLE_ETAG in serve_flags) {
-					if ("\"%s\"".printf (etag) == req.headers.get_one ("If-None-Match"))
+					if (etag == req.headers.get_one ("If-None-Match"))
 						throw new Redirection.NOT_MODIFIED ("");
-					res.headers.replace ("ETag", "\"%s\"".printf (etag));
+					res.headers.replace ("ETag", etag);
 				}
 
 				else if (last_modified.tv_sec > 0 && ServeFlags.ENABLE_LAST_MODIFIED in serve_flags) {
