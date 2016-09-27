@@ -18,6 +18,11 @@ soup = dependency('libsoup-2.4', version: '>=2.44')
 
 vala_defines = []
 
+# provide structured logging
+if glib.version().version_compare('>=2.50')
+    vala_defines += '--define=GLIB_2_50'
+endif
+
 # provide 'OutputStream.write_all_async' and 'SimpleIOStream'
 if gio.version().version_compare('>=2.44')
     vala_defines += '--define=GIO_2_44'

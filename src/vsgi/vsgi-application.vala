@@ -41,18 +41,21 @@ public class VSGI.Application : GLib.Application {
 		         ApplicationFlags.NON_UNIQUE;
 		const OptionEntry[] entries = {
 			// general options
-			{"forks",           0,   0, OptionArg.INT,            null, "Number of forks to create",            "0"},
+			{"forks",           0,   0, OptionArg.INT,            null, "Number of forks to create",                               "0"},
+#if                             GLIB_2_50
+			{"log-writer",      0,   0, OptionArg.STRING,         null, "Log writer to use (e.g. 'journald', 'standard-streams')", "default"},
+#endif
 			// address
-			{"address",         'a', 0, OptionArg.STRING_ARRAY,   null, "Listen on each addresses",             "[]"},
+			{"address",         'a', 0, OptionArg.STRING_ARRAY,   null, "Listen on each addresses",                                "[]"},
 			// port
-			{"port",            'p', 0, OptionArg.STRING_ARRAY,   null, "Listen on each ports, '0' for random", "[]"},
-			{"any",             'A', 0, OptionArg.NONE,           null, "Listen on any address instead of only from the loopback interface"},
+			{"port",            'p', 0, OptionArg.STRING_ARRAY,   null, "Listen on each ports, '0' for random",                    "[]"},
+			{"any",             'a', 0, OptionArg.NONE,           null, "Listen on any address instead of only from the loopback interface"},
 			{"ipv4-only",       '4', 0, OptionArg.NONE,           null, "Listen only to IPv4 interfaces"},
 			{"ipv6-only",       '6', 0, OptionArg.NONE,           null, "Listen only to IPv6 interfaces"},
 			// socket
-			{"socket",          's', 0, OptionArg.FILENAME_ARRAY, null, "Listen on each UNIX socket paths",     "[]"},
+			{"socket",          's', 0, OptionArg.FILENAME_ARRAY, null, "Listen on each UNIX socket paths",                        "[]"},
 			// file descriptor
-			{"file-descriptor", 'f', 0, OptionArg.STRING_ARRAY,   null, "Listen on each file descriptors",      "[]"},
+			{"file-descriptor", 'f', 0, OptionArg.STRING_ARRAY,   null, "Listen on each file descriptors",                         "[]"},
 			{null}
 		};
 		add_main_option_entries (entries);
@@ -61,29 +64,46 @@ public class VSGI.Application : GLib.Application {
 	public override int command_line (ApplicationCommandLine command_line) {
 		var options = command_line.get_options_dict ().end ();
 
-		// per-worker logging
-		if (Posix.isatty (stderr.fileno ())) {
-			Log.set_handler (null, LogLevelFlags.LEVEL_MASK, (domain, level, message) => {
-				stderr.printf ("[%s] %s%s:%s %s%s%s%s\n",
-				               new DateTime.now_utc ().format ("%FT%H:%M:%S.000Z"),
-				               "\x1b[33m",
-				               "worker %d".printf (Posix.getpid ()),
-				               "\x1b[0m",
-				               domain == null ? "" : "%s: ".printf (domain),
-				               LogLevelFlags.LEVEL_ERROR    in level ? "\x1b[31m" :
-				               LogLevelFlags.LEVEL_CRITICAL in level ? "\x1b[31m" :
-				               LogLevelFlags.LEVEL_WARNING  in level ? "\x1b[33m" :
-				               LogLevelFlags.LEVEL_MESSAGE  in level ? "\x1b[32m" :
-				               LogLevelFlags.LEVEL_INFO     in level ? "\x1b[34m" :
-				               LogLevelFlags.LEVEL_DEBUG    in level ? "\x1b[36m" : "",
-				               message.replace ("\n", "\n\t\t"),
-				               "\x1b[0m");
-			});
-		} else {
-			Log.set_handler (null, LogLevelFlags.LEVEL_MASK, (domain, level, message) => {
-				Log.default_handler (domain, level, "[%s] %s".printf (new DateTime.now_utc ().format ("%FT%H:%M:%S.000Z"), message));
-			});
+#if GLIB_2_50
+		var log_writer = options.lookup_value ("log-writer", VariantType.STRING);
+		if (log_writer != null) {
+			switch (log_writer.get_string ()) {
+				case "journald":
+					Log.set_writer_func ((LogWriterFunc) Log.writer_journald);
+					break;
+				case "standard-streams":
+					Log.set_writer_func ((LogWriterFunc) Log.writer_standard_streams);
+					break;
+				case "default":
+					Log.set_writer_func ((LogWriterFunc) Log.writer_default);
+					break;
+				default:
+					critical ("unknown log writer '%s'", log_writer.get_string ());
+					return 1;
+			}
 		}
+#else
+		Log.set_handler (null, LogLevelFlags.LEVEL_MASK, (log_domain, log_level, message) => {
+			if (Posix.isatty (stderr.fileno ())) {
+				stderr.printf ("[%s] %s%s:%s %s%s%s%s\n",
+							   new DateTime.now_utc ().format ("%FT%H:%M:%S.000Z"),
+							   "\x1b[33m",
+							   "worker %d".printf (Posix.getpid ()),
+							   "\x1b[0m",
+							   log_domain == null ? "" : "%s: ".printf (log_domain),
+							   LogLevelFlags.LEVEL_ERROR    in log_level ? "\x1b[31m" :
+							   LogLevelFlags.LEVEL_CRITICAL in log_level ? "\x1b[31m" :
+							   LogLevelFlags.LEVEL_WARNING  in log_level ? "\x1b[33m" :
+							   LogLevelFlags.LEVEL_MESSAGE  in log_level ? "\x1b[32m" :
+							   LogLevelFlags.LEVEL_INFO     in log_level ? "\x1b[34m" :
+							   LogLevelFlags.LEVEL_DEBUG    in log_level ? "\x1b[36m" : "",
+							   message.replace ("\n", "\n\t\t"),
+							   "\x1b[0m");
+			} else {
+				Log.default_handler (log_domain, log_level, "[%s] %s".printf (new DateTime.now_utc ().format ("%FT%H:%M:%S.000Z"), message));
+			}
+		});
+#endif
 
 		try {
 			var addresses = options.lookup_value ("address",         VariantType.STRING_ARRAY);
