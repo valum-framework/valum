@@ -19,7 +19,7 @@ vsgi_sources = files(
     'vsgi-socket-server.vala',
     'vsgi-tee-output-stream.vala')
 vsgi_lib = library('vsgi-' + api_version, vsgi_sources,
-                   dependencies: [glib, gobject, gio, gio_unix, gmodule, soup],
+                   dependencies: [glib, gobject, gio, gio_unix, gmodule, soup, libsystemd],
                    vala_args: ['--pkg=posix'] + vala_defines,
                    vala_header: 'vsgi.h',
                    install: true,
