@@ -4,7 +4,6 @@ legacy_test_sources = [
     'cgi-test.vala',
     'cookies-test.vala',
     'decode-test.vala',
-    'router-test.vala',
     'route-test.vala',
     'server-sent-events-test.vala',
     'subdomain-test.vala',
@@ -41,6 +40,8 @@ test('content negotiation', executable('content-negotiation-test', ['content-neg
 test('context', executable('context-test', ['context-test.vala'],
                                        dependencies: [glib, gobject, gio, soup, vsgi, valum]))
 test('safely', executable('safely-test', 'safely-test.vala',
+                          dependencies: [glib, gobject, gio, soup, vsgi, valum]))
+test('router', executable('router-test', 'router-test.vala',
                           dependencies: [glib, gobject, gio, soup, vsgi, valum]))
 test('rule route', executable('rule-route-test', 'rule-route-test.vala',
                               dependencies: [glib, gobject, gio, soup, vsgi, valum]))
