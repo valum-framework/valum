@@ -72,6 +72,21 @@ namespace Valum {
 			types[name] = pattern;
 		}
 
+		public void once (owned HandlerCallback cb) {
+			size_t _once_init = 0;
+			route (new MatcherRoute (Method.ANY, () => { return _once_init == 0; }, (req, res, next, ctx) => {
+				if (Once.init_enter (&_once_init)) {
+					try {
+						return cb (req, res, next, ctx);
+					} finally {
+						Once.init_leave (&_once_init, 1);
+					}
+				} else {
+					return next ();
+				}
+			}));
+		}
+
 		/**
 		 * Mount a handling middleware on the routing queue.
 		 *

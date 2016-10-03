@@ -56,6 +56,28 @@ public int main (string[] args) {
 		assert (null == response.headers.get_content_type (out @params));
 	});
 
+	Test.add_func ("/router/once", () => {
+		var router = new Router ();
+
+		router.once (() => {
+			return true;
+		});
+
+		router.get ("/", () => {
+			return false;
+		});
+
+		var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var res = new Response (req);
+
+		try {
+			assert (router.handle (req, res));
+			assert (!router.handle (req, res));
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+	});
+
 	/**
 	 * @since 0.3
 	 */

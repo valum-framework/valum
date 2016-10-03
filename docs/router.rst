@@ -190,6 +190,27 @@ or explicit varidic arguments via ``Router.url_for_valist``.
 
         var bootstrap_url = app.url_for ("static", path: "bootstrap/dist/css/bootstrap.min.css");
 
+Once
+----
+
+.. versionadded:: 0.3
+
+To perform initialization or just call some middleware once, use
+``Router.once``.
+
+::
+
+    Gda.Connection database;
+
+    app.once ((req, res, next) => {
+        database = new Gda.Connection.from_string ("mysql", ...);
+        return next ();
+    });
+
+    app.get ("/", (req, res) => {
+        return res.expand_utf8 ("Hello world!");
+    });
+
 Use
 ---
 
