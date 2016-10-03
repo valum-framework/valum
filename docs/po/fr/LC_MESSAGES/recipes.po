@@ -1,0 +1,394 @@
+# French translations for Valum.
+# Copyright (C) 2015, Antono Vasiljev, Guillaume Poirier-Morency
+# This file is distributed under the same license as the Valum package.
+# Guillaume Poirier-Morency <guillaumepoiriermorency@gmail.com>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Valum web micro-framework 0.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-10-03 16:05-0400\n"
+"PO-Revision-Date: 2016-10-03 22:54-0400\n"
+"Last-Translator: Guillaume Poirier-Morency <guillaumepoiriermorency@gmail."
+"com>\n"
+"Language-Team: français <>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Gtranslator 2.91.7\n"
+
+#: ../../../docs/recipes/bump.rst:2
+msgid "Bump"
+msgstr ""
+
+#: ../../../docs/recipes/bump.rst:4
+msgid "`Bump`_ is a library providing high-level concurrency patterns."
+msgstr ""
+
+#: ../../../docs/recipes/bump.rst:9
+msgid "Resource pooling"
+msgstr ""
+
+#: ../../../docs/recipes/bump.rst:11
+msgid ""
+"A resource pool is a structure that maintain and dispatch a set of shared "
+"resources."
+msgstr ""
+
+#: ../../../docs/recipes/bump.rst:14
+msgid "There's various way of using the pool:"
+msgstr ""
+
+#: ../../../docs/recipes/bump.rst:16
+msgid "execute with a callback"
+msgstr ""
+
+#: ../../../docs/recipes/bump.rst:17
+msgid "acquire a claim that will release the resource automatically"
+msgstr ""
+
+#: ../../../docs/recipes/bump.rst:18
+msgid "acquire a resource that has to be released explicitly"
+msgstr ""
+
+#: ../../../docs/recipes/configuration.rst:2
+msgid "Configuration"
+msgstr ""
+
+#: ../../../docs/recipes/configuration.rst:4
+msgid "add command line options"
+msgstr ""
+
+#: ../../../docs/recipes/configuration.rst:5
+msgid "read a configuration file"
+msgstr ""
+
+#: ../../../docs/recipes/configuration.rst:6
+msgid "use GSettings"
+msgstr ""
+
+#: ../../../docs/recipes/configuration.rst:10
+msgid "GSettings"
+msgstr ""
+
+#: ../../../docs/recipes/configuration.rst:12
+msgid "GSettings is a good approach to store configuration."
+msgstr ""
+
+#: ../../../docs/recipes/configuration.rst:14
+msgid "declare available settings in a XML schema"
+msgstr ""
+
+#: ../../../docs/recipes/configuration.rst:15
+msgid "monitor changes"
+msgstr ""
+
+#: ../../../docs/recipes/configuration.rst:25
+msgid "GSettings over DBus"
+msgstr ""
+
+#: ../../../docs/recipes/index.rst:2
+msgid "Recipes"
+msgstr ""
+
+#: ../../../docs/recipes/index.rst:4
+msgid ""
+"Recipes are documents providing approaches to common web development tasks "
+"and their potential integration with Valum."
+msgstr ""
+
+#: ../../../docs/recipes/json.rst:2
+msgid "JSON"
+msgstr ""
+
+#: ../../../docs/recipes/json.rst:4
+msgid ""
+"JSON is a popular data format for web services and `json-glib`_ provide a "
+"complete implementation that integrates with the GObject type system."
+msgstr ""
+
+#: ../../../docs/recipes/json.rst:7
+msgid ""
+"The following features will be covered in this document with code examples:"
+msgstr ""
+
+#: ../../../docs/recipes/json.rst:9
+msgid "serialize a GObject"
+msgstr ""
+
+#: ../../../docs/recipes/json.rst:10
+msgid "unserialize a GObject"
+msgstr ""
+
+#: ../../../docs/recipes/json.rst:11
+msgid "parse an `GLib.InputStream`_ of JSON like a :doc:`../vsgi/request` body"
+msgstr ""
+
+#: ../../../docs/recipes/json.rst:12
+msgid ""
+"generate JSON in a `GLib.OutputStream`_ like a :doc:`../vsgi/response` body"
+msgstr ""
+
+#: ../../../docs/recipes/json.rst:19
+msgid "Produce and stream JSON"
+msgstr ""
+
+#: ../../../docs/recipes/json.rst:21
+msgid ""
+"Using a `Json.Generator`_, you can conveniently produce an JSON object and "
+"stream synchronously it in the :doc:`../vsgi/response` body."
+msgstr ""
+
+#: ../../../docs/recipes/json.rst:42
+msgid "Serialize GObject"
+msgstr ""
+
+#: ../../../docs/recipes/json.rst:44
+msgid ""
+"You project is likely to have a model abstraction and serialization of "
+"GObject with `Json.gobject_serialize`_ is a handy feature. It will "
+"recursively build a JSON object from the encountered properties."
+msgstr ""
+
+#: ../../../docs/recipes/json.rst:76
+msgid ""
+"With middlewares, you can split the process in multiple reusable steps to "
+"avoid code duplication. They are described in the :doc:`../router` document."
+msgstr ""
+
+#: ../../../docs/recipes/json.rst:79
+msgid "fetch a model from a data storage"
+msgstr ""
+
+#: ../../../docs/recipes/json.rst:80
+msgid "process the model with data obtained from a `Json.Parser`_"
+msgstr ""
+
+#: ../../../docs/recipes/json.rst:81
+msgid "produce a JSON response with `Json.gobject_serialize`_"
+msgstr ""
+
+#: ../../../docs/recipes/json.rst:146
+msgid ""
+"It is also possible to use `Json.Parser.load_from_stream_async`_ and invoke "
+"`next` in the callback with :doc:`../router` ``invoke`` function if you are "
+"expecting a considerable user input."
+msgstr ""
+
+#: ../../../docs/recipes/persistence.rst:2
+msgid "Persistence"
+msgstr ""
+
+#: ../../../docs/recipes/persistence.rst:4
+msgid ""
+"Multiple persistence solutions have bindings in Vala and can be used by "
+"Valum."
+msgstr ""
+
+#: ../../../docs/recipes/persistence.rst:6
+msgid "`libgda`_ for relational databases and more"
+msgstr ""
+
+#: ../../../docs/recipes/persistence.rst:7
+msgid "`memcached`_"
+msgstr ""
+
+#: ../../../docs/recipes/persistence.rst:8
+msgid "`redis-glib`_"
+msgstr ""
+
+#: ../../../docs/recipes/persistence.rst:9
+msgid "`mongodb-glib`_"
+msgstr ""
+
+#: ../../../docs/recipes/persistence.rst:10
+msgid "`couchdb-glib`_ which is supported by the Ubuntu team"
+msgstr ""
+
+#: ../../../docs/recipes/persistence.rst:18
+msgid ""
+"One good general approach is to use a per-process connection pool since "
+"handlers are executing in asynchronous context, your application will "
+"greatly benefit from multiple connections."
+msgstr ""
+
+#: ../../../docs/recipes/persistence.rst:23
+msgid "Memcached"
+msgstr ""
+
+#: ../../../docs/recipes/persistence.rst:25
+msgid ""
+"You can use `libmemcached.vapi`_ to access a Memcached cache storage, it is "
+"maintained in nemequ/vala-extra-vapis GitHub repository."
+msgstr ""
+
+#: ../../../docs/recipes/scripting.rst:2
+msgid "Scripting"
+msgstr ""
+
+#: ../../../docs/recipes/scripting.rst:4
+msgid ""
+"Through `Vala VAPI bindings <https://wiki.gnome.org/Projects/Vala/"
+"Bindings>`__, application written with Valum can embed multiple interpreters "
+"and JIT to provide facilities for computation and templating."
+msgstr ""
+
+#: ../../../docs/recipes/scripting.rst:9
+msgid "Lua"
+msgstr ""
+
+#: ../../../docs/recipes/scripting.rst:11
+msgid ""
+"`luajit`_ ships with a VAPI you can use to access a Lua VM, just add ``--pkg "
+"lua`` to ``valac``."
+msgstr ""
+
+#: ../../../docs/recipes/scripting.rst:45
+msgid "The sample Lua script contains:"
+msgstr ""
+
+#: ../../../docs/recipes/scripting.rst:53
+msgid "Resulting response"
+msgstr ""
+
+#: ../../../docs/recipes/scripting.rst:60
+msgid "Scheme (TODO)"
+msgstr ""
+
+#: ../../../docs/recipes/scripting.rst:62
+msgid "Scheme can be used to produce template or facilitate computation."
+msgstr ""
+
+#: ../../../docs/recipes/scripting.rst:70
+msgid "Scheme code:"
+msgstr ""
+
+#: ../../../docs/recipes/static-resource.rst:2
+msgid "Resources"
+msgstr ""
+
+#: ../../../docs/recipes/static-resource.rst:4
+msgid ""
+"GLib provides a powerful `resource api`_ for bundling static resources and "
+"optionally link them in the executable."
+msgstr ""
+
+#: ../../../docs/recipes/static-resource.rst:9
+msgid "It has a few advantages:"
+msgstr ""
+
+#: ../../../docs/recipes/static-resource.rst:11
+msgid ""
+"resources can be compiled in the text segment of the executable, providing "
+"lightning fast loading time"
+msgstr ""
+
+#: ../../../docs/recipes/static-resource.rst:13
+msgid "resource api is simpler than file api and avoids IOError handling"
+msgstr ""
+
+#: ../../../docs/recipes/static-resource.rst:14
+msgid ""
+"application do not have to deal with its resource location or minimally if a "
+"separate bundle is used"
+msgstr ""
+
+#: ../../../docs/recipes/static-resource.rst:17
+msgid ""
+"This only applies to small and static resources as it will grow the size of "
+"the executable. Also, if the resources are compiled in your executable, "
+"changing them will require a recompilation."
+msgstr ""
+
+#: ../../../docs/recipes/static-resource.rst:21
+msgid ""
+"Middlewares are provided for that purpose, see `../middlewares/static` for "
+"more details."
+msgstr ""
+
+#: ../../../docs/recipes/static-resource.rst:25
+msgid "Integration"
+msgstr ""
+
+#: ../../../docs/recipes/static-resource.rst:27
+msgid "Let's say your project has a few resources:"
+msgstr ""
+
+#: ../../../docs/recipes/static-resource.rst:29
+msgid "CTPL templates in a ``templates`` folder"
+msgstr ""
+
+#: ../../../docs/recipes/static-resource.rst:30
+msgid "CSS, JavaScript files in ``static`` folder"
+msgstr ""
+
+#: ../../../docs/recipes/static-resource.rst:32
+msgid ""
+"Setup a ``app.gresource.xml`` file that defines what resources will to be "
+"bundled."
+msgstr ""
+
+#: ../../../docs/recipes/static-resource.rst:46
+msgid "You can test your setup with:"
+msgstr ""
+
+#: ../../../docs/recipes/static-resource.rst:52
+msgid ""
+"Latest version of ``waf`` automatically link ``*.gresource.xml`` if you load "
+"the ``glib2`` plugin and add the file to your sources."
+msgstr ""
+
+#: ../../../docs/recipes/static-resource.rst:65
+msgid ""
+"The `app example`_ serves its static resources this way if you need a code "
+"reference."
+msgstr ""
+
+#: ../../../docs/recipes/templating.rst:2
+msgid "Templating"
+msgstr ""
+
+#: ../../../docs/recipes/templating.rst:4
+msgid ""
+"Template engines are very important tools to craft Web applications and a "
+"few libraries exist to handle that tedious work."
+msgstr ""
+
+#: ../../../docs/recipes/templating.rst:8
+msgid "Compose"
+msgstr ""
+
+#: ../../../docs/recipes/templating.rst:10
+msgid "For HTML5, `Compose`_ is quite appropriate."
+msgstr ""
+
+#: ../../../docs/recipes/templating.rst:26
+msgid ""
+"It comes with two utilities: ``take`` and ``when`` to iterate and perform "
+"conditional evaluation."
+msgstr ""
+
+#: ../../../docs/recipes/templating.rst:40
+msgid ""
+"Strings are not escaped by default due to the design of the library. "
+"Instead, all unsafe value must be escaped properly. For HTML, ``e`` is "
+"provided."
+msgstr ""
+
+#: ../../../docs/recipes/templating.rst:47
+msgid ""
+"Templates and fragments can be store in Vala source files to separate "
+"concerns. In this case, arguments would be used to pass the environment."
+msgstr ""
+
+#: ../../../docs/recipes/templating.rst:66
+msgid "Template-GLib"
+msgstr ""
+
+#: ../../../docs/recipes/templating.rst:68
+msgid ""
+"`Template-GLib`_ provide a more traditional solution that integrates with "
+"GObject. It can render properties and perform method calls."
+msgstr ""

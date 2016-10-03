@@ -1,0 +1,205 @@
+# French translations for Valum.
+# Copyright (C) 2015, Antono Vasiljev, Guillaume Poirier-Morency
+# This file is distributed under the same license as the Valum package.
+# Guillaume Poirier-Morency <guillaumepoiriermorency@gmail.com>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Valum web micro-framework 0.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-10-03 16:05-0400\n"
+"PO-Revision-Date: 2016-10-04 16:35-0400\n"
+"Last-Translator: Guillaume Poirier-Morency <guillaumepoiriermorency@gmail."
+"com>\n"
+"Language-Team: français <>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Gtranslator 2.91.7\n"
+
+#: ../../../docs/guidelines.rst:2
+msgid "Guidelines"
+msgstr "Directives"
+
+#: ../../../docs/guidelines.rst:4
+msgid ""
+"To ease application development and decision processing, this document "
+"present some guidelines to structure and organize code in a Web application."
+msgstr ""
+"Afin de faciliter le développement et la prise de décisions, ce document "
+"présente quelques directives afin de structurer et organiser le code d'une "
+"application Web."
+
+#: ../../../docs/guidelines.rst:7
+msgid ""
+"While Valum adopted a more flat layout, it is recommended to keep a minimal "
+"folder organization to keep code easily traversable as applications tend to "
+"become somewhat populous over time."
+msgstr ""
+"Tandis que Valum adopte un modèle plat, il est recommendé de préserver une "
+"organisation minimale de dossiers afin de rendre le code facilement "
+"parcourable. Les applications Web ont tendance à devenir relativement "
+"populeuse avec le temps."
+
+#: ../../../docs/guidelines.rst:24
+msgid ""
+"Include the last namespace or its abbreviation in the file name as this is "
+"pretty much the norm across GLib software. Read more on `Yorba's page`_ "
+"about Geary and Shotwell coding practices."
+msgstr ""
+
+#: ../../../docs/guidelines.rst:30
+msgid ""
+"Since applications are mostly domain oriented, it is a good practice to "
+"reuse names across related concepts. Introduce names to disambiguate and "
+"make evident the semantic of relationships (e.g. ``model-membership`` "
+"instead of ``model-user-group``)."
+msgstr ""
+
+#: ../../../docs/guidelines.rst:34
+msgid ""
+"Use ``src/app.vala`` as the main entry point of your application, where all "
+"other middlewares are mounted and the server is launched. Using the :doc:`../"
+"middlewares/basepath` middleware, you can make most of your controllers "
+"agnostics of the used path prefix."
+msgstr ""
+
+#: ../../../docs/guidelines.rst:47
+msgid ""
+"Don't mix frontend and backend code: favour separate repositories as they "
+"are likely to use a completely different set of technologies. Let the "
+"communication happen through an well-defined Web API."
+msgstr ""
+
+#: ../../../docs/guidelines.rst:51
+msgid "Some of the provided middlewares are particularly useful:"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:53
+msgid ":doc:`middlewares/authenticate` to authenticate users"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:54
+msgid ""
+":doc:`middlewares/content-negotiation` to negotiate a representation: think "
+"of"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:55
+msgid "HTML for human and JSON for client"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:56
+msgid ""
+":doc:`middlewares/server-sent-events` if the frontend needs to poll data"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:59
+msgid "Controllers"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:61
+msgid ""
+"Using the middleware definition and `Router.handle`, one can easily build "
+"controllers:"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:82
+msgid "Or by subclassing :doc:`router`:"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:99
+msgid "Models"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:101
+msgid ""
+"Use plain `GLib.Object` for models, they already provide a nice way of "
+"holding immutable data with construct properties and they can be "
+"introspected for automatic serialization and deserialization."
+msgstr ""
+
+#: ../../../docs/guidelines.rst:106
+msgid "Serialization"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:108
+msgid ""
+"Keep model and serialization separated. Introduce ``<format>.Serializable`` "
+"interfaces to let models override how they are represented in specific "
+"formats."
+msgstr ""
+
+#: ../../../docs/guidelines.rst:111
+msgid "JSON with JSON-GLib"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:112
+msgid "XML with GXml"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:113
+msgid "GVariant"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:114
+msgid "MessagePack with MessagePack-GLib"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:115
+msgid "MessagePack using JSON-MessagePack-GLib"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:117
+msgid ""
+"To organize payloads effectively and add some semantics, look into `JSON-"
+"API`_ and `JSON-LD`_. For the former, `JSON-API-GLib`_ provides serializable "
+"objects to avoid most of the boilerplate."
+msgstr ""
+
+#: ../../../docs/guidelines.rst:126
+msgid "Views"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:128
+msgid ""
+"For views, use a template engine like `Compose`_ or `Template-GLib`_. Use "
+"``GLib.Resource`` to bundle them during the compilation. Serve any static "
+"files using one of the :doc:`../middlewares/static` middlewares."
+msgstr ""
+
+#: ../../../docs/guidelines.rst:137
+msgid "Headers"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:139
+msgid ""
+"Move as much as possible outside the scope of the application. Here's a few "
+"things that should not be part:"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:142
+msgid "caching (see `mod_cache`\\_ and `nginx cache`\\_)"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:143
+msgid "HTTPS enforcement (e.g. redirection, HSTS)"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:145
+msgid "Those which should be part:"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:147
+msgid "``Cache-Control`` directives"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:148
+msgid "compression"
+msgstr ""
+
+#: ../../../docs/guidelines.rst:150
+msgid "Move as much as possible at the frontend."
+msgstr ""

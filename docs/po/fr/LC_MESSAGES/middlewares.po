@@ -1,0 +1,972 @@
+# French translations for Valum.
+# Copyright (C) 2015, Antono Vasiljev, Guillaume Poirier-Morency
+# This file is distributed under the same license as the Valum package.
+# Guillaume Poirier-Morency <guillaumepoiriermorency@gmail.com>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Valum web micro-framework 0.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-10-03 16:05-0400\n"
+"PO-Revision-Date: 2016-10-08 09:30-0400\n"
+"Last-Translator: Guillaume Poirier-Morency <guillaumepoiriermorency@gmail."
+"com>\n"
+"Language-Team: français <>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Gtranslator 2.91.7\n"
+
+#: ../../../docs/middlewares/authenticate.rst:2
+msgid "Authenticate"
+msgstr "Authentification"
+
+#: ../../../docs/middlewares/authenticate.rst:4
+msgid ""
+"The ``authenticate`` middleware allow one to perform HTTP basic and digest "
+"authentication."
+msgstr ""
+"Le middleware ``authenticate`` permet d'effectuer une authentification de "
+"base ou haché."
+
+#: ../../../docs/middlewares/authenticate.rst:7
+msgid "It takes three parameters:"
+msgstr "Il prend trois paramètres:"
+
+#: ../../../docs/middlewares/authenticate.rst:9
+msgid "an ``Authentication`` object described in :doc:`../vsgi/authentication`"
+msgstr ""
+"un objet de type ``Authentication`` décrit dans :doc:`../vsgi/authentication`"
+
+#: ../../../docs/middlewares/authenticate.rst:10
+msgid "a callback to challenge a user-provided ``Authorization`` header"
+msgstr ""
+"une fonction de rappel pour mettre à l'épreuve une en-tête ``Authorization`` "
+"fournie par l'agent utilisateur"
+
+#: ../../../docs/middlewares/authenticate.rst:11
+msgid ""
+"a forward callback invoked on success with the corresponding authorization "
+"object"
+msgstr ""
+"une fonction de rappel invoquée en case de succès avec l'objet "
+"d'autorisation correspondant"
+
+#: ../../../docs/middlewares/authenticate.rst:14
+msgid ""
+"If the authentication fails, a ``401 Unauthorized`` status is raised with a "
+"``WWW-Authenticate`` header."
+msgstr ""
+"Si l'authentification échoue, une erreur ``401 Unauthorized`` sera lancée "
+"avec pour message le contenu de l'en-tête ``WWW-Authenticate``."
+
+#: ../../../docs/middlewares/authenticate.rst:25
+msgid ""
+"To perform custom password comparison, it is best to cast the "
+"``authorization`` parameter and access the password directly."
+msgstr ""
+"Afin d'effectuer une comparaison de mot de passe plus spécifique, il est "
+"préférable de caster le paramètre ``authorization`` et d'accéder au mot de "
+"passe directement."
+
+#: ../../../docs/middlewares/basepath.rst:2
+msgid "Basepath"
+msgstr "Chemin de base"
+
+#: ../../../docs/middlewares/basepath.rst:4
+msgid ""
+"The ``basepath`` middleware allow a better isolation when composing routers "
+"by stripping a prefix on the :doc:`../vsgi/request` URI."
+msgstr ""
+"Le middleware ``basepath`` permet une meilleure isolation lors de la "
+"compositions de routers en extrayant un préfix de l'URI de la :doc:`../vsgi/"
+"request`."
+
+#: ../../../docs/middlewares/basepath.rst:7
+msgid ""
+"The middleware strips and forwards requests which match the provided base "
+"path. If the resulting path is empty, it fallbacks to a root ``/``."
+msgstr ""
+"Le middleware extrait un préfix du chemin et passe le résultat à la fonction "
+"de rappel. Si le chemin résultant est vide, ``/`` sera utilisé."
+
+#: ../../../docs/middlewares/basepath.rst:10
+msgid ""
+"Error which use their message as a ``Location`` header are automatically "
+"prefixed by the base path."
+msgstr ""
+"Les erreurs qui utilise leurs messages pour l'en-tête ``Location`` seront "
+"automatiquement préfixées."
+
+#: ../../../docs/middlewares/basepath.rst:31
+msgid ""
+"If ``next`` is called while forwarding or an error is thrown, the original "
+"path is restored."
+msgstr ""
+"Si ``next`` est applée ou une erreur est lancée depuis la fonction de "
+"rappel, le chemin original sera restauré."
+
+#: ../../../docs/middlewares/basepath.rst:46
+msgid ""
+"One common pattern is to provide a path-based fallback when using the :doc:"
+"`subdomain` middleware."
+msgstr ""
+"Une approche commune est de fournir une alternative basé sur un préfix de "
+"chemin avec le middleware :doc:`subdomain`."
+
+#: ../../../docs/middlewares/basic.rst:2
+msgid "Basic"
+msgstr "Base"
+
+#: ../../../docs/middlewares/basic.rst:6
+msgid ""
+"Previously know under the name of *default handling*, the ``basic`` "
+"middleware provide a conforming handling of raised status codes as described "
+"in the :doc:`../redirection-and-error` document."
+msgstr ""
+"Connu précédement sous le nom de gestion par défaut, le middleware ``basic`` "
+"fournit une gestion conforme des codes de status décrits dans le document :"
+"doc:`../redirection-and-error`."
+
+#: ../../../docs/middlewares/basic.rst:10
+msgid "It aims at providing sane defaults for a top-level middleware."
+msgstr ""
+"Il fournit un ensemble de comportements désirable pour un middleware situé "
+"au début de la séquence."
+
+#: ../../../docs/middlewares/basic.rst:20
+msgid "If an error is caught, it will perform the following tasks:"
+msgstr "Si une erreur est capturée, il s'occupe des choses suivantes:"
+
+#: ../../../docs/middlewares/basic.rst:22
+msgid "assign an appropriate status code (500 for other errors)"
+msgstr "assigner un code de status approprié (500 sinon)"
+
+#: ../../../docs/middlewares/basic.rst:23
+msgid "setup required headers (eg. `Location` for a redirection)"
+msgstr "il ajoute les en-têtes requises (e.g. `Location` pour une redirection)"
+
+#: ../../../docs/middlewares/basic.rst:24
+msgid ""
+"produce a payload based on the message if required and not already used for "
+"a header"
+msgstr "produit un corps basé sur le message si requis"
+
+#: ../../../docs/middlewares/basic.rst:27
+msgid ""
+"The payload will have the ``text/plain`` content type encoded with ``UTF-8``."
+msgstr ""
+"Le corps possède le type de contenu ``text/plain`` encodé en ``UTF-8``."
+
+#: ../../../docs/middlewares/basic.rst:29
+msgid ""
+"For privacy and security reason, non-status errors (eg. ``IOError``) will "
+"not be used for the payload. To enable that for specific errors, it's "
+"possible to convert them into into a raised status, preferably a ``500 "
+"Internal Server Error``."
+msgstr ""
+"Pour des raisons de sécurité, les messages d'erreur qui ne constituent pas "
+"un code de status (e.g. ``IOError``) ne seront pas utilisés comme corps. "
+"Pour l'utiliser de toute manière, il est possible de convertir l'erreur, "
+"préférablement en ``500 Internal Server Error``."
+
+#: ../../../docs/middlewares/content-negotiation.rst:2
+msgid "Content Negotiation"
+msgstr "Négotiation de contenu"
+
+#: ../../../docs/middlewares/content-negotiation.rst:4
+msgid ""
+"Negotiating the resource representation is an essential part of the HTTP "
+"protocol."
+msgstr "Négotier une ressource est un aspect essentiel du protocole HTTP."
+
+#: ../../../docs/middlewares/content-negotiation.rst:7
+msgid ""
+"The negotiation process is simple: expectations are provided for a specific "
+"header, if they are met, the processing is forwarded with the highest "
+"quality value, otherwise a ``406 Not Acceptable`` status is raised."
+msgstr ""
+"Le processus de négotiation est simple: on fournit des valeurs possibles à "
+"l'aide d'une en-tête spécifique. Si elle sont satisfaites, la fonction de "
+"rappel est appelé avec la valeur dont a qualité est la plus grande, "
+"autrement une erreur ``406 Not Acceptable`` est lancée."
+
+#: ../../../docs/middlewares/content-negotiation.rst:20
+msgid "Or directly by using the default forward callback:"
+msgstr "En utilisant directement la fonction de rappel ``forward``:"
+
+#: ../../../docs/middlewares/content-negotiation.rst:29
+msgid "Preference and quality"
+msgstr "Préférence et qualité"
+
+#: ../../../docs/middlewares/content-negotiation.rst:31
+msgid ""
+"Additionally, the server can state the quality of each expectation. The "
+"middleware will maximize the product of quality and user agent preference "
+"with respect to the order of declaration and user agent preferences if it "
+"happens to be equal."
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:36
+msgid ""
+"If, for instance, you would serve a XML document that is just poorly "
+"converted from a JSON source, you could state it by giving it a low ``q`` "
+"value. If the user agent as a strong preference the former and a low "
+"preference for the latter (eg. ``Accept: text/xml; application/json; "
+"q=0.1)``), it will be served the version with the highest product (eg. ``0.3 "
+"* 1 > 1 * 0.3``)."
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:50
+msgid "Error handling"
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:52
+msgid ""
+"The :doc:`status` middleware may be used to handle the possible ``406 Not "
+"Acceptable`` error raised if no expectation can be satisfied."
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:66
+msgid "Custom comparison"
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:68
+msgid ""
+"A custom comparison function can be provided to ``negotiate`` in order to "
+"handle wildcards and other edge cases. The user agent pattern is the first "
+"argument and the expectation is the second."
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:74
+msgid ""
+"Most of the HTTP/1.1 specification about headers is case-insensitive, use "
+"`Soup.str_case_equal`_ to perform comparisons."
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:89
+#: ../../../docs/middlewares/static.rst:63
+msgid "Helpers"
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:91
+msgid "For convenience, helpers are provided to handle common headers:"
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:94
+msgid "Middleware"
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:94
+msgid "Header"
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:94
+msgid "Edge cases"
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:96
+msgid "``accept``"
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:96
+#: ../../../docs/middlewares/content-negotiation.rst:98
+msgid "``Content-Type``"
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:96
+msgid "``*/*``, ``type/*`` and ``type/subtype1+subtype2``"
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:98
+msgid "``accept_charset``"
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:98
+#: ../../../docs/middlewares/content-negotiation.rst:100
+msgid "``*``"
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:100
+msgid "``accept_encoding``"
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:100
+msgid "``Content-Encoding``"
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:102
+msgid "``accept_language``"
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:102
+msgid "``Content-Language``"
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:102
+msgid "missing language type"
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:104
+msgid "``accept_ranges``"
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:104
+msgid "``Content-Ranges``"
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:104
+msgid "none"
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:107
+msgid ""
+"The ``accept`` middleware will assign the media type and preserve all other "
+"parameters."
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:110
+msgid ""
+"If multiple subtypes are specified (e.g. ``application/vnd.api+json``), the "
+"middleware will check if the subtypes accepted by the user agent form a "
+"subset. This is useful if you serve a specified JSON document format to a "
+"client which only state to accept JSON and does not care about the "
+"specification itself."
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:126
+msgid ""
+"The ``accept_encoding`` middleware will convert the :doc:`../vsgi/response` "
+"if it's either ``gzip`` or ``deflate``."
+msgstr ""
+
+#: ../../../docs/middlewares/content-negotiation.rst:135
+msgid ""
+"The ``accept_charset`` middleware will set the ``charset`` parameter of the "
+"``Content-Type`` header, defaulting to ``application/octet-stream`` if "
+"undefined."
+msgstr ""
+
+#: ../../../docs/middlewares/decode.rst:2
+msgid "Decode"
+msgstr ""
+
+#: ../../../docs/middlewares/decode.rst:4
+msgid "The ``decode`` middleware is used to unapply various content codings."
+msgstr ""
+
+#: ../../../docs/middlewares/decode.rst:14
+msgid "It is typically put at the top of an application."
+msgstr ""
+
+#: ../../../docs/middlewares/decode.rst:17
+msgid "Encoding"
+msgstr ""
+
+#: ../../../docs/middlewares/decode.rst:17
+msgid "Action"
+msgstr ""
+
+#: ../../../docs/middlewares/decode.rst:19
+msgid "deflate"
+msgstr ""
+
+#: ../../../docs/middlewares/decode.rst:19
+#: ../../../docs/middlewares/decode.rst:20
+msgid "`GLib.ZlibDecompressor`_"
+msgstr ""
+
+#: ../../../docs/middlewares/decode.rst:20
+msgid "gzip and x-gzip"
+msgstr ""
+
+#: ../../../docs/middlewares/decode.rst:21
+msgid "identity"
+msgstr ""
+
+#: ../../../docs/middlewares/decode.rst:21
+msgid "nothing"
+msgstr ""
+
+#: ../../../docs/middlewares/decode.rst:26
+msgid ""
+"If an encoding is not supported, a ``501 Not Implemented`` is raised and "
+"remaining encodings are *reapplied* on the request."
+msgstr ""
+
+#: ../../../docs/middlewares/decode.rst:29
+msgid ""
+"To prevent this behavior, the ``DecodeFlags.FORWARD_REMAINING_ENCODINGS`` "
+"flag can be passed to forward unsupported content codings."
+msgstr ""
+
+#: ../../../docs/middlewares/hsts.rst:2
+msgid "HTTP Strict Transport Security"
+msgstr ""
+
+#: ../../../docs/middlewares/hsts.rst:4
+msgid ""
+"The ``hsts`` implement the HTTP strict transport security protocol defined "
+"in RFC6797."
+msgstr ""
+
+#: ../../../docs/middlewares/hsts.rst:7
+msgid ""
+"The duration of the policy must be specified. Using ``0`` will indicate to "
+"the user agent not to enforce the policy."
+msgstr ""
+
+#: ../../../docs/middlewares/hsts.rst:15
+msgid "Include subdomains"
+msgstr ""
+
+#: ../../../docs/middlewares/hsts.rst:17
+msgid ""
+"To include subdomains to the policy, specify the ``HSTSFlags."
+"INCLUDE_SUBDOMAINS`` flag."
+msgstr ""
+
+#: ../../../docs/middlewares/hsts.rst:25
+msgid "Redirect on HTTP"
+msgstr ""
+
+#: ../../../docs/middlewares/hsts.rst:27
+msgid ""
+"The ``HSTSFlags.REDIRECT_ON_HTTP`` perform a redirection of unsecured "
+"requests using the :doc:`https-only` middleware."
+msgstr ""
+
+#: ../../../docs/middlewares/hsts.rst:34
+msgid ""
+"It should be used with :doc:`subdomain` in order to produce the header for "
+"specific domain names."
+msgstr ""
+
+#: ../../../docs/middlewares/https-only.rst:2
+msgid "HTTPS only"
+msgstr ""
+
+#: ../../../docs/middlewares/https-only.rst:4
+msgid ""
+"The ``https_only`` middleware enable HTTPS by performing permanent "
+"redirection (see :doc:`../redirection-and-error` for more details)."
+msgstr ""
+
+#: ../../../docs/middlewares/index.rst:2
+msgid "Middlewares"
+msgstr ""
+
+#: ../../../docs/middlewares/index.rst:4
+msgid ""
+"Middlewares are reusable pieces of processing that can perform various work "
+"from authentication to the delivery of a static resource."
+msgstr ""
+
+#: ../../../docs/middlewares/index.rst:24
+msgid ""
+"The typical way of declaring them involve closures. It is parametrized and "
+"returned to perform a specific task:"
+msgstr ""
+
+#: ../../../docs/middlewares/index.rst:37
+msgid ""
+"The following example shows a middleware that provide a compressed stream "
+"over the :doc:`../vsgi/response` body."
+msgstr ""
+
+#: ../../../docs/middlewares/index.rst:52
+msgid ""
+"If this is wrapped in a function, which is typically the case, it can even "
+"be used directly from the handler."
+msgstr ""
+
+#: ../../../docs/middlewares/index.rst:69
+msgid ""
+"Alternatively, a middleware can be used directly instead of being attached "
+"to a ``Route``, the processing will happen in a ``NextCallback``."
+msgstr ""
+
+#: ../../../docs/middlewares/index.rst:81
+msgid "Forward"
+msgstr ""
+
+#: ../../../docs/middlewares/index.rst:85
+msgid ""
+"One typical middleware pattern is to take a continuation that is forwarded "
+"on success (or any other event) with a single value like it's the case for "
+"the :doc:`content-negotiation` middlewares."
+msgstr ""
+
+#: ../../../docs/middlewares/index.rst:89
+msgid ""
+"This can be easily done with ``ForwardCallback<T>``. The generic parameter "
+"specify the type of the forwarded value."
+msgstr ""
+
+#: ../../../docs/middlewares/index.rst:105
+msgid ""
+"Often, one would simply call the ``next`` continuation, so a ``forward`` "
+"definition is provided to do that. It is used as a default value for various "
+"middlewares such that all the following examples are equivalent:"
+msgstr ""
+
+#: ../../../docs/middlewares/index.rst:120
+msgid ""
+"To pass multiple values, it is preferable to explicitly declare them using a "
+"delegate."
+msgstr ""
+
+#: ../../../docs/middlewares/rate-limit.rst:2
+msgid "Rate-limit"
+msgstr ""
+
+#: ../../../docs/middlewares/rate-limit.rst:4
+msgid "The ``rate_limit`` middleware is provided to setup a rate-limit policy."
+msgstr ""
+
+#: ../../../docs/middlewares/rate-limit.rst:16
+msgid ""
+"The rate-limit let user agents perform a certain number of calls for a "
+"specified duration, by default in hours."
+msgstr ""
+
+#: ../../../docs/middlewares/rate-limit.rst:19
+msgid ""
+"If the limit is busted, a ``429 Too Many Requests`` status is raised with "
+"the value of the ``Retry-After`` header as message. Use the :doc:`basic` "
+"middleware to produce the appropriate payload."
+msgstr ""
+
+#: ../../../docs/middlewares/rate-limit.rst:25
+msgid ""
+"If multiple instances are used to serve requests, the maximum number of "
+"requests should be divided amongts the number of instances. The load-"
+"balancer can be setup to try other instances if a ``429 Too Many Requests`` "
+"is received."
+msgstr ""
+
+#: ../../../docs/middlewares/safely.rst:2
+msgid "Safely"
+msgstr ""
+
+#: ../../../docs/middlewares/safely.rst:4
+msgid ""
+"Yet very simple, the ``safely`` middleware provide a powerful way of "
+"discovering possible error conditions and handle them locally."
+msgstr ""
+
+#: ../../../docs/middlewares/safely.rst:7
+msgid ""
+"Only status defined in :doc:`../redirection-and-error` are leaked: the "
+"compiler will warn for all other unhandled errors."
+msgstr ""
+
+#: ../../../docs/middlewares/sequence.rst:2
+msgid "Sequence"
+msgstr ""
+
+#: ../../../docs/middlewares/sequence.rst:6
+msgid ""
+"The ``sequence`` middleware provide a handy way of chaining middlewares."
+msgstr ""
+
+#: ../../../docs/middlewares/sequence.rst:14
+msgid ""
+"To chain more than two middlewares, one can chain a middleware with a "
+"sequence."
+msgstr ""
+
+#: ../../../docs/middlewares/sequence.rst:28
+msgid ""
+"Vala does not support varidic delegate arguments, which would be much more "
+"convenient to describe a sequence."
+msgstr ""
+
+#: ../../../docs/middlewares/server-sent-events.rst:2
+msgid "Server-Sent Events"
+msgstr ""
+
+#: ../../../docs/middlewares/server-sent-events.rst:4
+msgid ""
+"Valum provides a middleware for the HTML5 `Server-Sent Events`_ protocol to "
+"stream notifications over a persistent connection."
+msgstr ""
+
+#: ../../../docs/middlewares/server-sent-events.rst:9
+msgid ""
+"The ``ServerSentEvents.stream_events`` function creates a handling "
+"middleware and provide a ``send`` callback to transmit the actual events."
+msgstr ""
+
+#: ../../../docs/middlewares/server-sent-events.rst:30
+msgid "Multi-line messages"
+msgstr ""
+
+#: ../../../docs/middlewares/server-sent-events.rst:32
+msgid ""
+"Multi-line messages are handled correctly by splitting the data into into "
+"multiple ``data:`` chunks."
+msgstr ""
+
+#: ../../../docs/middlewares/static.rst:2
+msgid "Static Resource Delivery"
+msgstr "Livraison des ressources statiques"
+
+#: ../../../docs/middlewares/static.rst:4
+msgid ""
+"Middlewares in the ``Valum.Static`` namespace ensure delivery of static "
+"resources."
+msgstr ""
+"Les middlewares de l'espace de nom ``Valum.Static`` assure la livraison des "
+"ressources statiques."
+
+#: ../../../docs/middlewares/static.rst:11
+msgid ""
+"As of convention, all middleware use the ``path`` context key to resolve the "
+"resource to be served. This can easily be specified using a rule parameter "
+"with the ``path`` type."
+msgstr ""
+"Par convention, tous les middlewares utilise la clé ``path`` dans le context "
+"pour résoudre la ressource desservie. Sa valeur peut être facilement fournie "
+"par un paramètre de règle utilisant le type ``path``."
+
+#: ../../../docs/middlewares/static.rst:15
+msgid ""
+"For more flexibility, one can compute the ``path`` value and pass the "
+"control with ``next``. The following example obtains the key from the HTTP "
+"query:"
+msgstr ""
+"Pour plus de flexibilité, il est également possible de calculer l'entrée "
+"``path`` et de passer le contrôle au middleware en appelant ``next``. "
+"L'exemple suivant construit l'entrée depuis les paramètres de l'URL."
+
+#: ../../../docs/middlewares/static.rst:25
+msgid "If a ``HEAD`` request is performed, the payload will be omitted."
+msgstr ""
+"Si une requête de méthode ``HEAD`` est effectuée, le corps sera délibérément "
+"omis."
+
+#: ../../../docs/middlewares/static.rst:28
+msgid "GFile backend"
+msgstr ""
+
+#: ../../../docs/middlewares/static.rst:30
+msgid ""
+"The ``serve_from_file`` middleware will serve resources relative to a `GLib."
+"File`_ instance."
+msgstr ""
+"Le middleware ``serve_from_file`` dessert les ressources relative à une "
+"instance de `GLib.File`_."
+
+#: ../../../docs/middlewares/static.rst:37
+msgid "To deliver from the global resources, use the ``resource://`` scheme."
+msgstr ""
+"Pour délivrer les ressources globals, il est possible d'utiliser le schéma "
+"``resource://``."
+
+#: ../../../docs/middlewares/static.rst:45
+msgid ""
+"Before being served, each file is forwarded to make it possible to modify "
+"headers more specifically or raise a last-minute error."
+msgstr ""
+"Avant d'être desservit, chaque fichier est passé à la fonction de rappel "
+"afin de pouvoir en modifier les en-têtes ou lancer une erreur de dernière "
+"minute."
+
+#: ../../../docs/middlewares/static.rst:48
+msgid "Once done, invoke the ``next`` continuation to send over the content."
+msgstr ""
+"Une fois prêt, on peut appeler ``next`` pour transmettre le contenu de la "
+"ressource."
+
+#: ../../../docs/middlewares/static.rst:65
+msgid ""
+"Two helpers are provided for GFile-based delivery: ``serve_from_path`` and "
+"``serve_from_uri``."
+msgstr ""
+"Deux utilitaires sont fournis pour la livraison: ``serve_from_path`` et "
+"``serve_from_url``."
+
+#: ../../../docs/middlewares/static.rst:75
+msgid "GResource backend"
+msgstr ""
+
+#: ../../../docs/middlewares/static.rst:77
+msgid ""
+"The ``serve_from_resource`` middleware is provided to serve a resource "
+"bundle (see `GLib.Resource`_) from a given prefix. Note that the prefix must "
+"be a valid path, starting and ending with a slash ``/`` character."
+msgstr ""
+"Le middleware ``serve_from_resource`` permet de desservir un agglomérat de "
+"ressources (voir `GLib.Resource`_) à partir d'un préfixe donné. Il est à "
+"noter que le préfixe doit être un chemin valide commençant et se terminant "
+"par une barre oblique ``/``."
+
+#: ../../../docs/middlewares/static.rst:89
+msgid "Compression"
+msgstr "Compression"
+
+#: ../../../docs/middlewares/static.rst:91
+msgid ""
+"To compress static resources, it is best to negotiate a compression encoding "
+"with a :doc:`content-negotiation` middleware: body stream and headers will "
+"be set properly if the encoding is supported."
+msgstr ""
+"Pour compresser les ressources statiques, il est préférable de négotier "
+"l'encodage avec un middleware de :doc:`content-negotiation`. Les en-têtes et "
+"un convertisseur de flux sera appliqué si l'encodage est supporté."
+
+#: ../../../docs/middlewares/static.rst:95
+msgid ""
+"Using the ``identity`` encoding provide a fallback in case the user agent "
+"does not want compression and prevent a ``406 Not Acceptable`` from being "
+"raised."
+msgstr ""
+"Utiliser l'encodage ``identity`` permet de fournir une alternative au cas où "
+"l'agent utilisateur ne veut ou ne supporte pas la compression. Autrement, "
+"une erreur ``406 Not Acceptable`` aurait été lancée."
+
+#: ../../../docs/middlewares/static.rst:104
+msgid "Content type detection"
+msgstr "Détection du type de contenu"
+
+#: ../../../docs/middlewares/static.rst:106
+msgid ""
+"The middlewares will detect the content type based on the file name and a "
+"lookup on its content."
+msgstr ""
+"Le middleware détecte automatiquement le type de contenu basé sur le nom du "
+"fichier et un aperçu de son contenu."
+
+#: ../../../docs/middlewares/static.rst:109
+msgid ""
+"Content type detection, based on the file name and a small data lookup, is "
+"performed with `GLib.ContentType`_."
+msgstr ""
+"La détection du type de contenu, basé sur le nom du fichier et un aperçu de "
+"son contenu, est effectué à l'aide de `GLib.ContentType`_."
+
+#: ../../../docs/middlewares/static.rst:115
+msgid "Deal with missing resources"
+msgstr "Gérer les ressources manquantes"
+
+#: ../../../docs/middlewares/static.rst:117
+msgid ""
+"If a resource is not available (eg. the file does not exist), the control "
+"will be forwarded to the next route."
+msgstr ""
+"Si une resource n,est pas disponible (e.g. le fichier n'existe pas), la "
+"fonction de rappel ``next`` sera invoquée afin de passer à la prochaine "
+"route."
+
+#: ../../../docs/middlewares/static.rst:120
+msgid ""
+"One can use that behaviour to implement a cascading failover with the :doc:"
+"`sequence` middleware."
+msgstr ""
+"Il est possible d'utiliser ce comportement pour implanter des alternatives "
+"en cascade à l'aide du middleware :doc:`sequence`."
+
+#: ../../../docs/middlewares/static.rst:128
+msgid ""
+"To generate a ``404 Not Found``, just raise a ``ClientError.NOT_FOUND`` as "
+"described in :doc:`../redirection-and-error`."
+msgstr ""
+"Pour produire une erreur ``404 Not Found``, il est suffisant de lancer une "
+"erreur ``ClientError.NOT_FOUND`` tel que décrit dans :doc:``../redirection-"
+"and-error``."
+
+#: ../../../docs/middlewares/static.rst:142
+msgid "Options"
+msgstr ""
+
+#: ../../../docs/middlewares/static.rst:144
+msgid "Options are provided as flags from the ``ServeFlags`` enumeration."
+msgstr "Les options sont fournies sous la forme d'un masque ``ServeFlags``."
+
+#: ../../../docs/middlewares/static.rst:147
+msgid "ETag"
+msgstr ""
+
+#: ../../../docs/middlewares/static.rst:149
+msgid ""
+"If the ``ServeFlags.ENABLE_ETAG`` is specified, a checksum of the resource "
+"will be generated in the ``ETag`` header."
+msgstr ""
+
+#: ../../../docs/middlewares/static.rst:152
+msgid ""
+"If set and available, it will have precedence over ``ServeFlags."
+"ENABLE_LAST_MODIFIED`` described below."
+msgstr ""
+
+#: ../../../docs/middlewares/static.rst:156
+msgid "Last-Modified"
+msgstr ""
+
+#: ../../../docs/middlewares/static.rst:158
+msgid ""
+"Unlike ``ETag``, this caching feature is time-based and will indicate the "
+"last modification on the resource. This is only available for some GFile "
+"backend and will fallback to ``ETag`` if enabled as well."
+msgstr ""
+
+#: ../../../docs/middlewares/static.rst:162
+msgid "Specify the ``ServeFlags.ENABLE_LAST_MODIFIED`` to enable this feature."
+msgstr ""
+
+#: ../../../docs/middlewares/static.rst:165
+msgid "X-Sendfile"
+msgstr ""
+
+#: ../../../docs/middlewares/static.rst:167
+msgid ""
+"If the application run behind a HTTP server which have access to the "
+"resources, it might be preferable to let it serve them directly with "
+"``ServeFlags.X_SENDFILE``."
+msgstr ""
+"Si l'application exécute derrière un proxy HTTP inversé qui a accès aux "
+"ressources, il est probablement préférable de le laisser les servir "
+"directement avec ``ServeFlags.X_SENDFILE``,"
+
+#: ../../../docs/middlewares/static.rst:174
+msgid "If files are not locally available, they will be served directly."
+msgstr ""
+"Si les fichiers ne sont pas localement disponible, ils seront servis "
+"directement."
+
+#: ../../../docs/middlewares/static.rst:177
+msgid "Public caching"
+msgstr "Cache publique"
+
+#: ../../../docs/middlewares/static.rst:179
+msgid ""
+"The ``ServeFlags.ENABLE_CACHE_CONTROL_PUBLIC`` let intermediate HTTP servers "
+"cache the payload by attaching a ``Cache-Control: public`` header to the "
+"response."
+msgstr ""
+
+#: ../../../docs/middlewares/static.rst:184
+msgid "Expose missing permissions"
+msgstr ""
+
+#: ../../../docs/middlewares/static.rst:186
+msgid ""
+"The ``ServeFlags.FORBID_ON_MISSING_RIGHTS`` will trigger a ``403 Forbidden`` "
+"if rights are missing to read a file. This is not a default as it may expose "
+"information about the existence of certain files."
+msgstr ""
+
+#: ../../../docs/middlewares/status.rst:2
+msgid "Status"
+msgstr ""
+
+#: ../../../docs/middlewares/status.rst:4
+msgid ""
+"Thrown status codes (see :doc:`../redirection-and-error`) can be handled "
+"with the ``status`` middleware."
+msgstr ""
+
+#: ../../../docs/middlewares/status.rst:7
+msgid ""
+"The received :doc:`../vsgi/request` and :doc:`../vsgi/response` object are "
+"in the same state they were when the status was thrown. An additional "
+"parameter provide access to the actual `GLib.Error`_ object."
+msgstr ""
+
+#: ../../../docs/middlewares/status.rst:20
+msgid ""
+"To jump to the next status handler found upstream in the routing queue, just "
+"throw the error. If the error can be resolved, you might want to try "
+"``next`` once more."
+msgstr ""
+
+#: ../../../docs/middlewares/status.rst:39
+msgid ""
+"If an error is not handled, it will eventually be caught by the default "
+"status handler, which produce a minimal response."
+msgstr ""
+
+#: ../../../docs/middlewares/subdomain.rst:2
+msgid "Subdomain"
+msgstr "Sous-domaine"
+
+#: ../../../docs/middlewares/subdomain.rst:4
+msgid ""
+"The ``subdomain`` middleware matches :doc:`../vsgi/request` which subdomain "
+"is conform to expectations."
+msgstr ""
+"Le middleware ``subdomain`` accepte les :doc:`../vsgi/request` dont le sous-"
+"domaine est conforme aux attentes."
+
+#: ../../../docs/middlewares/subdomain.rst:9
+msgid ""
+"Domains are interpreted in their semantical right-to-left order and matched "
+"as suffix."
+msgstr ""
+"Les domaines sont interprétés dans l'ordre sémaitque de droite à gauche et "
+"accepté par suffixe."
+
+#: ../../../docs/middlewares/subdomain.rst:12
+msgid ""
+"The pattern is specified as the first argument. It may contain asterisk "
+"``*`` which specify that any supplied label satisfy that position."
+msgstr ""
+"Le patron est spécifié en premier argument. Il peut contenir des astérisques "
+"``*`` qui spécifient que tout libellé fourni sera satisfait à cette position."
+
+#: ../../../docs/middlewares/subdomain.rst:26
+msgid "The matched subdomain labels are extracted and passed by parameter."
+msgstr ""
+"Les libellés correspondant du domaine de la requête sont extrait et passé à "
+"la fonction de rappel."
+
+#: ../../../docs/middlewares/subdomain.rst:34
+msgid ""
+"This middleware can be used along with subrouting to mount any :doc:`../"
+"router` on a specific domain pattern."
+msgstr ""
+"Ce middleware peut être utilisé pour monter un :doc:`../router` à l'aide de "
+"sous-routage sur un patron de domaine spécifique."
+
+#: ../../../docs/middlewares/subdomain.rst:45
+msgid "Strict"
+msgstr "Mode strict"
+
+#: ../../../docs/middlewares/subdomain.rst:47
+msgid ""
+"There is two matching mode: loose and strict. The loose mode only expect the "
+"request to be performed on a suffix-compatible hostname. For instance, "
+"``api`` would match ``api.example.com`` and ``v1.api.example.com`` as well."
+msgstr ""
+"Il existe deux mode de comparaison: flexible et stricte. Le mode flexible "
+"vérifie uniquement que le domaine de la requête possède un suffixe "
+"compatible. Par exemple, ``api`` accepte ``api.example.com`` et ``v1.api."
+"example.com``."
+
+#: ../../../docs/middlewares/subdomain.rst:51
+msgid ""
+"To prevent this and perform a _strict_ match, simply specify the second "
+"argument. The domain of the request will have to supply exactly the same "
+"amount of labels matching the expectations."
+msgstr ""
+"Afin de prevenir çela et d'effectuer une comparaison stricte, il suffit de "
+"spécifier le deuxième argument. Le domaine de la requête devra comporter "
+"exactement le même nombre de libellés."
+
+#: ../../../docs/middlewares/subdomain.rst:61
+msgid "Skip labels"
+msgstr "Libellés ignorés"
+
+#: ../../../docs/middlewares/subdomain.rst:63
+msgid ""
+"By default, the two first labels are ignored since web applications are "
+"typically served under two domain levels (eg. example.com). If it's not the "
+"case, the number of skipped labels can be set to any desirable value."
+msgstr ""
+"Par défaut, les deux premiers libellés sont ignorés puisqu'une application "
+"Web est normalement desservie sous deux niveaux de domaines (e.g. example."
+"com). Dans le cas contraire, il est possible de définir le nombre de "
+"libellés à ignorer."

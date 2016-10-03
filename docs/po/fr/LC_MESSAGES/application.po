@@ -1,0 +1,149 @@
+# French translations for Valum.
+# Copyright (C) 2015, Antono Vasiljev, Guillaume Poirier-Morency
+# This file is distributed under the same license as the Valum package.
+# Guillaume Poirier-Morency <guillaumepoiriermorency@gmail.com>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Valum web micro-framework 0.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-10-03 16:05-0400\n"
+"PO-Revision-Date: 2016-10-03 22:53-0400\n"
+"Last-Translator: Guillaume Poirier-Morency <guillaumepoiriermorency@gmail."
+"com>\n"
+"Language-Team: français <>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Gtranslator 2.91.7\n"
+
+#: ../../../docs/application.rst:2
+msgid "Application"
+msgstr "Application"
+
+#: ../../../docs/application.rst:4
+msgid ""
+"This document explains step-by-step the sample presented in the :doc:"
+"`getting-started` document."
+msgstr ""
+"Ce document explique étape-par-étape l'exemple de code présenté dans le "
+"document :doc:`getting-started`."
+
+#: ../../../docs/application.rst:7
+msgid ""
+"Many implementations are provided and documented in :doc:`vsgi/server/index`."
+msgstr ""
+"Plusieurs implémentations sont fournies et documentées dans :doc:`vsgi/"
+"server/index`."
+
+#: ../../../docs/application.rst:10
+msgid "Creating an application"
+msgstr "Créer une application"
+
+#: ../../../docs/application.rst:12
+msgid ""
+"An application is defined by a function that respects the ``VSGI."
+"ApplicationCallback`` delegate. The :doc:`router` provides ``handle`` for "
+"that purpose along with powerful routing facilities for client requests."
+msgstr ""
+"Une application est définie par une fonction typée par ``VSGI."
+"ApplicationCallback``. Le :doc:`router` fourni une fonction compatible "
+"``handle`` ainsi qu'une multitude de fonctionnalités pour traiter les "
+"requêtes HTTP. "
+
+#: ../../../docs/application.rst:21
+msgid "Binding a route"
+msgstr "Connecter une route"
+
+#: ../../../docs/application.rst:23
+msgid ""
+"An application constitute of a list of routes matching and handling user "
+"requests. The router provides helpers to declare routes which internally use "
+"``Route`` instances."
+msgstr ""
+"Une application est constituée d'une séquence de routes qui acceptent et "
+"traitent les requêtes HTTP. Le router fournit des utilitaires afin de "
+"déclarer ces routes qui sont des instances des implémentations de la classe "
+"abstraite ``Route``."
+
+#: ../../../docs/application.rst:33
+msgid ""
+"Every route declaration has a callback associated that does the request "
+"processing. The callback, named handler, receives four arguments:"
+msgstr ""
+"Chaque déclaration de route est accompagnée d'une fonction de retour qui "
+"procède au traitement de la requête. Cette fonction, nommée _handler_, "
+"reçoit quatre arguments:"
+
+#: ../../../docs/application.rst:36
+msgid "a :doc:`vsgi/request` that describes a resource being requested"
+msgstr "une :doc:`vsgi/request` qui décrit une resource demandée"
+
+#: ../../../docs/application.rst:37
+msgid "a :doc:`vsgi/response` that correspond to that resource"
+msgstr "une :doc:`vsgi/response` qui correspond à cette resource"
+
+#: ../../../docs/application.rst:38
+msgid "a ``next`` continuation to `keep routing`"
+msgstr "une continuation ``next`` afin de continuer le routage"
+
+#: ../../../docs/application.rst:39
+msgid ""
+"a routing ``context`` to retrieve and store states from previous and for "
+"following handlers"
+msgstr ""
+"un contexte de routage ``context`` afin de récupérer et stocker des états "
+"produits et destinés respectivement aux routes précédentes et suivantes"
+
+#: ../../../docs/application.rst:44
+msgid ""
+"For an alternative, more structured approach to route binding, see :ref:"
+"`cleaning-up-route-logic`"
+msgstr ""
+"Pour une approche alternative et plus structurées à la déclaration de "
+"routes, consulter :ref:`cleaning-up-route-logic`."
+
+#: ../../../docs/application.rst:48
+msgid "Serving the application"
+msgstr "Servir l'application"
+
+#: ../../../docs/application.rst:50
+msgid ""
+"This part is pretty straightforward: you create a server that will serve "
+"your application at port ``3003`` and since ``http`` was specified, it will "
+"be served with :doc:`vsgi/server/http`."
+msgstr ""
+"Cette partie est relativement simple: un server est créé afin de desservir "
+"l'application au port ``3003`` et puisque ``http`` est spécifié, "
+"l'application sera servie par :doc:`vsgi/server/http`."
+
+#: ../../../docs/application.rst:58
+msgid ""
+":doc:`vsgi/server/index` takes an application identifier and an "
+"``ApplicationCallback``, which is respected by the ``handle`` function."
+msgstr ""
+":doc:`vsgi/server/index` prend un identifiant d'application et une fonction "
+"de retour de type ``ApplicationCallback``, qui est ``handle`` dans ce cas "
+"spécifique."
+
+#: ../../../docs/application.rst:61
+msgid ""
+"Minimal application can be defined using a simple lambda function taking a :"
+"doc:`vsgi/request` and :doc:`vsgi/response`."
+msgstr ""
+"Une application minimale peut-être définie en utilisant une simple fonction "
+"de retour qui prend pour argument la paire :doc:`vsgi/request` et :doc:`vsgi/"
+"response`."
+
+#: ../../../docs/application.rst:71
+msgid ""
+"Usually, you would only pass the CLI arguments to ``run``, so that your "
+"runtime can be parametrized easily, but in this case we just want our "
+"application to run with fixed parameters. Options are documented per "
+"implementation."
+msgstr ""
+"Normalement, les arguments de la ligne de commande sont fourni à ``run`` "
+"afin de pouvoir paramétriser l'exécution, mais dans ce cas on ne fait que "
+"fournir des paramètres fixés. Les options sont documentés par implémentation."

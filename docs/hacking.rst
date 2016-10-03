@@ -110,3 +110,23 @@ in the code have to be updated manually:
 -   GIR version annotations for all declared namespaces
 -   ``version`` and ``release`` in ``docs/conf.py``
 
+Translations
+------------
+
+To generate pot files, enable the documentation with ``-D enable_docs=true`` in
+the configure step (or later with ``mesonconf``) and launch the following
+command:
+
+.. code-block:: bash
+
+    ninja docs/po
+
+Then, move to the ``docs`` folder to update the translations:
+
+.. code-block:: bash
+
+    sphinx-intl update -p ../build/docs/locale -l <lang>
+
+This should update the files located in ``po/<lang>/LC_MESSAGES``. The docs can
+then be regenerated with the translations.
+

@@ -1,0 +1,663 @@
+# French translations for Valum.
+# Copyright (C) 2015, Antono Vasiljev, Guillaume Poirier-Morency
+# This file is distributed under the same license as the Valum package.
+# Guillaume Poirier-Morency <guillaumepoiriermorency@gmail.com>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Valum web micro-framework 0.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-10-03 17:00-0400\n"
+"PO-Revision-Date: 2016-10-04 16:53-0400\n"
+"Last-Translator: Guillaume Poirier-Morency <guillaumepoiriermorency@gmail."
+"com>\n"
+"Language-Team: français <>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Gtranslator 2.91.7\n"
+
+#: ../../../docs/router.rst:2
+msgid "Router"
+msgstr "Routeur"
+
+#: ../../../docs/router.rst:4
+msgid ""
+"Router is the core component of Valum. It dispatches request to the right "
+"handler and processes certain error conditions described in :doc:"
+"`redirection-and-error`."
+msgstr ""
+"Le routeur est une composante fondamentale de Valum. Il permet de déterminer "
+"la route qui traitera la requête et gère certaines conditions d'erreur "
+"décrites dans :doc:`redirection-and-error`."
+
+#: ../../../docs/router.rst:8
+msgid ""
+"The router is constituted of a sequence of ``Route`` objects which may or "
+"may not match incoming requests and perform the process described in their "
+"handlers."
+msgstr ""
+"Le routeur est constitué d'une séquence d'objet ``Route`` qui peuvent "
+"accepter et traiter une requête d'un agent utilisateur."
+
+#: ../../../docs/router.rst:13
+msgid "Route"
+msgstr "Route"
+
+#: ../../../docs/router.rst:15
+msgid ""
+"The most basic and explicit way of attaching a handler is ``Router.route``, "
+"which attach the provided ``Route`` object to the sequence."
+msgstr ""
+
+#: ../../../docs/router.rst:22
+msgid ""
+"Route are simple objects which combine a matching and handling processes. "
+"The following sections implicitly treat of route objects such such as "
+"``RuleRoute`` and ``RegexRoute``."
+msgstr ""
+
+#: ../../../docs/router.rst:27
+msgid "Method"
+msgstr ""
+
+#: ../../../docs/router.rst:31
+msgid ""
+"The ``Method`` flag provide a list of HTTP methods and some useful masks "
+"used into route definitions."
+msgstr ""
+
+#: ../../../docs/router.rst:35
+msgid "Flag"
+msgstr ""
+
+#: ../../../docs/router.rst:35 ../../../docs/router.rst:284
+msgid "Description"
+msgstr ""
+
+#: ../../../docs/router.rst:37
+msgid "``Method.SAFE``"
+msgstr ""
+
+#: ../../../docs/router.rst:37
+msgid "safe methods"
+msgstr ""
+
+#: ../../../docs/router.rst:38
+msgid "``Method.IDEMPOTENT``"
+msgstr ""
+
+#: ../../../docs/router.rst:38
+msgid "idempotent methods (e.g. ``SAFE`` and ``PUT``)"
+msgstr ""
+
+#: ../../../docs/router.rst:39
+msgid "``Method.CACHEABLE``"
+msgstr ""
+
+#: ../../../docs/router.rst:39
+msgid "cacheable methods (e.g. ``HEAD``, ``GET`` and ``POST``)"
+msgstr ""
+
+#: ../../../docs/router.rst:40
+msgid "``Method.ALL``"
+msgstr ""
+
+#: ../../../docs/router.rst:40
+msgid "all standard HTTP methods"
+msgstr ""
+
+#: ../../../docs/router.rst:41
+msgid "``Method.OTHER``"
+msgstr ""
+
+#: ../../../docs/router.rst:41
+msgid "any non-standard HTTP methods"
+msgstr ""
+
+#: ../../../docs/router.rst:42
+msgid "``Method.ANY``"
+msgstr ""
+
+#: ../../../docs/router.rst:42
+msgid "anything, including non-standard methods"
+msgstr ""
+
+#: ../../../docs/router.rst:43
+msgid "``Method.PROVIDED``"
+msgstr ""
+
+#: ../../../docs/router.rst:43
+msgid "indicate that the route provide its methods"
+msgstr ""
+
+#: ../../../docs/router.rst:44
+msgid "``Method.META``"
+msgstr ""
+
+#: ../../../docs/router.rst:44
+msgid "mask for all meta flags like ``Method.PROVIDED``"
+msgstr ""
+
+#: ../../../docs/router.rst:49
+msgid ""
+"Safe, idempotent and cacheable methods are defined in section 4.2 of `RFC "
+"7231`_."
+msgstr ""
+
+#: ../../../docs/router.rst:53
+msgid ""
+"Using a flag makes it really convenient to capture multiple methods with the "
+"``|`` binary operator."
+msgstr ""
+
+#: ../../../docs/router.rst:62
+msgid ""
+"``Method.GET`` is defined as ``Method.ONLY_GET | Method.HEAD`` such that "
+"defining the former will also provide a ``HEAD`` implementation. In general, "
+"it's recommended to check the method in order to skip a body that won't be "
+"considered by the user agent."
+msgstr ""
+
+#: ../../../docs/router.rst:77
+msgid "To provide only the ``GET`` part, use ``Method.ONLY_GET``."
+msgstr ""
+
+#: ../../../docs/router.rst:86
+msgid ""
+"Per definition, ``POST`` is considered cacheable, but if it's not desirable, "
+"it may be removed from the mask with the unary ``~`` operator."
+msgstr ""
+
+#: ../../../docs/router.rst:97
+msgid "Non-standard method"
+msgstr ""
+
+#: ../../../docs/router.rst:99
+msgid ""
+"To handle non-standard HTTP method, use the ``Method.OTHER`` along with an "
+"explicit check."
+msgstr ""
+
+#: ../../../docs/router.rst:110
+msgid "Reverse"
+msgstr ""
+
+#: ../../../docs/router.rst:114
+msgid ""
+"Some route implementations can be reversed into URLs by calling ``Route."
+"to_url`` or the alternative ``Route.to_urlv`` and ``Route."
+"to_url_from_hash``. It may optionally take parameters which, in the case of "
+"the rule-based route, correspond to the named captures."
+msgstr ""
+
+#: ../../../docs/router.rst:120
+msgid "Introspection"
+msgstr ""
+
+#: ../../../docs/router.rst:122
+msgid ""
+"The router introspect the route sequence to determine what methods are "
+"allowed for a given URI and thus produce a nice ``Allow`` header. To mark a "
+"method as *provided*, the ``Method.PROVIDED`` flag has to be used. This is "
+"automatically done for the helpers and the ``Router.rule`` function "
+"described below."
+msgstr ""
+
+#: ../../../docs/router.rst:127
+msgid ""
+"Additionally, the ``OPTIONS`` and ``TRACE`` are automatically handled if not "
+"specified for a path. The ``OPTIONS`` will produce a ``Allow`` header and "
+"``TRACE`` will feedback the request into the response payload."
+msgstr ""
+
+#: ../../../docs/router.rst:132
+msgid "Named route"
+msgstr ""
+
+#: ../../../docs/router.rst:136
+msgid ""
+"Few of the helpers provided by the router also accept an additional "
+"parameter to name the created route object. This can then be used to "
+"generate reverse URLs with ``Router.url_for``."
+msgstr ""
+
+#: ../../../docs/router.rst:142
+msgid ""
+"This feature is only support for the asterisk, rule-based or path-based "
+"route implementations."
+msgstr ""
+
+#: ../../../docs/router.rst:153
+msgid ""
+"Likewise to ``to_url``, it's possible to pass additional parameters as "
+"varidic arguments. The following example show how one can serve relocatable "
+"static resources and generate URLs in a `Compose`_ template."
+msgstr ""
+
+#: ../../../docs/router.rst:178
+msgid "Once"
+msgstr ""
+
+#: ../../../docs/router.rst:182
+msgid ""
+"To perform initialization or just call some middleware once, use ``Router."
+"once``."
+msgstr ""
+
+#: ../../../docs/router.rst:199
+msgid "Use"
+msgstr ""
+
+#: ../../../docs/router.rst:203
+msgid ""
+"The simplest way to attach a handler is ``Router.use``, which "
+"unconditionally apply the route on the request."
+msgstr ""
+
+#: ../../../docs/router.rst:215
+msgid "It is typically used to mount a :doc:`middlewares/index` on the router."
+msgstr ""
+
+#: ../../../docs/router.rst:218
+msgid "Asterisk"
+msgstr ""
+
+#: ../../../docs/router.rst:222
+msgid ""
+"The special ``*`` URI is handled by the ``Router.asterisk`` helper. It is "
+"typically used along with the ``OPTIONS`` method to provide a self-"
+"description of the web service or application."
+msgstr ""
+
+#: ../../../docs/router.rst:233 ../../../docs/router.rst:269
+msgid "Rule"
+msgstr ""
+
+#: ../../../docs/router.rst:237
+msgid ""
+"Rule helpers (e.g. ``get``, ``post``, ``rule``) must explicitly be provided "
+"with a leading slash."
+msgstr ""
+
+#: ../../../docs/router.rst:240
+msgid ""
+"The rule syntax has been greatly improved to support groups, optionals and "
+"wildcards."
+msgstr ""
+
+#: ../../../docs/router.rst:243
+msgid ""
+"The *de facto* way of attaching handler callbacks is based on the rule "
+"system. The ``Router.rule`` as well as all HTTP method helpers use it."
+msgstr ""
+
+#: ../../../docs/router.rst:252
+msgid "The syntax for rules is given by the following EBNF grammar:"
+msgstr ""
+
+#: ../../../docs/router.rst:258
+msgid "Remarks"
+msgstr ""
+
+#: ../../../docs/router.rst:260
+msgid ""
+"a piece is a single character, so ``/users/?`` only indicates that the ``/`` "
+"is optional"
+msgstr ""
+
+#: ../../../docs/router.rst:262
+msgid ""
+"the wildcard ``*`` matches anything, just like the ``.*`` regular expression"
+msgstr ""
+
+#: ../../../docs/router.rst:264
+msgid ""
+"The following table show valid rules and their corresponding regular "
+"expressions. Note that rules are matching the whole path as they are "
+"automatically anchored."
+msgstr ""
+
+#: ../../../docs/router.rst:269 ../../../docs/router.rst:353
+msgid "Regular expression"
+msgstr ""
+
+#: ../../../docs/router.rst:271
+msgid "``/user``"
+msgstr ""
+
+#: ../../../docs/router.rst:271
+msgid "``^/user$``"
+msgstr ""
+
+#: ../../../docs/router.rst:272
+msgid "``/user/<id>``"
+msgstr ""
+
+#: ../../../docs/router.rst:272
+msgid "``^/user/(?<id>\\w+)$``"
+msgstr ""
+
+#: ../../../docs/router.rst:273
+msgid "``/user/<int:id>``"
+msgstr ""
+
+#: ../../../docs/router.rst:273
+msgid "``^/user/(?<id>\\d+)$``"
+msgstr ""
+
+#: ../../../docs/router.rst:274
+msgid "``/user(/<int:id>)?``"
+msgstr ""
+
+#: ../../../docs/router.rst:274
+msgid "``^/user(?:/(?<id>\\d+))?$``"
+msgstr ""
+
+#: ../../../docs/router.rst:278
+msgid "Types"
+msgstr ""
+
+#: ../../../docs/router.rst:280
+msgid ""
+"Valum provides built-in types initialized in the :doc:`router` constructor. "
+"The following table details these types and what they match."
+msgstr ""
+
+#: ../../../docs/router.rst:284
+msgid "Type"
+msgstr ""
+
+#: ../../../docs/router.rst:284
+msgid "Regex"
+msgstr ""
+
+#: ../../../docs/router.rst:286
+msgid "``int``"
+msgstr ""
+
+#: ../../../docs/router.rst:286
+msgid "``\\d+``"
+msgstr ""
+
+#: ../../../docs/router.rst:286
+msgid "matches non-negative integers like a database primary key"
+msgstr ""
+
+#: ../../../docs/router.rst:289
+msgid "``string``"
+msgstr ""
+
+#: ../../../docs/router.rst:289
+msgid "``\\w+``"
+msgstr ""
+
+#: ../../../docs/router.rst:289
+msgid "matches any word character"
+msgstr ""
+
+#: ../../../docs/router.rst:291
+msgid "``path``"
+msgstr ""
+
+#: ../../../docs/router.rst:291
+msgid "``(?:\\.?[\\w/-\\s/])+``"
+msgstr ""
+
+#: ../../../docs/router.rst:291
+msgid "matches a piece of route including slashes, but not ``..``"
+msgstr ""
+
+#: ../../../docs/router.rst:295
+msgid ""
+"Undeclared types default to ``string``, which matches any word characters."
+msgstr ""
+
+#: ../../../docs/router.rst:297
+msgid ""
+"It is possible to specify or overwrite types using the ``types`` map in :doc:"
+"`router`. This example will define the ``path`` type matching words and "
+"slashes using a regular expression literal."
+msgstr ""
+
+#: ../../../docs/router.rst:305
+msgid "If you would like ``ìnt`` to match negatives integer, you may just do:"
+msgstr ""
+
+#: ../../../docs/router.rst:311
+msgid "Rule parameters are available from the routing context by their name."
+msgstr ""
+
+#: ../../../docs/router.rst:321
+msgid "Helpers"
+msgstr ""
+
+#: ../../../docs/router.rst:323
+msgid ""
+"Helpers for the methods defined in the HTTP/1.1 protocol and the extra "
+"``TRACE`` methods are included. The path is matched according to the rule "
+"system defined previously."
+msgstr ""
+
+#: ../../../docs/router.rst:333
+msgid ""
+"The following example deal with a ``POST`` request providing using `Soup."
+"Form`_ to decode the payload."
+msgstr ""
+
+#: ../../../docs/router.rst:357
+msgid "The regex helper must be provided with an explicit leading slash."
+msgstr ""
+
+#: ../../../docs/router.rst:359
+msgid ""
+"If the rule system does not suit your needs, it is always possible to use "
+"regular expression. Regular expression will be automatically scoped, "
+"anchored and optimized."
+msgstr ""
+
+#: ../../../docs/router.rst:369
+msgid "Named captures are registered on the routing context."
+msgstr ""
+
+#: ../../../docs/router.rst:378
+msgid "Matcher callback"
+msgstr ""
+
+#: ../../../docs/router.rst:380
+msgid ""
+"Request can be matched by a simple callback typed by the ``MatcherCallback`` "
+"delegate."
+msgstr ""
+
+#: ../../../docs/router.rst:390
+msgid "Scoping"
+msgstr ""
+
+#: ../../../docs/router.rst:394
+msgid ""
+"The scope feature does not include a slash, instead you should scope with a "
+"leading slash like shown in the following examples."
+msgstr ""
+
+#: ../../../docs/router.rst:397
+msgid ""
+"Scoping is a powerful prefixing mechanism for rules and regular expressions. "
+"Route declarations within a scope will be prefixed by ``<scope>``."
+msgstr ""
+
+#: ../../../docs/router.rst:400
+msgid ""
+"The ``Router`` maintains a scope stack so that when the program flow enter a "
+"scope, it pushes the fragment on top of that stack and pops it when it exits."
+msgstr ""
+
+#: ../../../docs/router.rst:416
+msgid ""
+"To literally mount an application on a prefix, see the :doc:`middlewares/"
+"basepath` middleware."
+msgstr ""
+
+#: ../../../docs/router.rst:420
+msgid "Context"
+msgstr ""
+
+#: ../../../docs/router.rst:424
+msgid ""
+"During the routing, states can obtained from a previous handler or passed to "
+"the next one using the routing context."
+msgstr ""
+
+#: ../../../docs/router.rst:427
+msgid ""
+"Keys are resolved recursively in the tree of context by looking at the "
+"parent context if it's missing."
+msgstr ""
+
+#: ../../../docs/router.rst:443
+msgid "Next"
+msgstr ""
+
+#: ../../../docs/router.rst:447
+msgid ""
+"The ``next`` continuation does not take the request and response objects as "
+"parameter. To perform transformation, see :doc:`vsgi/converters` and :doc:"
+"`middlewares/index`."
+msgstr ""
+
+#: ../../../docs/router.rst:451
+msgid ""
+"The handler takes a callback as an optional third argument. This callback is "
+"a continuation that will continue the routing process to the next matching "
+"route."
+msgstr ""
+
+#: ../../../docs/router.rst:467
+msgid ""
+"The ``next`` continuation can only be called from within the handler "
+"callback. Since it is not maked as ``owned``, the reference does not persist "
+"beyond the function return."
+msgstr ""
+
+#: ../../../docs/router.rst:471
+msgid ""
+"The ``next`` continuation can only be called synchronously. This is only "
+"temporary and an eventual release will revamp the whole routing when "
+"asynchronous delegates will be part of the Vala language (see `bug 604827`_ "
+"for details)."
+msgstr ""
+
+#: ../../../docs/router.rst:479
+msgid "Sequence"
+msgstr ""
+
+#: ../../../docs/router.rst:483
+msgid ""
+"The :doc:`middlewares/sequence` middleware should be used to chain handling "
+"callbacks."
+msgstr ""
+
+#: ../../../docs/router.rst:495
+msgid "Error handling"
+msgstr ""
+
+#: ../../../docs/router.rst:499
+msgid ""
+"Prior to this release, any unhandled error would crash the main loop "
+"iteration."
+msgstr ""
+
+#: ../../../docs/router.rst:504
+msgid ""
+"Error and status codes are now handled with a ``catch`` block or using the :"
+"doc:`middlewares/status` middleware."
+msgstr ""
+
+#: ../../../docs/router.rst:509
+msgid ""
+"The default handling is not ensured by the :doc:`middlewares/basic` "
+"middleware."
+msgstr ""
+
+#: ../../../docs/router.rst:514
+msgid ""
+"Thrown errors are forwarded to VSGI, which process them essentially the same "
+"way. See :doc:`vsgi/index` for more details."
+msgstr ""
+
+#: ../../../docs/router.rst:517
+msgid ""
+"Similarly to status codes, errors are propagated in the ``HandlerCallback`` "
+"and ``NextCallback`` delegate signatures and can be handled in a ``catch`` "
+"block."
+msgstr ""
+
+#: ../../../docs/router.rst:537
+msgid ""
+"Thrown status code can also be caught this way, but it's much more "
+"convenient to use the :doc:`middlewares/status` middleware."
+msgstr ""
+
+#: ../../../docs/router.rst:541
+msgid "Subrouting"
+msgstr ""
+
+#: ../../../docs/router.rst:543
+msgid ""
+"Since ``VSGI.ApplicationCallback`` is type compatible with "
+"``HandlerCallback``, it is possible to delegate request handling to another "
+"VSGI-compliant application."
+msgstr ""
+
+#: ../../../docs/router.rst:547
+msgid ""
+"In particular, it is possible to treat ``Router.handle`` like any handling "
+"callback."
+msgstr ""
+
+#: ../../../docs/router.rst:552
+msgid ""
+"This feature is a key design of the router and is intended to be used for a "
+"maximum inter-operability with other frameworks based on VSGI."
+msgstr ""
+
+#: ../../../docs/router.rst:555
+msgid ""
+"The following example delegates all ``GET`` requests to another router which "
+"will process in isolation with its own routing context."
+msgstr ""
+
+#: ../../../docs/router.rst:566
+msgid ""
+"One common pattern with subrouting is to attempt another router and fallback "
+"on ``next``."
+msgstr ""
+
+#: ../../../docs/router.rst:581
+msgid "Cleaning up route logic"
+msgstr ""
+
+#: ../../../docs/router.rst:583
+msgid ""
+"Performing a lot of route bindings can get messy, particularly if you want "
+"to split an application several reusable modules. Encapsulation can be "
+"achieved by subclassing ``Router`` and performing initialization in a "
+"``construct`` block:"
+msgstr ""
+
+#: ../../../docs/router.rst:610
+msgid ""
+"Using subrouting, it can be assembled to a parent router given a rule (or "
+"any matching process described in this document). This way, incoming request "
+"having the ``/admin/`` path prefix will be delegated to the ``admin`` router."
+msgstr ""
+
+#: ../../../docs/router.rst:620
+msgid ""
+"The :doc:`middlewares/basepath` middleware provide very handy path isolation "
+"so that the router can be simply written upon the leading ``/`` and rebased "
+"on any basepath. In that case, we can strip the leading ``/admin`` in "
+"router's rules."
+msgstr ""

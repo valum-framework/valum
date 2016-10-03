@@ -21,6 +21,7 @@ sphinx = find_program('sphinx-build-3', required: false)
 if not sphinx.found()
     sphinx = find_program('sphinx-build', required: false)
 endif
+
 if sphinx.found()
     docs_sources = [
         'about/gnu-lgpl-v3.0.rst',
@@ -65,10 +66,18 @@ if sphinx.found()
         'vsgi/server/http.rst',
         'vsgi/server/index.rst',
         'vsgi/server/scgi.rst']
-    custom_target('en user documentation',
-                  command: [sphinx, '-W', '-b', 'html', meson.current_source_dir(), '@OUTPUT@'],
+    # Generate '*.pot' files for translators
+    custom_target('docs-pot', command: [sphinx, '-W', '-b', 'gettext', meson.current_source_dir(), '@OUTPUT@'],
                   input: docs_sources,
-                  output: 'en',
+                  output: 'po',
                   build_by_default: true)
-    install_subdir(meson.current_build_dir() + '/en', install_dir: 'share/doc/valum-@0@/user'.format(api_version))
+
+    foreach lang : ['en', 'fr']
+        custom_target('@0@ user documentation'.format(lang),
+                      command: [sphinx, '-W', '-b', 'html', meson.current_source_dir(), '@OUTPUT@'],
+                      input: docs_sources,
+                      output: lang,
+                      build_by_default: true)
+        install_subdir(meson.current_build_dir() + '/' + lang, install_dir: 'share/doc/valum-@0@/user'.format(api_version))
+    endforeach
 endif

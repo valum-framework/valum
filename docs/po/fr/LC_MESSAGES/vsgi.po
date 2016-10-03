@@ -1,0 +1,1638 @@
+# French translations for Valum.
+# Copyright (C) 2015, Antono Vasiljev, Guillaume Poirier-Morency
+# This file is distributed under the same license as the Valum package.
+# Guillaume Poirier-Morency <guillaumepoiriermorency@gmail.com>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Valum web micro-framework 0.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-10-03 16:05-0400\n"
+"PO-Revision-Date: 2016-10-07 11:22-0400\n"
+"Last-Translator: Guillaume Poirier-Morency <guillaumepoiriermorency@gmail."
+"com>\n"
+"Language-Team: français <>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Gtranslator 2.91.7\n"
+
+#: ../../../docs/vsgi/authentication.rst:2
+msgid "HTTP authentication"
+msgstr "Authentification HTTP"
+
+#: ../../../docs/vsgi/authentication.rst:4
+msgid ""
+"VSGI provide implementations of both basic and digest authentication schemes "
+"respectively defined in `RFC 7617`_ and `RFC 7616`_."
+msgstr ""
+"VSGI fournit des implémentations pour les schémas d'authentification de base "
+"et haché respectivement définis par `RFC 7617`_ and `RFC 7616`_."
+
+#: ../../../docs/vsgi/authentication.rst:10
+msgid ""
+"Both ``Authentication`` and ``Authorization`` objects are provided to "
+"produce and interpret their corresponding HTTP headers. The typical "
+"authentication pattern is highlighted in the following example:"
+msgstr ""
+"Les classes ``Authentication`` et ``Autorization`` produisent et "
+"interprètent leurs en-têtes HTTP correspondantes. L'approche typique "
+"d'authentification est décrite par l'exemple suivant:"
+
+#: ../../../docs/vsgi/authentication.rst:39
+msgid "Basic"
+msgstr "Authentification de base"
+
+#: ../../../docs/vsgi/authentication.rst:41
+msgid ""
+"The ``Basic`` authentication scheme is the simplest one and expect the user "
+"agent to provide username and password in plain text. It should be used "
+"exclusively on a secured transport (e.g. HTTPS)."
+msgstr ""
+"Le schéma d'authentification ``Basic`` est le plus simple et s'attent que "
+"l'agent utilisateur fournissent un nom d'usager et un mot de passe en text "
+"brut. Il est recommendé de l'utiliser exclusivement sur un transport "
+"sécurisé (e.g. HTTPS)."
+
+#: ../../../docs/vsgi/connection.rst:2
+msgid "Connection"
+msgstr "Connexion"
+
+#: ../../../docs/vsgi/connection.rst:4
+msgid ""
+"All resources necessary to process a :doc:`request` and produce a :doc:"
+"`response` are bound to the lifecycle of a connection instance."
+msgstr ""
+"Toutes les ressources nécessaire au traitement d'un :doc:`request` et à la "
+"production d'un :doc:`response` sont liés au cycle de vie d'une connection."
+
+#: ../../../docs/vsgi/connection.rst:9
+msgid ""
+"It is not recommended to use this directly as it will most likely result in "
+"corrupted operations with no regard to the transfer encoding or message "
+"format."
+msgstr ""
+"Il n'est pas recommendé de l'utiliser directement, car cela pourrait "
+"outrepasser le protocole et corrompre le message attendu par l'agent "
+"utilisateur."
+
+#: ../../../docs/vsgi/connection.rst:13
+msgid ""
+"The connection can be accessed from the :doc:`request` ``connection`` "
+"property. It is a simple `GLib.IOStream`_ that provides native access to the "
+"input and output stream of the used technology."
+msgstr ""
+"La connection peut être accédée depuis :doc:`request` à partir de la "
+"propriété ``connection``. Il s'agit d'une simple `GLib.IOStream`_ qui "
+"fournit un accès brut aux fils d'entrées-sorties du protocole utilisé."
+
+#: ../../../docs/vsgi/connection.rst:19
+msgid ""
+"The following example shows how to bypass processing with higher-level "
+"abstractions. It will only work on :doc:`server/http`, as CGI-like protocols "
+"require the status to be part of the response headers."
+msgstr ""
+"L'exemple suivant montre comment outrepasser le traitement de haut-niveau "
+"que fournit les abstractions. Cela fonctionnera uniquement pour :doc:`server/"
+"cgi`, puisque ce protocole requière que la ligne de status fasse partie des "
+"en-têtes."
+
+#: ../../../docs/vsgi/converters.rst:2
+msgid "Converters"
+msgstr "Convertisseur"
+
+#: ../../../docs/vsgi/converters.rst:4
+msgid ""
+"VSGI provide stream utilities named converters to convert data according to "
+"modern web standards."
+msgstr ""
+"VSGI fournit des utilitaires de conversions de flux d'entrée-sortie "
+"approprié aux standards Web."
+
+#: ../../../docs/vsgi/converters.rst:7
+msgid ""
+"These are particularly useful to encode and recode request and response "
+"bodies in VSGI implementations."
+msgstr ""
+"Ils sont particulièrement utiles pour encoder et décoder les corps des "
+"messages HTTP."
+
+#: ../../../docs/vsgi/converters.rst:10
+msgid ""
+"GLib provide default converters for charset conversion and zlib compression. "
+"These can be used to compress the message bodies and convert the string "
+"encoding transparently."
+msgstr ""
+"GLib fournit des convertisseurs pour les classe de caractères et de la "
+"compression zlib. Ceux-ci peuvent être utilisés pour compresser ou convertir "
+"les corps des messages de manière transparente."
+
+#: ../../../docs/vsgi/converters.rst:14
+msgid "`GLib.CharsetConverter`_"
+msgstr ""
+
+#: ../../../docs/vsgi/converters.rst:15
+msgid "`GLib.ZLibCompressor`_"
+msgstr ""
+
+#: ../../../docs/vsgi/converters.rst:16
+msgid "`GLib.ZLibDecompressor`_"
+msgstr ""
+
+#: ../../../docs/vsgi/converters.rst:22
+msgid ""
+"Converters can be applied on both the :doc:`request` and :doc:`response` "
+"object using the ``convert`` method."
+msgstr ""
+"Les convertisseurs peuvent être appliqués autant aux :doc:`request` qu'aux :"
+"doc:`response` à l'aide de la méthode ``convert``."
+
+#: ../../../docs/vsgi/converters.rst:35
+msgid ""
+"The ``Content-Encoding`` header must be adapted to reflect the current set "
+"of encodings applied (or unapplied) on the payload."
+msgstr ""
+"L'en-tête ``Content-Encoding`` doit être adapté afin de refléter l'état "
+"courant de la pile d'encodages appliqués sur le corps."
+
+#: ../../../docs/vsgi/converters.rst:38
+msgid ""
+"Since conversion typically affect the resulting size of the payload, the "
+"``Content-Length`` header must be set appropriately. To ease that, the new "
+"value can be specified as second argument. Note that ``-1`` is used to "
+"describe an undetermined length."
+msgstr ""
+"Puisque la conversion peut affecter la taille du corps, l'en-tête ``Content-"
+"Length`` doit être définie de manière approrpriée. Afin de faciliter ce "
+"processus, la nouvelle valeur peut être passé en deuxième argument. La "
+"valeur ``-1`` est utilisée pour décrier une longueur indéterminée."
+
+#: ../../../docs/vsgi/converters.rst:47
+msgid ""
+"The default, which apply in most cases, is to remove the ``Content-Length`` "
+"header and thus describe an undetermined length."
+msgstr ""
+"L'opération par défaut, qui s'applique pour la plupart des cas, est "
+"d'enlever l'en-tête ``Content-Length`` afin de décrire un message d'une "
+"longueur indéterminée."
+
+#: ../../../docs/vsgi/cookies.rst:2 ../../../docs/vsgi/request.rst:68
+msgid "Cookies"
+msgstr "Témoins"
+
+#: ../../../docs/vsgi/cookies.rst:4
+msgid ""
+"Cookies are stored in :doc:`request` and :doc:`response` headers as part of "
+"the HTTP protocol."
+msgstr ""
+"Les cookies sont stockés dans les en-têtes de la :doc:`request` et de la :"
+"doc:`response`."
+
+#: ../../../docs/vsgi/cookies.rst:7
+msgid ""
+"Utilities are provided to perform basic operations based on `Soup.Cookie`_ "
+"as those provided by libsoup-2.4 requires a `Soup.Message`_, which is not "
+"common to all implementations."
+msgstr ""
+"Des utilitaires sont fournis afin d'effectuer des opérations sur `Soup."
+"Cookie`_ puisque ceux fournient par libsoup-2.4 requièrent une instance de "
+"`Soup.Message`_."
+
+#: ../../../docs/vsgi/cookies.rst:11
+msgid "extract cookies from request headers"
+msgstr "extrait les cookies depuis les en-têtes"
+
+#: ../../../docs/vsgi/cookies.rst:12
+msgid "find a cookie by its name"
+msgstr "trouve un cookie à partir de son nom"
+
+#: ../../../docs/vsgi/cookies.rst:13
+msgid ""
+"marshall cookies for request or response headers (provided by libsoup-2.4)"
+msgstr ""
+"sérialise un cookie pour un en-tête de requête ou de réponse (fourni par "
+"libsoup-2.4)"
+
+#: ../../../docs/vsgi/cookies.rst:16
+msgid "Extract cookies"
+msgstr "Extraire les cookies"
+
+#: ../../../docs/vsgi/cookies.rst:18
+msgid ""
+"Cookies can be extracted as a singly-linked list from a :doc:`request` or :"
+"doc:`response` their order of appearance (see `Soup.MessageHeaders."
+"get_list`_ for more details)."
+msgstr ""
+"Les cookies peuvent être extraient sous la forme d'une liste chaînée depuis "
+"une :doc:`request` ou une :doc:`response` dans l'ordre d'occurence (void "
+"`Soup.MessageHeaders.get_list`_ pour les détails)."
+
+#: ../../../docs/vsgi/cookies.rst:22
+msgid ""
+"The ``Request.cookies`` property will extract cookies from the ``Cookie`` "
+"headers. Only the ``name`` and ``value`` fields will be filled as it is the "
+"sole information sent by the client."
+msgstr ""
+"La propriété ``Request.cookies`` extrait les cookies depuis l'en-tête "
+"``Cookie``. Seuls les champs ``name`` et ``value`` se retrouveront dans les "
+"cookies: le client n'envoit rien d'autre."
+
+#: ../../../docs/vsgi/cookies.rst:30
+msgid ""
+"The equivalent property exist for :doc:`response` and will extract the ``Set-"
+"Cookie`` headers instead. The corresponding :doc:`request` URI will be used "
+"for the cookies origin."
+msgstr ""
+"Une propriété équivalente existe pour :doc:`response`, à la différence que "
+"l'extraction se fait depuis l'en-tête ``Set-Cookie``. L'origin sera extraite "
+"depuis l'URI de la :doc:`request`."
+
+#: ../../../docs/vsgi/cookies.rst:38
+msgid ""
+"The extracted cookies can be manipulated with common `SList`_ operations. "
+"However, they must be written back into the :doc:`response` for the changes "
+"to be effective."
+msgstr ""
+"Les cookies extraits peuvent être manipulés par les opérations sur une liste "
+"chaînée `SList`_. Par contre, ils doivent être écrit dans la :doc:`response` "
+"pour être effectifs."
+
+#: ../../../docs/vsgi/cookies.rst:46
+msgid ""
+"Cookies will be in their order of appearance and `SList.reverse`_ should be "
+"used prior to perform a lookup that respects precedence."
+msgstr ""
+"Puisque les cookies apparaisent dans le même ordre que leurs déclarations "
+"dans les en-têtes, `SList.reverse`_ devrait être utilisé afin de pouvoir "
+"faire une recherche qui respecte la précédence."
+
+#: ../../../docs/vsgi/cookies.rst:62
+msgid "Lookup a cookie"
+msgstr "Rechercher un cookie"
+
+#: ../../../docs/vsgi/cookies.rst:64
+msgid ""
+"You can lookup a cookie by its name from a :doc:`request` using "
+"``lookup_cookie``, ``null`` is returned if no such cookies can be found."
+msgstr ""
+"Il est possible de rechercher un cookie par son nom depuis une :doc:"
+"`request` en utilisant ``lookup_cookie``. ``null`` est retourné si aucun "
+"cookie ne correspond."
+
+#: ../../../docs/vsgi/cookies.rst:69
+msgid ""
+"Although this is not formally specified, cookies name are considered as "
+"being case-sensitive by ``CookieUtils`` utilities."
+msgstr ""
+"Même si cela n'est pas formellement spécifié, les noms des cookies sont "
+"considérés sensibles à la case par les utilitaires fournient."
+
+#: ../../../docs/vsgi/cookies.rst:72
+msgid ""
+"If it's signed (recommended for sessions), the equivalent "
+"``lookup_signed_cookie`` exists."
+msgstr ""
+"Si le cookie désiré est signé (e.g. un cookie de session), l'équivalent "
+"``lookup_signed_cookie`` peut être utilisé"
+
+#: ../../../docs/vsgi/cookies.rst:81
+msgid "Marshall a cookie"
+msgstr "Sérialiser un cookie"
+
+#: ../../../docs/vsgi/cookies.rst:83
+msgid ""
+"libsoup-2.4 provides a complete implementation with the `Soup.Cookie`_ class "
+"to represent and marshall cookies for both request and response headers."
+msgstr ""
+
+#: ../../../docs/vsgi/cookies.rst:86
+msgid ""
+"The newly created cookie can be sent by adding a ``Set-Cookie`` header in "
+"the :doc:`response`."
+msgstr ""
+
+#: ../../../docs/vsgi/cookies.rst:97
+msgid "Sign and verify"
+msgstr "Signature et vérification"
+
+#: ../../../docs/vsgi/cookies.rst:99
+msgid ""
+"Considering that cookies are persisted by the user agent, it might be "
+"necessary to sign to prevent forgery. ``CookieUtils.sign`` and ``CookieUtils."
+"verify`` functions are provided for the purposes of signing and verifying "
+"cookies."
+msgstr ""
+"Considérant que les cookies sont persistés par l'agent utilisateur, il peut "
+"être nécessaire de les signer afin d'éviter les attaques par fasification. "
+"``CookieUtils.sign`` et ``CookieUtils.verify`` sont fournies afin de signer "
+"et vérifier les cookies."
+
+#: ../../../docs/vsgi/cookies.rst:105
+msgid ""
+"Be careful when you choose and store the secret key. Also, changing it will "
+"break any previously signed cookies, which may still be submitted by user "
+"agents."
+msgstr ""
+"Prenez grand soin du choix et de la stratégie de stockage de la clé secrète. "
+"De plus, la changer va nécessairement briser tous les cookies déjà signés "
+"que l'agent utilisateur peut encore vous transmettre."
+
+#: ../../../docs/vsgi/cookies.rst:109
+msgid ""
+"It's up to you to choose what hashing algorithm and secret: ``SHA512`` is "
+"generally recommended."
+msgstr ""
+"Vous êtes libre de choisir l'algorithme de hachage pour calculer la "
+"signature HMAC. ``SHA512`` est généralement recommendé."
+
+#: ../../../docs/vsgi/cookies.rst:112
+msgid ""
+"The ``CookieUtils.sign`` utility will sign the cookie in-place. It can then "
+"be verified using ``CookieUtils.verify``."
+msgstr ""
+"L'utilitaire ``CookieUtils.sign`` signe le cookie en remplaçant sa valeur "
+"par une valeur signée. Il peut ensuite être vérifié par ``CookieUtils."
+"verify``."
+
+#: ../../../docs/vsgi/cookies.rst:115
+msgid ""
+"The value will be stored in the output parameter if the verification process "
+"is successful."
+msgstr ""
+"La valeur originelle du cookie sera stocké dans le paramètre de sortie si le "
+"processus de vérification est positif."
+
+#: ../../../docs/vsgi/cookies.rst:127
+msgid "The signature is computed in a way it guarantees that:"
+msgstr "La signature garantie les choses suivantes:"
+
+#: ../../../docs/vsgi/cookies.rst:129
+msgid "we have produced the value"
+msgstr "la valeur a été produite par le détenteur de la clé"
+
+#: ../../../docs/vsgi/cookies.rst:130
+msgid "we have produced the name and associated it to the value"
+msgstr "le nom a été produit et associé à la valeur par le détenteur de la clé"
+
+#: ../../../docs/vsgi/cookies.rst:132
+msgid "The algorithm is the following:"
+msgstr "L'algorithme de signature est le suivant:"
+
+#: ../../../docs/vsgi/cookies.rst:138
+msgid ""
+"The verification process does not handle special cases like values smaller "
+"than the hashing: cookies are either signed or not, even if their values are "
+"incorrectly formed."
+msgstr ""
+"Le processus de vérification de vérifie pas les cas particuliers: les "
+"cookies sont soit signé ou ne le sont pas, même si leur valeur est "
+"incorrectement formée."
+
+#: ../../../docs/vsgi/cookies.rst:142
+msgid ""
+"If well-formed, cookies are verified in constant-time to prevent time-based "
+"attacks."
+msgstr ""
+"Si ils sont bien formés les cookies sont vérifiés en temps constant afin de "
+"prévenir les attaques basés sur le temps."
+
+#: ../../../docs/vsgi/index.rst:2
+msgid "VSGI"
+msgstr ""
+
+#: ../../../docs/vsgi/index.rst:4
+msgid ""
+"VSGI is a middleware that interfaces different web server technologies under "
+"a common and simple set of abstractions."
+msgstr ""
+"VSGI est une couche d'abstraction qui permet d'accéder à différentes "
+"technologie de serveur Web."
+
+#: ../../../docs/vsgi/index.rst:7
+msgid ""
+"For the moment, it is developed along with Valum to target the needs of a "
+"web framework, but it will eventually be extracted and distributed as a "
+"shared library."
+msgstr ""
+"Pour le moment, elle est développée côte à côte avec Valum afin de cibler "
+"les besoins d'un framework Web. Elle sera éventuellement extraite et "
+"distribué sous la forme d'une librairie partagée."
+
+#: ../../../docs/vsgi/index.rst:21
+msgid ""
+"VSGI produces process-based applications that are able to communicate with "
+"various HTTP servers using standardized protocols."
+msgstr ""
+"Les applications résultantes sont des processus actifs qui peuvent "
+"communiquer avec une variété de serveur HTTP à l'aide de protocoles "
+"standardisés."
+
+#: ../../../docs/vsgi/index.rst:25
+msgid "Entry point"
+msgstr "Point d'entrée"
+
+#: ../../../docs/vsgi/index.rst:27
+msgid ""
+"The entry point of a VSGI application is type-compatible with the "
+"``ApplicationCallback`` delegate. It is a function of two arguments: a :doc:"
+"`request` and a :doc:`response` that return a boolean indicating if the "
+"request has been or will be processed."
+msgstr ""
+"Le point d'entrée d'une application VSGI est compatible avec la définition "
+"de fonction ``ApplicationCallback``. Il prend deux arguments: une :doc:"
+"`request` et une :doc:`response` et retourne un booléen qui indique si la "
+"requête a été traitée ou pas."
+
+#: ../../../docs/vsgi/index.rst:41
+msgid ""
+"If an application indicate that the request has not been processed, it's up "
+"to the server implementation to decide what will happen."
+msgstr ""
+"Si une application indique que la requête n'a pas été traitée, c'est à "
+"l'implémentation de décider de ce qui adviendra."
+
+#: ../../../docs/vsgi/index.rst:45
+msgid "Error handling"
+msgstr "Gestion d'erreur"
+
+#: ../../../docs/vsgi/index.rst:49
+msgid ""
+"At any moment, an error can be raised and handled by the server "
+"implementation which will in turn teardown the connection appropriately."
+msgstr ""
+"À tout moment, une erreur peut être lancée et gérée par l'implémentation du "
+"serveur qui devra en retour terminer la connexion de manière appropriée."
+
+#: ../../../docs/vsgi/index.rst:59
+msgid "Asynchronous processing"
+msgstr "Traitement asynchrone"
+
+#: ../../../docs/vsgi/index.rst:61
+msgid ""
+"The asynchronous processing model follows the `RAII pattern`_ and wraps all "
+"resources in a connection that inherits from `GLib.IOStream`_. It is "
+"therefore important that the said connection is kept alive as long as the "
+"streams are being used."
+msgstr ""
+"Le modèle de traitement asynchrone suit le `RAII pattern`_ et encapsule "
+"toutes les resources dans une connexion qui hérite de `GLib.IOStream`_. Il "
+"est donc important que cette connexion survive aussi longtempts que les flux "
+"d'entrée-sortie sont utilisés."
+
+#: ../../../docs/vsgi/index.rst:69
+msgid ""
+"The :doc:`request` holds a reference to the said connection and the :doc:"
+"`response` indirectly does as it holds a reference to the request. Generally "
+"speaking, holding a reference on any of these two instances is sufficient to "
+"keep the streams usable."
+msgstr ""
+"La :doc:`request` maintient une référence vers la dite connexion et la :doc:"
+"`response` indirectement par une référence vers la requête. En général, il "
+"est suffisant de référencer un de ces deux objets afin de rendre les flux "
+"utilisables."
+
+#: ../../../docs/vsgi/index.rst:76
+msgid ""
+"As VSGI relies on reference counting to free the resources underlying a "
+"request, you must keep a reference to either the :doc:`request` or :doc:"
+"`response` during the processing, including in asynchronous callbacks."
+msgstr ""
+"Puisque VSGI utilise le comptage de référence afin de libérer les ressources "
+"d'une requête, il est important de toujours maintenir une référence vers "
+"soit la :doc:`request` ou bien la :doc:`response` durant tout le traitement, "
+"incluant les fonction de rappel des appels asynchrones."
+
+#: ../../../docs/vsgi/index.rst:80
+msgid ""
+"It is important that the connection persist until all streams operations are "
+"done as the following example demonstrates:"
+msgstr ""
+"L'exemple suivant montre comment faire persister la connexion jusqu'à ce que "
+"toutes les opérations sur les flux d'entrée-sortie soit terminées:"
+
+#: ../../../docs/vsgi/request.rst:2
+msgid "Request"
+msgstr "Requête"
+
+#: ../../../docs/vsgi/request.rst:4
+msgid ""
+"Requests are representing incoming demands from user agents to resources "
+"served by an application."
+msgstr ""
+"Une requête représente une demande d'un agent utilisateur pour une ressource "
+"desservie par une application."
+
+#: ../../../docs/vsgi/request.rst:8
+msgid "Method"
+msgstr "Méthode"
+
+#: ../../../docs/vsgi/request.rst:10
+msgid ""
+"The ``Request`` class provides constants for the following HTTP methods:"
+msgstr ""
+"La classe ``Request`` fournit des constantes pour les méthodes HTTP "
+"suivantes:"
+
+#: ../../../docs/vsgi/request.rst:14
+msgid ""
+"libsoup-2.4 provide an enumeration of valid HTTP methods and this will be "
+"removed once exposed in their Vala API."
+msgstr ""
+"libsoup-2.4 fournit une énumération de méthodes HTTP valides et celles "
+"fournies par Valum seront enlevés une fois exposées dans les API Vala."
+
+#: ../../../docs/vsgi/request.rst:17
+msgid "``OPTIONS``"
+msgstr ""
+
+#: ../../../docs/vsgi/request.rst:18
+msgid "``GET``"
+msgstr ""
+
+#: ../../../docs/vsgi/request.rst:19
+msgid "``HEAD``"
+msgstr ""
+
+#: ../../../docs/vsgi/request.rst:20
+msgid "``POST``"
+msgstr ""
+
+#: ../../../docs/vsgi/request.rst:21
+msgid "``PUT``"
+msgstr ""
+
+#: ../../../docs/vsgi/request.rst:22
+msgid "``DELETE``"
+msgstr ""
+
+#: ../../../docs/vsgi/request.rst:23
+msgid "``TRACE``"
+msgstr ""
+
+#: ../../../docs/vsgi/request.rst:24
+msgid "``CONNECT``"
+msgstr ""
+
+#: ../../../docs/vsgi/request.rst:25
+msgid "``PATCH``"
+msgstr ""
+
+#: ../../../docs/vsgi/request.rst:27
+msgid ""
+"Additionally, an array of supported HTTP methods is provided by ``Request."
+"METHODS``."
+msgstr ""
+"Additionellement, une liste de méthodes supportées est fournie par ``Request."
+"METHODS``."
+
+#: ../../../docs/vsgi/request.rst:45 ../../../docs/vsgi/response.rst:61
+msgid "Headers"
+msgstr "En-têtes"
+
+#: ../../../docs/vsgi/request.rst:47
+msgid ""
+"Request headers are implemented with `Soup.MessageHeaders`_ and can be "
+"accessed from the ``headers`` property."
+msgstr ""
+"Les en-têtes de la requête sont implantées par `Soup.MessageHeaders`_ et "
+"peuvent être accédées par la propriété ``headers``."
+
+#: ../../../docs/vsgi/request.rst:59
+msgid ""
+"libsoup-2.4 provides a very extensive set of utilities to process the "
+"information contained in headers."
+msgstr ""
+"libsoup-2.4 fournit une large éventail d'utilitaires pour traiter "
+"l'information contenue dans les en-têtes."
+
+#: ../../../docs/vsgi/request.rst:70
+msgid ":doc:`cookies` can also be retrieved from the request headers."
+msgstr ""
+"Les :doc:`cookies` peuvent aussi être récupérés des en-têtes de la requête."
+
+#: ../../../docs/vsgi/request.rst:73
+msgid "Query"
+msgstr "Paramètres"
+
+#: ../../../docs/vsgi/request.rst:75
+msgid "The HTTP query is provided in various way:"
+msgstr "Les paramètres de la requête HTTP sont fournis de diverses manières:"
+
+#: ../../../docs/vsgi/request.rst:77
+msgid ""
+"parsed as a ``HashTable<string, string>?`` through the ``Request.query`` "
+"property"
+msgstr ""
+"sous forme de ``HashTable<string, string?>`` via la propriété ``Request."
+"query``"
+
+#: ../../../docs/vsgi/request.rst:79
+msgid "raw with ``Request.uri.get_query``"
+msgstr "brut avec ``Request.uri.get_query``"
+
+#: ../../../docs/vsgi/request.rst:81
+msgid ""
+"If the query is not provided (e.g. no ``?`` in the URI), then the ``Request."
+"query`` property will take the ``null`` value."
+msgstr ""
+"Si les paramètres ne sont pas fourni (e.g. aucun ``?`` dans l'URL), alors la "
+"propriété ``Request.query`` prendra la valeur ``null``."
+
+#: ../../../docs/vsgi/request.rst:86
+msgid ""
+"If the query is not encoded according to ``application/x-www-form-"
+"urlencoded``, it has to be parsed explicitly."
+msgstr ""
+"Si les paramètres ne sont pas encodé par ``application/x-www-form-"
+"urlencoded``, ils doivent être décodé de manière explicite."
+
+#: ../../../docs/vsgi/request.rst:89
+msgid ""
+"To safely obtain a value from the HTTP query, use ``Request.lookup_query`` "
+"with the null-coalescing operator ``??``."
+msgstr ""
+"Pour obtenir une valeur de manière sécuritaire (puisque ``Request.query`` "
+"peut être ``null``), il est possible d'utiliser l'utilitaire ``Request."
+"lookup_query`` et l'opérateur ``??``."
+
+#: ../../../docs/vsgi/request.rst:97 ../../../docs/vsgi/response.rst:110
+msgid "Body"
+msgstr "Corps"
+
+#: ../../../docs/vsgi/request.rst:99
+msgid ""
+"The body is provided as a `GLib.InputStream`_ by the ``body`` property. The "
+"stream is transparently decoded from any applied transfer encodings."
+msgstr "Le corps est fournie par un `GLib.InputStream`_"
+
+#: ../../../docs/vsgi/request.rst:102
+msgid ""
+"Implementation will typically consume the status line, headers and newline "
+"that separates the headers from the body in the base stream at construct "
+"time. It also guarantee that the body has been decoded if any transfer "
+"encoding were applied for the transport."
+msgstr ""
+"L'implémentation consomme la ligne de statut et les en-têtes de telle sorte "
+"qu'il ne reste plus que le corps à consommer. Elle garantie aussi que tout "
+"encodage de transfert est absent."
+
+#: ../../../docs/vsgi/request.rst:107
+msgid ""
+"If the content is encoded with the ``Content-Encoding`` header, it is the "
+"responsibility of your application to decode it properly. VSGI provides "
+"common :doc:`converters` to simplify the task."
+msgstr ""
+"Si le corps est encodé et l'en-tête ``Content-Encoding`` est spécifiée, il "
+"est de la responsabilité de l'application de le décoder. VSGI fournit des :"
+"doc:`converters` afin de simplifier cette tâche."
+
+#: ../../../docs/vsgi/request.rst:114
+msgid "Flatten"
+msgstr "Accumuler"
+
+#: ../../../docs/vsgi/request.rst:118
+msgid ""
+"In some cases, it is practical to flatten the whole request body in a buffer "
+"in order to process it as a whole."
+msgstr ""
+"Dans certains cas, il est pratique d'accumuler le corps de la requête afin "
+"de le traiter en entier."
+
+#: ../../../docs/vsgi/request.rst:121
+msgid ""
+"The ``flatten``, ``flatten_bytes`` and ``flatten_utf8`` functions accumulate "
+"the request body into a buffer (a `GLib.MemoryOutputStream`_) and return the "
+"corresponding ``uint8[]`` data buffer."
+msgstr ""
+"Les fonctions ``flatten``, ``flatten_bytes`` et ``flatten_utf8`` accumulent "
+"le corps de la requête (via `GLib.MemoryOutputStream`_) et retourne le "
+"tableau ``uint8[]`` correspondant."
+
+#: ../../../docs/vsgi/request.rst:125
+msgid ""
+"The request body is always fixed-size since the HTTP specification requires "
+"any request to provide a ``Content-Length`` header. However, the environment "
+"should be configured with a hard limit on payload size."
+msgstr ""
+"Le corps de la requête possède toujours une taille fixe puisque la "
+"spécification HTTP requière qu'elle soit accompagné de l'en-tête ``Content-"
+"Length``. Tout de même, l'environnement devrait être configuré avec une "
+"limite dure sur la taille acceptable d'un corps."
+
+#: ../../../docs/vsgi/request.rst:129
+msgid ""
+"When you are done, it is generally a good thing to close the request body "
+"and depending on the used implementation, this could have great benefits "
+"such as freeing a file resource."
+msgstr ""
+"Une fois terminé, il est générallement recommendé de fermer le corps de la "
+"requête."
+
+#: ../../../docs/vsgi/request.rst:143
+msgid "Form"
+msgstr "Formulaire"
+
+#: ../../../docs/vsgi/request.rst:145
+msgid ""
+"`Soup.Form`_ can be used to parse ``application/x-www-form-urlencoded`` "
+"format, which is submitted by web browsers."
+msgstr ""
+"`Soup.Form`_ peut être utiliser pour extraire le format ``application/x-www-"
+"form-urlencoded`` qui est soumit par les navigateur Web."
+
+#: ../../../docs/vsgi/request.rst:158
+msgid "Multipart body"
+msgstr ""
+
+#: ../../../docs/vsgi/request.rst:160
+msgid ""
+"Multipart body support is planned in a future minor release, more "
+"information on `issue #81`_. The implementation will be similar to `Soup."
+"MultipartInputStream`_ and provide part access with a filter approach."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:2
+msgid "Response"
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:4
+msgid ""
+"Responses are representing resources requested by a user agent. They are "
+"actively streamed across the network, preferably using non-blocking "
+"asynchronous I/O."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:9
+msgid "Status"
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:11
+msgid ""
+"The response status can be set with the ``status`` property. libsoup-2.4 "
+"provides an enumeration in `Soup.Status`_ for that purpose."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:14
+msgid "The ``status`` property will default to ``200 OK``."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:16
+msgid ""
+"The status code will be written in the response with ``write_head`` or "
+"``write_head_async`` if invoked manually. Otherwise, it is left to the "
+"implementation to call it at a proper moment."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:30
+msgid "Reason phrase"
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:34
+msgid ""
+"The reason phrase provide a textual description for the status code. If "
+"``null``, which is the default, it will be generated using `Soup.Status."
+"get_phrase`_. It is written along with the status line if ``write_head`` or "
+"``write_head_async`` is invoked."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:49
+msgid ""
+"To obtain final status line sent to the user agent, use the "
+"``wrote_status_line`` signal."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:63
+msgid ""
+"The response headers can be accessed as a `Soup.MessageHeaders`_ from the "
+"``headers`` property."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:76
+msgid ""
+"Headers can be written in the response synchronously by invoking "
+"``write_head`` or asynchronously with ``write_head_async``."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:87
+msgid ""
+"Once written, any modification to the ``headers`` object will be ignored."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:89
+msgid ""
+"The ``head_written`` property can be tested to see if it's already the case, "
+"even though a well written application should assume that already."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:98
+msgid ""
+"Since headers can still be modified once written, the ``wrote_headers`` "
+"signal can be used to obtain definitive values."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:112
+msgid ""
+"The body of a response is accessed through the ``body`` property. It "
+"inherits from `GLib.OutputStream`_ and provides synchronous and asynchronous "
+"streaming capabilities."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:116
+msgid ""
+"The response body is automatically closed following a RAII pattern whenever "
+"the ``Response`` object is disposed."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:119
+msgid ""
+"Note that a reference to the body is not sufficient to maintain the inner :"
+"doc:`connection` alive: a reference to either the :doc:`request` or response "
+"be maintained."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:123
+msgid ""
+"You can still close the body early as it can provide multiple advantages:"
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:125
+msgid "avoid further and undesired read or write operation"
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:126
+msgid "indicate to the user agent that the body has been fully sent"
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:129
+msgid "Expand"
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:133
+msgid ""
+"To deal with fixed-size body, ``expand``, ``expand_bytes``, ``expand_utf8`` "
+"and ``expand_file`` utilities as well as their respective asynchronous "
+"versions are provided."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:137
+msgid ""
+"It will automatically set the ``Content-Length`` header to the size of the "
+"provided buffer, write the response head and pipe the buffer into the body "
+"stream and close it properly."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:148
+msgid "Filtering"
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:150
+msgid ""
+"One common operation related to stream is filtering. `GLib."
+"FilterOutputStream`_ and `GLib.ConverterOutputStream`_ provide, by "
+"composition, many filters that can be used for:"
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:154
+msgid "compression and decompression (gzip, deflate, compress, ...)"
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:155
+msgid "charset conversion"
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:156
+msgid "buffering"
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:157
+msgid "writting data"
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:159
+msgid ""
+"VSGI also provides its own set of :doc:`converters` which cover parts of the "
+"HTTP/1.1 specifications such as chunked encoding."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:169
+msgid ""
+"Additionally, some filters are applied automatically if the ``Transfer-"
+"Encoding`` header is set. The obtained `GLib.OutputStream`_ will be wrapped "
+"appropriately so that the application can transparently produce its output."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:183
+msgid "Conversion"
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:187
+msgid "The body may be converted, see :doc:`converters` for more details."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:190
+msgid "Tee"
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:194
+msgid ""
+"The response body can be splitted pretty much like how the ``tee`` UNIX "
+"utility works. All further write operations will be performed as well on the "
+"passed stream, making it possible to process the payload sent to the user "
+"agent."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:198
+msgid ""
+"The typical use case would be to implement a file-based cache that would tee "
+"the produced response body into a key-based storage."
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:215
+msgid "End"
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:219
+msgid ""
+"To properly close the response, writing headers if missing, ``end`` is "
+"provided:"
+msgstr ""
+
+#: ../../../docs/vsgi/response.rst:231
+msgid "To produce a message before closing, favour ``extend`` utilities."
+msgstr ""
+
+#: ../../../docs/vsgi/server/cgi.rst:2
+msgid "CGI"
+msgstr ""
+
+#: ../../../docs/vsgi/server/cgi.rst:4
+msgid ""
+"CGI is a very simple process-based protocol that uses commonly available "
+"process resources:"
+msgstr ""
+
+#: ../../../docs/vsgi/server/cgi.rst:7
+msgid "environment variables"
+msgstr ""
+
+#: ../../../docs/vsgi/server/cgi.rst:8
+msgid "standard input stream for the :doc:`../request`"
+msgstr ""
+
+#: ../../../docs/vsgi/server/cgi.rst:9
+msgid "standard output stream for the :doc:`../response`"
+msgstr ""
+
+#: ../../../docs/vsgi/server/cgi.rst:13
+msgid ""
+"The CGI protocol expects the response to be written in the standard output: "
+"writting there will most surely corrupt the response."
+msgstr ""
+
+#: ../../../docs/vsgi/server/cgi.rst:16
+msgid ""
+"The ``VSGI.CGI`` implementation provides a basis for its derivatives "
+"protocols such as :doc:`fastcgi` and :doc:`scgi` and can be used along with "
+"any HTTP server."
+msgstr ""
+
+#: ../../../docs/vsgi/server/cgi.rst:20
+msgid ""
+"The interpretation of the environment prioritize the `CGI/1.1`_ "
+"specification while providing fallbacks with values we typically found like "
+"``REQUEST_URI``."
+msgstr ""
+
+#: ../../../docs/vsgi/server/cgi.rst:25
+msgid ""
+"Since a process is spawned per request and exits when the latter finishes, "
+"scheduled asynchronous tasks might not be processed. To overcome this issue, "
+"``hold`` and ``release`` should be used to keep the server alive as long as "
+"necessary."
+msgstr ""
+
+#: ../../../docs/vsgi/server/cgi.rst:30
+msgid ""
+"If your task involve the :doc:`../request` or :doc:`../response` in its "
+"callback, the connection will be kept alive until both are freed."
+msgstr ""
+
+#: ../../../docs/vsgi/server/cgi.rst:60
+msgid "lighttpd"
+msgstr ""
+
+#: ../../../docs/vsgi/server/cgi.rst:62
+msgid ""
+"There is an example in ``examples/cgi`` providing a sample `lighttpd`_ "
+"configuration file. Once launched, the application can be accessed at the "
+"following address: http://127.0.0.1:3003/cgi-bin/app/."
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:2
+msgid "FastCGI"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:4
+msgid ""
+"FastCGI is a binary protocol that multiplexes requests over a single "
+"connection."
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:7
+msgid ""
+"VSGI uses `FastCGI bindings`_ under the hood to provide a compliant "
+"implementation. See :doc:`../../installation` for more information about the "
+"framework dependencies."
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:13
+msgid ""
+"The whole request cycle is processed in a thread and dispatched in the main "
+"context, so it's absolutely safe to use shared states."
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:17
+#: ../../../docs/vsgi/server/http.rst:20
+#: ../../../docs/vsgi/server/index.rst:129
+#: ../../../docs/vsgi/server/scgi.rst:18
+msgid "Options"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:20
+#: ../../../docs/vsgi/server/http.rst:29 ../../../docs/vsgi/server/scgi.rst:21
+msgid "Option"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:20
+#: ../../../docs/vsgi/server/http.rst:29 ../../../docs/vsgi/server/scgi.rst:21
+msgid "Type"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:20
+#: ../../../docs/vsgi/server/http.rst:29 ../../../docs/vsgi/server/scgi.rst:21
+msgid "Default"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:20
+#: ../../../docs/vsgi/server/http.rst:29 ../../../docs/vsgi/server/scgi.rst:21
+msgid "Description"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:22
+msgid "``--socket``"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:22
+#: ../../../docs/vsgi/server/http.rst:44 ../../../docs/vsgi/server/http.rst:47
+msgid "``bytestring``"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:22
+#: ../../../docs/vsgi/server/fastcgi.rst:24
+#: ../../../docs/vsgi/server/http.rst:39 ../../../docs/vsgi/server/http.rst:44
+#: ../../../docs/vsgi/server/http.rst:47 ../../../docs/vsgi/server/scgi.rst:23
+#: ../../../docs/vsgi/server/scgi.rst:25
+msgid "none"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:22
+msgid "listen on a UNIX socket path"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:24
+#: ../../../docs/vsgi/server/http.rst:31 ../../../docs/vsgi/server/scgi.rst:25
+msgid "``--port``"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:24
+#: ../../../docs/vsgi/server/fastcgi.rst:26
+#: ../../../docs/vsgi/server/fastcgi.rst:28
+#: ../../../docs/vsgi/server/http.rst:31 ../../../docs/vsgi/server/http.rst:39
+#: ../../../docs/vsgi/server/scgi.rst:25 ../../../docs/vsgi/server/scgi.rst:27
+#: ../../../docs/vsgi/server/scgi.rst:29
+msgid "``int32``"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:24
+#: ../../../docs/vsgi/server/scgi.rst:25
+msgid "listen on a TCP port from local interface"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:26
+#: ../../../docs/vsgi/server/http.rst:39 ../../../docs/vsgi/server/scgi.rst:27
+msgid "``--file-descriptor``"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:26
+#: ../../../docs/vsgi/server/scgi.rst:27
+msgid "0"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:26
+#: ../../../docs/vsgi/server/http.rst:39 ../../../docs/vsgi/server/scgi.rst:27
+msgid "listen to the provided file descriptor"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:28
+#: ../../../docs/vsgi/server/scgi.rst:29
+msgid "``--backlog``"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:28
+#: ../../../docs/vsgi/server/scgi.rst:29
+msgid "10"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:28
+#: ../../../docs/vsgi/server/scgi.rst:29
+msgid "connection queue depth in the ``listen`` call"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:31
+msgid ""
+"Only one option from ``--port``, ``--socket`` and ``--file-descriptor`` can "
+"be specified."
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:34
+msgid ""
+"Due to the underlying library, the FastCGI implementation can only listen on "
+"IPv4 interfaces."
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:37
+msgid ""
+"By default, the FastCGI implementation listens on the file descriptor ``0``, "
+"which is conventionally the case when the process is spawned by an HTTP "
+"server."
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:41
+#: ../../../docs/vsgi/server/scgi.rst:33
+msgid "Lighttpd"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:43
+msgid ""
+"`Lighttpd`_ can be used to develop and potentially deploy your application. "
+"More details about the FastCGI module are provided `in their wiki`_."
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:52
+msgid "You can run the FastCGI example with Lighttpd:"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:60
+#: ../../../docs/vsgi/server/scgi.rst:42
+msgid "Apache"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:62
+msgid ""
+"Under Apache, there are two mods available: ``mod_fcgid`` is more likely to "
+"be available as it is part of Apache and ``mod_fastcgi`` is developed by "
+"those who did the FastCGI specifications."
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:66
+msgid "`mod\\_fcgid <http://httpd.apache.org/mod_fcgid/>`__"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:67
+msgid ""
+"`mod\\_fastcgi <http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html>`__"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:75
+msgid ""
+"Apache 2.5 provide a `mod_proxy_fcgi`_, which can serve FastCGI instance "
+"like it currently does for :doc:`scgi` using the ``ProxyPass`` directive."
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:85
+#: ../../../docs/vsgi/server/scgi.rst:53
+msgid "Nginx"
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:87
+msgid ""
+"Nginx expects a process to be already spawned and will communicate with it "
+"on a TCP port or a UNIX socket path. Read more about "
+"`ngx_http_fastcgi_module`_."
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:98
+msgid ""
+"If possible, it's preferable to spawn processes locally and serve them "
+"through a UNIX sockets. It is safer and much more efficient considering that "
+"requests are not going through the whole network stack."
+msgstr ""
+
+#: ../../../docs/vsgi/server/fastcgi.rst:108
+msgid ""
+"To spawn and manage a process, it is recommended to use a systemd unit and "
+"socket. More details are available in `Lighttpd wiki`_. Otherwise, it's "
+"possible to use the `spawn-fcgi`_ tool."
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:2
+msgid "HTTP"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:4
+msgid ""
+"libsoup-2.4 provides a `built-in HTTP server`_ that you can use to test your "
+"application or spawn workers in production."
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:22
+msgid ""
+"The implementation provides most options provided by `Soup.Server`_ through "
+"command-line options. The available options may vary and can be asserted "
+"with the ``--help`` flag."
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:31
+msgid "3003"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:31
+msgid "port the server is listening on"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:33
+msgid "``--all``"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:33 ../../../docs/vsgi/server/http.rst:35
+#: ../../../docs/vsgi/server/http.rst:37 ../../../docs/vsgi/server/http.rst:41
+#: ../../../docs/vsgi/server/http.rst:53 ../../../docs/vsgi/server/scgi.rst:23
+msgid "``boolean``"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:33
+msgid "local"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:33
+msgid "listen on all interfaces"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:35
+msgid "``--ipv4-only``"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:35 ../../../docs/vsgi/server/http.rst:37
+#: ../../../docs/vsgi/server/http.rst:41 ../../../docs/vsgi/server/http.rst:53
+msgid "disabled"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:35
+msgid "only listen to IPv4 interfaces"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:37
+msgid "``--ipv6-only``"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:37
+msgid "only listen on IPv6 interfaces"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:41
+msgid "``--https``"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:41
+msgid "listen for https connections rather than plain http"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:44
+msgid "``--ssl-cert-file``"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:44
+msgid "path to a file containing a PEM-encoded certificate"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:47
+msgid "``--ssl-key-file``"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:47
+msgid "path to a file containing a PEM-encoded private key"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:50
+msgid "``--server-header``"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:50
+msgid "``string``"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:50
+msgid "Valum/0.2"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:50
+msgid ""
+"value to use for the \"Server\" header on Messages processed by this server."
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:53
+msgid "``--raw-paths``"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:53
+msgid ""
+"percent-encoding in the Request-URI path will not be automatically decoded"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:58
+msgid "Notes"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:60
+msgid ""
+"if ``--all`` is not supplied, the server will only listen to local interfaces"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:62
+msgid ""
+"``--all`` can be combined with ``--ipv4-only`` or ``--ipv4-only`` to listen "
+"on all IPv4 or IPv6 interfaces"
+msgstr ""
+
+#: ../../../docs/vsgi/server/http.rst:64
+msgid ""
+"if ``--https`` is specified, you must provide a SSL or TLS certificate along "
+"with a private key"
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:2
+msgid "Server"
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:4
+msgid ""
+"Server provide HTTP technologies integrations under a common interface. They "
+"inherit from `GLib.Application`_, providing an optimal integration with the "
+"host environment."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:17
+msgid "General"
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:19
+msgid ""
+"Basically, you have access to a `DBusConnection`_ to communicate with other "
+"process and a `GLib.MainLoop`_ to process events and asynchronous work."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:22
+msgid "an application id to identify primary instance"
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:23
+msgid "``startup`` signal emmited right after the registration"
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:24
+msgid "``shutdown`` signal just before the server exits"
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:25
+msgid "a resource base path"
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:26
+msgid "ability to handle CLI arguments"
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:28
+msgid ""
+"The server can be gracefully terminated by sending a `SIGTERM` signal to the "
+"process."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:35
+msgid "Load an implementation"
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:37
+msgid ""
+"Server implementations are dynamically loaded using `GLib.Module`_. It makes "
+"it possible to define its own implementation if necessary."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:42
+msgid ""
+"The shared library name must conform to ``libvsgi-<name>`` with the "
+"appropriate extension. For instance, on GNU/Linux, the :doc:`cgi` module is "
+"stored in ``${LIBDIR}/vsgi/servers/libvsgi-cgi.so``."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:46
+msgid ""
+"To load an implementation, use the ``Server.new`` factory, which can receive "
+"GObject-style arguments as well."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:61
+msgid ""
+"For typical case, use ``Server.new_with_application`` to initialize the "
+"instance with an application identifier and callback:"
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:70
+msgid ""
+"For more flexibility, the ``ServerModule`` class allow a more fine-grained "
+"control for loading a server implementation. If non-null, the ``directory`` "
+"property will be used to retrieve the implementation from the given path "
+"instead of standard locations."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:75
+msgid ""
+"The computed path of the shared library is available from ``path`` property, "
+"which can be used for debugging purposes."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:89
+msgid ""
+"Unloading a module is not necessary: once initially loaded, a use count is "
+"kept so that it can be loaded on need or unloaded if not used."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:94
+msgid ""
+"Since a ``ServerModule`` cannot be disposed (see `GLib.TypeModule`_), one "
+"must be careful of how its reference is being handled. For instance, "
+"``Server.new`` keeps track of requested implementations and persist them "
+"forever."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:101
+msgid ""
+"Mixing direct usages of ``ServerModule`` and ``Server.@new`` (and the likes) "
+"is not recommended and will result in undefined behaviours if an "
+"implementation is loaded more than once."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:106
+msgid "DBus connection"
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:108
+msgid ""
+"`GLib.Application`_ will automatically register to the session DBus bus, "
+"making IPC (Inter-Process Communication) an easy thing."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:111
+msgid ""
+"It can be used to expose runtime information such as a database connection "
+"details or the amount of processing requests. See this `example of DBus "
+"server`_ for code examples."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:117
+msgid ""
+"This can be used to request services, communicate between your workers and "
+"interact with the runtime."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:131
+msgid ""
+"Each server implementation can optionally take arguments that parametrize "
+"its runtime."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:134
+msgid ""
+"If you build your application in a main block, it will not be possible to "
+"obtain the CLI arguments to parametrize the runtime. Instead, the code can "
+"be written in a usual ``main`` function."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:147
+msgid ""
+"If you specify the ``--help`` flag, you can get more information on the "
+"available options which vary from an implementation to another."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:171
+msgid ""
+"Since options are serialized into a `GLib.Variant`_ object, only a few types "
+"are actually allowed for values:"
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:174
+msgid "``boolean`` from `GLib.OptionArg.NONE`_"
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:175
+msgid "``int32`` from `GLib.OptionArg.INTEGER`_"
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:176
+msgid "``string`` from `GLib.OptionArg.STRING`_"
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:177
+msgid "``bytestring`` from `GLib.OptionArg.FILENAME`_"
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:186
+msgid "Forking"
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:188
+msgid ""
+"To achieve optimal performances on a multi-core architecture, VSGI support "
+"forking at the server level."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:193
+msgid ""
+"Keep in mind that the ``fork`` system call will actually copy the whole "
+"process: no resources (e.g. lock, memory) can be shared unless inter-process "
+"communication is used."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:197
+msgid ""
+"The ``--forks`` option will spawn the requested amount of workers, which "
+"should optimally default to the number of available CPUs."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:204
+msgid "It's also possible to fork manually via the ``fork`` call."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:217
+msgid ""
+"It is recommended to fork only through that call since implementations such "
+"as :doc:`cgi` are not guaranteed to support it."
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:221
+msgid "Listen on distinct interfaces"
+msgstr ""
+
+#: ../../../docs/vsgi/server/index.rst:223
+msgid ""
+"Typically, ``fork`` is called after ``listen`` so that all processes share "
+"the same file descriptors and interfaces. However, it might be useful to "
+"listen to multiple ports (e.g. HTTP and HTTPS)."
+msgstr ""
+
+#: ../../../docs/vsgi/server/scgi.rst:2
+msgid "SCGI"
+msgstr ""
+
+#: ../../../docs/vsgi/server/scgi.rst:4
+msgid ""
+"SCGI (Simple Common Gateway Interface) is a stream-based protocol that is "
+"particularly simple to implement."
+msgstr ""
+
+#: ../../../docs/vsgi/server/scgi.rst:9
+msgid ""
+"SCGI is the recommended implementation and should be used when available as "
+"it takes the best out of GIO asynchronous API."
+msgstr ""
+
+#: ../../../docs/vsgi/server/scgi.rst:12
+msgid ""
+"The implementation uses a `GLib.SocketService`_ and processes multiple "
+"requests using non-blocking I/O."
+msgstr ""
+
+#: ../../../docs/vsgi/server/scgi.rst:23
+msgid "``--any``"
+msgstr ""
+
+#: ../../../docs/vsgi/server/scgi.rst:23
+msgid "listen on any open TCP port"
+msgstr ""
+
+#: ../../../docs/vsgi/server/scgi.rst:35
+msgid ""
+"Similarly to :doc:`fastcgi`, Lighttpd can be used to spawn and serve SCGI "
+"processes."
+msgstr ""
+
+#: ../../../docs/vsgi/server/scgi.rst:44
+msgid "Apache can serve SCGI instances with `mod_proxy_scgi`_."
+msgstr ""
+
+#: ../../../docs/vsgi/server/scgi.rst:55
+msgid ""
+"Nginx support the SCGI protocol with `ngx_http_scgi_module`_ and can only "
+"pass requests over TCP/IP and UNIX domain sockets."
+msgstr ""

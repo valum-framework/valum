@@ -1,0 +1,145 @@
+# French translations for Valum.
+# Copyright (C) 2015, Antono Vasiljev, Guillaume Poirier-Morency
+# This file is distributed under the same license as the Valum package.
+# Guillaume Poirier-Morency <guillaumepoiriermorency@gmail.com>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Valum web micro-framework 0.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-10-03 16:05-0400\n"
+"PO-Revision-Date: 2016-10-03 22:55-0400\n"
+"Last-Translator: Guillaume Poirier-Morency <guillaumepoiriermorency@gmail."
+"com>\n"
+"Language-Team: français <>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Gtranslator 2.91.7\n"
+
+#: ../../../docs/getting-started.rst:2
+msgid "Quickstart"
+msgstr "Débuter"
+
+#: ../../../docs/getting-started.rst:4
+msgid ""
+"Assuming that Valum is built and installed correctly (view :doc:"
+"`installation` for more details), you are ready to create your first "
+"application!"
+msgstr ""
+"En assumant que Valum est construit et installé correctement (voir :doc:"
+"`installation` pour les détails), vous êtres en mesure de créer votre propre "
+"application!"
+
+#: ../../../docs/getting-started.rst:8
+msgid "Simple 'Hello world!' application"
+msgstr "Hello world!"
+
+#: ../../../docs/getting-started.rst:10
+msgid ""
+"You can use this sample application and project structure as a basis. The "
+"full `valum-framework/example`_ is available on GitHub and is kept up-to-"
+"date with the latest changes in the framework."
+msgstr ""
+"Vous pouvez utiliser cette application et la structure qui l'accompagne "
+"comme base. L'exemple complet `valum-framework/example`_ est disponible sur "
+"GitHub et devrait être à jour avec les derniers changements du framework."
+
+#: ../../../docs/getting-started.rst:29
+msgid ""
+"Typically, the ``run`` function contains CLI argument to make runtime the "
+"parametrizable."
+msgstr ""
+"Typiquement, la fonction ``run`` contient les argument de la ligne de "
+"commande."
+
+#: ../../../docs/getting-started.rst:32
+msgid ""
+"It is suggested to use the following structure for your project, but you can "
+"do pretty much what you think is the best for your needs."
+msgstr ""
+"La structure suivante est suggérée pour votre projet, mais vous pouvez faire "
+"ce qui vous semble le plus approprié pour vos besoins."
+
+#: ../../../docs/getting-started.rst:42
+msgid "Building with valac"
+msgstr "Construire avec valac"
+
+#: ../../../docs/getting-started.rst:44
+msgid "Simple applications can be built directly with ``valac``:"
+msgstr ""
+"Les applications simples peuvent être construire directement à l'aide du "
+"compilateur Vala."
+
+#: ../../../docs/getting-started.rst:50
+msgid ""
+"The ``vala`` program will build and run the produced binary, which is "
+"convenient for testing:"
+msgstr ""
+"Le programme ``vala`` construit et exécute le binaire produit, ce qui peut "
+"s'avérer très convivial pour tester:"
+
+#: ../../../docs/getting-started.rst:58
+msgid "Building with Meson"
+msgstr "Construire avec Meson"
+
+#: ../../../docs/getting-started.rst:60
+msgid ""
+"`Meson`_ is highly-recommended for its simplicity and expressiveness. It's "
+"not as flexible as waf, but it will handle most projects very well."
+msgstr ""
+"`Meson`_ est fortement recommendé pour sa simplicité et son expressivité. Il "
+"n'est pas aussi flexible que waf, mais saura prendre en charge la plupart "
+"des projets avec aisance."
+
+#: ../../../docs/getting-started.rst:84
+msgid ""
+"To include Valum as a subproject, it is sufficient to clone the repository "
+"into ``subprojects/valum``."
+msgstr ""
+"Pour inclure Valum comme un sous-projet, il est suffisant de cloner le dépôt "
+"git sous ``subprojects/valum``."
+
+#: ../../../docs/getting-started.rst:88
+msgid "Building with waf"
+msgstr "Construire avec waf"
+
+#: ../../../docs/getting-started.rst:90
+msgid ""
+"It is preferable to use a build system like `waf`_ to automate all this "
+"process. Get a release of ``waf`` and copy this file under the name "
+"``wscript`` at the root of your project."
+msgstr ""
+"Il est préférable d'utiliser un système de fabrication de logiciel comme "
+"`waf`_ afin d'automatiser tout ce processus. Il vous faudra distribuer le "
+"script ``waf`` ainsi qu'un fichier ``wscript`` à la racine de votre projet."
+
+#: ../../../docs/getting-started.rst:113
+msgid "You should now be able to build by issuing the following commands:"
+msgstr ""
+"Vous devriez pouvoir construire votre application à l'aide des commandes "
+"suivantes:"
+
+#: ../../../docs/getting-started.rst:121
+msgid "Running the example"
+msgstr "Exécuter l'exemple"
+
+#: ../../../docs/getting-started.rst:123
+msgid ""
+"VSGI produces process-based applications that are either self-hosted or able "
+"to communicate with a HTTP server according to a standardized protocol."
+msgstr ""
+"VSGI produit des applications qui sont soit prêtes à reçevoir des requêtes "
+"HTTP ou bien capable de communiquer avec un serveur HTTP à l'aide d'un "
+"protocole standardisé."
+
+#: ../../../docs/getting-started.rst:126
+msgid ""
+"The :doc:`vsgi/server/http` implementation is self-hosting, so you just have "
+"to run it and point your browser at http://127.0.0.1:3003 to see the result."
+msgstr ""
+"L'implémentation :doc:`vsgi/server/http` est prête à reçevoir des requête "
+"directement. Il suffit de l'exécuter et d'ouvrir la page "
+"http://127.0.0.1:3003/ afin d'en voir le résultat."
