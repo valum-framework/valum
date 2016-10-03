@@ -22,11 +22,13 @@ before_install:
 
 before_script:
     - mkdir build
-    - meson.py -D b_coverage=true -D enable_docs=true -D enable_examples=true . build
+    - meson.py -D b_coverage=true -D enable_examples=true . build
     - ninja -C build -v
 
 script:
     - ninja -C build -v test
+    - ninja -C build -v docs/pot
+    - ninja -C build -v docs/en docs/fr
     - DESTDIR=$(mktemp -d) ninja -C build -v install
 
 after_success:

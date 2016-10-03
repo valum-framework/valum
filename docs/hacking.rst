@@ -160,3 +160,26 @@ in the code have to be updated manually:
 -   GIR version annotations for all declared namespaces
 -   ``version`` and ``release`` in ``docs/conf.py``
 
+Translations
+------------
+
+To generate POT files, simply launch the following command:
+
+.. code-block:: bash
+
+    ninja docs/pot
+
+Then, move to the ``docs`` folder to update the translations for the language
+``<lang>``:
+
+.. code-block:: bash
+
+    sphinx-intl update -p ../build/docs/pot -l <lang>
+
+This should update the files located in ``po/<lang>/LC_MESSAGES``. The docs can
+then be regenerated with the translations.
+
+.. code-block:: bash
+
+    ninja docs/<lang>
+

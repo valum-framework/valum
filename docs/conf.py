@@ -262,3 +262,8 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
+
+# -- Localization configuration -------------------------------------------
+
+# Directories containing localized strings
+locale_dirs = ['po']
