@@ -238,7 +238,7 @@ namespace VSGI.SCGI {
 			var req = new Request (new Connection (this, connection), new BoundedInputStream (reader, content_length), environment);
 			var res = new Response (req);
 
-			dispatch (req, res);
+			yield dispatch_async (req, res);
 		}
 	}
 }
