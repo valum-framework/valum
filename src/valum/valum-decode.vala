@@ -69,7 +69,7 @@ namespace Valum {
 						if (DecodeFlags.FORWARD_REMAINING_ENCODINGS in flags) {
 							return next ();
 						} else {
-							throw new ClientError.UNSUPPORTED_MEDIA_TYPE ("The '%s' encoding is not supported.",
+							throw new ClientError.UNSUPPORTED_MEDIA_TYPE (_("The '%s' encoding is not supported."),
 							                                              encoding.data);
 						}
 				}

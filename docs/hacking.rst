@@ -113,7 +113,17 @@ in the code have to be updated manually:
 Translations
 ------------
 
-To generate pot files, enable the documentation with ``-D enable_docs=true`` in
+Once built, all the localizable strings are written to ``build/po/messages.pot``,
+which can then be processed with ``msginit`` and ``msgmerge`` to update PO
+files located in ``po``.
+
+The build automatically generate ``*.gmo`` which are then installed system-wide
+or loaded locally.
+
+User documentation
+~~~~~~~~~~~~~~~~~~
+
+To generate POT files, enable the documentation with ``-D enable_docs=true`` in
 the configure step (or later with ``mesonconf``) and launch the following
 command:
 

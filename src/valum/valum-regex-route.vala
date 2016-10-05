@@ -85,7 +85,7 @@ namespace Valum {
 		}
 
 		public override string to_url_from_hash (HashTable<string, string>? @params = null) {
-			error ("'RegexRoute' does not support reversing URLs.");
+			error (_("'RegexRoute' does not support reversing URLs."));
 		}
 	}
 }

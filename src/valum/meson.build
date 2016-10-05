@@ -27,6 +27,7 @@ valum_sources = files(
     'valum-subdomain.vala')
 valum_lib = library('valum-' + api_version, valum_sources,
                     dependencies: [glib, gobject, gio, soup, vsgi],
+                    c_args: '-DGETTEXT_PACKAGE="valum-@0@"'.format(api_version),
                     vala_args: vala_defines,
                     vala_header: 'valum.h',
                     install: true)

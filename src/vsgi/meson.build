@@ -22,6 +22,7 @@ vsgi_lib = library('vsgi-' + api_version, vsgi_sources,
                    dependencies: [glib, gobject, gio, gio_unix, gmodule, soup],
                    vala_args: ['--pkg=posix'] + vala_defines,
                    vala_header: 'vsgi.h',
+                   c_args: '-DGETTEXT_PACKAGE="vsgi-@0@"'.format(api_version),
                    install: true,
                    install_rpath: '$ORIGIN/vsgi-@0@/servers'.format(api_version))
 

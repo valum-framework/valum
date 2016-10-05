@@ -78,7 +78,7 @@ namespace Valum.ContentNegotiation {
 			var header = req.headers.get_list (header_name);
 
 			if (_expectations.length () == 0) {
-				throw new ClientError.NOT_ACCEPTABLE ("'%s' cannot be satisfied: nothing is expected.", header_name);
+				throw new ClientError.NOT_ACCEPTABLE (_("'%s' cannot be satisfied: nothing is expected."), header_name);
 			}
 
 			if (_expectations.length () > 1) {
@@ -111,7 +111,7 @@ namespace Valum.ContentNegotiation {
 				return forward (req, res, next, ctx, best_expectation);
 			}
 
-			throw new ClientError.NOT_ACCEPTABLE ("'%s' is not satisfiable by any of '%s'.",
+			throw new ClientError.NOT_ACCEPTABLE (_("'%s' is not satisfiable by any of '%s'."),
 												  header_name,
 												  expectations);
 		};
@@ -212,7 +212,7 @@ namespace Valum.ContentNegotiation {
 				case "identity":
 					return forward (req, res, next, ctx, encoding);
 				default:
-					throw new ServerError.NOT_IMPLEMENTED ("The '%s' encoding is not supported.", encoding);
+					throw new ServerError.NOT_IMPLEMENTED (_("The '%s' encoding is not supported."), encoding);
 			}
 		}, (a, b) => {
 			return a == "*"                            ||

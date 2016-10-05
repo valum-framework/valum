@@ -67,14 +67,14 @@ if sphinx.found()
         'vsgi/server/index.rst',
         'vsgi/server/scgi.rst']
     # Generate '*.pot' files for translators
-    custom_target('docs-pot', command: [sphinx, '-W', '-b', 'gettext', meson.current_source_dir(), '@OUTPUT@'],
-                  input: docs_sources,
-                  output: 'po',
+    custom_target('pot', command: [sphinx, '-W', '-b', 'gettext', '@INPUT@', '@OUTPUT@'],
+                  input: '.',
+                  output: 'pot',
                   build_by_default: true)
 
     foreach lang : ['en', 'fr']
         custom_target('@0@ user documentation'.format(lang),
-                      command: [sphinx, '-W', '-b', 'html', meson.current_source_dir(), '@OUTPUT@'],
+                      command: [sphinx, '-W', '-b', 'html', '-D', 'language=@0@'.format(lang), meson.current_source_dir(), '@OUTPUT@'],
                       input: docs_sources,
                       output: lang,
                       build_by_default: true)

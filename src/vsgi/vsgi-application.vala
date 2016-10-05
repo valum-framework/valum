@@ -88,7 +88,7 @@ public class VSGI.Application : GLib.Application {
 				stderr.printf ("[%s] %s%s:%s %s%s%s%s\n",
 							   new DateTime.now_utc ().format ("%FT%H:%M:%S.000Z"),
 							   "\x1b[33m",
-							   "worker %d".printf (Posix.getpid ()),
+								_("worker %d".printf (Posix.getpid ())),
 							   "\x1b[0m",
 							   log_domain == null ? "" : "%s: ".printf (log_domain),
 							   LogLevelFlags.LEVEL_ERROR    in log_level ? "\x1b[31m" :
@@ -208,7 +208,7 @@ public class VSGI.Application : GLib.Application {
 					else {
 						// monitor child process
 						ChildWatch.add (pid, (pid, status) => {
-							warning ("Worker %d exited with status '%d'.", pid, status);
+							warning (_("Worker %d exited with status '%d'."), pid, status);
 						});
 					}
 				}
@@ -219,7 +219,7 @@ public class VSGI.Application : GLib.Application {
 		}
 
 		foreach (var uri in server.uris) {
-			message ("Listening on '%s'.", uri.to_string (false));
+			message (_("Listening on '%s'."), uri.to_string (false));
 		}
 
 		// keep the process (and workers) alive

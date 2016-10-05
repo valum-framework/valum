@@ -288,7 +288,7 @@ namespace Valum {
 		[Version (since = "0.3")]
 		public string url_for_hash (string name, HashTable<string, string>? @params = null) {
 			if (!_named_routes.contains (name)) {
-				error ("No such route named '%s'.", name);
+				error (_("No such route named '%s'."), name);
 			}
 			return _named_routes.lookup (name).to_url_from_hash (@params);
 		}
@@ -300,7 +300,7 @@ namespace Valum {
 		[Version (since = "0.3")]
 		public string url_for_valist (string name, va_list list) {
 			if (!_named_routes.contains (name)) {
-				error ("No such route named '%s'.", name);
+				error (_("No such route named '%s'."), name);
 			}
 			return _named_routes.lookup (name).to_url_from_valist (list);
 		}
@@ -449,7 +449,7 @@ namespace Valum {
 					}
 				}
 
-				throw new ClientError.NOT_FOUND ("The request URI '%s' was not found.", req.uri.to_string (true));
+				throw new ClientError.NOT_FOUND (_("The request URI '%s' was not found."), req.uri.to_string (true));
 			}, new Context.with_parent (context));
 		}
 

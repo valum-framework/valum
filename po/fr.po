@@ -1,0 +1,80 @@
+# French translations for Valum.
+# Copyright (C) 2015, Antono Vasiljev, Guillaume Poirier-Morency
+# This file is distributed under the same license as the Valum package.
+# Guillaume Poirier-Morency <guillaumepoiriermorency@gmail.com>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Valum 0.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-10-05 00:21-0400\n"
+"PO-Revision-Date: 2016-10-05 00:28-0400\n"
+"Last-Translator: Guillaume Poirier-Morency <guillaumepoiriermorency@gmail."
+"com>\n"
+"Language-Team: français <>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Gtranslator 2.91.7\n"
+
+#: ../src/valum/valum-basic.vala:175
+msgid ""
+"The server encountered an unexpected condition which prevented it from "
+"fulfilling the request."
+msgstr ""
+"Le serveur a rencontré une condition innatendue qui l'empêche de remplir la "
+"requête."
+
+#: ../src/valum/valum-decode.vala:75
+#: ../src/valum/valum-content-negotiation.vala:221
+#, c-format
+msgid "The '%s' encoding is not supported."
+msgstr "L'encodage '%s' n'est pas supporté."
+
+#: ../src/valum/valum-matcher-route.vala:53
+msgid "'MatcherRoute' does not support reversing URLs."
+msgstr "'MatcherRoute' ne supporte pas le renversement d'URL."
+
+#: ../src/valum/valum-content-negotiation.vala:84
+#, c-format
+msgid "'%s' cannot be satisfied: nothing is expected."
+msgstr "'%s' ne peut pas être satisfait: rien n'est attendu."
+
+#: ../src/valum/valum-content-negotiation.vala:117
+#, c-format
+msgid "'%s' is not satisfiable by any of '%s'."
+msgstr "'%s' ne peut pas être satisfait par '%s'."
+
+#: ../src/valum/valum-regex-route.vala:96
+msgid "'RegexRoute' does not support reversing URLs."
+msgstr "'RegexRoute' ne supporte pas le renversement d'URL."
+
+#: ../src/valum/valum-router.vala:318 ../src/valum/valum-router.vala:331
+#, c-format
+msgid "No such route named '%s'."
+msgstr "Aucune route nommée '%s'."
+
+#: ../src/valum/valum-router.vala:486
+#, c-format
+msgid "The request URI '%s' was not found."
+msgstr "L'URI '%s' de la requête n'a pas été trouvé."
+
+#: ../src/valum/valum-rule-route.vala:100
+#, c-format
+msgid "Using an undefined type '%s' for capture '%s'."
+msgstr "Utilisation d'un type indéfini '%s' pour la capture '%s'."
+
+#: ../src/valum/valum-rule-route.vala:127
+#, c-format
+msgid "The parameter '%s' was not provided."
+msgstr "Le paramètre '%s' n'est pas fourni."
+
+#: ../src/valum/valum-static.vala:143 ../src/valum/valum-static.vala:250
+msgid "The 'Content-Type' header could not be infered with certainty."
+msgstr "L'en-tête 'Content-Type' n'a pas pu être inférée avec certitude."
+
+#: ../src/valum/valum-static.vala:161
+msgid "You cannot access this resource."
+msgstr "Vous ne pouvez pas accéder cette ressource."

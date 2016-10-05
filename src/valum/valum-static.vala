@@ -130,7 +130,7 @@ namespace Valum.Static {
 				if (uncertain) {
 					res.headers.append ("Warning", "%u, %s, \"%s\", \"%s\"".printf (199,
 					                                                                req.uri.host + (req.uri.uses_default_port () ? "" : ":" + req.uri.port.to_string ()),
-					                                                                "The 'Content-Type' header could not be infered with certainty.",
+					                                                                _("The 'Content-Type' header could not be infered with certainty."),
 					                                                                new Soup.Date.from_now (0).to_string (Soup.DateFormat.HTTP)));
 				}
 
@@ -148,7 +148,7 @@ namespace Valum.Static {
 				}, ctx, file);
 			} catch (FileError.ACCES fe) {
 				if (ServeFlags.FORBID_ON_MISSING_RIGHTS in serve_flags) {
-					throw new ClientError.FORBIDDEN ("You cannot access this resource.");
+					throw new ClientError.FORBIDDEN (_("You cannot access this resource."));
 				} else {
 					return next ();
 				}
@@ -232,7 +232,7 @@ namespace Valum.Static {
 			if (uncertain) {
 				res.headers.append ("Warning", "%u, %s, \"%s\", \"%s\"".printf (199,
 				                                                                req.uri.host + (req.uri.uses_default_port () ? "" : ":" + req.uri.port.to_string ()),
-				                                                                "The 'Content-Type' header could not be infered with certainty.",
+				                                                                _("The 'Content-Type' header could not be infered with certainty."),
 				                                                                new Soup.Date.from_now (0).to_string (Soup.DateFormat.HTTP)));
 			}
 

@@ -91,7 +91,7 @@ namespace Valum {
 					} else if (type == "string") {
 						pattern.append_printf ("(?<%s>\\w+)", key);
 					} else {
-						throw new RegexError.COMPILE ("Using an undefined type '%s' for capture '%s'.", type, key);
+						throw new RegexError.COMPILE (_("Using an undefined type '%s' for capture '%s'."), type, key);
 					}
 				}
 			}
@@ -136,7 +136,7 @@ namespace Valum {
 			}
 
 			if (missing) {
-				critical ("The parameter '%s' was not provided.", missing_key);
+				critical (_("The parameter '%s' was not provided."), missing_key);
 			}
 
 			return url.str;

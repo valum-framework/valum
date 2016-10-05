@@ -39,6 +39,7 @@ endif
 
 subdir('src')
 subdir('bin')
+subdir('po')
 subdir('tests')
 subdir('docs')
 if get_option('enable_examples')

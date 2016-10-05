@@ -167,7 +167,7 @@ namespace Valum {
 								return res.expand_utf8 (err.message);
 							} else {
 								critical ("%s (%s, %d)", err.message, err.domain.to_string (), err.code);
-								return res.expand_utf8 ("The server encountered an unexpected condition which prevented it from fulfilling the request.");
+								return res.expand_utf8 (_("The server encountered an unexpected condition which prevented it from fulfilling the request."));
 							}
 						} catch (IOError io_err) {
 							critical ("%s (%s, %d)", io_err.message, io_err.domain.to_string (), io_err.code);
