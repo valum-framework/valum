@@ -73,6 +73,9 @@ namespace VSGI.CGI {
 			}
 		}
 
+		public override OptionEntry[] get_listen_options () {
+			return {};
+		}
 
 		public override void listen (Variant options) throws GLib.Error {
 			if (_uris.length () > 0) {
@@ -83,8 +86,8 @@ namespace VSGI.CGI {
 
 			Idle.add (() => {
 				var connection = new Connection (this,
-												 new UnixInputStream (stdin.fileno (), true),
-												 new UnixOutputStream (stdout.fileno (), true));
+				                                 new UnixInputStream (stdin.fileno (), true),
+				                                 new UnixOutputStream (stdout.fileno (), true));
 
 				var req = new Request (connection, Environ.@get ());
 				var res = new Response (req);
@@ -97,6 +100,14 @@ namespace VSGI.CGI {
 				}
 
 				return false;
+			});
+
+			Idle.add (() => {
+				if (MainContext.@default ().pending ()) {
+					return true;
+				} else {
+					Process.exit (0);
+				}
 			});
 		}
 

@@ -21,7 +21,7 @@ app.get ("/", (req, res) => {
     return res.extend_utf8 ("Hello world!");
 });
 
-Server.new_with_application ("http", "org.valum.example.App", app.handle).run ({"app", "--forks=4"});
+Server.new_with_application ("http", app.handle).run ({"app", "--forks=4"});
 ```
 
 

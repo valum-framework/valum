@@ -1,5 +1,6 @@
 vsgi_sources = files(
     'vsgi.vala',
+    'vsgi-application.vala',
     'vsgi-authentication.vala',
     'vsgi-authorization.vala',
     'vsgi-basic-authentication.vala',

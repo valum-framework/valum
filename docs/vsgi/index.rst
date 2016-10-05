@@ -33,7 +33,7 @@ request has been or will be processed.
 
     using VSGI;
 
-    Server.new_with_application ("http", "org.vsgi.App", (req, res) => {
+    Server.new_with_application ("http", (req, res) => {
         // process the request and produce the response...
         return true;
     }).run ();
@@ -51,7 +51,7 @@ which will in turn teardown the connection appropriately.
 
 ::
 
-    Server.new_with_application ("http", "org.vsgi.App", (req, res) => {
+    Server.new_with_application ("http", (req, res) => {
         throw new IOError.FAILED ("some I/O failed");
     });
 

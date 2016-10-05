@@ -43,7 +43,11 @@ public abstract class VSGI.SocketListenerServer : Server {
 	}
 
 	construct {
-#if GIO_2_40
+		// FIXME: probably a compiler bug with default property not being initialized
+		socket_service = new SocketService ();
+	}
+
+	public override OptionEntry[] get_listen_options () {
 		const OptionEntry[] options = {
 			{"any",             'a', 0, OptionArg.NONE,     null, "Listen on any open TCP port"},
 			{"port",            'p', 0, OptionArg.INT,      null, "Listen to the provided TCP port"},
@@ -51,11 +55,7 @@ public abstract class VSGI.SocketListenerServer : Server {
 			{"backlog",         'b', 0, OptionArg.INT,      null, "Listen queue depth used in the listen() call", "10"},
 			{null}
 		};
-
-		this.add_main_option_entries (options);
-#endif
-		// FIXME: probably a compiler bug with default property not being initialized
-		socket_service = new SocketService ();
+		return options;
 	}
 
 	public override void listen (Variant options) throws Error {

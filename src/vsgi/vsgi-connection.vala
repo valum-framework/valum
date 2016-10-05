@@ -28,12 +28,4 @@ public abstract class VSGI.Connection : GLib.IOStream {
 	 * @since 0.3
 	 */
 	public Server server { construct; get; }
-
-	public override void constructed () {
-		server.hold ();
-	}
-
-	public override void dispose () {
-		server.release ();
-	}
 }

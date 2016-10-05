@@ -21,7 +21,7 @@ body.
 
 ::
 
-    Server.new_with_application ("http", "org.vsgi.App", (req, res) => {
+    Server.new_with_application ("http", (req, res) => {
         res.status = Soup.Status.MALFORMED;
         return true;
     });
@@ -36,7 +36,7 @@ The reason phrase provide a textual description for the status code. If
 
 ::
 
-    Server.new_with_application ("http", "org.vsgi.App", (req, res) => {
+    Server.new_with_application ("http", (req, res) => {
         res.status = Soup.Status.OK;
         res.reason_phrase = "Everything Went Well"
         return true;
@@ -65,7 +65,7 @@ The response headers can be accessed as a `Soup.MessageHeaders`_ from the
 
 ::
 
-    Server.new_with_application ("http", "org.vsgi.App", (req, res) => {
+    Server.new_with_application ("http", (req, res) => {
         res.status = Soup.Status.OK;
         res.headers.set_content_type ("text/plain", null);
         return res.body.write_all ("Hello world!".data, null);
@@ -138,7 +138,7 @@ stream and close it properly.
 
 ::
 
-    Server.new_with_application ("http", "org.vsgi.App", (req, res) => {
+    Server.new_with_application ("http", (req, res) => {
         res.expand_utf8 ("Hello world!");
     });
 
@@ -219,7 +219,7 @@ provided:
 
 ::
 
-    Server.new_with_application ("http", "org.vsgi.App", (req, res, next) => {
+    Server.new_with_application ("http", (req, res, next) => {
         res.status = Soup.Status.NO_CONTENT;
         return res.end () && next ();
     }).then ((req, res) => {

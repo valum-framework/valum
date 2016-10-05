@@ -1,9 +1,7 @@
 Server
 ======
 
-Server provide HTTP technologies integrations under a common interface. They
-inherit from `GLib.Application`_, providing an optimal integration with the
-host environment.
+Server provide HTTP technologies integrations under a common interface.
 
 .. toctree::
     :caption: Table of Contents
@@ -13,23 +11,26 @@ host environment.
     fastcgi
     scgi
 
-General
+Cushion
 -------
 
-Basically, you have access to a `DBusConnection`_ to communicate with other
-process and a `GLib.MainLoop`_ to process events and asynchronous work.
+The ``Application`` class provide a nice cushion around ``Server`` that deals
+with pretty logging and CLI argument parsing.
 
--  an application id to identify primary instance
--  ``startup`` signal emmited right after the registration
--  ``shutdown`` signal just before the server exits
--  a resource base path
--  ability to handle CLI arguments
+The ``Server.run`` function actually create a new application object around the
+server instance. Thus, the following snippets are equivalent:
 
-The server can be gracefully terminated by sending a `SIGTERM` signal to the
-process.
+::
 
-.. _DBusConnection: http://valadoc.org/#!api=gio-2.0/GLib.DBusConnection
-.. _GLib.MainLoop: http://valadoc.org/#!api=glib-2.0/GLib.MainLoop
+    using VSGI;
+
+    Server.new ("http").run ();
+
+::
+
+    using VSGI;
+
+    new Application (Server.new ("http")).run ();
 
 Load an implementation
 ----------------------
@@ -41,14 +42,14 @@ possible to define its own implementation if necessary.
 
 The shared library name must conform to ``libvsgi-<name>`` with the appropriate
 extension. For instance, on GNU/Linux, the :doc:`cgi` module is stored in
-``${LIBDIR}/vsgi/servers/libvsgi-cgi.so``.
+``${prefix}/${libdir}/vsgi-0.3/servers/libvsgi-cgi.so``.
 
 To load an implementation, use the ``Server.new`` factory, which can receive
 GObject-style arguments as well.
 
 ::
 
-    var cgi_server = Server.new ("cgi", "application-id", "org.valum.example.CGI");
+    var cgi_server = Server.new ("cgi");
 
     if (cgi_server == null) {
         assert_not_reached ();
@@ -102,34 +103,16 @@ Mixing direct usages of ``ServerModule`` and ``Server.@new`` (and the likes) is
 not recommended and will result in undefined behaviours if an implementation is
 loaded more than once.
 
-DBus connection
----------------
-
-`GLib.Application`_ will automatically register to the session DBus bus, making
-IPC (Inter-Process Communication) an easy thing.
-
-It can be used to expose runtime information such as a database connection
-details or the amount of processing requests. See this `example of DBus server`_
-for code examples.
-
-.. _example of DBus server: https://wiki.gnome.org/Projects/Vala/DBusServerSample
-
-This can be used to request services, communicate between your workers and
-interact with the runtime.
-
-.. code:: vala
-
-    var connection = server.get_dbus_connection ()
-
-    connection.call ()
-
-.. _GLib.Application: http://valadoc.org/#!api=gio-2.0/GLib.Application
-
 Options
 -------
 
 Each server implementation can optionally take arguments that parametrize its
 runtime.
+
+The available options are listed in ``get_listen_options`` in the form of
+a list of `GLib.OptionEntry`_ structs.
+
+.. _GLib.OptionEntry: http://valadoc.org/#!api=glib-2.0/GLib.OptionEntry
 
 If you build your application in a main block, it will not be possible to
 obtain the CLI arguments to parametrize the runtime. Instead, the code can be
@@ -137,8 +120,8 @@ written in a usual ``main`` function.
 
 .. code:: vala
 
-    public static int main (string[] args) {
-        Server.new ("http", "org.vsgi.App", (req, res) => {
+    public int main (string[] args) {
+        return Server.new ("http", "org.vsgi.App", (req, res) => {
             res.status = Soup.Status.OK;
             return res.body.write_all ("Hello world!".data, null);
         }).run (args);
@@ -185,15 +168,15 @@ optimally default to the number of available CPUs.
 
 ::
 
-    server.run ("app", {"--forks=4"});
+    server.run ({"app", "--forks=4"});
 
 It's also possible to fork manually via the ``fork`` call.
 
 ::
 
-    using VSGI.HTTP;
+    using VSGI;
 
-    var server = new Server ();
+    var server = Server.new ("http");
 
     server.listen (options);
     server.fork ();
@@ -212,9 +195,9 @@ to multiple ports (e.g. HTTP and HTTPS).
 
 ::
 
-    using VSGI.HTTP;
+    using VSGI;
 
-    var server = new Server ();
+    var server = Server.new ("http");
 
     var parent_options = new VariantDict ();
     var child_options = new VariantDict ();

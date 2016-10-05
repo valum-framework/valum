@@ -24,4 +24,4 @@ app.get ("/", (req, res) => {
 	return res.expand_utf8 ("Hello world!");
 });
 
-Server.new_with_application ("cgi", "org.valum.example.CGI", app.handle).run ();
+Server.new_with_application ("cgi", app.handle).run ();

@@ -162,6 +162,10 @@ namespace VSGI.Mock {
 
 		public override SList<Soup.URI> uris { get { return _uris; } }
 
+		public override OptionEntry[] get_listen_options () {
+			return {};
+		}
+
 		public override void listen (Variant options) throws Error {
 			_uris.append (new Soup.URI ("mock://"));
 		}

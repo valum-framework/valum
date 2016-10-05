@@ -32,7 +32,7 @@ namespace VSGI {
 	 *
 	 * @since 0.1
 	 */
-	public abstract class Server : GLib.Application {
+	public abstract class Server : Object {
 
 		private static HashTable<string, ServerModule>? _server_modules = null;
 
@@ -69,15 +69,13 @@ namespace VSGI {
 		 *
 		 * @since 0.3
 		 *
-		 * @param application_id application identifier, it must be a valid
-		 *                       {@link GLib.Application} identifier
 		 * @param application    application callback
 		 *
 		 * @return the server instance of loaded successfully, otherwise 'null'
 		 *         and a warning will be emitted
 		 */
-		public static Server? new_with_application (string name, string application_id, owned ApplicationCallback callback) {
-			var server = @new (name, "application-id", application_id);
+		public static Server? new_with_application (string name, owned ApplicationCallback callback) {
+			var server = @new (name);
 			if (server != null) {
 				server.set_application_callback ((owned) callback);
 			}
@@ -100,101 +98,7 @@ namespace VSGI {
 			_application = (owned) application;
 		}
 
-		construct {
-			flags |= ApplicationFlags.HANDLES_COMMAND_LINE |
-			         ApplicationFlags.SEND_ENVIRONMENT |
-			         ApplicationFlags.NON_UNIQUE;
-#if GIO_2_40
-			const OptionEntry[] entries = {
-				// general options
-				{"forks", 0, 0, OptionArg.INT, null, "Number of fork to create", "0"},
-				{null}
-			};
-			this.add_main_option_entries (entries);
-#endif
-		}
-
-		public override int command_line (ApplicationCommandLine command_line) {
-#if GIO_2_40
-			var options = command_line.get_options_dict ().end ();
-#else
-			var options = new Variant ("a{sv}");
-#endif
-
-			// per-worker logging
-			if (Posix.isatty (stderr.fileno ())) {
-				Log.set_handler (null, LogLevelFlags.LEVEL_MASK, (domain, level, message) => {
-					stderr.printf ("[%s] %s%s:%s %s%s%s%s\n",
-					               new DateTime.now_utc ().format ("%FT%H:%M:%S.000Z"),
-					               "\x1b[33m",
-					               "worker %d".printf (Posix.getpid ()),
-					               "\x1b[0m",
-					               domain == null ? "" : "%s: ".printf (domain),
-					               LogLevelFlags.LEVEL_ERROR    in level ? "\x1b[31m" :
-					               LogLevelFlags.LEVEL_CRITICAL in level ? "\x1b[31m" :
-					               LogLevelFlags.LEVEL_WARNING  in level ? "\x1b[33m" :
-					               LogLevelFlags.LEVEL_MESSAGE  in level ? "\x1b[32m" :
-#if GLIB_2_40
-					               LogLevelFlags.LEVEL_INFO     in level ? "\x1b[34m" :
-#endif
-					               LogLevelFlags.LEVEL_DEBUG    in level ? "\x1b[36m" : "",
-					               message.replace ("\n", "\n\t\t"),
-					               "\x1b[0m");
-				});
-			} else {
-				Log.set_handler (null, LogLevelFlags.LEVEL_MASK, (domain, level, message) => {
-					Log.default_handler (domain, level, "[%s] %s".printf (new DateTime.now_utc ().format ("%FT%H:%M:%S.000Z"), message));
-				});
-			}
-
-			try {
-				listen (options);
-			} catch (Error err) {
-				critical ("%s (%s, %d)", err.message, err.domain.to_string (), err.code);
-				return 1;
-			}
-
-			if (options.lookup_value ("forks", VariantType.INT32) != null) {
-				var forks = options.lookup_value ("forks", VariantType.INT32).get_int32 ();
-				try {
-					for (var i = 0; i < forks; i++) {
-						var pid = fork ();
-
-						// worker
-						if (pid == 0) {
-							break;
-						}
-
-						// parent
-						else {
-							// monitor child process
-							ChildWatch.add (pid, (pid, status) => {
-								warning ("worker %d exited with status '%d'", pid, status);
-							});
-						}
-					}
-				} catch (Error err) {
-					critical ("%s (%s, %d)", err.message, err.domain.to_string (), err.code);
-					return 1;
-				}
-			}
-
-			foreach (var uri in uris) {
-				message ("listening on '%s'", uri.to_string (false)[0:-uri.path.length]);
-			}
-
-			// keep the process (and workers) alive
-			hold ();
-
-			// release on 'SIGTERM'
-			Unix.signal_add (ProcessSignal.TERM, () => {
-				release ();
-				stop ();
-				return false;
-			}, Priority.LOW);
-
-			return 0;
-		}
+		public abstract OptionEntry[] get_listen_options ();
 
 		/**
 		 * Prepare the server for listening based on the provided options.
@@ -267,6 +171,15 @@ namespace VSGI {
 		 */
 		protected async bool dispatch_async (Request req, Response res) throws Error {
 			return dispatch (req, res);
+		}
+
+		/**
+		 * Shorthand to execute this server within a {@link VSGI.Application}.
+		 *
+		 * @since 0.3
+		 */
+		public int run (string[]? args = null) {
+			return new VSGI.Application (this).run (args);
 		}
 	}
 }

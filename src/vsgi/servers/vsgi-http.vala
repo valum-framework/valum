@@ -236,9 +236,8 @@ namespace VSGI.HTTP {
 			}
 		}
 
-		construct {
-#if GIO_2_40
-			const OptionEntry[] entries = {
+		public override OptionEntry[] get_listen_options () {
+			const OptionEntry[] options = {
 				// port options
 				{"port",      'p', 0, OptionArg.INT,  null, "Listen to the provided TCP port", "3003"},
 #if SOUP_2_48
@@ -261,8 +260,7 @@ namespace VSGI.HTTP {
 
 				{null}
 			};
-			this.add_main_option_entries (entries);
-#endif
+			return options;
 		}
 
 		public override void listen (Variant options) throws GLib.Error {

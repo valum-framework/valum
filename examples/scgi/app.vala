@@ -25,5 +25,5 @@ public int main (string[] args) {
 		return res.expand_utf8 ("Hello world!");
 	});
 
-	return Server.new_with_application ("scgi", "org.valum.example.SCGI", app.handle).run (args);
+	return Server.new_with_application ("scgi", app.handle).run (args);
 }

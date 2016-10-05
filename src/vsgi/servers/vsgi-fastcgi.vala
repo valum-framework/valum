@@ -183,8 +183,7 @@ namespace VSGI.FastCGI {
 			get { return _uris; }
 		}
 
-		construct {
-#if GIO_2_40
+		public override OptionEntry[] get_listen_options () {
 			const OptionEntry[] options = {
 				{"socket",          's', 0, OptionArg.FILENAME, null, "Listen to the provided UNIX domain socket (or named pipe for WinNT)"},
 				{"port",            'p', 0, OptionArg.INT,      null, "Listen to the provided TCP port"},
@@ -192,8 +191,7 @@ namespace VSGI.FastCGI {
 				{"backlog",         'b', 0, OptionArg.INT,      null, "Listen queue depth used in the listen() call", "10"},
 				{null}
 			};
-			this.add_main_option_entries (options);
-#endif
+			return options;
 		}
 
 		public override void listen (Variant options) throws GLib.Error {
@@ -238,10 +236,7 @@ namespace VSGI.FastCGI {
 				_uris.append (new Soup.URI ("fcgi+fd://%u/".printf (global::FastCGI.LISTENSOCK_FILENO)));
 			}
 
-			accept_loop_async.begin (fd, (obj, result) => {
-				accept_loop_async.end (result);
-				release ();
-			});
+			accept_loop_async.begin (fd);
 		}
 
 		public override void stop () {
