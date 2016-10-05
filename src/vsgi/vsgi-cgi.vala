@@ -44,7 +44,6 @@ namespace VSGI.CGI {
 
 		private URI _uri                          = new URI (null);
 		private HashTable<string, string>? _query = null;
-		private MessageHeaders _headers           = new MessageHeaders (MessageHeadersType.REQUEST);
 
 		public override HTTPVersion http_version {
 			get {
@@ -71,10 +70,6 @@ namespace VSGI.CGI {
 			get {
 				return this._query;
 			}
-		}
-
-		public override MessageHeaders headers {
-			get { return this._headers; }
 		}
 
 		/**
@@ -130,6 +125,8 @@ namespace VSGI.CGI {
 				this._query = Form.decode (request_uri.split ("?", 2)[1]);
 			}
 
+			headers = new Soup.MessageHeaders (Soup.MessageHeadersType.REQUEST);
+
 			var content_type = Environ.get_variable (environment, "CONTENT_TYPE") ?? "application/octet-stream";
 			var @params = Soup.header_parse_param_list (content_type);
 			headers.set_content_type (content_type.split (";", 2)[0], @params);
@@ -158,12 +155,12 @@ namespace VSGI.CGI {
 	 */
 	public class Response : VSGI.Response {
 
-		private MessageHeaders _headers = new MessageHeaders (MessageHeadersType.RESPONSE);
-
-		public override MessageHeaders headers { get { return this._headers; } }
-
 		public Response (Request request) {
 			Object (request: request);
+		}
+
+		construct {
+			headers = new Soup.MessageHeaders (Soup.MessageHeadersType.RESPONSE);
 		}
 
 		/**

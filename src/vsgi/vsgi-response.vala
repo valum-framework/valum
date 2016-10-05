@@ -52,7 +52,7 @@ namespace VSGI {
 		 *
 		 * @since 0.0.1
 		 */
-		public abstract MessageHeaders headers { get; }
+		public MessageHeaders headers { get; protected construct set; }
 
 		/**
 		 * Response cookies extracted from the 'Set-Cookie' header.

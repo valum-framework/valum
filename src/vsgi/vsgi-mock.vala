@@ -66,7 +66,6 @@ namespace VSGI.Mock {
 		private Soup.HTTPVersion _http_version    = Soup.HTTPVersion.@1_1;
 		private string _method                    = VSGI.Request.GET;
 		private Soup.URI _uri                     = new Soup.URI (null);
-		private Soup.MessageHeaders _headers      = new Soup.MessageHeaders (Soup.MessageHeadersType.REQUEST);
 		private HashTable<string, string>? _query = null;
 
 		public override Soup.HTTPVersion http_version { get { return this._http_version; } }
@@ -79,17 +78,11 @@ namespace VSGI.Mock {
 
 		public override HashTable<string, string>? query { get { return this._query; } }
 
-		public override Soup.MessageHeaders headers {
-			get {
-				return this._headers;
-			}
-		}
-
 		/**
 		 * @since 0.3
 		 */
 		public Request (Connection connection, string method, Soup.URI uri, HashTable<string, string>? query = null) {
-			Object (connection: connection);
+			Object (connection: connection, headers: new Soup.MessageHeaders (Soup.MessageHeadersType.REQUEST));
 			this._method = method;
 			this._uri    = uri;
 			this._query  = query;
@@ -122,20 +115,12 @@ namespace VSGI.Mock {
 	 */
 	public class Response : VSGI.Response {
 
-		private Soup.MessageHeaders _headers = new Soup.MessageHeaders (Soup.MessageHeadersType.RESPONSE);
-
-		public override Soup.MessageHeaders headers {
-			get {
-				return this._headers;
-			}
-		}
-
 		public Response (Request req) {
-			Object (request: req);
+			Object (request: req, headers: new Soup.MessageHeaders (Soup.MessageHeadersType.RESPONSE));
 		}
 
 		public Response.with_status (Request req, uint status) {
-			Object (request: req, status: status);
+			Object (request: req, status: status, headers: new Soup.MessageHeaders (Soup.MessageHeadersType.RESPONSE));
 		}
 
 		protected override bool write_status_line (Soup.HTTPVersion http_version, uint status, string reason_phrase, out size_t bytes_written, Cancellable? cancellable = null)  throws IOError {

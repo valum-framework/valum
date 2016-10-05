@@ -84,12 +84,6 @@ namespace VSGI.HTTP {
 
 		public override HashTable<string, string>? query { get { return this._query; } }
 
-		public override MessageHeaders headers {
-			get {
-				return this.message.request_headers;
-			}
-		}
-
 		/**
 		 * {@inheritDoc}
 		 *
@@ -102,7 +96,7 @@ namespace VSGI.HTTP {
 		 * @param query      parsed HTTP query provided by {@link Soup.ServerCallback}
 		 */
 		public Request (Connection connection, Message msg, HashTable<string, string>? query) {
-			Object (connection: connection, message: msg);
+			Object (connection: connection, message: msg, headers: msg.request_headers);
 			this._query = query;
 		}
 	}
@@ -129,10 +123,6 @@ namespace VSGI.HTTP {
 			set { this.message.reason_phrase = value ?? Status.get_phrase (this.message.status_code); }
 		}
 
-		public override MessageHeaders headers {
-			get { return this.message.response_headers; }
-		}
-
 		/**
 		 * {@inheritDoc}
 		 *
@@ -141,7 +131,7 @@ namespace VSGI.HTTP {
 		 * @param msg message underlying this response
 		 */
 		public Response (Request req, Message msg) {
-			Object (request: req, message: msg);
+			Object (request: req, message: msg, headers: msg.response_headers);
 		}
 
 		/**

@@ -136,7 +136,7 @@ namespace VSGI {
 		 *
 		 * @since 0.0.1
 		 */
-		public abstract Soup.MessageHeaders headers { get; }
+		public Soup.MessageHeaders headers { get; protected construct set; }
 
 		/**
 		 * Request cookies extracted from the 'Cookie' header.
