@@ -3,6 +3,24 @@ using VSGI.Mock;
 public int main (string[] args) {
 	Test.init (ref args);
 
+	Test.add_func ("/response/cookies", () => {
+		var res = new Response (new Request.with_method ("GET", new Soup.URI ("http://localhost:3003/")));
+		assert (0 == res.cookies.length ());
+	});
+
+	Test.add_func ("/response/convert", () => {
+		var res = new Response (new Request.with_method ("GET", new Soup.URI ("http://localhost:3003/")));
+		try {
+			res.convert (new CharsetConverter ("utf-16", "ascii"), 24);
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+		assert (24 == res.headers.get_content_length ());
+		HashTable<string, string> @params;
+		res.headers.get_content_type (out @params);
+		assert (null == @params);
+	});
+
 	Test.add_func ("/response/write_head", () => {
 		var res = new Response (new Request.with_method ("GET", new Soup.URI ("http://localhost:3003/")));
 
@@ -42,6 +60,19 @@ public int main (string[] args) {
 		assert (12 == res.headers.get_content_length ());
 	});
 
+	Test.add_func ("/response/expand/do_not_set_content_length_if_encoding_is_applied", () => {
+		var res = new Response (new Request.with_method ("GET", new Soup.URI ("http://localhost:3003/")));
+		res.headers.append ("Content-Encoding", "gzip");
+		assert (res.headers.get_list ("Content-Encoding") != null);
+		try {
+			res.expand ("Hello world!".data);
+		} catch (IOError err) {
+			assert_not_reached ();
+		}
+		assert (Soup.Encoding.EOF == res.headers.get_encoding ());
+		assert (null == res.headers.get_one ("Content-Length"));
+	});
+
 	Test.add_func ("/response/expand_bytes", () => {
 		var res = new Response (new Request.with_method ("GET", new Soup.URI ("http://localhost:3003/")));
 		try {
@@ -67,6 +98,21 @@ public int main (string[] args) {
 		assert ("UTF-8" == @params["charset"]);
 	});
 
+	Test.add_func ("/response/expand_utf8/set_character_attribute", () => {
+		var res = new Response (new Request.with_method ("GET", new Soup.URI ("http://localhost:3003/")));
+		try {
+			res.headers.set_content_type ("text/plain", null);
+			res.expand_utf8 ("Hello world!");
+		} catch (IOError err) {
+			assert_not_reached ();
+		}
+		assert (Soup.Encoding.CONTENT_LENGTH == res.headers.get_encoding ());
+		assert (12 == res.headers.get_content_length ());
+		HashTable<string, string> @params;
+		assert ("text/plain" == res.headers.get_content_type (out @params));
+		assert ("UTF-8" == @params["charset"]);
+	});
+
 	Test.add_func ("/response/expand_utf8/preserve_existing_charset_attribute", () => {
 		var res = new Response (new Request.with_method ("GET", new Soup.URI ("http://localhost:3003/")));
 		res.headers.set_content_type ("text/plain", Soup.header_parse_param_list ("charset=US-ASCII"));
@@ -80,6 +126,54 @@ public int main (string[] args) {
 		HashTable<string, string> @params;
 		assert ("text/plain" == res.headers.get_content_type (out @params));
 		assert ("US-ASCII" == @params["charset"]);
+	});
+
+	Test.add_func ("/response/append", () => {
+		var res = new Response (new Request.with_method ("GET", new Soup.URI ("http://localhost:3003/")));
+		try {
+			res.append ("Hello world!".data);
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+		assert (res.head_written);
+		assert (Soup.Encoding.EOF == res.headers.get_encoding ());
+	});
+
+	Test.add_func ("/response/append/preserve_chunked_encoding", () => {
+		var res = new Response (new Request.with_method ("GET", new Soup.URI ("http://localhost:3003/")));
+		res.headers.set_encoding (Soup.Encoding.CHUNKED);
+		try {
+			res.append ("Hello world!".data);
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+		assert (res.head_written);
+		assert (Soup.Encoding.CHUNKED == res.headers.get_encoding ());
+	});
+
+	Test.add_func ("/response/append_bytes", () => {
+		var res = new Response (new Request.with_method ("GET", new Soup.URI ("http://localhost:3003/")));
+		try {
+			res.append_bytes (new Bytes.take ("Hello world!".data));
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+		assert (res.head_written);
+		assert (Soup.Encoding.EOF == res.headers.get_encoding ());
+	});
+
+	Test.add_func ("/response/append_utf8", () => {
+		var res = new Response (new Request.with_method ("GET", new Soup.URI ("http://localhost:3003/")));
+		try {
+			res.append_utf8 ("Hello world!");
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+		assert (res.head_written);
+		assert (Soup.Encoding.EOF == res.headers.get_encoding ());
+		HashTable<string, string> @params;
+		res.headers.get_content_type (out @params);
+		assert ("UTF-8" == @params["charset"]);
 	});
 
 	Test.add_func ("/response/tee", () => {

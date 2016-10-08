@@ -308,23 +308,17 @@ namespace VSGI {
 		}
 
 		private inline void _mark_content_length_as_undetermined () {
-			if (head_written) {
+			if (head_written || headers.get_encoding () == Soup.Encoding.CHUNKED) {
 				return;
 			}
-			if (headers.get_encoding () == Soup.Encoding.CHUNKED) {
-				// nothing to do
-			} else {
-				headers.set_encoding (Soup.Encoding.EOF);
-			}
+			headers.set_encoding (Soup.Encoding.EOF);
 		}
 
 		private inline void _mark_content_length_as_fixed (int64 content_length) {
-			if (head_written) {
+			if (head_written || headers.get_list ("Content-Encoding") != null) {
 				return;
 			}
-			if (headers.get_list ("Content-Encoding") == null) {
-				headers.set_content_length (content_length);
-			}
+			headers.set_content_length (content_length);
 		}
 
 		/**
