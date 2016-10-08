@@ -116,20 +116,35 @@ namespace Valum {
 
 		public override string to_url_from_hash (HashTable<string, string>? @params = null) {
 			var url    = new StringBuilder ();
-			var pieces = /(<(?:\w+:)?\w+>)/.split (rule);
+			var pieces = /([\*\?\(\)]|<(?:\w+:)?\w+>)/.split (rule);
+
+			// TODO: check the group depth and immediate '?' after parameters
+			var missing         = false;
+			string? missing_key = null;
+
 			foreach (var piece in pieces) {
-				if (piece[0] == '<') {
+				if (piece == "*" || piece == "(" || piece == ")") {
+					continue;
+				} else if (piece == "?") {
+					missing = false;
+				} else if (piece[0] != '<') {
+					url.append (piece);
+				} else {
 					var cap  = piece.slice (1, piece.length - 1).split (":", 2);
 					var key  = cap.length == 1 ? cap[0] : cap[1];
 					if (@params != null && @params.contains (key)) {
 						url.append (@params[key]);
 					} else {
-						error ("The parameter '%s' was not provided.", key);
+						missing     = true;
+						missing_key = key;
 					}
-				} else {
-					url.append (piece);
 				}
 			}
+
+			if (missing) {
+				error ("The parameter '%s' was not provided.", missing_key);
+			}
+
 			return url.str;
 		}
 	}
