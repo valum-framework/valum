@@ -1,0 +1,305 @@
+# French translations for Valum.
+# Copyright (C) 2015, Antono Vasiljev, Guillaume Poirier-Morency
+# This file is distributed under the same license as the Valum package.
+# Guillaume Poirier-Morency <guillaumepoiriermorency@gmail.com>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Valum web micro-framework 0.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-10-04 00:15-0400\n"
+"PO-Revision-Date: 2016-10-05 08:46-0400\n"
+"Last-Translator: Guillaume Poirier-Morency <guillaumepoiriermorency@gmail."
+"com>\n"
+"Language-Team: français <>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Gtranslator 2.91.7\n"
+
+#: ../../../docs/hacking.rst:2
+msgid "Hacking"
+msgstr ""
+
+#: ../../../docs/hacking.rst:4
+msgid ""
+"This document addresses hackers who wants to get involved in the framework "
+"development."
+msgstr ""
+"Ce document s'adresse aux contributeurs qui veulent s'impliquer dans le "
+"développement du framework."
+
+#: ../../../docs/hacking.rst:8
+msgid "Building"
+msgstr "Construction"
+
+#: ../../../docs/hacking.rst:10
+msgid ""
+"You can avoid installing the library if you export ``LD_LIBRARY_PATH`` to "
+"the ``build`` folder."
+msgstr ""
+
+#: ../../../docs/hacking.rst:23
+msgid "Code conventions"
+msgstr "Conventions de code"
+
+#: ../../../docs/hacking.rst:25
+msgid ""
+"Valum uses the `Vala compiler coding style`_ and these rules are "
+"specifically highlighted:"
+msgstr ""
+"Valum utilise le `Vala compiler coding style`_ et les règle suivantes sont "
+"mises en évidence:"
+
+#: ../../../docs/hacking.rst:28
+msgid "tabs for indentation"
+msgstr "tabulations pour l'indentation"
+
+#: ../../../docs/hacking.rst:29
+msgid "spaces for alignment"
+msgstr "espaces pour l'alignement"
+
+#: ../../../docs/hacking.rst:30
+msgid "80 characters for comment block and 120 for code"
+msgstr "80 caractères pour les commentaires et 120 pour le code"
+
+#: ../../../docs/hacking.rst:31
+msgid "always align blocks of assignation around ``=`` sign"
+msgstr ""
+"toujours aligner les blocs d'assignation autours des opérateurs d'égalité "
+"``=``"
+
+#: ../../../docs/hacking.rst:32
+msgid "remember that little space between a function name and its arguments"
+msgstr ""
+"ne pas oublier le petit espace entre le nom d'un fonction et ses arguments"
+
+#: ../../../docs/hacking.rst:33
+msgid "doclets should be aligned, grouped and ordered alphabetically"
+msgstr ""
+"les doclets devraient être alignés, groupés et ordonnés alphabétiquement"
+
+#: ../../../docs/hacking.rst:38
+msgid "General strategies"
+msgstr "Stratégies générales"
+
+#: ../../../docs/hacking.rst:40
+msgid ""
+"Produce minimal headers, especially if the response has an empty body as "
+"every byte will count."
+msgstr ""
+"Produire des en-têtes minimales, en particulier si la réponse est un corps "
+"vide. Tous les octets comptent."
+
+#: ../../../docs/hacking.rst:43
+msgid ""
+"Since ``GET`` handle ``HEAD`` as well, verifying the request method to "
+"prevent spending time on producing a body that won't be considered is "
+"important."
+msgstr ""
+"Puisque ``GET`` est un masque incluant ``HEAD``, il est important de "
+"vérifier la méthode afin d'éviter de perdre du temps à produire un corps qui "
+"sera ignoré par l'agent utilisateur."
+
+#: ../../../docs/hacking.rst:57
+msgid ""
+"Use the ``construct`` block to perform post-initialization work. It will be "
+"called independently of how the object is constructed."
+msgstr ""
+"Utiliser le bloc ``construct`` pour effectuer des traitements post-"
+"initialisation. Il est appelé idépendament du constructeur utilisé."
+
+#: ../../../docs/hacking.rst:61
+msgid "Tricky stuff"
+msgstr ""
+
+#: ../../../docs/hacking.rst:63
+msgid ""
+"Many parts of the HTTP/1.1 specification is case-insensitive, in these "
+"cases, `Soup.str_case_equal`_ must be used to perform comparisons."
+msgstr ""
+"Plusieurs sections de la spécification du protocole HTTP/1.1 sont "
+"insensibles à la case. Il faut donc utiliser `Soup.str_case_equal`_ afin "
+"d'effectuer les comparaisons."
+
+#: ../../../docs/hacking.rst:68
+msgid ""
+"Try to stay by the book and read carefully the specification to ensure that "
+"the framework is semantically correct. In particular, the following points:"
+msgstr ""
+
+#: ../../../docs/hacking.rst:71
+msgid "choice of a status code"
+msgstr "choix du code de statut"
+
+#: ../../../docs/hacking.rst:72
+msgid "method is case-sensitive"
+msgstr "les méthode sont sensibles à la case"
+
+#: ../../../docs/hacking.rst:73
+msgid "URI and query are automatically decoded by `Soup.URI`_"
+msgstr ""
+"l'URI et les paramètres de l'URL sont automatiquement décodés par `Soup.URI`_"
+
+#: ../../../docs/hacking.rst:74
+msgid "headers and their parameters are case-insensitive"
+msgstr "les en-têtes et leurs paramères sont insensible à la case"
+
+#: ../../../docs/hacking.rst:75
+msgid "``\\r\\n`` are used as newlines"
+msgstr "``\\r\\n`` sont utilisés pour les nouvelles lignes"
+
+#: ../../../docs/hacking.rst:76
+msgid ""
+"do not handle ``Transfer-Encoding``, except for the libsoup-2.4 "
+"implementation with ``steal_connection``: at this level, it's up to the HTTP "
+"server to perform the transformation"
+msgstr ""
+"ne pas traiter l'en-tête ``Transfer-Encoding``, c'est au serveur HTTP "
+"d'effectuer cette transformation"
+
+#: ../../../docs/hacking.rst:82
+msgid ""
+"The framework should rely as much as possible upon libsoup-2.4 to ensure "
+"consistent and correct behaviours."
+msgstr ""
+"Toujours se réutiliser libsoup-2.4 afin d'obtenir des comportements "
+"consistants."
+
+#: ../../../docs/hacking.rst:86
+msgid "Coverage"
+msgstr "Couverture"
+
+#: ../../../docs/hacking.rst:88
+msgid ""
+"`gcov`_ is used to measure coverage of the tests on the generated C code. "
+"The results are automatically uploaded to `Codecov`_ on a successful build."
+msgstr ""
+"`gcov`_ est utilisé pour mesurer la couverture des tests. Les résultats sont "
+"téléchargé automatiquement sur `Codecov`_ en cas de succès."
+
+#: ../../../docs/hacking.rst:91
+msgid ""
+"You can build Valum with gcov if you specify the appropriate ``CFLAGS`` and "
+"``VALAFLAGS`` during the configuration step."
+msgstr ""
+
+#: ../../../docs/hacking.rst:103
+msgid ""
+"During the execution of the tests, some files will be generated and can be "
+"inspected with the ``gcov`` utility."
+msgstr ""
+
+#: ../../../docs/hacking.rst:111
+msgid "Would output something like:"
+msgstr ""
+
+#: ../../../docs/hacking.rst:119
+msgid ""
+"The generated ``router.c.gcov`` will contain detailed coverage information "
+"structured in three columns separated by a ``:`` character:"
+msgstr ""
+
+#: ../../../docs/hacking.rst:122
+msgid "number of executions"
+msgstr ""
+
+#: ../../../docs/hacking.rst:123
+msgid "line number"
+msgstr ""
+
+#: ../../../docs/hacking.rst:124
+msgid "corresponding line of code"
+msgstr ""
+
+#: ../../../docs/hacking.rst:126
+msgid "The number of executions can take the following values:"
+msgstr ""
+
+#: ../../../docs/hacking.rst:128
+msgid "a ``-`` symbol means that the line is irrelevant (eg. comment)"
+msgstr ""
+
+#: ../../../docs/hacking.rst:129
+msgid "``#####`` means that the line is uncovered"
+msgstr ""
+
+#: ../../../docs/hacking.rst:130
+msgid "a positive integer indicates how many time the line has executed"
+msgstr ""
+
+#: ../../../docs/hacking.rst:132
+msgid ""
+"Once you have identified an uncovered region, you can supply a test that "
+"covers that particular case and submit us a `pull request on GitHub`_."
+msgstr ""
+
+#: ../../../docs/hacking.rst:138
+msgid "Tests"
+msgstr ""
+
+#: ../../../docs/hacking.rst:140
+msgid ""
+"Valum is thoroughly tested for regression with the `GLib.Test`_ framework. "
+"Test cases are annotated with ``@since`` to track when a behaviour was "
+"introduced and guarantee its backward compatibility."
+msgstr ""
+
+#: ../../../docs/hacking.rst:146
+msgid ""
+"You can refer an issue from GitHub by calling ``Test.bug`` with the issue "
+"number."
+msgstr ""
+
+#: ../../../docs/hacking.rst:154
+msgid "Version bump"
+msgstr "Incrémentation de la version"
+
+#: ../../../docs/hacking.rst:156
+msgid ""
+"Most of the version substitutions is handled during the build, but some "
+"places in the code have to be updated manually:"
+msgstr ""
+"La plupart du travail de substitution de la version est effectié durant "
+"l'étape de construction, mais certains endroits doivent être mis à jour "
+"manuellement:"
+
+#: ../../../docs/hacking.rst:159
+msgid "``VERSION`` and ``API_VERSION`` in ``wscript``"
+msgstr ""
+
+#: ../../../docs/hacking.rst:160
+msgid "GIR version annotations for all declared namespaces"
+msgstr ""
+
+#: ../../../docs/hacking.rst:161
+msgid "``version`` and ``release`` in ``docs/conf.py``"
+msgstr ""
+
+#: ../../../docs/hacking.rst:164
+msgid "Translations"
+msgstr "Traductions"
+
+#: ../../../docs/hacking.rst:166
+msgid ""
+"To generate pot files, enable the documentation with ``-D enable_docs=true`` "
+"in the configure step (or later with ``mesonconf``) and launch the following "
+"command:"
+msgstr ""
+"Pour générer les fichiers POT, il suffit d'activer la documentation avec ``-"
+"D enable_docs=true`` et lancer la commande suivante:"
+
+#: ../../../docs/hacking.rst:174
+msgid "Then, move to the ``docs`` folder to update the translations:"
+msgstr ""
+"Puis, depuis le répertoire ``docs``, il faut mettre à jour les traductions:"
+
+#: ../../../docs/hacking.rst:180
+msgid ""
+"This should update the files located in ``po/<lang>/LC_MESSAGES``. The docs "
+"can then be regenerated with the translations."
+msgstr ""
+"Ceci devrait mettre à jour les fichiers sous ``po/<lang>/LC_MESSAGES``. La "
+"documentation peut ensuite être regénérée avec les traductions."

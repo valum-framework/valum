@@ -1,0 +1,373 @@
+# French translations for Valum.
+# Copyright (C) 2015, Antono Vasiljev, Guillaume Poirier-Morency
+# This file is distributed under the same license as the Valum package.
+# Guillaume Poirier-Morency <guillaumepoiriermorency@gmail.com>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Valum web micro-framework 0.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-10-03 16:05-0400\n"
+"PO-Revision-Date: 2016-10-04 16:45-0400\n"
+"Last-Translator: Guillaume Poirier-Morency <guillaumepoiriermorency@gmail."
+"com>\n"
+"Language-Team: français <>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"X-Generator: Gtranslator 2.91.7\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: ../../../docs/installation.rst:2
+msgid "Installation"
+msgstr "Installation"
+
+#: ../../../docs/installation.rst:4
+msgid ""
+"This document describes the compilation and installation process. Most of "
+"that work is automated with `Meson`_, a build tool written in Python."
+msgstr ""
+"Ce document décrit les processus de compilation et d'installation. La "
+"plupartdu travail est automatisé à l'aide de `Meson`_, un système de "
+"fabricationlogiciel écrit en Python."
+
+#: ../../../docs/installation.rst:10
+msgid "Packages"
+msgstr "Paquets"
+
+#: ../../../docs/installation.rst:12
+msgid ""
+"Packages for RPM and Debian based Linux distributions will be provided for "
+"stable releases so that the framework can easily be installed in a container "
+"or production environment."
+msgstr ""
+"Les paquets RPM et Debian seront fournis pour les versions stables du "
+"framework afin d'être aisément installé dans un conteneur ou un "
+"environnement de production."
+
+#: ../../../docs/installation.rst:17
+msgid "Fedora"
+msgstr ""
+
+#: ../../../docs/installation.rst:19
+msgid ""
+"RPM packages for Fedora (22, 23, 24 and rawhide) are available from the "
+"`arteymix/valum-framework`_ Copr repository."
+msgstr ""
+"Les paquets RPM pour Fedora (22, 23, 24 et rawhide) sont disponibles depuis "
+"le dépôt Copr `arteymix/valum-framework`_."
+
+#: ../../../docs/installation.rst:28
+msgid ""
+"The `valum` package contains the shared library and `valum-devel` contains "
+"all that is necessary to build an application."
+msgstr ""
+"Le paquet `valum` contient la librarie partagée tandis que le paquet `valum-"
+"devel` contient tout le nécessaire pour construire une application."
+
+#: ../../../docs/installation.rst:36
+msgid "Nix"
+msgstr ""
+
+#: ../../../docs/installation.rst:43
+msgid "Subproject"
+msgstr "Sous-projet"
+
+#: ../../../docs/installation.rst:45
+msgid ""
+"If your project uses the Meson build system, you may integrate the framework "
+"as a subproject. The project must be cloned in the ``subprojects`` folder, "
+"preferably using a git submodule. Be careful using a tag and not the "
+"``master`` trunk."
+msgstr ""
+"Si vous utilier le système de fabrication logicielle Meson, vous pouvez "
+"intégrer le framework à titre de sous-projet. Le projet doit alors être "
+"cloné dans le dossier ``subprojects``, préférablement à l'aide d'un sous-"
+"module git. Prenez soins d'utiliser une étiquette et non la branche "
+"principale."
+
+#: ../../../docs/installation.rst:50
+msgid "The following variables can be used as dependencies:"
+msgstr "Les variables suivantes peuvent être utilisées comme dépendances:"
+
+#: ../../../docs/installation.rst:52
+msgid "``vsgi`` for the abstraction layer"
+msgstr "``vsgi`` pour la couche d'abstraction"
+
+#: ../../../docs/installation.rst:53
+msgid "``valum`` for the framework"
+msgstr "``valum`` pour le framework"
+
+#: ../../../docs/installation.rst:55
+msgid ""
+"Note that due to Meson design, dependencies must be explicitly provided."
+msgstr ""
+"Étant donné le les principes du système Meson, toutes les dépendances "
+"doivent être explicitement fournies."
+
+#: ../../../docs/installation.rst:72
+msgid "Dependencies"
+msgstr "Dépendances"
+
+#: ../../../docs/installation.rst:74
+msgid ""
+"The following dependencies are minimal to build the framework under Ubuntu "
+"12.04 LTS and should be satisfied by most recent Linux distributions."
+msgstr ""
+"Les dépendances suivantes sont minimales afin de construire le framework "
+"sous Uubtu 12.04 LTS et devraient être satisfaites par la plupart des "
+"distributions Linux récentes."
+
+#: ../../../docs/installation.rst:78 ../../../docs/installation.rst:100
+#: ../../../docs/installation.rst:116
+msgid "Package"
+msgstr "Paquet"
+
+#: ../../../docs/installation.rst:78 ../../../docs/installation.rst:100
+msgid "Version"
+msgstr "Version"
+
+#: ../../../docs/installation.rst:80
+msgid "vala"
+msgstr ""
+
+#: ../../../docs/installation.rst:80
+msgid ">=0.26"
+msgstr ""
+
+#: ../../../docs/installation.rst:82
+msgid "python"
+msgstr ""
+
+#: ../../../docs/installation.rst:82
+msgid ">=3.4"
+msgstr ""
+
+#: ../../../docs/installation.rst:84
+msgid "meson"
+msgstr ""
+
+#: ../../../docs/installation.rst:84
+msgid ">=0.33"
+msgstr ""
+
+#: ../../../docs/installation.rst:86
+msgid "ninja"
+msgstr ""
+
+#: ../../../docs/installation.rst:86
+msgid ">=1.6.0"
+msgstr ""
+
+#: ../../../docs/installation.rst:88
+msgid "glib-2.0"
+msgstr ""
+
+#: ../../../docs/installation.rst:88 ../../../docs/installation.rst:90
+#: ../../../docs/installation.rst:92
+msgid ">=2.32"
+msgstr ""
+
+#: ../../../docs/installation.rst:90 ../../../docs/installation.rst:102
+#: ../../../docs/installation.rst:105 ../../../docs/installation.rst:107
+msgid "gio-2.0"
+msgstr ""
+
+#: ../../../docs/installation.rst:92
+msgid "gio-unix-2.0"
+msgstr ""
+
+#: ../../../docs/installation.rst:94 ../../../docs/installation.rst:109
+msgid "libsoup-2.4"
+msgstr ""
+
+#: ../../../docs/installation.rst:94
+msgid ">=2.38"
+msgstr ""
+
+#: ../../../docs/installation.rst:97
+msgid "Recent dependencies will enable more advanced features:"
+msgstr "Les dépendances plus récentes offrent des fonctionnalités avancées:"
+
+#: ../../../docs/installation.rst:100
+msgid "Feature"
+msgstr "Fonctionnalité"
+
+#: ../../../docs/installation.rst:102
+msgid ">=2.34"
+msgstr ""
+
+#: ../../../docs/installation.rst:102
+msgid "CGI server uses the command line stdin which can be provided by DBus"
+msgstr ""
+"le serveur CGI utilise l'entrée standard de la ligne de commande qui peut "
+"être fournie par DBus"
+
+#: ../../../docs/installation.rst:105
+msgid ">=2.40"
+msgstr ""
+
+#: ../../../docs/installation.rst:105
+msgid "CLI arguments parsing"
+msgstr "interprétation des arguments de la ligne de commande"
+
+#: ../../../docs/installation.rst:107
+msgid ">=2.44"
+msgstr ""
+
+#: ../../../docs/installation.rst:107
+msgid "better support for asynchronous I/O"
+msgstr "meilleur support pour les entrées-sorties asynchrone"
+
+#: ../../../docs/installation.rst:109
+msgid ">=2.48"
+msgstr ""
+
+#: ../../../docs/installation.rst:109
+msgid "new server API"
+msgstr "nouvel API de serveur"
+
+#: ../../../docs/installation.rst:112
+msgid ""
+"You can also install additional dependencies to build the examples, you will "
+"have to specify the ``-D enable_examples=true`` flag during the configure "
+"step."
+msgstr ""
+"Il est également possible d'installer des dépendances additionnelles afin de "
+"construire les exemples. Il faut spécifier l'argument ``-D "
+"enable_examples=true`` à l'étape de configuration."
+
+#: ../../../docs/installation.rst:116
+msgid "Description"
+msgstr "Description"
+
+#: ../../../docs/installation.rst:118
+msgid "ctpl"
+msgstr ""
+
+#: ../../../docs/installation.rst:118
+msgid "C templating library"
+msgstr "librairie de patronage C"
+
+#: ../../../docs/installation.rst:120
+msgid "gee-0.8"
+msgstr ""
+
+#: ../../../docs/installation.rst:120
+msgid "data structures"
+msgstr "structures de données"
+
+#: ../../../docs/installation.rst:122
+msgid "json-glib-1.0"
+msgstr ""
+
+#: ../../../docs/installation.rst:122
+msgid "JSON library"
+msgstr "librairie pour traiter les documents JSON"
+
+#: ../../../docs/installation.rst:124
+msgid "libmemcached"
+msgstr ""
+
+#: ../../../docs/installation.rst:124
+msgid "client for memcached cache storage"
+msgstr "client pour la cache memcached"
+
+#: ../../../docs/installation.rst:126
+msgid "libluajit"
+msgstr ""
+
+#: ../../../docs/installation.rst:126
+msgid "embed a Lua VM"
+msgstr "intégrer une machine virtuelle Lua"
+
+#: ../../../docs/installation.rst:128
+msgid "libmarkdown"
+msgstr ""
+
+#: ../../../docs/installation.rst:128
+msgid "parser and generator for Markdown"
+msgstr "analyseur syntaxique et générateur de Markdown"
+
+#: ../../../docs/installation.rst:130
+msgid "template-glib"
+msgstr ""
+
+#: ../../../docs/installation.rst:130
+msgid "templating library"
+msgstr "librairie de patronage"
+
+#: ../../../docs/installation.rst:134
+msgid "Download the sources"
+msgstr "Télécharger les sources"
+
+#: ../../../docs/installation.rst:136
+msgid ""
+"You may either clone the whole git repository or download one of our "
+"`releases from GitHub`_:"
+msgstr ""
+"Vous pouvez soit clôner le dépôt git ou télécharger une `releases from "
+"GitHub`_:"
+
+#: ../../../docs/installation.rst:145
+msgid ""
+"The ``master`` branch is a development trunk and is not guaranteed to be "
+"very stable. It is always a better idea to checkout the latest tagged "
+"release."
+msgstr ""
+"La branche ``master`` est utilisée pour le développement et aucune garantie "
+"n'est faite sur sa stabilité. Il est préférable d'utiliser une étiquette."
+
+#: ../../../docs/installation.rst:149
+msgid "Build"
+msgstr "Construction"
+
+#: ../../../docs/installation.rst:158
+msgid "Install"
+msgstr "Installation"
+
+#: ../../../docs/installation.rst:160
+msgid "The framework can be installed for system-wide availability."
+msgstr ""
+"Le framework peut être installé de manière à être disponible sur tout le "
+"sysème."
+
+#: ../../../docs/installation.rst:166
+msgid ""
+"Once installed, VSGI implementations will be looked up into ``${prefix}/"
+"${libdir}/vsgi-0.3/servers``. This path can be changed by setting the "
+"``VSGI_SERVER_PATH`` environment variable."
+msgstr ""
+"Une fois installé, les implantations de VSGI se trouveront dans le "
+"répertoire ``${prefix}/${libdir}/vsgi-0.3/servers``. Il est possible de "
+"modifier ce chemin en définissant la variable d'environnement "
+"``VSGI_SERVER_PATH``."
+
+#: ../../../docs/installation.rst:171
+msgid "Run the tests"
+msgstr "Exécuter les tests"
+
+#: ../../../docs/installation.rst:177
+msgid ""
+"If any of them fail, please `open an issue on GitHub`_ so that we can tackle "
+"the bug. Include the test logs (e.g. ``build/meson-private/mesonlogs.txt``) "
+"and any relevant details."
+msgstr ""
+"Si un ou plusieurs tests échouent, veuillez `open an issue on GitHub`_ de "
+"sorte que l'on puisse traiter le problème. Incluez les journaux de tests (e."
+"g. ``build/meson-private/mesonlogs.txt``) et tout détails pertinents."
+
+#: ../../../docs/installation.rst:184
+msgid "Run the sample application"
+msgstr "Exécuter l'exemple d'application"
+
+#: ../../../docs/installation.rst:186
+msgid ""
+"You can run the sample application from the ``build`` folder if you called "
+"``meson`` with the ``-D enable_examples=true`` flag. The following example "
+"uses the :doc:`vsgi/server/http` server."
+msgstr ""
+"Il est possible d'exécuter un exemple d'application depuis le répertoire "
+"``build`` si l'argument ``-D enable_examples=true`` a été spécifié lors de "
+"la configuration. L'exemple suivant utilise :doc:`vsgi/server/http`."

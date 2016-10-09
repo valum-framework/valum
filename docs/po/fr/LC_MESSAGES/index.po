@@ -1,0 +1,46 @@
+# French translations for Valum.
+# Copyright (C) 2015, Antono Vasiljev, Guillaume Poirier-Morency
+# This file is distributed under the same license as the Valum package.
+# Guillaume Poirier-Morency <guillaumepoiriermorency@gmail.com>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Valum web micro-framework 0.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-10-03 16:05-0400\n"
+"PO-Revision-Date: 2016-10-04 16:33-0400\n"
+"Last-Translator: Guillaume Poirier-Morency <guillaumepoiriermorency@gmail."
+"com>\n"
+"Language-Team: français <>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Gtranslator 2.91.7\n"
+
+#: ../../../docs/index.rst:2
+msgid "Valum web micro-framework"
+msgstr "Valum, micro-framework Web"
+
+#: ../../../docs/index.rst:14
+msgid ""
+"Valum is a web micro-framework written in Vala and licensed under the "
+"LGPLv3. Its source code and releases are available on GitHub: `valum-"
+"framework/valum`_."
+msgstr ""
+"Valum est un micro-framework Web écrit en Vala et distribué sous la LGPLv3."
+"Le code source et les releases sont disponible sur GitHub:`valum-framework/"
+"valum`_."
+
+#: ../../../docs/index.rst:17
+msgid ""
+"This user documentation aims to be as complete as possible and covers topics "
+"that are not directly related to the framework, but essential for web "
+"development. If you think that this document could be improved, `open a "
+"ticket on GitHub`_ to let us know."
+msgstr ""
+"Cette documentation vise à être aussi complète que possible et couvre "
+"dessujets essentiels au développement Web. Si vous pensez que cette "
+"documentationpuisse être améliorée, ouvrez un ticket sr `GitHub`_ afin que "
+"nous puissionsremédier à la situation."
