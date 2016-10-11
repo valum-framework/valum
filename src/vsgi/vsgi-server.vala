@@ -89,7 +89,7 @@ namespace VSGI {
 		 */
 		public abstract SList<Soup.URI> uris { get; }
 
-		private ApplicationCallback _application;
+		private ApplicationCallback? _application = null;
 
 		/**
 		 * Assign the callback used when {@link VSGI.Server.dispatch} is called.
@@ -157,7 +157,11 @@ namespace VSGI {
 		 * @return true if the request and response were dispatched
 		 */
 		protected bool dispatch (Request req, Response res) throws Error {
-			return _application (req, res);
+			if (unlikely (_application == null)) {
+				error ("Use 'set_application_callback' to assign this an application.");
+			} else {
+				return _application (req, res);
+			}
 		}
 
 		/**
