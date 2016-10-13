@@ -21,6 +21,9 @@ test('response', executable('response-test', 'response-test.vala',
                            dependencies: [glib, gobject, gio, soup, vsgi]))
 test('server', executable('server-test', 'server-test.vala',
                            dependencies: [glib, gobject, gio, soup, vsgi]))
+test('http server', executable('http-server-test', 'http-server-test.vala',
+                               dependencies: [glib, gobject, gio, gio_unix,  soup, vsgi]),
+     env: ['G_TEST_SRCDIR=' + meson.current_source_dir()])
 test('socket server', executable('socket-server-test', 'socket-server-test.vala',
                                           dependencies: [glib, gobject, gio, gio_unix,  soup, vsgi]))
 if fcgi.found()
