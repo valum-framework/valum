@@ -14,18 +14,13 @@ using non-blocking I/O.
 
 .. _GLib.SocketService: http://valadoc.org/#!api=gio-2.0/GLib.SocketService
 
-Options
--------
+Parameters
+----------
 
-+-----------------------+---------+-----------------------------------------------+
-| Option                | Default | Description                                   |
-+=======================+=========+===============================================+
-| ``--any``             | none    | listen on any open TCP port                   |
-+-----------------------+---------+-----------------------------------------------+
-| ``--port``            | none    | listen on a TCP port from local interface     |
-+-----------------------+---------+-----------------------------------------------+
-| ``--file-descriptor`` | 0       | listen to the provided file descriptor        |
-+-----------------------+---------+-----------------------------------------------+
-| ``--backlog``         | 10      | connection queue depth in the ``listen`` call |
-+-----------------------+---------+-----------------------------------------------+
+The only available parameter is ``backlog`` which set the depth of the listen
+queue when performing the ``accept`` system call.
+
+::
+
+    var scgi_server = Server.new ("scgi", backlog: 1024);
 

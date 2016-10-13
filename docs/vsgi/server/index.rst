@@ -4,45 +4,16 @@ Server
 Server provide HTTP technologies integrations under a common interface.
 
 .. toctree::
-    :caption: Table of Contents
 
     http
     cgi
     fastcgi
     scgi
 
-Cushion
--------
-
-The ``Application`` class provide a nice cushion around ``Server`` that deals
-with pretty logging and CLI argument parsing.
-
-The ``Server.run`` function actually create a new application object around the
-server instance. Thus, the following snippets are equivalent:
-
-::
-
-    using VSGI;
-
-    Server.new ("http").run ();
-
-::
-
-    using VSGI;
-
-    new Application (Server.new ("http")).run ();
-
-Load an implementation
-----------------------
-
 Server implementations are dynamically loaded using `GLib.Module`_. It makes it
 possible to define its own implementation if necessary.
 
 .. _GLib.Module: http://valadoc.org/#!api=gmodule-2.0/GLib.Module
-
-The shared library name must conform to ``libvsgi-<name>`` with the appropriate
-extension. For instance, on GNU/Linux, the :doc:`cgi` module is stored in
-``${prefix}/${libdir}/vsgi-0.3/servers/libvsgi-cgi.so``.
 
 To load an implementation, use the ``Server.new`` factory, which can receive
 GObject-style arguments as well.
@@ -64,9 +35,12 @@ instance with an application identifier and callback:
 
 ::
 
-    var cgi_server = Server.new_with_application ("cgi", "org.example.CGI", (req, res) => {
-        return true;
+    var cgi_server = Server.new_with_application ("cgi", (req, res) => {
+        return res.expand_utf8 ("Hello world!");
     });
+
+Custom implementation
+---------------------
 
 For more flexibility, the ``ServerModule`` class allow a more fine-grained
 control for loading a server implementation. If non-null, the ``directory``
@@ -76,9 +50,13 @@ instead of standard locations.
 The computed path of the shared library is available from ``path`` property,
 which can be used for debugging purposes.
 
+The shared library name must conform to ``vsgi-<name>`` with the appropriate
+prefix and extension. For instance, on GNU/Linux, the :doc:`cgi` module is
+stored in ``${prefix}/${libdir}/vsgi-0.3/servers/libvsgi-cgi.so``.
+
 ::
 
-    var directory  = "/usr/lib64/vsgi/servers";
+    var directory  = "/usr/lib64/vsgi-0.3/servers";
     var cgi_module = new ServerModule (directory, "cgi");
 
     if (!cgi_module.load ()) {
@@ -103,53 +81,78 @@ Mixing direct usages of ``ServerModule`` and ``Server.@new`` (and the likes) is
 not recommended and will result in undefined behaviours if an implementation is
 loaded more than once.
 
-Options
+Parameters
+----------
+
+Each server implementation expose its own set of parameters via GObject
+properties which are passed using the provided static constructors:
+
+::
+
+    var https_server = Server.new ("http", https: true);
+
+More details on available parameters are presented in implementation-specific
+documents.
+
+Listening
+---------
+
+Once initialized, a server can be made ready to listen with ``listen`` and
+``listen_socket``. Implementations typically support listening from an
+arbitrary number of interfaces.
+
+If the provided parameters are not supported, a `GLib.IOError.NOT_SUPPORTED`_
+will be raised.
+
+.. _GLib.IOError.NOT_SUPPORTED: http://valadoc.org/#!api=gio-2.0/GLib.IOError.NOT_SUPPORTED
+
+The ``listen`` call is designed to make the server listen on a `GLib.SocketAddress`_
+such as `GLib.InetSocketAddress`_ and `GLib.UnixSocketAddress`_.
+
+.. _GLib.SocketAddress: http://valadoc.org/#!api=gio-unix-2.0/GLib.SocketAddress
+.. _GLib.InetSocketAddress: http://valadoc.org/#!api=gio-unix-2.0/GLib.InetSocketAddress
+.. _GLib.UnixSocketAddress: http://valadoc.org/#!api=gio-unix-2.0/GLib.UnixSocketAddress
+
+::
+
+    server.listen (new InetSocketAddress (new InetAddress.loopback (SocketFamily.IPV4), 3003));
+
+It's also possible to pass ``null`` such that the default interface for the
+implementation will be used.
+
+::
+
+    server.listen (); // default is 'null'
+
+The ``listen_socket`` call make the server listen on an existing socket or file
+descriptor if passed through `GLib.Socket.from_fd`_.
+
+.. _GLib.Socket.from_fd:
+
+::
+
+    server.listen_socket (new Socket.from_fd (0));
+
+Serving
 -------
 
-Each server implementation can optionally take arguments that parametrize its
-runtime.
+Once ready, either call ``Server.run`` or launch a `GLib.MainLoop`_ to start
+serving incoming requests:
 
-The available options are listed in ``get_listen_options`` in the form of
-a list of `GLib.OptionEntry`_ structs.
+.. _GLib.MainLoop: http://valadoc.org/#!api=glib-2.0/GLib.MainLoop
 
-.. _GLib.OptionEntry: http://valadoc.org/#!api=glib-2.0/GLib.OptionEntry
+::
 
-If you build your application in a main block, it will not be possible to
-obtain the CLI arguments to parametrize the runtime. Instead, the code can be
-written in a usual ``main`` function.
+    using GLib;
+    using VSGI;
 
-.. code:: vala
+    var server = Server.new_with_application ("http", (req, res) => {
+        return res.expand_utf8 ("Hello world!");
+    });
 
-    public int main (string[] args) {
-        return Server.new ("http", "org.vsgi.App", (req, res) => {
-            res.status = Soup.Status.OK;
-            return res.body.write_all ("Hello world!".data, null);
-        }).run (args);
-    }
+    server.listen (new InetSocketAddress (new InetAddress (SocketFamily.IPV4), 3003));
 
-If you specify the ``--help`` flag, you can get more information on the
-available options which vary from an implementation to another.
-
-.. code:: bash
-
-    build/examples/fastcgi --help
-
-.. code:: bash
-
-    Usage:
-      fastcgi [OPTION...]
-
-    Help Options:
-      -h, --help                  Show help options
-      --help-all                  Show all help options
-      --help-gapplication         Show GApplication options
-
-    Application Options:
-      --forks=0                   Number of fork to create
-      -s, --socket                Listen to the provided UNIX domain socket (or named pipe for WinNT)
-      -p, --port                  Listen to the provided TCP port
-      -f, --file-descriptor=0     Listen to the provided file descriptor
-      -b, --backlog=10            Listen queue depth used in the listen() call
+    new MainLoop ().run (); // or server.run ();
 
 Forking
 -------
@@ -163,57 +166,73 @@ forking at the server level.
     process: no resources (e.g. lock, memory) can be shared unless
     inter-process communication is used.
 
-The ``--forks`` option will spawn the requested amount of workers, which should
-optimally default to the number of available CPUs.
+The ``Server.fork`` call is used for that purpose:
 
 ::
 
-    server.run ({"app", "--forks=4"});
-
-It's also possible to fork manually via the ``fork`` call.
-
-::
-
+    using GLib;
     using VSGI;
 
     var server = Server.new ("http");
 
-    server.listen (options);
+    server.listen (new InetSocketAddress (new InetAddress.loopback (SocketFamily.IPV4), 3003));
+
     server.fork ();
 
     new MainLoop ().run ();
 
 It is recommended to fork only through that call since implementations such as
-:doc:`cgi` are not guaranteed to support it.
+:doc:`cgi` are not guaranteed to support it and will gently fallback on doing
+nothing.
 
-Listen on distinct interfaces
------------------------------
+Application
+-----------
 
-Typically, ``fork`` is called after ``listen`` so that all processes share the
-same file descriptors and interfaces. However, it might be useful to listen
-to multiple ports (e.g. HTTP and HTTPS).
+The ``VSGI.Application`` class provide a nice cushion around ``Server`` that
+deals with pretty logging and CLI argument parsing. The ``Server.run`` function
+is a shorthand to create and run an application.
 
 ::
 
     using VSGI;
 
-    var server = Server.new ("http");
+    public int main (string[] args) {
+        var server = Server.new_with_application ("http", (req, res) => {
+            return res.expand_utf8 ("Hello world!");
+        });
 
-    var parent_options = new VariantDict ();
-    var child_options = new VariantDict ();
-
-    // parent serve HTTP
-    parent_options.insert_value ("port", new Variant.int32 (80));
-
-    // child serve HTTPS
-    child_options.insert_value ("https");
-    child_options.insert_value ("port", new Variant.int32 (443));
-
-    if (server.fork () > 0) {
-        server.listen (parent_options);
-    } else {
-        server.listen (child_options);
+        return new Application (server).run (args);
     }
 
-    new MainLoop ().run ();
+CLI
+~~~
 
+The following options are made available:
+
++-----------------------+-----------+---------------------------------------+
+| Option                | Default   | Description                           |
++=======================+===========+=======================================+
+| ``--forks``           | none      | number of forks to create             |
++-----------------------+-----------+---------------------------------------+
+| ``--port``            | none      | listen on each ports, '0' for random  |
++-----------------------+-----------+---------------------------------------+
+| ``--socket``          | none      | listen on each UNIX socket paths      |
++-----------------------+-----------+---------------------------------------+
+| ``--any``             | disabled  | listen on any address instead of only |
+|                       |           | from the loopback interface           |
++-----------------------+-----------+---------------------------------------+
+| ``--ipv4-only``       | disabled  | listen only to IPv4 interfaces        |
++-----------------------+-----------+---------------------------------------+
+| ``--ipv6-only``       | disabled  | listen only on IPv6 interfaces        |
++-----------------------+-----------+---------------------------------------+
+| ``--file-descriptor`` | none      | listen on each file descriptors       |
++-----------------------+-----------+---------------------------------------+
+
+If none of ``--port`` ``--socket`` nor ``--file-descriptor`` flags are
+provided, it will fallback on the default listening interface for the
+implementation.
+
+The default when ``--port`` is provided is to listen on both IPv4 and IPv6
+interfaces, or just IPv4 if IPv6 is not supported.
+
+Use the ``--help`` flag to obtain more information about available options.

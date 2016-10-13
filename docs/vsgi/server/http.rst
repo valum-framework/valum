@@ -6,61 +6,43 @@ application or spawn workers in production.
 
 .. _built-in HTTP server: http://valadoc.org/#!api=libsoup-2.4/Soup.Server
 
-.. code:: vala
+::
 
     using Valum;
-    using VSGI.HTTP;
 
-    new Server ("org.vsgi.HTTP", () => {
-        res.status = Soup.Status.OK;
-        return res.body.write_all ("Hello world!".data, null);
+    Server.new_with_application ("http", (req, res) => {
+        return res.expand_utf8 ("Hello world!");
     }).run ({"app", "--port", "3003"});
 
-Options
--------
+Parameters
+----------
 
-The implementation provides most options provided by `Soup.Server`_ through
-command-line options. The available options may vary and can be asserted with
-the ``--help`` flag.
+The implementation provides most parameters provided by `Soup.Server`_.
 
 .. _Soup.Server: http://valadoc.org/#!api=libsoup-2.4/Soup.Server
 
 +-----------------------+-----------+-----------------------------------------+
-| Option                | Default   | Description                             |
+| Parameter             | Default   | Description                             |
 +=======================+===========+=========================================+
-| ``--port``            | 3003      | port the server is listening on         |
+| ``interface``         | 3003      | listening interface if using libsoup's  |
+|                       |           | old server API (<2.48)                  |
 +-----------------------+-----------+-----------------------------------------+
-| ``--all``             | local     | listen on all interfaces                |
-+-----------------------+-----------+-----------------------------------------+
-| ``--ipv4-only``       | disabled  | only listen to IPv4 interfaces          |
-+-----------------------+-----------+-----------------------------------------+
-| ``--ipv6-only``       | disabled  | only listen on IPv6 interfaces          |
-+-----------------------+-----------+-----------------------------------------+
-| ``--file-descriptor`` | none      | listen to the provided file descriptor  |
-+-----------------------+-----------+-----------------------------------------+
-| ``--https``           | disabled  | listen for https connections rather     |
+| ``https``             | disabled  | listen for https connections rather     |
 |                       |           | than plain http                         |
 +-----------------------+-----------+-----------------------------------------+
-| ``--ssl-cert-file``   | none      | path to a file containing a PEM-encoded |
+| ``tls-certificate``   | none      | path to a file containing a PEM-encoded |
 |                       |           | certificate                             |
 +-----------------------+-----------+-----------------------------------------+
-| ``--ssl-key-file``    | none      | path to a file containing a PEM-encoded |
-|                       |           | private key                             |
-+-----------------------+-----------+-----------------------------------------+
-| ``--server-header``   | Valum/0.2 | value to use for the "Server" header on |
+| ``server-header``     | disabled  | value to use for the "Server" header on |
 |                       |           | Messages processed by this server.      |
 +-----------------------+-----------+-----------------------------------------+
-| ``--raw-paths``       | disabled  | percent-encoding in the Request-URI     |
+| ``raw-paths``         | disabled  | percent-encoding in the Request-URI     |
 |                       |           | path will not be automatically decoded  |
 +-----------------------+-----------+-----------------------------------------+
 
 Notes
 ~~~~~
 
--  if ``--all`` is not supplied, the server will only listen to local
-   interfaces
--  ``--all`` can be combined with ``--ipv4-only`` or ``--ipv4-only`` to listen
-   on all IPv4 or IPv6 interfaces
--  if ``--https`` is specified, you must provide a SSL or TLS certificate along
+-  if ``--https`` is specified, you must provide a TLS certificate along
    with a private key
 

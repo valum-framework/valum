@@ -13,26 +13,21 @@ framework dependencies.
 The whole request cycle is processed in a thread and dispatched in the main
 context, so it's absolutely safe to use shared states.
 
-Options
--------
-
-+-----------------------+---------+-----------------------------------------------+
-| Option                | Default | Description                                   |
-+=======================+=========+===============================================+
-| ``--port``            | none    | listen on a TCP port from local interface     |
-+-----------------------+---------+-----------------------------------------------+
-| ``--socket``          | none    | listen on a UNIX socket path                  |
-+-----------------------+---------+-----------------------------------------------+
-| ``--file-descriptor`` | 0       | listen to the provided file descriptor        |
-+-----------------------+---------+-----------------------------------------------+
-| ``--backlog``         | 10      | connection queue depth in the ``listen`` call |
-+-----------------------+---------+-----------------------------------------------+
-
-Only one option from ``--port``, ``--socket`` and ``--file-descriptor`` can be
-specified.
-
 By default, the FastCGI implementation listens on the file descriptor ``0``,
 which is conventionally the case when the process is spawned by an HTTP server.
+
+The implementation only support file descriptors, UNIX socket paths and IPv4
+addresses on the loopback interface.
+
+Parameters
+----------
+
+The only available parameter is ``backlog`` which set the depth of the listen
+queue when performing the ``accept`` system call.
+
+::
+
+    var fastcgi_server = Server.new ("fastcgi", backlog: 1024);
 
 lighttpd
 --------
