@@ -4,9 +4,9 @@ Cookies
 Cookies are stored in :doc:`request` and :doc:`response` headers as
 part of the HTTP protocol.
 
-Utilities are provided to perform basic operations based on `Soup.Cookie`_ as
-those provided by libsoup-2.4 requires a `Soup.Message`_, which is not common
-to all implementations.
+Utilities are provided to perform basic operations based on :valadoc:`libsoup-2.4/Soup.Cookie`
+as those provided by libsoup-2.4 requires a :valadoc:`libsoup-2.4/Soup.Message`,
+which is not common to all implementations.
 
 -  extract cookies from request headers
 -  find a cookie by its name
@@ -16,7 +16,7 @@ Extract cookies
 ---------------
 
 Cookies can be extracted as a singly-linked list from a :doc:`request` or
-:doc:`response` their order of appearance (see `Soup.MessageHeaders.get_list`_
+:doc:`response` their order of appearance (see :valadoc:`libsoup-2.4/Soup.MessageHeaders.get_list`
 for more details).
 
 The ``Request.cookies`` property will extract cookies from the ``Cookie``
@@ -35,16 +35,14 @@ used for the cookies origin.
 
     var cookies = res.cookies;
 
-The extracted cookies can be manipulated with common `SList`_ operations.
-However, they must be written back into the :doc:`response` for the changes to
-be effective.
-
-.. _SList: http://valadoc.org/#!api=glib-2.0/GLib.SList
+The extracted cookies can be manipulated with common :valadoc:`glib-2.0/GLib.SList`
+operations. However, they must be written back into the :doc:`response` for the
+changes to be effective.
 
 .. warning::
 
-    Cookies will be in their order of appearance and `SList.reverse`_ should be
-    used prior to perform a lookup that respects precedence.
+    Cookies will be in their order of appearance and :valadoc:`glib-2.0/SList.reverse`
+    should be used prior to perform a lookup that respects precedence.
 
 ::
 
@@ -53,10 +51,6 @@ be effective.
     for (var cookie in cookies)
         if (cookie.name == "session")
             return cookie;
-
-.. _Soup.Message: http://valadoc.org/#!api=libsoup-2.4/Soup.Message
-.. _Soup.MessageHeaders.get_list: http://valadoc.org/#!api=libsoup-2.4/Soup.MessageHeaders.get_list
-.. _SList.reverse: http://valadoc.org/#!api=glib-2.0/GLib.SList.reverse
 
 Lookup a cookie
 ---------------
@@ -80,13 +74,11 @@ If it's signed (recommended for sessions), the equivalent
 Marshall a cookie
 -----------------
 
-libsoup-2.4 provides a complete implementation with the `Soup.Cookie`_ class to
-represent and marshall cookies for both request and response headers.
+libsoup-2.4 provides a complete implementation with the :valadoc:`libsoup-2.4/Soup.Cookie`
+class to represent and marshall cookies for both request and response headers.
 
 The newly created cookie can be sent by adding a ``Set-Cookie`` header in the
 :doc:`response`.
-
-.. _Soup.Cookie: http://valadoc.org/#!api=libsoup-2.4/Soup.Cookie
 
 ::
 

@@ -1,10 +1,8 @@
 Resources
 =========
 
-GLib provides a powerful `resource api`_ for bundling static resources and
-optionally link them in the executable.
-
-.. _resource api: http://valadoc.org/#!api=gio-2.0/GLib.Resource
+GLib provides a powerful :valadoc:`gio-2.0/GLib.Resource` for bundling static
+resources and optionally link them in the executable.
 
 It has a few advantages:
 

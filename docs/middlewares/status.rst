@@ -6,9 +6,7 @@ Thrown status codes (see :doc:`../redirection-and-error`) can be handled with th
 
 The received :doc:`../vsgi/request` and :doc:`../vsgi/response` object are in
 the same state they were when the status was thrown. An additional parameter
-provide access to the actual `GLib.Error`_ object.
-
-.. _GLib.Error: //
+provide access to the actual :valadoc:`glib-2.0/GLib.Error` object.
 
 ::
 

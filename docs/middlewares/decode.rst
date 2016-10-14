@@ -13,15 +13,13 @@ The ``decode`` middleware is used to unapply various content codings.
 
 It is typically put at the top of an application.
 
-=============== =========================
+=============== ========================================
 Encoding        Action
-=============== =========================
-deflate         `GLib.ZlibDecompressor`_
-gzip and x-gzip `GLib.ZlibDecompressor`_
+=============== ========================================
+deflate         :valadoc:`gio-2.0/GLib.ZlibDecompressor`
+gzip and x-gzip :valadoc:`gio-2.0/GLib.ZlibDecompressor`
 identity        nothing
-=============== =========================
-
-.. _GLib.ZlibDecompressor: http://valadoc.org/#!api=gio-2.0/GLib.ZlibDecompressor
+=============== ========================================
 
 If an encoding is not supported, a ``501 Not Implemented`` is raised and
 remaining encodings are *reapplied* on the request.

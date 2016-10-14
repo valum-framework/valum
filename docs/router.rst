@@ -315,10 +315,8 @@ system defined previously.
         return res.expand_utf8 ("Hello world!");
     });
 
-The following example deal with a ``POST`` request providing using `Soup.Form`_
-to decode the payload.
-
-.. _Soup.Form: http://valadoc.org/#!api=libsoup-2.4/Soup.Form
+The following example deal with a ``POST`` request providing using
+:valadoc:`libsoup-2.4/Soup.Form` to decode the payload.
 
 ::
 
@@ -503,8 +501,6 @@ Similarly to status codes, errors are propagated in the ``HandlerCallback`` and
     app.get ("/", (req, res) => {
         throw new IOError.FAILED ("I/O failed some some reason.");
     });
-
-.. _GLib.Error: http://valadoc.org/#!api=glib-2.0/GLib.Error
 
 Thrown status code can also be caught this way, but it's much more convenient
 to use the :doc:`middlewares/status` middleware.

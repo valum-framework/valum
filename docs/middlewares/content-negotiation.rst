@@ -72,9 +72,7 @@ argument and the expectation is the second.
 .. warning::
 
     Most of the HTTP/1.1 specification about headers is case-insensitive, use
-    `Soup.str_case_equal`_ to perform comparisons.
-
-.. _Soup.str_case_equal: http://valadoc.org/#!api=libsoup-2.4/Soup.str_case_equal
+    :valadoc:`libsoup-2.4/Soup.str_case_equal` to perform comparisons.
 
 ::
 

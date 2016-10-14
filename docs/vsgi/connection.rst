@@ -11,10 +11,8 @@ a :doc:`response` are bound to the lifecycle of a connection instance.
     format.
 
 The connection can be accessed from the :doc:`request` ``connection`` property.
-It is a simple `GLib.IOStream`_ that provides native access to the input and
-output stream of the used technology.
-
-.. _GLib.IOStream: http://valadoc.org/#!api=gio-2.0/GLib.IOStream
+It is a simple :valadoc:`gio-2.0/GLib.IOStream` that provides native access to
+the input and output stream of the used technology.
 
 The following example shows how to bypass processing with higher-level
 abstractions. It will only work on :doc:`server/http`, as CGI-like protocols

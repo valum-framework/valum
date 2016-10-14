@@ -59,12 +59,11 @@ Asynchronous processing
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 The asynchronous processing model follows the `RAII pattern`_ and wraps all
-resources in a connection that inherits from `GLib.IOStream`_. It is therefore
-important that the said connection is kept alive as long as the streams are
-being used.
+resources in a connection that inherits from :valadoc:`gio-2.0/GLib.IOStream`.
+It is therefore important that the said connection is kept alive as long as the
+streams are being used.
 
 .. _RAII pattern: https://en.wikipedia.org/wiki/Resource_Acquisition_Is_Initialization
-.. _GLib.IOStream: http://valadoc.org/#!api=gio-2.0/GLib.IOStream
 
 The :doc:`request` holds a reference to the said connection and the
 :doc:`response` indirectly does as it holds a reference to the request.

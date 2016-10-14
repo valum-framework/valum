@@ -1,27 +1,21 @@
 JSON
 ====
 
-JSON is a popular data format for web services and `json-glib`_ provide
-a complete implementation that integrates with the GObject type system.
+JSON is a popular data format for web services and :valadoc:`json-glib-1.0/Json`
+provide a complete implementation that integrates with the GObject type system.
 
 The following features will be covered in this document with code examples:
 
 -   serialize a GObject
 -   unserialize a GObject
--   parse an `GLib.InputStream`_ of JSON like a :doc:`../vsgi/request` body
--   generate JSON in a `GLib.OutputStream`_ like a :doc:`../vsgi/response` body
-
-.. _json-glib: http://www.valadoc.org/#!wiki=json-glib-1.0/index
-.. _GLib.InputStream: http://www.valadoc.org/#!api=gio-2.0/GLib.InputStream
-.. _GLib.OutputStream: http://www.valadoc.org/#!api=gio-2.0/GLib.OutputStream
+-   parse an :valadoc:`gio-2.0/GLib.InputStream` of JSON like a :doc:`../vsgi/request` body
+-   generate JSON in a :valadoc:`gio-2.0/GLib.OutputStream` like a :doc:`../vsgi/response` body
 
 Produce and stream JSON
 -----------------------
 
-Using a `Json.Generator`_, you can conveniently produce an JSON object and
-stream synchronously it in the :doc:`../vsgi/response` body.
-
-.. _Json.Generator: http://www.valadoc.org/#!api=json-glib-1.0/Json.Generator
+Using a :valadoc:`json-glib-1.0/Json.Generator`, you can conveniently produce
+an JSON object and stream synchronously it in the :doc:`../vsgi/response` body.
 
 ::
 
@@ -42,10 +36,8 @@ Serialize GObject
 -----------------
 
 You project is likely to have a model abstraction and serialization of GObject
-with `Json.gobject_serialize`_ is a handy feature. It will recursively build
-a JSON object from the encountered properties.
-
-.. _Json.gobject_serialize: http://www.valadoc.org/#!api=json-glib-1.0/Json.gobject_serialize
+with :valadoc:`json-glib-1.0/Json.gobject_serialize` is a handy feature. It
+will recursively build a JSON object from the encountered properties.
 
 ::
 
@@ -77,11 +69,8 @@ With middlewares, you can split the process in multiple reusable steps to avoid
 code duplication. They are described in the :doc:`../router` document.
 
 -  fetch a model from a data storage
--  process the model with data obtained from a `Json.Parser`_
--  produce a JSON response with `Json.gobject_serialize`_
-
-.. _Json.Parser: http://www.valadoc.org/#!api=json-glib-1.0/Json.Parser
-.. _Json.gobject_serialize: http://www.valadoc.org/#!api=json-glib-1.0/Json.gobject_serialize
+-  process the model with data obtained from a :valadoc:`json-glib-1.0/Json.Parser`
+-  produce a JSON response with :valadoc:`json-glib-1.0/Json.gobject_serialize`
 
 ::
 
@@ -143,11 +132,9 @@ code duplication. They are described in the :doc:`../router` document.
         });
     });
 
-It is also possible to use `Json.Parser.load_from_stream_async`_ and invoke
-`next` in the callback with :doc:`../router` ``invoke`` function if you are
-expecting a considerable user input.
-
-.. _Json.Parser.load_from_stream_async: http://www.valadoc.org/#!api=json-glib-1.0/Json.Parser.load_from_stream_async
+It is also possible to use :valadoc:`json-glib-1.0/Json.Parser.load_from_stream_async`
+and invoke `next` in the callback with :doc:`../router` ``invoke`` function if
+you are expecting a considerable user input.
 
 ::
 

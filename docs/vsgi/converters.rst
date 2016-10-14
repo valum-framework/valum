@@ -11,13 +11,9 @@ GLib provide default converters for charset conversion and zlib compression.
 These can be used to compress the message bodies and convert the string
 encoding transparently.
 
--  `GLib.CharsetConverter`_
--  `GLib.ZLibCompressor`_
--  `GLib.ZLibDecompressor`_
-
-.. _GLib.CharsetConverter: http://valadoc.org/#!api=gio-2.0/GLib.CharsetConverter
-.. _GLib.ZlibCompressor: http://valadoc.org/#!api=gio-2.0/GLib.ZlibCompressor
-.. _GLib.ZlibDecompressor: http://valadoc.org/#!api=gio-2.0/GLib.ZlibDecompressor
+-  :valadoc:`gio-2.0/GLib.CharsetConverter`
+-  :valadoc:`gio-2.0/GLib.ZLibCompressor`
+-  :valadoc:`gio-2.0/GLib.ZLibDecompressor`
 
 Converters can be applied on both the :doc:`request` and :doc:`response` object
 using the ``convert`` method.

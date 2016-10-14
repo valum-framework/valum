@@ -115,10 +115,9 @@ specific use cases:
 
 -   `GXml`_ or libxml2
 -   `GSettings`_ for a remote (via DBus) and monitorable configuration
--   environment variables via `GLib.Environment`_ utilities
+-   environment variables via :valadoc:`glib-2.0/GLib.Environment` utilities
 -   CLI options (see ``VSGI.Server.add_main_option`` and ``VSGI.Server.handle_local_options``)
 
 .. _GXml: https://wiki.gnome.org/GXml
 .. _GSettings: https://developer.gnome.org/GSettings/
-.. _GLib.Environment: http://www.valadoc.org/#!api=glib-2.0/GLib.Environment
 

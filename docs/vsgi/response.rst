@@ -9,15 +9,13 @@ Status
 ------
 
 The response status can be set with the ``status`` property. libsoup-2.4
-provides an enumeration in `Soup.Status`_ for that purpose.
+provides an enumeration in :valadoc:`libsoup-2.4/Soup.Status` for that purpose.
 
 The ``status`` property will default to ``200 OK``.
 
 The status code will be written in the response with ``write_head`` or
 ``write_head_async`` if invoked manually or during the first access to its
 body.
-
-.. _Soup.Status: http://valadoc.org/#!api=libsoup-2.4/Soup.Status
 
 ::
 
@@ -32,7 +30,8 @@ Reason phrase
 .. versionadded:: 0.3
 
 The reason phrase provide a textual description for the status code. If
-``null``, which is the default, it will be generated using `Soup.Status.get_phrase`_.
+``null``, which is the default, it will be generated using
+:valadoc:`libsoup-2.4/Soup.Status.get_phrase`.
 
 ::
 
@@ -41,8 +40,6 @@ The reason phrase provide a textual description for the status code. If
         res.reason_phrase = "Everything Went Well"
         return true;
     });
-
-.. _Soup.Status.get_phrase: http://valadoc.org/#!api=libsoup-2.4/Soup.Status.get_phrase
 
 To obtain final status line sent to the user agent, use the ``wrote_status_line``
 signal.
@@ -58,10 +55,8 @@ signal.
 Headers
 -------
 
-The response headers can be accessed as a `Soup.MessageHeaders`_ from the
-``headers`` property.
-
-.. _Soup.MessageHeaders: http://valadoc.org/#!api=libsoup-2.4/Soup.MessageHeaders
+The response headers can be accessed as a :valadoc:`libsoup-2.4/Soup.MessageHeaders`
+from the ``headers`` property.
 
 ::
 
@@ -109,8 +104,8 @@ Body
 ----
 
 The body of a response is accessed through the ``body`` property. It inherits
-from `GLib.OutputStream`_ and provides synchronous and asynchronous streaming
-capabilities.
+from :valadoc:`gio-2.0/GLib.OutputStream` and provides synchronous and
+asynchronous streaming capabilities.
 
 The response body is automatically closed following a RAII pattern whenever the
 ``Response`` object is disposed.
@@ -145,9 +140,9 @@ stream and close it properly.
 Filtering
 ~~~~~~~~~
 
-One common operation related to stream is filtering. `GLib.FilterOutputStream`_
-and `GLib.ConverterOutputStream`_ provide, by composition, many filters that
-can be used for:
+One common operation related to stream is filtering. :valadoc:`gio-2.0/GLib.FilterOutputStream`
+and :valadoc:`gio-2.0/GLib.ConverterOutputStream` provide, by composition, many
+filters that can be used for:
 
  - compression and decompression (gzip, deflate, compress, ...)
  - charset conversion
@@ -165,12 +160,9 @@ HTTP/1.1 specifications such as chunked encoding.
     return body.write_all ("Omelette du fromâge!", null);
 
 Additionally, some filters are applied automatically if the ``Transfer-Encoding``
-header is set. The obtained `GLib.OutputStream`_ will be wrapped appropriately
-so that the application can transparently produce its output.
-
-.. _GLib.OutputStream: http://valadoc.org/#!api=gio-2.0/GLib.OutputStream
-.. _GLib.FilterOutputStream: http://valadoc.org/#!api=gio-2.0/GLib.FilterOutputStream
-.. _GLib.ConverterOutputStream: http://valadoc.org/#!api=gio-2.0/GLib.ConverterOutputStream
+header is set. The obtained :valadoc:`gio-2.0/GLib.OutputStream` will be
+wrapped appropriately so that the application can transparently produce its
+output.
 
 ::
 

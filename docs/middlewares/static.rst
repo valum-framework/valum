@@ -37,15 +37,13 @@ GFile
 -----
 
 The ``serve_from_file`` middleware will serve resources relative to
-a `GLib.File`_ instance.
+a :valadoc:`gio-2.0/GLib.File` instance.
 
 ::
 
     app.get ("/static/<path:path>", serve_from_file (File.new_for_path ("static")));
 
 To deliver from the global resources, use the ``resource://`` scheme.
-
-.. _GLib.File: http://valadoc.org/#!api=gio-2.0/GLib.File
 
 ::
 
@@ -77,9 +75,7 @@ Resource bundle
 ---------------
 
 The ``serve_from_resource`` middleware is provided to serve a resource bundle
-(see `GLib.Resource`_) from a given prefix.
-
-.. _GLib.Resource: http://valadoc.org/#!api=gio-2.0/GLib.Resource
+(see :valadoc:`gio-2.0/GLib.Resource`) from a given prefix.
 
 ::
 

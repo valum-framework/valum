@@ -44,10 +44,8 @@ Additionally, an array of supported HTTP methods is provided by
 Headers
 -------
 
-Request headers are implemented with `Soup.MessageHeaders`_ and can be accessed
-from the ``headers`` property.
-
-.. _Soup.MessageHeaders: http://valadoc.org/#!api=libsoup-2.4/Soup.MessageHeaders
+Request headers are implemented with :valadoc:`libsoup-2.4/Soup.MessageHeaders`
+and can be accessed from the ``headers`` property.
 
 ::
 
@@ -96,8 +94,9 @@ the null-coalescing operator ``??``.
 Body
 ----
 
-The body is provided as a `GLib.InputStream`_ by the ``body`` property. The
-stream is transparently decoded from any applied transfer encodings.
+The body is provided as a :valadoc:`gio-2.0/GLib.InputStream` by the ``body``
+property. The stream is transparently decoded from any applied transfer
+encodings.
 
 Implementation will typically consume the status line, headers and newline that
 separates the headers from the body in the base stream at construct time. It
@@ -108,8 +107,6 @@ If the content is encoded with the ``Content-Encoding`` header, it is the
 responsibility of your application to decode it properly. VSGI provides common
 :doc:`converters` to simplify the task.
 
-.. _GLib.InputStream: http://valadoc.org/#!api=gio-2.0/GLib.InputStream
-
 Flatten
 ~~~~~~~
 
@@ -119,8 +116,8 @@ In some cases, it is practical to flatten the whole request body in a buffer
 in order to process it as a whole.
 
 The ``flatten``, ``flatten_bytes`` and ``flatten_utf8`` functions accumulate
-the request body into a buffer (a `GLib.MemoryOutputStream`_) and return the
-corresponding ``uint8[]`` data buffer.
+the request body into a buffer (a :valadoc:`gio-2.0/GLib.MemoryOutputStream`)
+and return the corresponding ``uint8[]`` data buffer.
 
 The request body is always fixed-size since the HTTP specification requires any
 request to provide a ``Content-Length`` header. However, the environment should
@@ -137,13 +134,11 @@ freeing a file resource.
         return true;
     });
 
-.. _GLib.MemoryOutputStream: http://valadoc.org/#!api=gio-2.0/GLib.MemoryOutputStream
-
 Form
 ~~~~
 
-`Soup.Form`_ can be used to parse ``application/x-www-form-urlencoded`` format,
-which is submitted by web browsers.
+:valadoc:`libsoup-2.4/Soup.Form` can be used to parse ``application/x-www-form-urlencoded``
+format, which is submitted by web browsers.
 
 ::
 
@@ -152,15 +147,12 @@ which is submitted by web browsers.
         return true;
     });
 
-.. _Soup.Form: http://valadoc.org/#!api=libsoup-2.4/Soup.Form
-
 Multipart body
 ~~~~~~~~~~~~~~
 
 Multipart body support is planned in a future minor release, more information
-on `issue #81`_. The implementation will be similar to `Soup.MultipartInputStream`_
+on `issue #81`_. The implementation will be similar to :valadoc:`libsoup-2.4/Soup.MultipartInputStream`
 and provide part access with a filter approach.
 
 .. _issue #81: https://github.com/valum-framework/valum/issues/81
-.. _Soup.MultipartInputStream: http://valadoc.org/#!api=libsoup-2.4/Soup.MultipartInputStream.MultipartInputStream
 
