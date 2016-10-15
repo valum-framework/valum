@@ -225,6 +225,20 @@ namespace VSGI.HTTP {
 		[Description (blurb = "Percent-encoding in the Request-URI path will not be automatically decoded")]
 		public bool raw_paths { construct; get; default = false; }
 
+#if SOUP_2_44
+		/**
+		 * @since 0.3
+		 */
+		[Description (blurb = "URI schemes that should be considered alias for 'http'")]
+		public string[] http_aliases { construct; get; default = {}; }
+
+		/**
+		 * @since 0.3
+		 */
+		[Description (blurb = "URI schemes that should be considered alias for 'https'")]
+		public string[] https_aliases { construct; get; default = {}; }
+#endif
+
 		public override SList<URI> uris {
 			owned get {
 #if SOUP_2_48
@@ -258,6 +272,10 @@ namespace VSGI.HTTP {
 		public bool init (Cancellable? cancellable = null) throws GLib.Error {
 			if (https) {
 				server = new Soup.Server (
+#if SOUP_2_44
+					SERVER_HTTP_ALIASES,    http_aliases,
+					SERVER_HTTPS_ALIASES,   https_aliases,
+#endif
 #if !SOUP_2_48
 					SERVER_INTERFACE,       @interface,
 #endif
@@ -265,6 +283,10 @@ namespace VSGI.HTTP {
 					SERVER_TLS_CERTIFICATE, tls_certificate);
 			} else {
 				server = new Soup.Server (
+#if SOUP_2_44
+					SERVER_HTTP_ALIASES,    http_aliases,
+					SERVER_HTTPS_ALIASES,   https_aliases,
+#endif
 #if !SOUP_2_48
 					SERVER_INTERFACE,       @interface,
 #endif

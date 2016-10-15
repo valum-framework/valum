@@ -15,24 +15,30 @@ Parameters
 
 The implementation provides most parameters provided by :valadoc:`libsoup-2.4/Soup.Server`.
 
-+-----------------------+-----------+-----------------------------------------+
-| Parameter             | Default   | Description                             |
-+=======================+===========+=========================================+
-| ``interface``         | 3003      | listening interface if using libsoup's  |
-|                       |           | old server API (<2.48)                  |
-+-----------------------+-----------+-----------------------------------------+
-| ``https``             | disabled  | listen for https connections rather     |
-|                       |           | than plain http                         |
-+-----------------------+-----------+-----------------------------------------+
-| ``tls-certificate``   | none      | path to a file containing a PEM-encoded |
-|                       |           | certificate                             |
-+-----------------------+-----------+-----------------------------------------+
-| ``server-header``     | disabled  | value to use for the "Server" header on |
-|                       |           | Messages processed by this server.      |
-+-----------------------+-----------+-----------------------------------------+
-| ``raw-paths``         | disabled  | percent-encoding in the Request-URI     |
-|                       |           | path will not be automatically decoded  |
-+-----------------------+-----------+-----------------------------------------+
++---------------------+-----------+-----------------------------------------+
+| Parameter           | Default   | Description                             |
++=====================+===========+=========================================+
+| ``http-aliases``    | []        | URI schemes that should be considered   |
+|                     |           | to be aliases for 'http'                |
++---------------------+-----------+-----------------------------------------+
+| ``https-aliases``   | []        | URI schemes that should be considered   |
+|                     |           | to be aliases for 'https'               |
++---------------------+-----------+-----------------------------------------+
+| ``interface``       | 3003      | listening interface if using libsoup's  |
+|                     |           | old server API (<2.48)                  |
++---------------------+-----------+-----------------------------------------+
+| ``https``           | disabled  | listen for https connections rather     |
+|                     |           | than plain http                         |
++---------------------+-----------+-----------------------------------------+
+| ``tls-certificate`` | none      | path to a file containing a PEM-encoded |
+|                     |           | certificate                             |
++---------------------+-----------+-----------------------------------------+
+| ``server-header``   | disabled  | value to use for the "Server" header on |
+|                     |           | Messages processed by this server.      |
++---------------------+-----------+-----------------------------------------+
+| ``raw-paths``       | disabled  | percent-encoding in the Request-URI     |
+|                     |           | path will not be automatically decoded  |
++---------------------+-----------+-----------------------------------------+
 
 Notes
 ~~~~~

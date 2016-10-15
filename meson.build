@@ -28,6 +28,11 @@ if gio.version().version_compare('>=2.44')
     vala_defines += '--define=GIO_2_44'
 endif
 
+# 'http-aliases' and 'https-aliases'
+if soup.version().version_compare('>=2.44')
+    vala_defines += '--define=SOUP_2_44'
+endif
+
 # new 'Soup.Server' API
 if soup.version().version_compare('>=2.48')
     vala_defines += '--define=SOUP_2_48'
