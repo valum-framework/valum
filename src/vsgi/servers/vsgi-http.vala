@@ -280,6 +280,7 @@ namespace VSGI.HTTP {
 					SERVER_INTERFACE,       @interface,
 #endif
 					SERVER_RAW_PATHS,       raw_paths,
+					SERVER_SERVER_HEADER,   server_header,
 					SERVER_TLS_CERTIFICATE, tls_certificate);
 			} else {
 				server = new Soup.Server (
@@ -291,6 +292,7 @@ namespace VSGI.HTTP {
 					SERVER_INTERFACE,       @interface,
 #endif
 					SERVER_RAW_PATHS,       raw_paths,
+					SERVER_SERVER_HEADER,   server_header,
 					SERVER_TLS_CERTIFICATE, tls_certificate);
 			}
 
@@ -324,9 +326,6 @@ namespace VSGI.HTTP {
 					}
 				});
 			});
-
-			if (server_header != null)
-				server.server_header = server_header;
 
 #if SOUP_2_48
 			if (https)
