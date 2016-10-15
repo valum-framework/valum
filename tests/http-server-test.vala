@@ -21,29 +21,24 @@ using VSGI;
 public int main (string[] args) {
 	Test.init (ref args);
 
-	Test.add_func ("/server/new/cgi", () => {
-		var server = Server.@new ("cgi");
-		assert ("VSGICGIServer" == server.get_type ().name ());
-	});
-
-	Test.add_func ("/server/new/scgi", () => {
-		var server = Server.@new ("scgi");
-		assert ("VSGISCGIServer" == server.get_type ().name ());
-	});
-
-	Test.add_func ("/server/new/mock", () => {
-		var server = Server.@new ("mock");
-		assert ("VSGIMockServer" == server.get_type ().name ());
-	});
-
-	Test.add_func ("/server/fork", () => {
-		var server = Server.@new ("mock");
-		Pid pid;
+	Test.add_func ("/http_server/https", () => {
+		TlsCertificate tls_certificate;
 		try {
-			pid = server.fork ();
+			tls_certificate = new TlsCertificate.from_files (Test.get_filename (Test.FileType.DIST, "data", "http-server", "cert.pem"),
+			                                                 Test.get_filename (Test.FileType.DIST, "data", "http-server", "key.pem"));
 		} catch (Error err) {
 			assert_not_reached ();
 		}
+
+		var https_server = Server.@new ("http", https: true, tls_certificate: tls_certificate);
+
+		try {
+			https_server.listen ();
+		} catch (Error err) {
+			assert_not_reached ();
+		}
+
+		assert ("https" == https_server.uris.data.scheme);
 	});
 
 	return Test.run ();

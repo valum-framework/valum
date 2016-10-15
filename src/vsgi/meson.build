@@ -15,7 +15,7 @@ vsgi_sources = files(
     'vsgi-security-utils.vala',
     'vsgi-server-module.vala',
     'vsgi-server.vala',
-    'vsgi-socket-listener-server.vala',
+    'vsgi-socket-server.vala',
     'vsgi-tee-output-stream.vala')
 vsgi_lib = library('vsgi-' + api_version, vsgi_sources,
                    dependencies: [glib, gobject, gio, gio_unix, gmodule, soup],
@@ -33,7 +33,7 @@ install_data('vsgi-@0@.deps'.format(api_version), install_dir: 'share/vala/vapi'
 
 pkgconfig = import('pkgconfig')
 pkgconfig.generate(requires: 'glib-2.0 gobject-2.0 gio-2.0 libsoup-2.4',
-                   requires_private: 'gmodule-2.0',
+                   requires_private: 'gio-unix-2.0 gmodule-2.0',
                    libraries: vsgi_lib,
                    version: meson.project_version(),
                    name: 'VSGI',

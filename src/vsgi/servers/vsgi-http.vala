@@ -28,12 +28,7 @@ public Type server_init (TypeModule type_module) {
  *
  * @since 0.1
  */
-[CCode (gir_namespace = "VSGI.HTTP", gir_version = "0.2")]
 namespace VSGI.HTTP {
-
-	private errordomain Error {
-		FAILED
-	}
 
 	private class MessageBodyOutputStream : OutputStream {
 
@@ -220,147 +215,157 @@ namespace VSGI.HTTP {
 	 *
 	 * @since 0.1
 	 */
-	public class Server : VSGI.Server {
+	public class Server : VSGI.Server, Initable {
 
-		private Soup.Server? server = null;
-
-		private SList<Soup.URI> _uris = new SList<Soup.URI> ();
-
-		public override SList<Soup.URI> uris {
-			get {
-#if SOUP_2_48
-				if (server != null)
-					_uris = server.get_uris ();
+#if !SOUP_2_48
+		/**
+		 * @since 0.3
+		 */
+		[Description (blurb = "The port the server is listening on")]
+		public Address @interface { construct; get; default = new Address.any (AddressFamily.IPV4, 3003); }
 #endif
+
+		/**
+		 * @since 0.3
+		 */
+		[Description (blurb = "Listen for HTTPS connections rather than plain HTTP")]
+		public bool https { construct; get; default = false; }
+
+		/**
+		 * @since 0.3
+		 */
+		[Description (blurb = "TLS certificate containing both a PEM-Encoded certificate and private key")]
+		public TlsCertificate? tls_certificate { construct; get; default = null; }
+
+		/**
+		 * @since 0.3
+		 */
+		[Description (blurb = "Value to use for the 'Server' header on Messages processed by this server")]
+		public string? server_header { construct; get; default = null; }
+
+		/**
+		 * @since 0.3
+		 */
+		[Description (blurb = "Percent-encoding in the Request-URI path will not be automatically decoded")]
+		public bool raw_paths { construct; get; default = false; }
+
+		public override SList<URI> uris {
+			owned get {
+#if SOUP_2_48
+				return server.get_uris ();
+#else
+				var _uris = new SList<Soup.URI> ();
+
+				_uris.append (new Soup.URI ("%s://%s:%d/".printf (https ? "https" : "http",
+				                                                  @interface.physical,
+				                                                  @interface.port)));
+
 				return _uris;
+#endif
 			}
 		}
 
-		public override OptionEntry[] get_listen_options () {
-			const OptionEntry[] options = {
-				// port options
-				{"port",      'p', 0, OptionArg.INT,  null, "Listen to the provided TCP port", "3003"},
+		private Soup.Server server;
+
 #if SOUP_2_48
-				{"all",       'a', 0, OptionArg.NONE, null, "Listen on all interfaces '--port'"},
-				{"ipv4-only", '4', 0, OptionArg.NONE, null, "Only listen on IPv4 interfaces"},
-				{"ipv6-only", '6', 0, OptionArg.NONE, null, "Only listen on IPv6 interfaces"},
-
-				// fd options
-				{"file-descriptor", 'f', 0, OptionArg.INT, null, "Listen to the provided file descriptor"},
-
-				// https options
-				{"https",         0, 0, OptionArg.NONE,     null, "Listen for HTTPS connections rather than plain HTTP"},
+		private ServerListenOptions server_listen_options = 0;
 #endif
-				{"ssl-cert-file", 0, 0, OptionArg.FILENAME, null, "Path to a file containing a PEM-encoded certificate"},
-				{"ssl-key-file",  0, 0, OptionArg.FILENAME, null, "Path to a file containing a PEM-encoded private key"},
 
-				// headers options
-				{"server-header", 'h', 0, OptionArg.STRING, null, "Value to use for the 'Server' header on Messages processed by this server"},
-				{"raw-paths",     0,   0, OptionArg.NONE,   null, "Percent-encoding in the Request-URI path will not be automatically decoded"},
-
-				{null}
-			};
-			return options;
-		}
-
-		public override void listen (Variant options) throws GLib.Error {
-			var port          = options.lookup_value ("port", VariantType.INT32) ?? new Variant.@int32 (3003);
-			var https         = options.lookup_value ("https", VariantType.BOOLEAN) ?? new Variant.boolean (false);
-			var ssl_cert_file = options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING);
-			var ssl_key_file  = options.lookup_value ("ssl-key-file", VariantType.BYTESTRING);
-
-			if (server == null) {
-				TlsCertificate? tls_certificate = null;
-				if (ssl_cert_file != null && ssl_key_file != null) {
-					tls_certificate = new TlsCertificate.from_files (options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING).get_bytestring (),
-																	 options.lookup_value ("ssl-key-file", VariantType.BYTESTRING).get_bytestring ());
-				} else if (https.get_boolean ()) {
-					throw new Error.FAILED ("both '--ssl-cert-file' and '--ssl-key-file' must be provided with 'https' option on first 'listen' call");
-				}
-
-				if (https.get_boolean ()) {
-					this.server = new Soup.Server (
 #if !SOUP_2_48
-						SERVER_PORT,            port.get_int32 (),
-#endif
-						SERVER_RAW_PATHS,       options.lookup_value ("raw-paths", VariantType.BOOLEAN) != null,
-						SERVER_TLS_CERTIFICATE, tls_certificate);
-				} else {
-					this.server = new Soup.Server (
-#if !SOUP_2_48
-						SERVER_PORT,          port.get_int32 (),
-#endif
-						SERVER_RAW_PATHS,     options.lookup_value ("raw-paths", VariantType.BOOLEAN) != null,
-						SERVER_TLS_CERTIFICATE, tls_certificate);
-				}
-
-				// register a catch-all handler
-				this.server.add_handler (null, (server, msg, path, query, client) => {
-					var connection = new Connection (this, server, msg);
-
-					msg.set_status (Status.OK);
-
-					var req = new Request (connection, msg, query);
-					var res = new Response (req, msg);
-
-					var auth = req.headers.get_one ("Authorization");
-					if (auth != null) {
-						if (str_case_equal (auth.slice (0, 6), "Basic ")) {
-							var auth_data = (string) Base64.decode (auth.substring (6));
-							if (auth_data.index_of_char (':') != -1) {
-								req.uri.set_user (auth_data.slice (0, auth.index_of_char (':')));
-							}
-						} else if (str_case_equal (auth.slice (0, 7), "Digest ")) {
-							var auth_data = header_parse_param_list (auth.substring (7));
-							req.uri.set_user (auth_data["username"]);
-						}
-					}
-
-					try {
-						dispatch (req, res);
-					} catch (GLib.Error err) {
-						critical ("%s", err.message);
-					}
-				});
-			} else if (options.lookup_value ("ssl-cert-file", VariantType.BYTESTRING) != null) {
-				throw new Error.FAILED ("The 'ssl-cert-file' option can only be set during the first 'listen' call.");
-			} else if (options.lookup_value ("ssl-key-file", VariantType.BYTESTRING) != null) {
-				throw new Error.FAILED ("The 'ssl-key-file' option can only be set during the first 'listen' call.");
-			} else if (options.lookup_value ("raw-paths", VariantType.BOOLEAN) != null) {
-				throw new Error.FAILED ("The 'raw-paths' option can only be set during the first 'listen' call.");
+		construct {
+			if (@interface == null) {
+				@interface = new Address.any (AddressFamily.IPV4, 3003);
 			}
+		}
+#endif
 
-			if (options.lookup_value ("server-header", VariantType.STRING) != null)
-				this.server.server_header = options.lookup_value ("server-header", VariantType.STRING).get_string ();
-
-#if SOUP_2_48
-			ServerListenOptions listen_options = 0;
-
-			if (https.get_boolean ())
-				listen_options |= ServerListenOptions.HTTPS;
-
-			if (options.lookup_value ("ipv4-only", VariantType.BOOLEAN) != null)
-				listen_options |= ServerListenOptions.IPV4_ONLY;
-
-			if (options.lookup_value ("ipv6-only", VariantType.BOOLEAN) != null)
-				listen_options |= ServerListenOptions.IPV6_ONLY;
-
-			if (options.lookup_value ("file-descriptor", VariantType.INT32) != null) {
-				this.server.listen_fd (options.lookup_value ("file-descriptor", VariantType.INT32).get_int32 (),
-				                       listen_options);
-			} else if (options.lookup_value ("all", VariantType.BOOLEAN) != null) {
-				this.server.listen_all (port.get_int32 (), listen_options);
+		public bool init (Cancellable? cancellable = null) throws GLib.Error {
+			if (https) {
+				server = new Soup.Server (
+#if !SOUP_2_48
+					SERVER_INTERFACE,       @interface,
+#endif
+					SERVER_RAW_PATHS,       raw_paths,
+					SERVER_TLS_CERTIFICATE, tls_certificate);
 			} else {
-				this.server.listen_local (port.get_int32 (), listen_options);
+				server = new Soup.Server (
+#if !SOUP_2_48
+					SERVER_INTERFACE,       @interface,
+#endif
+					SERVER_RAW_PATHS,       raw_paths,
+					SERVER_TLS_CERTIFICATE, tls_certificate);
+			}
+
+			// register a catch-all handler
+			server.add_handler (null, (server, msg, path, query, client) => {
+				var connection = new Connection (this, server, msg);
+
+				msg.set_status (Status.OK);
+
+				var req = new Request (connection, msg, query);
+				var res = new Response (req, msg);
+
+				var auth = req.headers.get_one ("Authorization");
+				if (auth != null) {
+					if (str_case_equal (auth.slice (0, 6), "Basic ")) {
+						var auth_data = (string) Base64.decode (auth.substring (6));
+						if (auth_data.index_of_char (':') != -1) {
+							req.uri.set_user (auth_data.slice (0, auth.index_of_char (':')));
+						}
+					} else if (str_case_equal (auth.slice (0, 7), "Digest ")) {
+						var auth_data = header_parse_param_list (auth.substring (7));
+						req.uri.set_user (auth_data["username"]);
+					}
+				}
+
+				try {
+					dispatch (req, res);
+				} catch (GLib.Error err) {
+					critical ("%s", err.message);
+				}
+			});
+
+			if (server_header != null)
+				server.server_header = server_header;
+
+#if SOUP_2_48
+			if (https)
+				server_listen_options |= ServerListenOptions.HTTPS;
+#else
+			server.run_async ();
+#endif
+
+			return true;
+		}
+
+		public override void listen (SocketAddress? address = null) throws GLib.Error {
+#if SOUP_2_48
+			if (address == null) {
+				server.listen_local (3003, server_listen_options);
+			} else {
+				server.listen (address, server_listen_options);
 			}
 #else
-			this.server.run_async ();
-			_uris.append (new Soup.URI ("%s://0.0.0.0:%u".printf (https.get_boolean () ? "http" : "https", server.port)));
+			if (address != null) {
+				throw new IOError.NOT_SUPPORTED ("Prior to libsoup-2.4 (>=2.48), this implementation is only listening via the 'interface' property.");
+			}
+#endif
+		}
+
+		public override void listen_socket (GLib.Socket socket) throws GLib.Error {
+#if SOUP_2_48
+			server.listen_socket (socket, server_listen_options);
+#else
+			throw new IOError.NOT_SUPPORTED ("Prior to libsoup-2.4 (>=2.48), this implementation is only listening via the 'interface' property.");
 #endif
 		}
 
 		public override void stop () {
+#if SOUP_2_48
 			server.disconnect ();
+#else
+			server.quit ();
+#endif
 		}
 	}
 }

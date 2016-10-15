@@ -16,7 +16,6 @@
  */
 
 using GLib;
-using Soup;
 
 [ModuleInit]
 public Type server_init (TypeModule type_module) {
@@ -31,12 +30,7 @@ public Type server_init (TypeModule type_module) {
  *
  * @since 0.2
  */
-[CCode (gir_namespace = "VSGI.CGI", gir_version = "0.2")]
 namespace VSGI.CGI {
-
-	private errordomain Error {
-		FAILED
-	}
 
 	private class Connection : VSGI.Connection {
 
@@ -65,24 +59,16 @@ namespace VSGI.CGI {
 	 */
 	public class Server : VSGI.Server {
 
-		private SList<URI> _uris = new SList<URI> ();
-
-		public override SList<URI> uris {
-			get {
-				return _uris;
+		public override SList<Soup.URI> uris {
+			owned get {
+				return new SList<Soup.URI> ();
 			}
 		}
 
-		public override OptionEntry[] get_listen_options () {
-			return {};
-		}
-
-		public override void listen (Variant options) throws GLib.Error {
-			if (_uris.length () > 0) {
-				throw new Error.FAILED ("this server is already listening from '%s'", _uris.data.to_string (false));
+		public override void listen (SocketAddress? address = null) throws Error {
+			if (address != null) {
+				throw new IOError.NOT_SUPPORTED ("The CGI server only support listening from standard streams.");
 			}
-
-			_uris.append (new Soup.URI ("cgi+fd://%u/".printf (stdin.fileno ())));
 
 			Idle.add (() => {
 				var connection = new Connection (this,
@@ -95,7 +81,7 @@ namespace VSGI.CGI {
 				// handle a single request and quit
 				try {
 					dispatch (req, res);
-				} catch (GLib.Error err) {
+				} catch (Error err) {
 					critical (err.message);
 				}
 
@@ -109,6 +95,10 @@ namespace VSGI.CGI {
 					Process.exit (0);
 				}
 			});
+		}
+
+		public override void listen_socket (Socket socket) throws Error {
+			throw new IOError.NOT_SUPPORTED ("The CGI server only support listening from standard streams.");
 		}
 
 		public override void stop () {

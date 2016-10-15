@@ -29,19 +29,14 @@ soup = dependency('libsoup-2.4', version: '>=2.38')
 
 vala_defines = []
 
-# provide 'OutputStream.write_all_async'
-if gio.version().version_compare('>=2.44')
-    vala_defines += '--define=GIO_2_44'
-endif
-
 # support parsing of CLI arguments
 if gio.version().version_compare('>=2.40')
     vala_defines += '--define=GIO_2_40'
 endif
 
-# provide 'GLib.ApplicationCommandLine.get_stdin'
-if gio.version().version_compare('>=2.34')
-    vala_defines += '--define=GIO_2_34'
+# provide 'OutputStream.write_all_async'
+if gio.version().version_compare('>=2.44')
+    vala_defines += '--define=GIO_2_44'
 endif
 
 # new 'Soup.Server' API

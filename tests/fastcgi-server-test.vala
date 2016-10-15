@@ -15,39 +15,31 @@
  * along with Valum.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using GLib.Unix;
 using VSGI;
 
 public int main (string[] args) {
 	Test.init (ref args);
 
-	Test.add_func ("/fastcgi/server/port", () => {
+	Test.add_func ("/fastcgi_server/port", () => {
 		var server = Server.@new ("fastcgi");
-		var port   = Random.int_range (1024, 32768);
-
-		var options = new VariantBuilder (new VariantType ("a{sv}"));
-
-
-		options.add ("{sv}", "port", new Variant.@int32 (port));
+		var port   = (uint16) Random.int_range (1024, 32768);
 
 		try {
-			server.listen (options.end ());
+			server.listen (new InetSocketAddress (new InetAddress.loopback (SocketFamily.IPV4), port));
 		} catch (Error err) {
 			assert_not_reached ();
 		}
 
 		assert (1 == server.uris.length ());
-		assert ("fcgi://0.0.0.0:%d/".printf (port) == server.uris.data.to_string (false));
+		assert ("fcgi://127.0.0.1:%d/".printf (port) == server.uris.data.to_string (false));
 	});
 
-	Test.add_func ("/fastcgi/server/socket", () => {
+	Test.add_func ("/fastcgi_server/socket", () => {
 		var server = Server.@new ("fastcgi");
 
-		var options = new VariantBuilder (new VariantType ("a{sv}"));
-
-		options.add ("{sv}", "socket", new Variant.bytestring ("some-socket.sock"));
-
 		try {
-			server.listen (options.end ());
+			server.listen (new UnixSocketAddress ("some-socket.sock"));
 		} catch (Error err) {
 			assert_not_reached ();
 		} finally {
@@ -58,13 +50,11 @@ public int main (string[] args) {
 		assert ("fcgi+unix://some-socket.sock/" == server.uris.data.to_string (false));
 	});
 
-	Test.add_func ("/fastcgi/server/multiple_listen", () => {
+	Test.add_func ("/fastcgi_server/multiple_listen", () => {
 		var server  = Server.@new ("fastcgi");
 
 		try {
-			var options = new VariantBuilder (new VariantType ("a{sv}"));
-			options.add ("{sv}", "socket", new Variant.bytestring ("some-socket.sock"));
-			server.listen (options.end ());
+			server.listen (new UnixSocketAddress ("some-socket.sock"));
 		} catch (Error err) {
 			assert_not_reached ();
 		} finally {
@@ -72,12 +62,11 @@ public int main (string[] args) {
 		}
 
 		try {
-			var options = new VariantBuilder (new VariantType ("a{sv}"));
-			options.add ("{sv}", "socket", new Variant.bytestring ("some-socket.sock"));
-			server.listen (options.end ());
-			assert_not_reached ();
+			server.listen (new UnixSocketAddress ("some-socket.sock"));
 		} catch (Error err) {
 			assert (1 == server.uris.length ());
+		} finally {
+			FileUtils.unlink ("some-socket.sock");
 		}
 	});
 

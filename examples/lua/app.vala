@@ -32,4 +32,4 @@ app.get ("/", (req, res) => {
 	return res.expand_utf8 (vm.to_string (-1));
 });
 
-Server.new_with_application ("http", app.handle).run ({"app", "--all"});
+Server.new_with_application ("http", app.handle).run ();

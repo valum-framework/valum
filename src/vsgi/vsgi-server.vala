@@ -47,11 +47,12 @@ namespace VSGI {
 		 * @since 0.3
 		 *
 		 * @param name name of the server implementation to load
+		 * @param list arguments to pass to {@link GLib.Object.new_valist}
 		 *
 		 * @return the server instance of loaded successfully, otherwise 'null'
-		 *         and a warning will be emitted
+		 *         and a critical will be emitted
 		 */
-		public static new Server? @new (string name, ...) {
+		public static new Server? @new_valist (string name, va_list list) {
 			if (_server_modules == null)
 				_server_modules = new HashTable<string, ServerModule> (str_hash, str_equal);
 			if (_server_modules[name] == null) {
@@ -60,7 +61,25 @@ namespace VSGI {
 					return null;
 				_server_modules[name] = server_module;
 			}
-			return Object.@new_valist (_server_modules[name].server_type, null, va_list ()) as Server;
+			var server = Object.@new_valist (_server_modules[name].server_type, list.arg<string> (), list) as Server;
+			if (server is Initable) {
+				try {
+					((Initable) server).init ();
+				} catch (Error err) {
+					critical (err.message);
+					return null;
+				}
+			}
+			return server;
+		}
+
+		/**
+		 * Instantiate a new {@link VSGI.Server} with varidic arguments.
+		 *
+		 * @since 0.3
+		 */
+		public static new Server? @new (string name, ...) {
+			return @new_valist (name, va_list ());
 		}
 
 		/**
@@ -69,13 +88,15 @@ namespace VSGI {
 		 *
 		 * @since 0.3
 		 *
-		 * @param application    application callback
+		 * @param name        name of the server implementation to load
+		 * @param application initial application callback
+		 * @param list        arguments to pass to {@link GLib.Object.new}
 		 *
 		 * @return the server instance of loaded successfully, otherwise 'null'
 		 *         and a warning will be emitted
 		 */
-		public static Server? new_with_application (string name, owned ApplicationCallback callback) {
-			var server = @new (name);
+		public static Server? new_valist_with_application (string name, owned ApplicationCallback callback, va_list list) {
+			var server = @new_valist (name, list);
 			if (server != null) {
 				server.set_application_callback ((owned) callback);
 			}
@@ -83,11 +104,21 @@ namespace VSGI {
 		}
 
 		/**
-		 * List of URIs this server is currently listening on.
+		 * Instantiate a new {@link VSGI.Server} with an initial application
+		 * callback and varidic arguments.
 		 *
 		 * @since 0.3
 		 */
-		public abstract SList<Soup.URI> uris { get; }
+		public static Server? new_with_application (string name, owned ApplicationCallback callback, ...) {
+			return new_valist_with_application (name, callback, va_list ());
+		}
+
+		/**
+		 * URIs this server is listening on.
+		 *
+		 * @since 0.3
+		 */
+		public abstract SList<Soup.URI> uris { owned get; }
 
 		private ApplicationCallback? _application = null;
 
@@ -98,18 +129,34 @@ namespace VSGI {
 			_application = (owned) application;
 		}
 
-		public abstract OptionEntry[] get_listen_options ();
+		/**
+		 * Prepare the server for listening on the provided socket address.
+		 *
+		 * Once the {@link GLib.MainLoop} is started, the server should start
+		 * accepting incoming connections.
+		 *
+		 * @since 0.3
+		 *
+		 * @param address a {@link GLib.SocketAddress} or 'null' to listen on
+		 *                the default interface
+		 *
+		 * @throws GLib.IOError.NOT_SUPPORTED if the server does not support
+		 *                                    listening on the provided address
+		 */
+		public abstract void listen (SocketAddress? address = null) throws Error;
 
 		/**
-		 * Prepare the server for listening based on the provided options.
+		 * Prepare the server for listening on the provided socket.
 		 *
-		 * @param options dictionary of options that map string to variant, just
-		 *                like {@link GLib.ApplicationCommandLine}
+		 * Once the {@link GLib.MainLoop} is started, the server should start
+		 * accepting incoming connections.
 		 *
-		 * @throws Error if anything fail during the initialization, use
-		 *               {@link VSGI.ServerError} for general errors
+		 * @since 0.3
+		 *
+		 * @throws GLib.IOError.NOT_SUPPORTED if the server does not support
+		 *                                    listening on the provided address
 		 */
-		public abstract void listen (Variant options) throws Error;
+		public abstract void listen_socket (Socket socket) throws Error;
 
 		/**
 		 * Stop accepting new connections.
@@ -178,12 +225,13 @@ namespace VSGI {
 		}
 
 		/**
-		 * Shorthand to execute this server within a {@link VSGI.Application}.
+		 * Create a new {@link VSGI.Application} that cushion the execution of
+		 * this server.
 		 *
 		 * @since 0.3
 		 */
-		public int run (string[]? args = null) {
-			return new VSGI.Application (this).run (args);
+		public int run (string[] args = {}) {
+			return new Application (this).run (args);
 		}
 	}
 }

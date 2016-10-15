@@ -16,7 +16,6 @@
  */
 
 using GLib;
-using Soup;
 
 /**
  * Mock implementation of VSGI used for testing purposes.
@@ -56,23 +55,23 @@ namespace VSGI.Mock {
 	 */
 	public class Request : VSGI.Request {
 
-		private HTTPVersion _http_version         = HTTPVersion.@1_1;
+		private Soup.HTTPVersion _http_version    = Soup.HTTPVersion.@1_1;
 		private string _method                    = VSGI.Request.GET;
-		private URI _uri                          = new URI (null);
-		private MessageHeaders _headers           = new MessageHeaders (MessageHeadersType.REQUEST);
+		private Soup.URI _uri                     = new Soup.URI (null);
+		private Soup.MessageHeaders _headers      = new Soup.MessageHeaders (Soup.MessageHeadersType.REQUEST);
 		private HashTable<string, string>? _query = null;
 
-		public override HTTPVersion http_version { get { return this._http_version; } }
+		public override Soup.HTTPVersion http_version { get { return this._http_version; } }
 
 		public override string gateway_interface { owned get { return "Mock/0.3"; } }
 
 		public override string method { owned get { return this._method; } }
 
-		public override URI uri { get { return this._uri; } }
+		public override Soup.URI uri { get { return this._uri; } }
 
 		public override HashTable<string, string>? query { get { return this._query; } }
 
-		public override MessageHeaders headers {
+		public override Soup.MessageHeaders headers {
 			get {
 				return this._headers;
 			}
@@ -81,7 +80,7 @@ namespace VSGI.Mock {
 		/**
 		 * @since 0.3
 		 */
-		public Request (Connection connection, string method, URI uri, HashTable<string, string>? query = null) {
+		public Request (Connection connection, string method, Soup.URI uri, HashTable<string, string>? query = null) {
 			Object (connection: connection);
 			this._method = method;
 			this._uri    = uri;
@@ -91,14 +90,14 @@ namespace VSGI.Mock {
 		/**
 		 * @since 0.3
 		 */
-		public Request.with_method (string method, URI uri, HashTable<string, string>? query = null) {
+		public Request.with_method (string method, Soup.URI uri, HashTable<string, string>? query = null) {
 			this (new Connection (new Server ()), method, uri, query);
 		}
 
 		/**
 		 * @since 0.3
 		 */
-		public Request.with_uri (URI uri, HashTable<string, string>? query = null) {
+		public Request.with_uri (Soup.URI uri, HashTable<string, string>? query = null) {
 			this (new Connection (new Server ()), "GET", uri, query);
 		}
 
@@ -115,9 +114,9 @@ namespace VSGI.Mock {
 	 */
 	public class Response : VSGI.Response {
 
-		private MessageHeaders _headers = new MessageHeaders (MessageHeadersType.RESPONSE);
+		private Soup.MessageHeaders _headers = new Soup.MessageHeaders (Soup.MessageHeadersType.RESPONSE);
 
-		public override MessageHeaders headers {
+		public override Soup.MessageHeaders headers {
 			get {
 				return this._headers;
 			}
@@ -131,13 +130,13 @@ namespace VSGI.Mock {
 			Object (request: req, status: status);
 		}
 
-		protected override bool write_status_line (HTTPVersion http_version, uint status, string reason_phrase, out size_t bytes_written, Cancellable? cancellable = null)  throws IOError {
-			return request.connection.output_stream.write_all ("HTTP/%s %u %s\r\n".printf (http_version == HTTPVersion.@1_0 ? "1.0" : "1.1", status, reason_phrase).data,
+		protected override bool write_status_line (Soup.HTTPVersion http_version, uint status, string reason_phrase, out size_t bytes_written, Cancellable? cancellable = null)  throws IOError {
+			return request.connection.output_stream.write_all ("HTTP/%s %u %s\r\n".printf (http_version == Soup.HTTPVersion.@1_0 ? "1.0" : "1.1", status, reason_phrase).data,
 			                                                   out bytes_written,
 			                                                   cancellable);
 		}
 
-		protected override bool write_headers (MessageHeaders headers, out size_t bytes_written, Cancellable?
+		protected override bool write_headers (Soup.MessageHeaders headers, out size_t bytes_written, Cancellable?
 				cancellable = null) throws IOError {
 			var head = new StringBuilder ();
 
@@ -158,16 +157,14 @@ namespace VSGI.Mock {
 	 */
 	public class Server : VSGI.Server {
 
-		private SList<Soup.URI> _uris;
+		public override SList<Soup.URI> uris { owned get { return new SList<Soup.URI> (); } }
 
-		public override SList<Soup.URI> uris { get { return _uris; } }
-
-		public override OptionEntry[] get_listen_options () {
-			return {};
+		public override void listen (SocketAddress? address = null) throws Error {
+			// nothing to listen on
 		}
 
-		public override void listen (Variant options) throws Error {
-			_uris.append (new Soup.URI ("mock://"));
+		public override void listen_socket (Socket socket) throws Error {
+			// nothing to listen on
 		}
 
 		public override void stop () {
