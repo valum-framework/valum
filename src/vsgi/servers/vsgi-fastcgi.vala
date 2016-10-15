@@ -220,13 +220,15 @@ namespace VSGI.FastCGI {
 					throw new IOError.NOT_SUPPORTED ("The FastCGI backend only listen to the loopback interface.");
 				}
 
-				fd = global::FastCGI.open_socket ((":%" + uint16.FORMAT).printf (inet_address.get_port ()), backlog);
+				var port = inet_address.get_port () > 0 ? inet_address.get_port () : (uint16) Random.int_range (1024, 32768);
+
+				fd = global::FastCGI.open_socket ((":%" + uint16.FORMAT).printf (port), backlog);
 
 				if (fd == -1) {
-					throw new Error.FAILED ("Could not open TCP port '%" + uint16.FORMAT + "'.", inet_address.get_port ());
+					throw new Error.FAILED ("Could not open TCP port '%" + uint16.FORMAT + "'.", port);
 				}
 
-				_uris.append (new Soup.URI ("fcgi://127.0.0.1:%u/".printf (inet_address.get_port ())));
+				_uris.append (new Soup.URI (("fcgi://127.0.0.1:%" + uint16.FORMAT + "/").printf (port)));
 			} else {
 				throw new IOError.NOT_SUPPORTED ("The FastCGI backend only support listening from 'InetSocketAddress' and 'UnixSocketAddress'.");
 			}
