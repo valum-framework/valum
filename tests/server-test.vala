@@ -21,11 +21,6 @@ using VSGI;
 public int main (string[] args) {
 	Test.init (ref args);
 
-	Test.add_func ("/server/new/http", () => {
-		var server = Server.@new ("http");
-		assert ("VSGIHTTPServer" == server.get_type ().name ());
-	});
-
 	Test.add_func ("/server/new/cgi", () => {
 		var server = Server.@new ("cgi");
 		assert ("VSGICGIServer" == server.get_type ().name ());

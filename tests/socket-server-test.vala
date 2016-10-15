@@ -14,20 +14,6 @@ private class MockedSocketServer : SocketServer {
 public int main (string[] args) {
 	Test.init (ref args);
 
-	Test.add_func ("/socket_server/listen/loopback", () => {
-		var server = new MockedSocketServer ();
-
-		try {
-			server.listen (new InetSocketAddress (new InetAddress.loopback (SocketFamily.IPV4), 0));
-			server.listen (new InetSocketAddress (new InetAddress.loopback (SocketFamily.IPV6), 0));
-		} catch (Error err) {
-			assert_not_reached ();
-		}
-
-		assert (server.uris.data.to_string (false).has_prefix ("mock://127.0.0.1:"));
-		assert (server.uris.next.data.to_string (false).has_prefix ("mock://[::1]:"));
-	});
-
 	Test.add_func ("/socket_server/listen/any", () => {
 		var server = new MockedSocketServer ();
 
