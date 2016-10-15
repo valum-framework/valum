@@ -35,7 +35,6 @@ The installation process is fully documented in the
 Features
 --------
 
- - streaming-first API for minimal overhead with support for async I/O through [GIO](https://developer.gnome.org/gio/stable/)
  - powerful routing mechanism to write expressive web services:
     - helpers and flags (i.e. `Method.GET | Method.POST`) for common HTTP methods
     - scoping
@@ -47,9 +46,16 @@ Features
     - filtering by composition
     - context to hold states
  - middlewares for subdomains, server-sent events, content negotiation and much more
- - written upon VSGI so that you can deploy using libsoup-2.4 built-in HTTP server, CGI, [FastCGI](http://www.fastcgi.com/drupal/) or [SCGI](https://python.ca/scgi/)
- - support plugin for custom server implementation
- - support for `fork` to scale on multi-core architecture
+ - written upon VSGI, an abstraction layer for various protocols:
+     - fast, asynchronous and elegant
+     - streaming-first API
+     - listen on multiple interfaces (e.g. port, UNIX socket, file descriptor)
+       with tight [GIO](https://developer.gnome.org/gio/stable/) integration
+     - support [libsoup-2.4 built-in HTTP server](https://wiki.gnome.org/Projects/libsoup), CGI,
+       [FastCGI](http://www.fastcgi.com/drupal/) and [SCGI](https://python.ca/scgi/) out of the box
+     - support plugin for custom server implementation
+     - `fork` to scale on multi-core architecture
+     - cushion for parsing CLI, logging and running a Web application
  - extensively documented at [docs.valum-framework.org](http://docs.valum-framework.org/en/latest/)
 
 
