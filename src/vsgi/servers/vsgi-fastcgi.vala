@@ -30,10 +30,6 @@ public Type server_init (TypeModule type_module) {
  */
 namespace VSGI.FastCGI {
 
-	private errordomain Error {
-		FAILED
-	}
-
 	/**
 	 * Produce a significant error message given an error on a
 	 * {@link FastCGI.Stream}.
@@ -66,8 +62,8 @@ namespace VSGI.FastCGI {
 		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
 			var read = this.in.read (buffer);
 
-			if (read == GLib.FileStream.EOF) {
-				warning (strerror (this.in.get_error ()));
+			if (unlikely (read == GLib.FileStream.EOF)) {
+				critical (strerror (this.in.get_error ()));
 				this.in.clear_error ();
 				return -1;
 			}
@@ -76,8 +72,8 @@ namespace VSGI.FastCGI {
 		}
 
 		public override bool close (Cancellable? cancellable = null) throws IOError {
-			if (in.close () == GLib.FileStream.EOF) {
-				warning (strerror (this.in.get_error ()));
+			if (unlikely (in.close () == GLib.FileStream.EOF)) {
+				critical (strerror (this.in.get_error ()));
 				this.in.clear_error ();
 			}
 			return in.is_closed;
@@ -97,8 +93,8 @@ namespace VSGI.FastCGI {
 		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
 			var written = this.out.put_str (buffer);
 
-			if (written == GLib.FileStream.EOF) {
-				warning (strerror (this.out.get_error ()));
+			if (unlikely (written == GLib.FileStream.EOF)) {
+				critical (strerror (this.out.get_error ()));
 				this.out.clear_error ();
 				return -1;
 			}
@@ -110,24 +106,30 @@ namespace VSGI.FastCGI {
 		 * Headers are written on the first flush call.
 		 */
 		public override bool flush (Cancellable? cancellable = null) {
-			return this.err.flush () && this.out.flush ();
+			if (unlikely (this.out.flush () == GLib.FileStream.EOF)) {
+				critical (strerror (this.out.get_error ()));
+				this.out.clear_error ();
+				return false;
+			}
+
+			return true;
 		}
 
 		/**
 		 * The 'err' stream is closed before 'out' to avoid an extra write.
 		 */
 		public override bool close (Cancellable? cancellable = null) throws IOError {
-			if (this.err.close () == GLib.FileStream.EOF) {
-				warning (strerror (this.err.get_error ()));
+			if (unlikely (this.err.close () == GLib.FileStream.EOF)) {
+				critical (strerror (this.err.get_error ()));
 				this.err.clear_error ();
 			}
 
-			if (this.out.close () == GLib.FileStream.EOF) {
-				warning (strerror (this.out.get_error ()));
+			if (unlikely (this.out.close () == GLib.FileStream.EOF)) {
+				critical (strerror (this.out.get_error ()));
 				this.out.clear_error ();
 			}
 
-			return this.err.is_closed && this.out.is_closed;
+			return this.out.is_closed;
 		}
 	}
 
@@ -197,7 +199,7 @@ namespace VSGI.FastCGI {
 				fd = global::FastCGI.open_socket (socket_address.path, backlog);
 
 				if (fd == -1) {
-					throw new Error.FAILED ("Could not open socket path '%s'.", socket_address.path);
+					throw new IOError.FAILED ("Could not open socket path '%s'.", socket_address.path);
 				}
 
 				_uris.append (new Soup.URI ("fcgi+unix://%s/".printf (socket_address.path)));
@@ -217,7 +219,7 @@ namespace VSGI.FastCGI {
 				fd = global::FastCGI.open_socket ((":%" + uint16.FORMAT).printf (port), backlog);
 
 				if (fd == -1) {
-					throw new Error.FAILED ("Could not open TCP port '%" + uint16.FORMAT + "'.", port);
+					throw new IOError.FAILED ("Could not open TCP port '%" + uint16.FORMAT + "'.", port);
 				}
 
 				_uris.append (new Soup.URI (("fcgi://0.0.0.0:%" + uint16.FORMAT + "/").printf (port)));

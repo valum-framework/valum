@@ -160,7 +160,7 @@ namespace FastCGI {
 		 * writes and therefore reduces performance.
 		 */
 		[CCode (cname = "FCGX_FFlush")]
-		public bool flush ();
+		public int flush ();
 
 		/**
 		 * Closes the stream.  For writers, flushes any buffered output.
