@@ -42,9 +42,11 @@ public class VSGI.Application : GLib.Application {
 		const OptionEntry[] entries = {
 			// general options
 			{"forks",           0,   0, OptionArg.INT,            null, "Number of forks to create",            "0"},
+			// address
+			{"address",         'a', 0, OptionArg.STRING_ARRAY,   null, "Listen on each addresses",             "[]"},
 			// port
 			{"port",            'p', 0, OptionArg.STRING_ARRAY,   null, "Listen on each ports, '0' for random", "[]"},
-			{"any",             'a', 0, OptionArg.NONE,           null, "Listen on any address instead of only from the loopback interface"},
+			{"any",             'A', 0, OptionArg.NONE,           null, "Listen on any address instead of only from the loopback interface"},
 			{"ipv4-only",       '4', 0, OptionArg.NONE,           null, "Listen only to IPv4 interfaces"},
 			{"ipv6-only",       '6', 0, OptionArg.NONE,           null, "Listen only to IPv6 interfaces"},
 			// socket
@@ -91,12 +93,34 @@ public class VSGI.Application : GLib.Application {
 		}
 
 		try {
+			var addresses = options.lookup_value ("address",         VariantType.STRING_ARRAY);
 			var ports     = options.lookup_value ("port",            VariantType.STRING_ARRAY);
 			var any       = options.lookup_value ("any",             VariantType.BOOLEAN);
 			var ipv4_only = options.lookup_value ("ipv4-only",       VariantType.BOOLEAN);
 			var ipv6_only = options.lookup_value ("ipv6-only",       VariantType.BOOLEAN);
 			var sockets   = options.lookup_value ("socket",          VariantType.BYTESTRING_ARRAY);
 			var fds       = options.lookup_value ("file-descriptor", VariantType.STRING_ARRAY);
+
+			if (addresses != null) {
+				foreach (var address in addresses.get_strv ()) {
+					var host = address.slice (0, address.last_index_of_char (':') == -1 ? address.length : address.last_index_of_char (':'));
+					var inet_address = new InetAddress.from_string (host);
+					if (inet_address == null) {
+						critical ("Malformed address host '%s'.", host);
+					}
+					uint64 port;
+					if (address.last_index_of_char (':') == -1) {
+						port = 0;
+					} else {
+						if (!uint64.try_parse (address.slice (address.last_index_of_char (':') + 1, address.length), out port)) {
+							critical ("Malformed port number in '%s'.", address);
+							return 1;
+						}
+
+					}
+					server.listen (new InetSocketAddress (inet_address, (uint16) port));
+				}
+			}
 
 			if (ports != null) {
 				foreach (var _port in ports) {
@@ -157,7 +181,7 @@ public class VSGI.Application : GLib.Application {
 			}
 
 			// default listening interface
-			if (ports == null && sockets == null && fds == null) {
+			if (addresses == null && ports == null && sockets == null && fds == null) {
 				server.listen ();
 			}
 
