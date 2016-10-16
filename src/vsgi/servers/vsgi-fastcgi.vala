@@ -216,8 +216,8 @@ namespace VSGI.FastCGI {
 					throw new IOError.NOT_SUPPORTED ("The FastCGI backend does not support listening on IPv6 address.");
 				}
 
-				if (!inet_address.get_address ().is_loopback) {
-					throw new IOError.NOT_SUPPORTED ("The FastCGI backend only listen to the loopback interface.");
+				if (inet_address.get_address ().is_loopback) {
+					throw new IOError.NOT_SUPPORTED ("The FastCGI backend cannot be restricted to the loopback interface.");
 				}
 
 				var port = inet_address.get_port () > 0 ? inet_address.get_port () : (uint16) Random.int_range (1024, 32768);
@@ -228,7 +228,7 @@ namespace VSGI.FastCGI {
 					throw new Error.FAILED ("Could not open TCP port '%" + uint16.FORMAT + "'.", port);
 				}
 
-				_uris.append (new Soup.URI (("fcgi://127.0.0.1:%" + uint16.FORMAT + "/").printf (port)));
+				_uris.append (new Soup.URI (("fcgi://0.0.0.0:%" + uint16.FORMAT + "/").printf (port)));
 			} else {
 				throw new IOError.NOT_SUPPORTED ("The FastCGI backend only support listening from 'InetSocketAddress' and 'UnixSocketAddress'.");
 			}

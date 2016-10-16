@@ -26,13 +26,13 @@ public int main (string[] args) {
 		var port   = (uint16) Random.int_range (1024, 32768);
 
 		try {
-			server.listen (new InetSocketAddress (new InetAddress.loopback (SocketFamily.IPV4), port));
+			server.listen (new InetSocketAddress (new InetAddress.any (SocketFamily.IPV4), port));
 		} catch (Error err) {
 			assert_not_reached ();
 		}
 
 		assert (1 == server.uris.length ());
-		assert ("fcgi://127.0.0.1:%d/".printf (port) == server.uris.data.to_string (false));
+		assert ("fcgi://0.0.0.0:%d/".printf (port) == server.uris.data.to_string (false));
 	});
 
 	Test.add_func ("/fastcgi_server/socket", () => {
