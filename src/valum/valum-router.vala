@@ -267,6 +267,7 @@ namespace Valum {
 		 *
 		 * @param route an instance of Route defining the matching process and
 		 *              the callback.
+		 * @param name  route name which can be retreived later with {@link Valum.Router.get_route_by_name}
 		 */
 		[Version (since = "0.3")]
 		public void route (Route route, string? name = null) {
@@ -277,20 +278,34 @@ namespace Valum {
 		}
 
 		/**
-		 * Reverse an URL for a named {@link Valum.Route}.
+		 * Retreive a named {@link Valum.Route} object.
 		 *
 		 * @param name   name of the route
 		 * @param params parameters for the {@link Valum.Route.to_url} call
 		 *
-		 * @return 'null' if the route is not found otherwise the return value
-		 *         of {@link Valum.Route.to_url}
+		 * @return the corresponding {@link Valum.Route} object if found,
+		 *         otherwise an error is emitted
+		 */
+		[Version (since = "0.3")]
+		public unowned Route get_route_by_name (string name) {
+			if (_named_routes.contains (name)) {
+				return _named_routes.lookup (name);
+			} else {
+				error (_("No such route named '%s'."), name);
+			}
+		}
+
+		/**
+		 * Reverse an URL for a named {@link Valum.Route}.
+		 *
+		 * @param name route name
+		 *
+		 * @return the return value of {@link Valum.Route.to_url} if the route is
+		 *         found, otherwise an error is emitted
 		 */
 		[Version (since = "0.3")]
 		public string url_for_hash (string name, HashTable<string, string>? @params = null) {
-			if (!_named_routes.contains (name)) {
-				error (_("No such route named '%s'."), name);
-			}
-			return _named_routes.lookup (name).to_url_from_hash (@params);
+			return get_route_by_name (name).to_url_from_hash (@params);
 		}
 
 		/**
@@ -299,10 +314,7 @@ namespace Valum {
 		 */
 		[Version (since = "0.3")]
 		public string url_for_valist (string name, va_list list) {
-			if (!_named_routes.contains (name)) {
-				error (_("No such route named '%s'."), name);
-			}
-			return _named_routes.lookup (name).to_url_from_valist (list);
+			return get_route_by_name (name).to_url_from_valist (list);
 		}
 
 		/**
@@ -311,7 +323,7 @@ namespace Valum {
 		 */
 		[Version (since = "0.3")]
 		public string url_for (string name, ...) {
-			return url_for_valist (name, va_list ());
+			return get_route_by_name (name).to_url_from_valist (va_list ());
 		}
 
 		/**
