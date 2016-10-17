@@ -103,22 +103,12 @@ public class VSGI.Application : GLib.Application {
 
 			if (addresses != null) {
 				foreach (var address in addresses.get_strv ()) {
-					var host = address.slice (0, address.last_index_of_char (':') == -1 ? address.length : address.last_index_of_char (':'));
-					var inet_address = new InetAddress.from_string (host);
-					if (inet_address == null) {
-						critical ("Malformed address host '%s'.", host);
+					var net_address = NetworkAddress.parse (address, 0);
+					var socket_address_iterator = net_address.enumerate ();
+					SocketAddress socket_address;
+					while ((socket_address = socket_address_iterator.next ()) != null) {
+						server.listen (socket_address);
 					}
-					uint64 port;
-					if (address.last_index_of_char (':') == -1) {
-						port = 0;
-					} else {
-						if (!uint64.try_parse (address.slice (address.last_index_of_char (':') + 1, address.length), out port)) {
-							critical ("Malformed port number in '%s'.", address);
-							return 1;
-						}
-
-					}
-					server.listen (new InetSocketAddress (inet_address, (uint16) port));
 				}
 			}
 
