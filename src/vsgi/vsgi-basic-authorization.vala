@@ -18,6 +18,8 @@
 using GLib;
 
 /**
+ * Hold the state of a basic 'Authorization' header.
+ *
  * @since 0.3
  */
 public class VSGI.BasicAuthorization : Authorization {
@@ -36,5 +38,9 @@ public class VSGI.BasicAuthorization : Authorization {
 
 	public override bool challenge_with_password (string password) {
 		return str_const_equal (password, this.password);
+	}
+
+	public override string to_authorization_header () {
+		return "Basic %s".printf (Base64.encode ((uchar[]) "%s:%s".printf (username, password).to_utf8 ()));
 	}
 }

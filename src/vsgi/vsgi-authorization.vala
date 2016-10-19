@@ -38,4 +38,13 @@ public abstract class VSGI.Authorization : Object {
 	 * @return 'true' if the password corresponds, 'false' otherwise
 	 */
 	public abstract bool challenge_with_password (string password);
+
+	/**
+	 * Produce a 'Authorization' header for this.
+	 *
+	 * @since 0.3
+	 *
+	 * @return an 'Authorization' header value
+	 */
+	public abstract string to_authorization_header ();
 }

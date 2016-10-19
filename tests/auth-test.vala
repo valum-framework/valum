@@ -36,6 +36,7 @@ public int main (string[] args) {
 
 		assert (authorization.challenge_with_password ("1234"));
 		assert (!authorization.challenge_with_password ("123"));
+		assert ("Basic dGVzdDoxMjM0" == authorization.to_authorization_header ());
 	});
 
 	Test.add_func ("/auth/basic/charset", () => {
