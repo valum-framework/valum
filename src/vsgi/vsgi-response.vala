@@ -406,7 +406,7 @@ namespace VSGI {
 		 *
 		 * @since 0.3
 		 */
-		public bool expand (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
+		public virtual bool expand (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
 			_mark_content_length_as_fixed (buffer.length);
 			size_t bytes_written;
 			return write_head (out bytes_written, cancellable) &&
@@ -441,9 +441,9 @@ namespace VSGI {
 		/**
 		 * @since 0.3
 		 */
-		public async bool expand_async (uint8[]      buffer,
-		                                int          priority    = GLib.Priority.DEFAULT,
-		                                Cancellable? cancellable = null) throws Error {
+		public virtual async bool expand_async (uint8[]      buffer,
+		                                        int          priority    = GLib.Priority.DEFAULT,
+		                                        Cancellable? cancellable = null) throws Error {
 			_mark_content_length_as_fixed (buffer.length);
 #if GIO_2_44
 			size_t bytes_written;
@@ -477,14 +477,14 @@ namespace VSGI {
 		/**
 		 * @since 0.3
 		 */
-		public bool expand_stream (InputStream @in, Cancellable? cancellable = null) throws Error {
+		public virtual bool expand_stream (InputStream @in, Cancellable? cancellable = null) throws Error {
 			return body.splice (@in, OutputStreamSpliceFlags.CLOSE_TARGET, cancellable) != -1;
 		}
 
 		/**
 		 * @since 0.3
 		 */
-		public async bool expand_stream_async (InputStream  @in,
+		public virtual async bool expand_stream_async (InputStream  @in,
 		                                       int          priority    = GLib.Priority.DEFAULT,
 		                                       Cancellable? cancellable = null) throws Error {
 			return (yield body.splice_async (@in, OutputStreamSpliceFlags.CLOSE_TARGET, priority, cancellable)) != -1;
@@ -495,7 +495,7 @@ namespace VSGI {
 		 *
 		 * @since 0.3
 		 */
-		public bool expand_file (File file, Cancellable? cancellable = null) throws Error {
+		public virtual bool expand_file (File file, Cancellable? cancellable = null) throws Error {
 			_mark_content_length_as_fixed (file.query_info (FileAttribute.STANDARD_SIZE,
 			                                                FileQueryInfoFlags.NONE,
 			                                                cancellable).get_size ());
@@ -505,9 +505,9 @@ namespace VSGI {
 		/**
 		 * @since 0.3
 		 */
-		public async bool expand_file_async (File         file,
-		                                     int          priority    = GLib.Priority.DEFAULT,
-		                                     Cancellable? cancellable = null) throws Error {
+		public virtual async bool expand_file_async (File         file,
+		                                             int          priority    = GLib.Priority.DEFAULT,
+		                                             Cancellable? cancellable = null) throws Error {
 			_mark_content_length_as_fixed ((yield file.query_info_async (FileAttribute.STANDARD_SIZE,
 			                                                             FileQueryInfoFlags.NONE,
 			                                                             priority,
