@@ -36,15 +36,14 @@ meta-data.
 %setup -q
 
 %build
-mkdir build && cd build
-%meson ..
-ninja-build -v
+%meson
+%meson_build
 
 %install
-cd build && DESTDIR=%{buildroot} ninja-build -v install
+%meson_install
 
 %check
-cd build && ninja-build test
+%meson_test
 
 %files
 %doc README.md COPYING
@@ -52,4 +51,4 @@ cd build && ninja-build test
 
 %files devel
 %{_includedir}/*
-
+%{_datadir}/*
