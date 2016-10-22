@@ -39,22 +39,6 @@ namespace Valum {
 	}
 
 	/**
-	 * Flags for {@link Valum.subdomain}
-	 */
-	[Flags]
-	public enum SubdomainFlags {
-		NONE,
-		/**
-		 * Strictly match the subdomains to have the exactly same amount of
-		 * labels.
-		 *
-		 * @since 0.3
-		 */
-		STRICT
-	}
-
-
-	/**
 	 * Produce a matching middleware that accepts request which subdomain is
 	 * consistent with the expectation.
 	 *
@@ -67,20 +51,21 @@ namespace Valum {
 	 *
 	 * @param expected_subdomain expected subdomain pattern
 	 * @param forward            invoked if the subdomain matches
-	 * @param flags              see {@link Valum.SubdomainFlags}
+	 * @param strict             strictly match the subdomains to have the
+	 *                           exactly same amount of labels
 	 * @param skip               see {@link Valum.extract_subdomains}
 	 */
 	public HandlerCallback subdomain (string                        expected_subdomain,
 	                                  owned ForwardCallback<string> forward,
-	                                  SubdomainFlags                flags = SubdomainFlags.NONE,
-	                                  uint                          skip  = 2) {
+	                                  bool                          strict = false,
+	                                  uint                          skip   = 2) {
 		return (req, res, next, stack) => {
 			var expected_labels = expected_subdomain.split (".");
 			var labels          = extract_subdomains (req.uri.host, skip);
 			if (expected_labels.length > labels.length) {
 				return next ();
 			}
-			if (SubdomainFlags.STRICT in flags && expected_labels.length != labels.length) {
+			if (strict && expected_labels.length != labels.length) {
 				return next ();
 			}
 			for (var i = 1; i <= expected_labels.length; i++) {

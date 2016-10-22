@@ -48,14 +48,14 @@ There is two matching mode: loose and strict. The loose mode only expect the
 request to be performed on a suffix-compatible hostname. For instance, ``api``
 would match ``api.example.com`` and ``v1.api.example.com`` as well.
 
-To prevent this and perform a _strict_ match, simply specify the second
-argument. The domain of the request will have to supply exactly the same amount
-of labels matching the expectations.
+To prevent this and perform a _strict_ match, simply specify ``true`` the
+second argument. The domain of the request will have to supply exactly the same
+amount of labels matching the expectations.
 
 ::
 
     // match every request exactly from 'api.*.*'
-    app.use (subdomain ("api", api.handle, SubdomainFlags.STRICT));
+    app.use (subdomain ("api", api.handle, true));
 
 Skip labels
 -----------
@@ -67,4 +67,4 @@ case, the number of skipped labels can be set to any desirable value.
 ::
 
     // match exactly 'api.example.com'
-    app.use (subdomain ("api.example.com", api.handle, SubdomainFlags.STRICT, 0));
+    app.use (subdomain ("api.example.com", api.handle, true, 0));

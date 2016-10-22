@@ -29,7 +29,7 @@ public void test_subdomain () {
 	try {
 		subdomain ("api", () => {
 			assert_not_reached ();
-		}, SubdomainFlags.NONE) (req, res, () => { return true; }, new Context ());
+		}, false) (req, res, () => { return true; }, new Context ());
 	} catch (Error err) {
 		assert_not_reached ();
 	}
@@ -85,11 +85,11 @@ public void test_subdomain_strict () {
 			assert ("dev.api" == subdomains);
 			return true;
 		}) (req, res, () => { assert_not_reached (); }, new Context ());
-		subdomain ("api", () => { assert_not_reached (); }, SubdomainFlags.STRICT) (req, res, () => { return true; }, new Context ());
+		subdomain ("api", () => { assert_not_reached (); }, true) (req, res, () => { return true; }, new Context ());
 		subdomain ("dev.api.example.com", (req, res, next, ctx, subdomains) => {
 			assert ("dev.api.example.com" == subdomains);
 			return true;
-		}, SubdomainFlags.STRICT, 0) (req, res, () => { assert_not_reached (); }, new Context ());
+		}, true, 0) (req, res, () => { assert_not_reached (); }, new Context ());
 	} catch (Error err) {
 		assert_not_reached ();
 	}
