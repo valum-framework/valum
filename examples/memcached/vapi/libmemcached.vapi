@@ -535,7 +535,9 @@ namespace Memcached {
     ulonglong get_hits;
     ulonglong get_misses;
     ulonglong limit_maxbytes;
+#if VALA_0_26
     uint8 version[Memcached.VERSION_STRING_LENGTH];
+#endif
     void* __future;
     Memcached.Context root;
   }
