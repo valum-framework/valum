@@ -85,13 +85,13 @@ The following dependencies are minimal to build the framework under Ubuntu
 +--------------+----------+
 | ninja        | >=1.6.0  |
 +--------------+----------+
-| glib-2.0     | >=2.32   |
+| glib-2.0     | >=2.40   |
 +--------------+----------+
-| gio-2.0      | >=2.32   |
+| gio-2.0      | >=2.40   |
 +--------------+----------+
-| gio-unix-2.0 | >=2.32   |
+| gio-unix-2.0 | >=2.40   |
 +--------------+----------+
-| libsoup-2.4  | >=2.38   |
+| libsoup-2.4  | >=2.44   |
 +--------------+----------+
 
 Recent dependencies will enable more advanced features:
@@ -99,11 +99,6 @@ Recent dependencies will enable more advanced features:
 +-------------+---------+------------------------------------------------------+
 | Package     | Version | Feature                                              |
 +=============+=========+======================================================+
-| gio-2.0     | >=2.34  | CGI server uses the command line stdin which can be  |
-|             |         | provided by DBus                                     |
-+-------------+---------+------------------------------------------------------+
-| gio-2.0     | >=2.40  | CLI arguments parsing                                |
-+-------------+---------+------------------------------------------------------+
 | gio-2.0     | >=2.44  | better support for asynchronous I/O                  |
 +-------------+---------+------------------------------------------------------+
 | libsoup-2.4 | >=2.48  | new server API                                       |

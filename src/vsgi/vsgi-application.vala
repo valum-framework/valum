@@ -44,7 +44,6 @@ public class VSGI.Application : GLib.Application {
 		flags |= ApplicationFlags.HANDLES_COMMAND_LINE |
 		         ApplicationFlags.SEND_ENVIRONMENT     |
 		         ApplicationFlags.NON_UNIQUE;
-#if GIO_2_40
 		const OptionEntry[] entries = {
 			// general options
 			{"forks",           0,   0, OptionArg.INT,            null, "Number of forks to create",            "0"},
@@ -62,15 +61,10 @@ public class VSGI.Application : GLib.Application {
 			{null}
 		};
 		add_main_option_entries (entries);
-#endif
 	}
 
 	public override int command_line (ApplicationCommandLine command_line) {
-#if GIO_2_40
 		var options = command_line.get_options_dict ().end ();
-#else
-		var options = new Variant ("a{sv}");
-#endif
 
 		// per-worker logging
 		if (Posix.isatty (stderr.fileno ())) {
@@ -85,9 +79,7 @@ public class VSGI.Application : GLib.Application {
 				               LogLevelFlags.LEVEL_CRITICAL in level ? "\x1b[31m" :
 				               LogLevelFlags.LEVEL_WARNING  in level ? "\x1b[33m" :
 				               LogLevelFlags.LEVEL_MESSAGE  in level ? "\x1b[32m" :
-#if GLIB_2_40
 				               LogLevelFlags.LEVEL_INFO     in level ? "\x1b[34m" :
-#endif
 				               LogLevelFlags.LEVEL_DEBUG    in level ? "\x1b[36m" : "",
 				               message.replace ("\n", "\n\t\t"),
 				               "\x1b[0m");
