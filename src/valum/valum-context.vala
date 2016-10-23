@@ -85,9 +85,11 @@ public class Valum.Context : Object {
 	 * @return    the value, or 'null' if not found
 	 */
 	public Value? take (string key) {
-		bool exists;
-		var @value = states.take (key, out exists);
-		return exists ? @value : null;
+		try {
+			return states.lookup (key);
+		} finally {
+			states.steal (key);
+		}
 	}
 
 	/**
