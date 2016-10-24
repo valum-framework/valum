@@ -26,7 +26,7 @@ using GLib;
  * Two implementation are available: libsoup built-in Soup.Server and FastCGI.
  * The latter integrates with pretty much any web server.
  */
-[CCode (gir_namespace = "VSGI", gir_version = "0.2")]
+[CCode (gir_namespace = "VSGI", gir_version = "0.3")]
 namespace VSGI {
 
 	/**

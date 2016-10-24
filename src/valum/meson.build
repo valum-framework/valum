@@ -25,7 +25,7 @@ valum_sources = files(
     'valum-subdomain.vala')
 valum_lib = library('valum-' + api_version, valum_sources,
                     dependencies: [glib, gobject, gio, soup, vsgi],
-                    vala_args: vala_defines,
+                    vala_args: ['--gir=Valum-@0@.gir'.format(api_version)] + vala_defines,
                     install: true)
 
 valum = declare_dependency(include_directories: include_directories('.'),
@@ -34,6 +34,17 @@ valum = declare_dependency(include_directories: include_directories('.'),
 install_headers(meson.current_build_dir() + '/valum-@0@.h'.format(api_version), subdir: 'valum-' + api_version)
 install_data(meson.current_build_dir() + '/valum-@0@.vapi'.format(api_version), install_dir: 'share/vala/vapi')
 install_data('valum-@0@.deps'.format(api_version), install_dir: 'share/vala/vapi')
+install_data(meson.current_build_dir() + '/valum-@0@@sha/Valum-@0@.gir'.format(api_version), install_dir: 'share/gir-1.0')
+
+g_ir_compiler = find_program('g-ir-compiler', required: false)
+if g_ir_compiler.found()
+    custom_target('Valum typelib', command: [g_ir_compiler, '--includedir', meson.current_build_dir() + '/../vsgi/vsgi-@0@@sha'.format(api_version), '@INPUT@', '--output', '@OUTPUT@'],
+                  input: meson.current_build_dir() + '/valum-@0@@sha/Valum-@0@.gir'.format(api_version),
+                  output: 'Valum-@0@.typelib'.format(api_version),
+                  install: true,
+                  install_dir: '@0@/girepository-1.0'.format(get_option('libdir')),
+                  depends: vsgi_typelib)
+endif
 
 pkgconfig = import('pkgconfig')
 pkgconfig.generate(requires: 'vsgi-' + api_version,

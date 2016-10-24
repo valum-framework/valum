@@ -20,6 +20,7 @@ using GLib;
 /**
  * Mock implementation of VSGI used for testing purposes.
  */
+[CCode (gir_namespace = "VSGI", gir_version = "0.3")]
 namespace VSGI.Mock {
 
 	/**
