@@ -81,7 +81,7 @@ The following dependencies are minimal to build the framework under Ubuntu
 +--------------+----------+
 | python       | >=3.4    |
 +--------------+----------+
-| meson        | >=0.33   |
+| meson        | >=0.36   |
 +--------------+----------+
 | ninja        | >=1.6.0  |
 +--------------+----------+

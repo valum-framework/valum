@@ -1,19 +1,11 @@
 project('Valum', 'vala', 'c',
         version: '0.3.0-rc',
         license: 'LGPL',
-        meson_version: '>=0.35')
+        meson_version: '>=0.36')
 
 api_version = '0.3'
 
 if not meson.is_subproject()
-add_global_arguments(['-Wall',
-                      '-Wno-pointer-sign',
-                      '-Wno-deprecated-declarations',
-                      '-Wno-unused',
-                      '-Wno-incompatible-pointer-types',
-                      '-Wno-discarded-qualifiers'],
-                     language: 'c')
-
 add_global_arguments(['--enable-experimental',
                       '--enable-deprecated'],
                      language: 'vala')
