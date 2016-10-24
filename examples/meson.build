@@ -1,6 +1,5 @@
 subdir('api-interaction')
 subdir('app')
-subdir('c')
 subdir('cgi')
 subdir('fastcgi')
 subdir('genie')
