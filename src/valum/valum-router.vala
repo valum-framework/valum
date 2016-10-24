@@ -34,19 +34,15 @@ namespace Valum {
 		 */
 		public Context context { get; construct; }
 
+		public Sequence<Route>           routes = new Sequence<Route> ();
+		private HashTable<string, Regex> types  = new HashTable<string, Regex> (str_hash, str_equal);
+		private Queue<string>            scopes = new Queue<string> ();
+
 		/**
-		 * Sequence of {@link Valum.Route} object defining this.
-		 *
 		 * @since 0.3
 		 */
-		public Sequence<Route> routes { get; owned construct; }
-
-		private HashTable<string, Regex> types  = new HashTable<string, Regex> (str_hash, str_equal);
-		private Queue<string>            scopes = new Queue<string>   ();
-
 		public Router () {
 			Object (context: new Context ());
-			routes = new Sequence<Route> (); // FIXME: the GObject construction style cannot be used here
 		}
 
 		construct {
