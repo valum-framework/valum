@@ -23,7 +23,7 @@ using VSGI;
  *
  * @since 0.3
  */
-[CCode (gir_namespace = "ValumContentNegotiation", gir_version = "0.3")]
+[CCode (gir_namespace = "Valum", gir_version = "0.3")]
 namespace Valum.ContentNegotiation {
 
 	private double _qvalue_for_param (string header, string param) {

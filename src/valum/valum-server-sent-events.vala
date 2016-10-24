@@ -24,7 +24,7 @@ using VSGI;
  *
  * @since 0.3
  */
-[CCode (gir_namespace = "Valum.ServerSentEvents", gir_version = "0.3")]
+[CCode (gir_namespace = "Valum", gir_version = "0.3")]
 namespace Valum.ServerSentEvents {
 
 	/**
