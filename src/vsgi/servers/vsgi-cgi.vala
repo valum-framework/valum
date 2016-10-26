@@ -27,8 +27,6 @@ public Type server_init (TypeModule type_module) {
  *
  * This implementation is sufficiently general to implement other CGI-like
  * protocol such as FastCGI and SCGI.
- *
- * @since 0.2
  */
 namespace VSGI.CGI {
 
@@ -57,6 +55,7 @@ namespace VSGI.CGI {
 	 * {@link GLib.Application.hold} and {@link GLib.Application.release} to
 	 * keep the server alive as long as necessary.
 	 */
+	[Version (since = "0.1")]
 	public class Server : VSGI.Server {
 
 		public override SList<Soup.URI> uris {

@@ -20,9 +20,8 @@ using GLib;
 /**
  * Bounded input stream that provide a end-of-file behaviour when a a certain
  * number of bytes has been read from the base stream.
- *
- * @since 0.3
  */
+[Version (since = "0.3")]
 public class VSGI.BoundedInputStream : FilterInputStream {
 
 	/**
@@ -33,9 +32,8 @@ public class VSGI.BoundedInputStream : FilterInputStream {
 	/**
 	 * The {@link int64} type is used to remain consistent with
 	 * {@link Soup.MessageHeaders.get_content_length}
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public int64 content_length { construct; get; }
 
 	/**
@@ -44,6 +42,7 @@ public class VSGI.BoundedInputStream : FilterInputStream {
 	 * @param content_length number of bytes that can be read from the base
 	 *                       stream
 	 */
+	[Version (since = "0.3")]
 	public BoundedInputStream (InputStream base_stream, int64 content_length) {
 		Object (base_stream: base_stream, content_length: content_length);
 	}

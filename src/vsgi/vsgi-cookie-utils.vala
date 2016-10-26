@@ -19,10 +19,8 @@ using Soup;
 
 /**
  * Cookie-related utilities.
- *
- * @since 0.2
  */
-[CCode (gir_namespace = "VsgiCookieUtils", gir_version = "0.2")]
+[CCode (gir_namespace = "VSGI", gir_version = "0.3")]
 namespace VSGI.CookieUtils {
 
 	/**
@@ -39,6 +37,7 @@ namespace VSGI.CookieUtils {
 	 * @param checksum_type hash algorithm used to compute the HMAC
 	 * @param key           secret used to sign the cookie name and value
 	 */
+	[Version (since = "0.3")]
 	public void sign (Cookie cookie, ChecksumType checksum_type, uint8[] key) {
 		var checksum = Hmac.compute_for_string (checksum_type,
 		                                        key,
@@ -60,6 +59,7 @@ namespace VSGI.CookieUtils {
 	 *                      verification succeeds, null otherwise
 	 * @return              true if the cookie is signed by the secret
 	 */
+	[Version (since = "0.3")]
 	public bool verify (Cookie cookie, ChecksumType checksum_type, uint8[] key, out string? @value) {
 		var checksum_length = Hmac.compute_for_string (checksum_type, key, "").length;
 		@value              = null;

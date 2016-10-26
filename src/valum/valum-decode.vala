@@ -20,17 +20,15 @@ using VSGI;
 
 namespace Valum {
 
+	[Version (since = "0.3")]
 	public enum DecodeFlags {
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		NONE,
 		/**
 		 * Forward with the remaining content encodings if they are expected to
 		 * be processed later.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		FORWARD_REMAINING_ENCODINGS
 	}
 
@@ -39,9 +37,8 @@ namespace Valum {
 	 *
 	 * Supports 'gzip', 'deflate' and 'identity', otherwise raise a
 	 * {@link Valum.ServerError.NOT_IMPLEMENTED}.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public HandlerCallback decode (DecodeFlags flags = DecodeFlags.NONE) {
 		return (req, res, next, ctx) => {
 			var encodings = Soup.header_parse_list (req.headers.get_list ("Content-Encoding") ?? "");

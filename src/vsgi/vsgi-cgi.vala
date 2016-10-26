@@ -23,23 +23,19 @@ using Soup;
  *
  * This implementation is sufficiently general to implement other CGI-like
  * protocol such as FastCGI and SCGI.
- *
- * @since 0.3
  */
 namespace VSGI.CGI {
 
 	/**
 	 * CGI request providing consistent environment behaviours.
-	 *
-	 * @since 0.3
 	 */
+	[Version (experimental = true)]
 	public class Request : VSGI.Request {
 
 		/**
 		 * CGI environment variables encoded in 'NAME=VALUE'.
-		 *
-		 * @since 0.3
 		 */
+		[Version (experimental = true)]
 		public string[] environment { construct; get; }
 
 		private URI _uri                          = new URI (null);
@@ -80,10 +76,9 @@ namespace VSGI.CGI {
 		 *
 		 * {@inheritDoc}
 		 *
-		 * @since 0.3
-		 *
 		 * @param environment environment variables
 		 */
+		[Version (experimental = true)]
 		public Request (Connection connection, string[] environment) {
 			Object (connection: connection, environment: environment);
 		}
@@ -150,11 +145,11 @@ namespace VSGI.CGI {
 
 	/**
 	 * CGI response producing expected headers format.
-	 *
-	 * @since 0.3
 	 */
+	[Version (experimental = true)]
 	public class Response : VSGI.Response {
 
+		[Version (experimental = true)]
 		public Response (Request request) {
 			Object (request: request);
 		}

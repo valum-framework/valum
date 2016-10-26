@@ -33,8 +33,6 @@ namespace VSGI {
 	 * is passed to a {@link VSGI.Server} in order to receive request to
 	 * process.
 	 *
-	 * @since 0.2
-	 *
 	 * @throws Error unrecoverable error condition can be raised and will be
 	 *               handled by the implementation
 	 *
@@ -44,11 +42,10 @@ namespace VSGI {
 	 * @return 'true' if the request has been or will eventually be handled,
 	 *         otherwise 'false'
 	 */
+	[Version (since = "0.2")]
 	public delegate bool ApplicationCallback (Request req, Response res) throws Error;
 
-	/**
-	 * @since 0.3
-	 */
+	[Version (since = "0.3")]
 	[CCode (has_target = false)]
 	public delegate Type ServerInitFunc (TypeModule module);
 }

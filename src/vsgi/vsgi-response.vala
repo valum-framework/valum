@@ -21,44 +21,38 @@ using Soup;
 namespace VSGI {
 	/**
 	 * Response representing a request resource.
-	 *
-	 * @since 0.0.1
 	 */
+	[Version (since = "0.1")]
 	public abstract class Response : Object {
 
 		/**
 		 * Request to which this response is responding.
-		 *
-		 * @since 0.1
 		 */
+		[Version (since = "0.1")]
 		public Request request { construct; get; }
 
 		/**
 		 * Response status.
-		 *
-		 * @since 0.0.1
 		 */
+		[Version (since = "0.1")]
 		public virtual uint status { get; set; default = global::Soup.Status.OK; }
 
 		/**
 		 * Response status message.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public virtual string? reason_phrase { owned get; set; default = null; }
 
 		/**
 		 * Response headers.
-		 *
-		 * @since 0.0.1
 		 */
+		[Version (since = "0.1")]
 		public MessageHeaders headers { get; protected construct set; }
 
 		/**
 		 * Response cookies extracted from the 'Set-Cookie' header.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public SList<Cookie> cookies {
 			owned get {
 				var cookies     = new SList<Cookie> ();
@@ -84,16 +78,14 @@ namespace VSGI {
 		 * {@link GLib.OutputStream}.
 		 *
 		 * This property can only be set internally.
-		 *
-		 * @since 0.2
 		 */
+		[Version (since = "0.2")]
 		public bool head_written { get { return _head_written > 0; } }
 
 		/**
 		 * Placeholder for the response body.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3", experimental = true)]
 		protected OutputStream? _body = null;
 
 		/**
@@ -109,9 +101,8 @@ namespace VSGI {
 		 * For CGI-ish protocols, the server will generally deal with transfer
 		 * encoding automatically, so the default implementation is to simply
 		 * return the base_stream.
-		 *
-		 * @since 0.2
 		 */
+		[Version (since = "0.2")]
 		public virtual OutputStream body {
 			get {
 				return _body ?? this.request.connection.output_stream;
@@ -120,28 +111,23 @@ namespace VSGI {
 
 		/**
 		 * Emitted when the status line has been written.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public signal void wrote_status_line (uint status, string reason_phrase);
 
 		/**
 		 * Emitted when the headers has been written.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public signal void wrote_headers (Soup.MessageHeaders headers);
 
 		/**
 		 * Send the status line to the client.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		protected abstract bool write_status_line (HTTPVersion http_version, uint status, string reason_phrase, out size_t bytes_written, Cancellable? cancellable = null) throws IOError;
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		protected virtual async bool write_status_line_async (HTTPVersion  http_version,
 		                                                      uint         status,
 		                                                      string       reason_phrase,
@@ -153,16 +139,13 @@ namespace VSGI {
 
 		/**
 		 * Send headers to the client.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		protected abstract bool write_headers (MessageHeaders headers,
 		                                       out size_t     bytes_written,
 		                                       Cancellable?   cancellable = null) throws IOError;
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		protected virtual async bool write_headers_async (MessageHeaders headers,
 		                                                  int            priority    = GLib.Priority.DEFAULT,
 		                                                  Cancellable?   cancellable = null,
@@ -193,12 +176,11 @@ namespace VSGI {
 		 * stream, it has not been flushed. This is designed to avoid the number
 		 * of I/O operations necessary to send the response.
 		 *
-		 * @since 0.2
-		 *
 		 * @param bytes_written number of bytes written in the stream see
 		 *                      {@link GLib.OutputStream.write_all}
 		 * @return wether the head was effectively written
 		 */
+		[Version (since = "0.2")]
 		public bool write_head (out size_t bytes_written, Cancellable? cancellable = null) throws IOError {
 			if (Once.init_enter (&_head_written)) {
 				try {
@@ -227,9 +209,7 @@ namespace VSGI {
 			}
 		}
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		public async bool write_head_async (int          priority    = GLib.Priority.DEFAULT,
 		                                    Cancellable? cancellable = null,
 											out size_t   bytes_written) throws Error {
@@ -268,12 +248,11 @@ namespace VSGI {
 		 * If the payload is chunked, (eg. 'Transfer-Encoding: chunked') and the
 		 * new content length is undetermined, it will remain chunked.
 		 *
-		 * @since 0.3
-		 *
 		 * @param converter      converter to stack on the response body
 		 * @param content_length resulting value for the 'Content-Length' header
 		 *                       or '-1' if the length is undetermined
 		 */
+		[Version (since = "0.3")]
 		public void convert (Converter converter, int64 content_length = -1) {
 			if (content_length >= 0) {
 				_mark_content_length_as_fixed (content_length);
@@ -286,9 +265,8 @@ namespace VSGI {
 		/**
 		 * Split the body stream such that anything written to it are written
 		 * both in the base stream and the tee stream.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public void tee (OutputStream tee_stream) {
 			_body = new TeeOutputStream (_body ?? request.connection.output_stream, tee_stream);
 		}
@@ -333,9 +311,8 @@ namespace VSGI {
 		 *
 		 * Unless the 'Transport-Encoding' header is explicitly set to 'chunked',
 		 * the response encoding is marked with {@link Soup.Encoding.EOF}.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public bool append (uint8[] buffer, Cancellable? cancellable = null) throws Error {
 			_mark_content_length_as_undetermined ();
 			size_t bytes_written;
@@ -344,24 +321,18 @@ namespace VSGI {
 			       body.flush (cancellable);
 		}
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		public bool append_bytes (Bytes buffer, Cancellable? cancellable = null) throws Error {
 			return append (buffer.get_data (), cancellable);
 		}
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		public bool append_utf8 (string buffer, Cancellable? cancellable = null) throws Error {
 			_mark_content_as_utf8 ();
 			return append (buffer.data, cancellable);
 		}
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		public async bool append_async (uint8[]      buffer,
 		                                int          priority    = GLib.Priority.DEFAULT,
 		                                Cancellable? cancellable = null) throws Error {
@@ -376,18 +347,14 @@ namespace VSGI {
 #endif
 		}
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		public async bool append_bytes_async (Bytes        buffer,
 		                                      int          priority    = GLib.Priority.DEFAULT,
 		                                      Cancellable? cancellable = null) throws Error {
 			return yield append_async (buffer.get_data (), priority, cancellable);
 		}
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		public async bool append_utf8_async (string       buffer,
 		                                     int          priority    = GLib.Priority.DEFAULT,
 		                                     Cancellable? cancellable = null) throws Error {
@@ -403,9 +370,8 @@ namespace VSGI {
 		 *
 		 * This function accept empty buffers, which result in an explicit
 		 * 'Content-Length: 0' header and an empty payload.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public virtual bool expand (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
 			_mark_content_length_as_fixed (buffer.length);
 			size_t bytes_written;
@@ -416,9 +382,8 @@ namespace VSGI {
 
 		/**
 		 * Expand a {@link GLib.Bytes} buffer into the response body.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public bool expand_bytes (Bytes bytes, Cancellable? cancellable = null) throws IOError {
 			return expand (bytes.get_data (), cancellable);
 		}
@@ -430,17 +395,14 @@ namespace VSGI {
 		 * header will be set to 'UTF-8'. The media type will default to
 		 * 'application/octet-stream' if not set already. Use {@link VSGI.Response.expand}
 		 * to write data with arbitrairy charset.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public bool expand_utf8 (string body, Cancellable? cancellable = null) throws IOError {
 			_mark_content_as_utf8 ();
 			return expand (body.data, cancellable);
 		}
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		public virtual async bool expand_async (uint8[]      buffer,
 		                                        int          priority    = GLib.Priority.DEFAULT,
 		                                        Cancellable? cancellable = null) throws Error {
@@ -455,18 +417,14 @@ namespace VSGI {
 #endif
 		}
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		public async bool expand_bytes_async (Bytes        bytes,
 		                                      int          priority    = GLib.Priority.DEFAULT,
 		                                      Cancellable? cancellable = null) throws Error {
 			return yield expand_async (bytes.get_data (), priority, cancellable);
 		}
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		public async bool expand_utf8_async (string       body,
 		                                     int          priority    = GLib.Priority.DEFAULT,
 		                                     Cancellable? cancellable = null) throws Error {
@@ -474,16 +432,12 @@ namespace VSGI {
 			return yield expand_async (body.data, priority, cancellable);
 		}
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		public virtual bool expand_stream (InputStream @in, Cancellable? cancellable = null) throws Error {
 			return body.splice (@in, OutputStreamSpliceFlags.CLOSE_TARGET, cancellable) != -1;
 		}
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		public virtual async bool expand_stream_async (InputStream  @in,
 		                                       int          priority    = GLib.Priority.DEFAULT,
 		                                       Cancellable? cancellable = null) throws Error {
@@ -492,9 +446,8 @@ namespace VSGI {
 
 		/**
 		 * Expand the content of a file into the response body.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public virtual bool expand_file (File file, Cancellable? cancellable = null) throws Error {
 			_mark_content_length_as_fixed (file.query_info (FileAttribute.STANDARD_SIZE,
 			                                                FileQueryInfoFlags.NONE,
@@ -502,9 +455,7 @@ namespace VSGI {
 			return expand_stream (file.read (), cancellable);
 		}
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		public virtual async bool expand_file_async (File         file,
 		                                             int          priority    = GLib.Priority.DEFAULT,
 		                                             Cancellable? cancellable = null) throws Error {
@@ -517,17 +468,14 @@ namespace VSGI {
 
 		/**
 		 * End the response properly, writting the head if missing.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public bool end (Cancellable? cancellable = null) throws IOError {
 			size_t bytes_written;
 			return write_head (out bytes_written, cancellable) && body.close (cancellable);
 		}
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		public async bool end_async (int          priority    = GLib.Priority.DEFAULT,
 		                             Cancellable? cancellable = null) throws Error {
 			size_t bytes_written;

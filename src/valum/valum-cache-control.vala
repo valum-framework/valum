@@ -19,9 +19,7 @@ using GLib;
 
 namespace Valum {
 
-	/**
-	 * @since 0.3
-	 */
+	[Version (since = "0.3")]
 	public enum CacheControlDirective {
 		PUBLIC,
 		PRIVATE,
@@ -37,13 +35,12 @@ namespace Valum {
 	/**
 	 * Produce a 'Cache-Control' response header.
 	 *
-	 * @since 0.3
-	 *
 	 * @param directive directive for the 'Cache-Control' header
 	 * @param max_age   argument for 'max-age' or 's-maxage' directives if
 	 *                  specified in the type, otherwise it's used for 'max-age'
 	 *                  if greater than zero
 	 */
+	[Version (since = "0.3")]
 	public HandlerCallback cache_control (CacheControlDirective directive, TimeSpan max_age = 0) {
 		return (req, res, next) => {
 			var cache_control_header = new StringBuilder ();

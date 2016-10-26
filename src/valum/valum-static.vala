@@ -20,31 +20,25 @@ using VSGI;
 
 /**
  * Utilities to serve static resources.
- *
- * @since 0.3
  */
 [CCode (gir_namespace = "Valum", gir_version = "0.3")]
 namespace Valum.Static {
 
 	/**
 	 * Flags used to enble or disable options for serving static resources.
-	 *
-	 * @since 0.3
 	 */
 	[Flags]
+	[Version (since = "0.3")]
 	public enum ServeFlags {
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		NONE,
 		/**
 		 * Produce an 'ETag' header and raise a {@link Valum.Redirection.NOT_MODIFIED}
 		 * if the resource has already been transmitted. If not available, it
 		 * will fallback on either {@link Valum.Static.ServeFlags.ENABLE_LAST_MODIFIED}
 		 * or no caching at all.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		ENABLE_ETAG,
 		/**
 		 * Produce a 'Last-Modified' header and raise a {@link Valum.Redirection.NOT_MODIFIED}
@@ -52,16 +46,14 @@ namespace Valum.Static {
 		 *
 		 * If {@link Valum.Static.ServeFlags.ENABLE_ETAG} is specified and available,
 		 * it will be used instead.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		ENABLE_LAST_MODIFIED,
 		/**
 		 * Raise a {@link ClientError.FORBIDDEN} if rights are missing on the
 		 * resource rather than calling 'next'.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		FORBID_ON_MISSING_RIGHTS,
 		/**
 		 * If supported, generate a 'X-Sendfile' header instead of delivering
@@ -71,9 +63,8 @@ namespace Valum.Static {
 		 * produced in the 'X-Sendfile' header. It must therefore be accessible
 		 * for the HTTP server, otherwise it will silently fallback to serve the
 		 * resource directly.
-		 *
-		 * @since 0.3
 		 */
+		[Version (experimental = true)]
 		X_SENDFILE
 	}
 
@@ -92,11 +83,10 @@ namespace Valum.Static {
 	 *
 	 * If the file is not readable, a '403 Forbidden' is raised.
 	 *
-	 * @since 0.3
-	 *
 	 * @param root        path from which resources are resolved
 	 * @param serve_flags flags for serving the resources
 	 */
+	[Version (since = "0.3")]
 	public HandlerCallback serve_from_file (File root, ServeFlags serve_flags = ServeFlags.NONE, ForwardCallback<GLib.File> forward = Valum.forward) {
 		return (req, res, next, ctx) => {
 			var file = root.resolve_relative_path (ctx["path"].get_string ());
@@ -171,18 +161,14 @@ namespace Valum.Static {
 		};
 	}
 
-	/**
-	 * @since 0.3
-	 */
+	[Version (since = "0.3")]
 	public HandlerCallback serve_from_path (string                      path,
 	                                        ServeFlags                  serve_flags = ServeFlags.NONE,
 	                                        owned ForwardCallback<File> forward     = Valum.forward) {
 		return serve_from_file (File.new_for_path (path), serve_flags, (owned) forward);
 	}
 
-	/**
-	 * @since 0.3
-	 */
+	[Version (since = "0.3")]
 	public HandlerCallback serve_from_uri (string                      uri,
 	                                       ServeFlags                  serve_flags = ServeFlags.NONE,
 	                                       owned ForwardCallback<File> forward     = Valum.forward) {
@@ -200,14 +186,13 @@ namespace Valum.Static {
 	 * @see GLib.resources_open_stream
 	 * @see GLib.resources_lookup_data
 	 *
-	 * @since 0.3
-	 *
 	 * @param resource    resource bundle to serve
 	 * @param prefix      prefix from which resources are resolved in the
 	 *                    resource bundle; a valid prefix begin and start with a
 	 *                    '/' character
 	 * @param serve_flags flags for serving the resources
 	 */
+	[Version (since = "0.3")]
 	public HandlerCallback serve_from_resource (Resource              resource,
 	                                            string                prefix      = "/",
 	                                            ServeFlags            serve_flags = ServeFlags.NONE,

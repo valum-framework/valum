@@ -29,9 +29,8 @@ namespace VSGI {
 	 *
 	 * The server should be implemented by overriding the
 	 * {@link GLib.Application.command_line} signal.
-	 *
-	 * @since 0.1
 	 */
+	[Version (since = "0.1")]
 	public abstract class Server : Object {
 
 		private static HashTable<string, ServerModule>? _server_modules = null;
@@ -44,14 +43,13 @@ namespace VSGI {
 		 *
 		 * For a more fine-grained control, use {@link VSGI.ServerModule}.
 		 *
-		 * @since 0.3
-		 *
 		 * @param name name of the server implementation to load
 		 * @param list arguments to pass to {@link GLib.Object.new_valist}
 		 *
 		 * @return the server instance of loaded successfully, otherwise 'null'
 		 *         and a critical will be emitted
 		 */
+		[Version (since = "0.3")]
 		public static new Server? @new_valist (string name, va_list list) {
 			if (_server_modules == null)
 				_server_modules = new HashTable<string, ServerModule> (str_hash, str_equal);
@@ -75,9 +73,8 @@ namespace VSGI {
 
 		/**
 		 * Instantiate a new {@link VSGI.Server} with varidic arguments.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public static new Server? @new (string name, ...) {
 			return @new_valist (name, va_list ());
 		}
@@ -86,8 +83,6 @@ namespace VSGI {
 		 * Instantiate a new {@link VSGI.Server} with an initial application
 		 * callback.
 		 *
-		 * @since 0.3
-		 *
 		 * @param name     name of the server implementation to load
 		 * @param callback initial application callback
 		 * @param list     arguments to pass to {@link GLib.Object.new}
@@ -95,6 +90,7 @@ namespace VSGI {
 		 * @return the server instance of loaded successfully, otherwise 'null'
 		 *         and a warning will be emitted
 		 */
+		[Version (since = "0.3")]
 		public static Server? new_valist_with_application (string name, owned ApplicationCallback callback, va_list list) {
 			var server = @new_valist (name, list);
 			if (server != null) {
@@ -106,18 +102,16 @@ namespace VSGI {
 		/**
 		 * Instantiate a new {@link VSGI.Server} with an initial application
 		 * callback and varidic arguments.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public static Server? new_with_application (string name, owned ApplicationCallback callback, ...) {
 			return new_valist_with_application (name, callback, va_list ());
 		}
 
 		/**
 		 * URIs this server is listening on.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public abstract SList<Soup.URI> uris { owned get; }
 
 		private ApplicationCallback? _application = null;
@@ -125,6 +119,7 @@ namespace VSGI {
 		/**
 		 * Assign the callback used when {@link VSGI.Server.dispatch} is called.
 		 */
+		[Version (since = "0.3")]
 		public void set_application_callback (owned ApplicationCallback application) {
 			_application = (owned) application;
 		}
@@ -135,14 +130,13 @@ namespace VSGI {
 		 * Once the {@link GLib.MainLoop} is started, the server should start
 		 * accepting incoming connections.
 		 *
-		 * @since 0.3
-		 *
 		 * @param address a {@link GLib.SocketAddress} or 'null' to listen on
 		 *                the default interface
 		 *
 		 * @throws GLib.IOError.NOT_SUPPORTED if the server does not support
 		 *                                    listening on the provided address
 		 */
+		[Version (since = "0.3")]
 		public abstract void listen (SocketAddress? address = null) throws Error;
 
 		/**
@@ -151,18 +145,16 @@ namespace VSGI {
 		 * Once the {@link GLib.MainLoop} is started, the server should start
 		 * accepting incoming connections.
 		 *
-		 * @since 0.3
-		 *
 		 * @throws GLib.IOError.NOT_SUPPORTED if the server does not support
 		 *                                    listening on the provided address
 		 */
+		[Version (since = "0.3")]
 		public abstract void listen_socket (Socket socket) throws Error;
 
 		/**
 		 * Stop accepting new connections.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public abstract void stop ();
 
 		/**
@@ -175,13 +167,12 @@ namespace VSGI {
 		 * return value. To disable forking, simply override this and return
 		 * '0'.
 		 *
-		 * @since 0.3
-		 *
 		 * @throws GLib.SpawnError.FORK if the {@link Posix.fork} call fails
 		 *
 		 * @return the process pid if this is the parent process,
 		 *         otherwise '0'
 		 */
+		[Version (since = "0.3")]
 		public virtual Pid fork () throws Error {
 			var pid = Posix.fork ();
 			if (pid == -1) {
@@ -199,10 +190,9 @@ namespace VSGI {
 		 * expected to be true unless its reference still held somewhere else
 		 * and the return value is 'true'.
 		 *
-		 * @since 0.3
-		 *
 		 * @return true if the request and response were dispatched
 		 */
+		[Version (since = "0.3")]
 		protected bool dispatch (Request req, Response res) throws Error {
 			if (unlikely (_application == null)) {
 				error ("Use 'set_application_callback' to assign this an application.");
@@ -217,9 +207,8 @@ namespace VSGI {
 		 * Note that this is equivalent to calling {@link VSGI.Server.dispatch}
 		 * for the moment, but an eventual release with support of asynchronous
 		 * delegates would literally yield from the application callback.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		protected async bool dispatch_async (Request req, Response res) throws Error {
 			return dispatch (req, res);
 		}
@@ -227,9 +216,8 @@ namespace VSGI {
 		/**
 		 * Create a new {@link VSGI.Application} that cushion the execution of
 		 * this server.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public int run (string[] args = {}) {
 			return new Application (this).run (args);
 		}

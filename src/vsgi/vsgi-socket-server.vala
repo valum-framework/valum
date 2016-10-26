@@ -19,22 +19,18 @@ using GLib;
 
 /**
  * Base for implementing a server upon {@link GLib.SocketService}.
- *
- * @since 0.3
  */
+[Version (since = "0.3")]
 public abstract class VSGI.SocketServer : Server {
 
-	/**
-	 * @since 0.3
-	 */
+	[Version (since = "0.3")]
 	[Description (blurb = "Listen queue depth used in the listen() call")]
 	public int backlog { construct; get; default = 10; }
 
 	/**
 	 * Scheme used for generated listening {@link Soup.URI}.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	protected abstract string scheme { get; }
 
 	private SList<Soup.URI> _uris = new SList<Soup.URI> ();
@@ -96,8 +92,7 @@ public abstract class VSGI.SocketServer : Server {
 
 	/**
 	 * Dispatch an incoming socket connection.
-	 *
-	 * @since 0.3
 	 */
-	public abstract bool incoming (SocketConnection connection);
+	[Version (since = "0.3")]
+	protected abstract bool incoming (SocketConnection connection);
 }

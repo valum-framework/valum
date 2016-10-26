@@ -23,14 +23,13 @@ namespace Valum {
 	 * Extract subdomains from a domain name excluding the top and second level
 	 * domain.
 	 *
-	 * @since 0.3
-	 *
 	 * @param domain domain from which subdomains will be extracted
 	 * @param skip   number of labels to skip, which defaults to 2 (eg. 'example'
 	 *               and 'com')
 	 * @return a list of subdomains in their left-to-right order of appearance
 	 *         in the domain excluding the two top-most levels
 	 */
+	[Version (since = "0.3")]
 	public string[] extract_subdomains (string domain, uint skip = 2) {
 		var labels = domain.split (".");
 		if (labels.length <= skip)
@@ -47,14 +46,13 @@ namespace Valum {
 	 *
 	 * The joker '*' can be used to fuzzy-match a label.
 	 *
-	 * @since 0.3
-	 *
 	 * @param expected_subdomain expected subdomain pattern
 	 * @param forward            invoked if the subdomain matches
 	 * @param strict             strictly match the subdomains to have the
 	 *                           exactly same amount of labels
 	 * @param skip               see {@link Valum.extract_subdomains}
 	 */
+	[Version (since = "0.3")]
 	public HandlerCallback subdomain (string                        expected_subdomain,
 	                                  owned ForwardCallback<string> forward,
 	                                  bool                          strict = false,

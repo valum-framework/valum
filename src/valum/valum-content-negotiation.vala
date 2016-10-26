@@ -20,8 +20,6 @@ using VSGI;
 
 /**
  * Content negociation for various headers.
- *
- * @since 0.3
  */
 [CCode (gir_namespace = "Valum", gir_version = "0.3")]
 namespace Valum.ContentNegotiation {
@@ -65,13 +63,12 @@ namespace Valum.ContentNegotiation {
 	 * negotiated header name will be appended to the response headers to
 	 * indicate that the resource has been generated based on its value.
 	 *
-	 * @since 0.3
-	 *
 	 * @param header_name  header to negotiate
 	 * @param expectations expected values, possibly with a qvalue
 	 * @param forward      callback forwarding the best expectation
 	 * @param match        compare the user agent string against an expectation
 	 */
+	[Version (since = "0.3")]
 	public HandlerCallback negotiate (string                        header_name,
 	                                  string                        expectations,
 	                                  owned ForwardCallback<string> forward = Valum.forward,
@@ -129,9 +126,8 @@ namespace Valum.ContentNegotiation {
 	 * For compound subtypes, it checks if the accepted subtypes by the user
 	 * agent form a subset of the proposed ones. Note that the '*' subtype is
 	 * always considered acceptable.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public HandlerCallback accept (string                        content_types,
 	                               owned ForwardCallback<string> forward = Valum.forward) {
 		return negotiate ("Accept", content_types, (req, res, next, ctx, content_type) => {
@@ -177,9 +173,8 @@ namespace Valum.ContentNegotiation {
 	 *
 	 * On success, set the 'charset' parameter of the 'Content-Type' header. If
 	 * no content type is set, it defaults to 'application/octet-stream'.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public HandlerCallback accept_charset (string                        charsets,
 	                                       owned ForwardCallback<string> forward = Valum.forward) {
 		return negotiate ("Accept-Charset", charsets, (req, res, next, ctx, charset) => {
@@ -201,9 +196,8 @@ namespace Valum.ContentNegotiation {
 	 *
 	 * The 'gzip', 'deflate' and 'identity' encodings are handled. Other
 	 * encodings must be handled manually.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public HandlerCallback accept_encoding (string                        encodings,
 	                                        owned ForwardCallback<string> forward = Valum.forward) {
 		return negotiate ("Accept-Encoding", encodings, (req, res, next, ctx, encoding) => {
@@ -238,9 +232,8 @@ namespace Valum.ContentNegotiation {
 	 *
 	 * Note that according to HTTP/1.1 specification, the 'chunked' encoding is
 	 * always considered acceptable.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public HandlerCallback accept_transfer_encoding (string                        encodings,
 	                                                 owned ForwardCallback<string> forward = Valum.forward) {
 		return negotiate ("TE", encodings, (req, res, next, ctx, encoding) => {
@@ -260,9 +253,8 @@ namespace Valum.ContentNegotiation {
 	 *
 	 * If the user agent have regional preferences (eg. 'Accept: en-GB'),
 	 * then any non-regional variation will be considered acceptable.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public HandlerCallback accept_language (string                        languages,
 	                                        owned ForwardCallback<string> forward = Valum.forward) {
 		return negotiate ("Accept-Language", languages, (req, res, next, ctx, language) => {
@@ -282,9 +274,8 @@ namespace Valum.ContentNegotiation {
 	 * Negotiate a 'Accept-Range' header.
 	 *
 	 * This is typically used with the 'bytes' value.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public HandlerCallback accept_ranges (string                        ranges,
 	                                      owned ForwardCallback<string> forward = Valum.forward) {
 		return negotiate ("Accept-Ranges", ranges, (owned) forward);

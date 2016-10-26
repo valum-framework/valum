@@ -23,9 +23,8 @@ namespace Valum {
 	/**
 	 * Used as a default value when all that is necessary is to call the 'next'
 	 * continuation.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public bool forward (Request req, Response res, NextCallback next) throws Error {
 		return next ();
 	}

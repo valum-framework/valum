@@ -31,32 +31,16 @@ public Type server_init (TypeModule type_module) {
  * The request InputStream is initially consumed as a netstring to extract the
  * environment variables using a {@link GLib.DataInputStream}. The resulting
  * stream is then exposed as the request body.
- *
- * @since 0.2
  */
 namespace VSGI.SCGI {
 
-	/**
-	 * @since 0.3
-	 */
 	private errordomain Error {
-		/**
-		 *
-		 */
 		FAILED,
 		/**
 		 * The submitted netstring is not well formed.
-		 *
-		 * @since 0.3
 		 */
 		MALFORMED_NETSTRING,
-		/**
-		 * @since 0.3
-		 */
 		MISSING_CONTENT_LENGTH,
-		/**
-		 * @since 0.3
-		 */
 		BAD_CONTENT_LENGTH
 	}
 
@@ -67,12 +51,10 @@ namespace VSGI.SCGI {
 	 * typically consumed for its netstring. This is why the constructor
 	 * expects a separate body stream.
 	 */
-	public class Request : CGI.Request {
+	private class Request : CGI.Request {
 
 		/**
 		 * {@inheritDoc}
-		 *
-		 * @since 2.3.3
 		 *
 		 * @param reader stream holding the request body
 		 */
@@ -85,7 +67,7 @@ namespace VSGI.SCGI {
 	/**
 	 * {@inheritDoc}
 	 */
-	public class Response : CGI.Response {
+	private class Response : CGI.Response {
 
 		public Response (Request request) {
 			base (request);
@@ -95,7 +77,7 @@ namespace VSGI.SCGI {
 	/**
 	 * Provide an auto-closing SCGI connection.
 	 */
-	public class Connection : VSGI.Connection {
+	private class Connection : VSGI.Connection {
 
 		/**
 		 *
@@ -126,6 +108,7 @@ namespace VSGI.SCGI {
 	/**
 	 * {@inheritDoc}
 	 */
+	[Version (since = "0.1")]
 	public class Server : VSGI.SocketServer {
 
 		protected override string scheme { get { return "scgi"; } }

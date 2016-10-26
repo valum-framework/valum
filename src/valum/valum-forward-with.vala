@@ -23,9 +23,8 @@ namespace Valum {
 	 * This is basically a hack to pass a {@link Valum.HandlerCallback} where a
 	 * {@link Valum.ForwardCallback} is expected, discarding the forwarded
 	 * value.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public ForwardCallback<T> forward_with<T> (owned HandlerCallback handle) {
 		return (req, res, next, ctx, @value) => {
 			return handle (req, res, next, ctx);

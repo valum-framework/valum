@@ -34,8 +34,8 @@ namespace Valum {
 	 * Informational status corresponding to the 1xx HTTP status codes.
 	 *
 	 * @see   Soup.Status
-	 * @since 0.1
 	 */
+	[Version (since = "0.1")]
 	public errordomain Informational {
 		CONTINUE            = Status.CONTINUE,
 		/**
@@ -49,8 +49,8 @@ namespace Valum {
 	 * Success corresponding to the 2xx HTTP status codes.
 	 *
 	 * @see   Soup.Status
-	 * @since 0.1
 	 */
+	[Version (since = "0.1")]
 	public errordomain Success {
 		OK                = Status.OK,
 		/**
@@ -77,8 +77,8 @@ namespace Valum {
 	 * The error message will be used in the 'Location' header.
 	 *
 	 * @see   Soup.Status
-	 * @since 0.1
 	 */
+	[Version (since = "0.1")]
 	public errordomain Redirection {
 		MULTIPLE_CHOICES               = Status.MULTIPLE_CHOICES,
 		MOVED_PERMANENTLY              = Status.MOVED_PERMANENTLY,
@@ -96,8 +96,8 @@ namespace Valum {
 	 * Client errors corresponding to the 4xx HTTP status codes.
 	 *
 	 * @see   Soup.Status
-	 * @since 0.1
 	 */
+	[Version (since = "0.1")]
 	public errordomain ClientError {
 		BAD_REQUEST                     = Status.BAD_REQUEST,
 		UNAUTHORIZED                    = Status.UNAUTHORIZED,
@@ -141,8 +141,8 @@ namespace Valum {
 	 * Server errors corresponding to the 5xx HTTP status codes.
 	 *
 	 * @see   Soup.Status
-	 * @since 0.1
 	 */
+	[Version (since = "0.1")]
 	public errordomain ServerError {
 		INTERNAL_SERVER_ERROR           = Status.INTERNAL_SERVER_ERROR,
 		NOT_IMPLEMENTED                 = Status.NOT_IMPLEMENTED,
@@ -162,9 +162,8 @@ namespace Valum {
 	 *
 	 * If {@link Soup.Status.INTERNAL_SERVER_ERROR} is specified, other errors
 	 * will be forwarded as well.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public HandlerCallback status (uint status, owned ForwardCallback<Error> forward) {
 		return (req, res, next, ctx) => {
 			try {

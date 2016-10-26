@@ -25,32 +25,28 @@ namespace Valum {
 	 * and {@link VSGI.Response} objects.
 	 *
 	 * It holds metadata as well to optimize the routing process.
-	 *
-	 * @since 0.0.1
 	 */
+	[Version (since = "0.1")]
 	public abstract class Route : Object {
 
 		/**
 		 * Flag describing allowed HTTP methods.
-		 *
-		 * @since 0.2
 		 */
+		[Version (since = "0.2")]
 		public Method method { construct; get; }
 
 		/**
 		 * Matches the given request and populate its parameters on success.
-         *
-		 * @since 0.0.1
 		 */
+		[Version (since = "0.1")]
 		public abstract bool match (Request req, Context ctx);
 
 		/**
 		 * Apply the handler on the request and response.
 		 *
-		 * @since 0.0.1
-		 *
 		 * @return the return value of the callback if set, otherwise 'false'
 		 */
+		[Version (since = "0.1")]
 		public abstract bool fire (Request req, Response res, NextCallback next, Context ctx) throws Success,
 		                                                                                             Redirection,
 		                                                                                             ClientError,
@@ -60,21 +56,19 @@ namespace Valum {
 		/**
 		 * Reverse the route into an URL.
 		 *
-		 * @since 0.3
-		 *
 		 * @param params parameters which are typically extract from the
 		 *               {@link VSGI.Request.uri} property
 		 *
 		 * @return the corresponding URL if supported, otherwise 'null'
 		 */
+		[Version (since = "0.3")]
 		public abstract string to_url_from_hash (HashTable<string, string>? @params = null);
 
 		/**
 		 * Reverse the route into an URL by building from a varidic arguments
 		 * list.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public string to_url_from_valist (va_list list) {
 			var hash = new HashTable<string, string> (str_hash, str_equal);
 			// potential compiler bug here: SEGFAULT if 'var' is used instead of 'unowned string'
@@ -91,9 +85,8 @@ namespace Valum {
 		 *
 		 * Arguments alternate between keys and values, all assumed to be
 		 * {@link string}.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public string to_url (...) {
 			return to_url_from_valist (va_list ());
 		}

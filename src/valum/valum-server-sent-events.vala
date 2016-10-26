@@ -21,8 +21,6 @@ using VSGI;
 
 /**
  * Middleware and utilities to produce server-sent events.
- *
- * @since 0.3
  */
 [CCode (gir_namespace = "Valum", gir_version = "0.3")]
 namespace Valum.ServerSentEvents {
@@ -33,8 +31,6 @@ namespace Valum.ServerSentEvents {
 	 * All string data must be encoded using UTF-8 and multi-line data are
 	 * handled properly by writing multiple 'data:' fields.
 	 *
-	 * @since 0.3
-	 *
 	 * @param event event name, or 'null' to omit the field
 	 * @param data  event data
 	 * @param id    event identifier, or 'null' to omit the field
@@ -43,6 +39,7 @@ namespace Valum.ServerSentEvents {
 	 * @throws Error errors are handled as warnings to avoid breaking the
 	 *               `text/event-stream` content
 	 */
+	[Version (since = "0.3")]
 	public delegate void SendEventCallback (string?   event,
 	                                        string    data,
 	                                        string?   id    = null,
@@ -53,14 +50,13 @@ namespace Valum.ServerSentEvents {
 	 *
 	 * It replaces the {@link VSGI.Response} by a {@link Valum.ServerSentEvents.SendEventCallback}.
 	 *
-	 * @since 0.3
-	 *
 	 * @param request    request this is responding to
 	 * @param send_event send a SSE message
 	 * @param context    routing context
 	 *
 	 * @throws GLib.Error thrown errors are suppressed with {@link GLib.warning}
 	 */
+	[Version (since = "0.3")]
 	public delegate void EventStreamCallback (Request                 request,
 	                                          owned SendEventCallback send_event,
 	                                          Context                 context) throws Error;
@@ -80,10 +76,9 @@ namespace Valum.ServerSentEvents {
 	 * The middleware automatically send a keep-alive every 15 seconds to ensure
 	 * that unaware clients keep the connection opened.
 	 *
-	 * @since 0.3
-	 *
 	 * @param context context for sending events
 	 */
+	[Version (since = "0.3")]
 	public HandlerCallback stream_events (owned EventStreamCallback context) {
 		return accept ("text/event-stream", (req, res, next, _context) => {
 			res.headers.set_encoding (Soup.Encoding.EOF);

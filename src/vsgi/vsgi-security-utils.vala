@@ -6,8 +6,6 @@ namespace VSGI {
 	 * Note that the length of 'b' is used and any user-provided string should
 	 * be passed as second argument.
 	 *
-	 * @since 0.3
-	 *
 	 * @param a the expected string
 	 * @param b the user-provided string
 	 *

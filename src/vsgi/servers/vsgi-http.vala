@@ -25,8 +25,6 @@ public Type server_init (TypeModule type_module) {
 
 /**
  * HTTP implementation of VSGI.
- *
- * @since 0.1
  */
 namespace VSGI.HTTP {
 
@@ -63,14 +61,12 @@ namespace VSGI.HTTP {
 	/**
 	 * Soup Request
 	 */
-	public class Request : VSGI.Request {
+	private class Request : VSGI.Request {
 
 		private HashTable<string, string>? _query;
 
 		/**
 		 * Message underlying this request.
-		 *
-		 * @since 0.2
 		 */
 		public Message message { construct; get; }
 
@@ -87,8 +83,6 @@ namespace VSGI.HTTP {
 		/**
 		 * {@inheritDoc}
 		 *
-		 * @since 0.2
-		 *
 		 * @param connection contains the connection obtain from
 		 *                   {@link Soup.ClientContext.steal_connection} or a
 		 *                   stud if it is not available
@@ -104,12 +98,10 @@ namespace VSGI.HTTP {
 	/**
 	 * Soup Response
 	 */
-	public class Response : VSGI.Response {
+	private class Response : VSGI.Response {
 
 		/**
 		 * Message underlying this response.
-		 *
-		 * @since 0.2
 		 */
 		public Message message { construct; get; }
 
@@ -125,8 +117,6 @@ namespace VSGI.HTTP {
 
 		/**
 		 * {@inheritDoc}
-		 *
-		 * @since 0.2
 		 *
 		 * @param msg message underlying this response
 		 */
@@ -157,10 +147,7 @@ namespace VSGI.HTTP {
 		}
 	}
 
-	/**
-	 * @since 0.2
-	 */
-	public class Connection : VSGI.Connection {
+	private class Connection : VSGI.Connection {
 
 		public Soup.Server soup_server { construct; get; }
 
@@ -202,40 +189,29 @@ namespace VSGI.HTTP {
 
 	/**
 	 * Implementation of VSGI.Server based on Soup.Server.
-	 *
-	 * @since 0.1
 	 */
+	[Version (since = "0.1")]
 	public class Server : VSGI.Server, Initable {
 
 #if !SOUP_2_48
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		[Description (blurb = "The port the server is listening on")]
 		public Address @interface { construct; get; default = new Address.any (AddressFamily.IPV4, 3003); }
 #endif
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		[Description (blurb = "Listen for HTTPS connections rather than plain HTTP")]
 		public bool https { construct; get; default = false; }
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		[Description (blurb = "TLS certificate containing both a PEM-Encoded certificate and private key")]
 		public TlsCertificate? tls_certificate { construct; get; default = null; }
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		[Description (blurb = "Value to use for the 'Server' header on Messages processed by this server")]
 		public string? server_header { construct; get; default = null; }
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		[Description (blurb = "Percent-encoding in the Request-URI path will not be automatically decoded")]
 		public bool raw_paths { construct; get; default = false; }
 

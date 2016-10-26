@@ -26,14 +26,13 @@ namespace Valum {
 	 * This will typically retreive the password for {@link VSGI.Authorization.username}
 	 * and call {@link VSGI.Authorization.challenge_with_password}.
 	 *
-	 * @since 0.3
-	 *
 	 * @param auth represent the credentials provided by the user-agent
 	 *             which can be challenged
 	 *
 	 * @return 'true' if the authentication is successful, 'false' otherwise
 	 *         even if the provided input is malformed
 	 */
+	[Version (since = "0.3")]
 	public delegate bool AuthCallback (Authorization auth);
 
 	/**
@@ -41,9 +40,8 @@ namespace Valum {
 	 * definition.
 	 *
 	 * On success, the request is forwarded with the authenticated username.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public HandlerCallback authenticate (Authentication                auth,
 	                                     owned AuthCallback            callback,
 	                                     owned ForwardCallback<string> forward = Valum.forward) {

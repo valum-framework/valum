@@ -26,9 +26,8 @@ namespace Valum {
 	 *
 	 * Other errors are treated as '500 Internal Server Error' with a
 	 * pre-defined payload.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public HandlerCallback basic () {
 		return (req, res, next) => {
 			try {

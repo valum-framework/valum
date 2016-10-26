@@ -20,31 +20,26 @@ using GLib;
 /**
  * Hold the state of an 'Authorization' header and provide means to challenge
  * it against a password.
- *
- * @since 0.3
  */
+[Version (since = "0.3")]
 public abstract class VSGI.Authorization : Object {
 
-	/**
-	 * @since 0.3
-	 */
+	[Version (since = "0.3")]
 	public string username { get; construct; }
 
 	/**
 	 * Challenge the credentials against a provided password.
 	 *
-	 * @since 0.3
-	 *
 	 * @return 'true' if the password corresponds, 'false' otherwise
 	 */
+	[Version (since = "0.3")]
 	public abstract bool challenge_with_password (string password);
 
 	/**
 	 * Produce a 'Authorization' header for this.
 	 *
-	 * @since 0.3
-	 *
 	 * @return an 'Authorization' header value
 	 */
+	[Version (since = "0.3")]
 	public abstract string to_authorization_header ();
 }

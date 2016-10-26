@@ -30,25 +30,17 @@ namespace Valum {
 	 *
 	 * Like for the rules, the regular expression starts matching after the
 	 * scopes and the leading '/' character.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public class RegexRoute : Route {
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		public Regex regex { construct; get; }
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		public SList<string> captures { owned construct; get; }
 
-		/**
-		 *
-		 * @since 0.1
-		 */
+		[Version (since = "0.3")]
 		public RegexRoute (Method method, Regex regex, owned HandlerCallback handler) {
 			Object (method: method, regex: regex);
 			_fire = (owned) handler;

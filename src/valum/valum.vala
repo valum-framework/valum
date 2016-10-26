@@ -29,9 +29,8 @@ namespace Valum {
 	 *
 	 * This is used for scoping and as a general definition for callback
 	 * taking a {@link Router} as parameter like modules.
-	 *
-	 * @since 0.0.1
 	 */
+	[Version (since = "0.1")]
 	public delegate void LoaderCallback (Router router);
 
 	/**
@@ -41,19 +40,16 @@ namespace Valum {
 	 * be performed. If necessary, it is preferable to use a
 	 * {@link Valum.HandlerCallback} and invoke the 'next' continuation when ready.
 	 *
-	 * @since 0.1
-	 *
 	 * @param req     request being matched
 	 * @param context context which may be initial or derive from a parent
 	 *
 	 * @return 'true' if the request is matched, otherwise 'false'
 	 */
+	[Version (since = "0.1")]
 	public delegate bool MatcherCallback (Request req, Context context);
 
 	/**
 	 * Handle a pair of request and response.
-	 *
-	 * @since 0.0.1
 	 *
 	 * @throws Error callback are free to raise any error
 	 *
@@ -67,6 +63,7 @@ namespace Valum {
 	 * @return 'true' if the request has been or will eventually be handled,
 	 *         otherwise 'false'
 	 */
+	[Version (since = "0.1")]
 	public delegate bool HandlerCallback (Request      req,
 	                                      Response     res,
 	                                      NextCallback next,
@@ -75,9 +72,8 @@ namespace Valum {
 	/**
 	 * Define a type of {@link Valum.HandlerCallback} that forward a generic
 	 * value.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public delegate bool ForwardCallback<T> (Request      req,
 	                                         Response     res,
 	                                         NextCallback next,
@@ -90,9 +86,8 @@ namespace Valum {
 	 *
 	 * Any thrown error will be propagate to the caller found upstream in the
 	 * routing.
-	 *
-	 * @since 0.1
 	 */
+	[Version (since = "0.1")]
 	public delegate bool NextCallback () throws Informational,
 	                                            Success,
 	                                            Redirection,

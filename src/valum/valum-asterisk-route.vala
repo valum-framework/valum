@@ -22,11 +22,11 @@ namespace Valum {
 
 	/**
 	 * Route supporting the asterisk '*' path.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public class AsteriskRoute : Route {
 
+		[Version (since = "0.3")]
 		public AsteriskRoute (Method method, owned HandlerCallback handler) {
 			Object (method: method);
 			_fire = (owned) handler;

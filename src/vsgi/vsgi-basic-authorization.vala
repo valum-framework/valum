@@ -19,19 +19,14 @@ using GLib;
 
 /**
  * Hold the state of a basic 'Authorization' header.
- *
- * @since 0.3
  */
+[Version (since = "0.3")]
 public class VSGI.BasicAuthorization : Authorization {
 
-	/**
-	 * @since 0.3
-	 */
+	[Version (since = "0.3")]
 	public string password { get; construct; }
 
-	/**
-	 * @since 0.3
-	 */
+	[Version (since = "0.3")]
 	public BasicAuthorization (string username, string password) {
 		Object (username: username, password: password);
 	}

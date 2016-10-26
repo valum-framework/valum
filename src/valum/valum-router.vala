@@ -22,25 +22,23 @@ namespace Valum {
 
 	/**
 	 * Dispatches incoming requests to the appropriate registered handler.
-	 *
-	 * @since 0.0.1
 	 */
+	[Version (since = "0.1")]
 	public class Router : Object {
 
 		/**
 		 * Global routing context.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public Context context { get; construct; }
 
-		public Sequence<Route>           routes = new Sequence<Route> ();
+		[Version (since = "0.3", experimental = true)]
+		public Sequence<Route> routes = new Sequence<Route> ();
+
 		private HashTable<string, Regex> types  = new HashTable<string, Regex> (str_hash, str_equal);
 		private Queue<string>            scopes = new Queue<string> ();
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		public Router () {
 			Object (context: new Context ());
 		}
@@ -58,16 +56,16 @@ namespace Valum {
 		 * If a type is already registered with that name, it is replaced with
 		 * the new definition.
 		 *
-		 * @since 0.3
-		 *
 		 * @param name             name by which types are identified in the
 		 *                         rule pattern
 		 * @param pattern          matches instance of the type in a path
 		 */
+		[Version (since = "0.3")]
 		public void register_type (string name, Regex pattern) {
 			types[name] = pattern;
 		}
 
+		[Version (since = "0.3")]
 		public void once (owned HandlerCallback cb) {
 			size_t _once_init = 0;
 			route (new MatcherRoute (Method.ANY, () => { return _once_init == 0; }, (req, res, next, ctx) => {
@@ -85,9 +83,8 @@ namespace Valum {
 
 		/**
 		 * Mount a handling middleware on the routing queue.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public void use (owned HandlerCallback cb) {
 			route (new MatcherRoute (Method.ANY, () => { return true; }, (owned) cb));
 		}
@@ -97,9 +94,8 @@ namespace Valum {
 		 *
 		 * Typically, this is used with {@link Valum.Method.OPTIONS} to provide
 		 * general information about the service.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public void asterisk (Method method, owned HandlerCallback cb) {
 			route (new AsteriskRoute (method, (owned) cb));
 		}
@@ -107,67 +103,51 @@ namespace Valum {
 		/**
 		 * Since the {@link Valum.Method.GET} flag is used, 'HEAD' will be
 		 * provided as well.
-		 *
-		 * @since 0.0.1
 		 */
+		[Version (since = "0.1")]
 		public new void @get (string rule, owned HandlerCallback cb, string? name = null) {
 			this.rule (Method.GET, rule, (owned) cb, name);
 		}
 
-		/**
-		 * @since 0.0.1
-		 */
+		[Version (since = "0.1")]
 		public void post (string rule, owned HandlerCallback cb, string? name = null) {
 			this.rule (Method.POST, rule, (owned) cb, name);
 		}
 
-		/**
-		 * @since 0.0.1
-		 */
+		[Version (since = "0.1")]
 		public void put (string rule, owned HandlerCallback cb, string? name = null) {
 			this.rule (Method.PUT, rule, (owned) cb, name);
 		}
 
-		/**
-		 * @since 0.0.1
-		 */
+		[Version (since = "0.1")]
 		public void @delete (string rule, owned HandlerCallback cb, string? name = null) {
 			this.rule (Method.DELETE, rule, (owned) cb, name);
 		}
 
-		/**
-		 * @since 0.0.1
-		 */
+		[Version (since = "0.1")]
 		public void head (string rule, owned HandlerCallback cb, string? name = null) {
 			this.rule (Method.HEAD, rule, (owned) cb, name);
 		}
 
-		/**
-		 * @since 0.0.1
-		 */
+		[Version (since = "0.1")]
 		public void options (string rule, owned HandlerCallback cb, string? name = null) {
 			this.rule (Method.OPTIONS, rule, (owned) cb);
 		}
 
-		/**
-		 * @since 0.0.1
-		 */
+		[Version (since = "0.1")]
 		public void trace (string rule, owned HandlerCallback cb, string? name = null) {
 			this.rule (Method.TRACE, rule, (owned) cb, name);
 		}
 
-		/**
-		 * @since 0.0.1
-		 */
+		[Version (since = "0.1")]
 		public new void connect (string rule, owned HandlerCallback cb, string? name = null) {
 			this.rule (Method.CONNECT, rule, (owned) cb, name);
 		}
 
 		/**
 		 * [[http://tools.ietf.org/html/rfc5789]]
-		 *
-		 * @since 0.0.1
 		 */
+		[Version (since = "0.1")]
 		public void patch (string rule, owned HandlerCallback cb, string? name = null) {
 			this.rule (Method.PATCH, rule, (owned) cb, name);
 		}
@@ -181,12 +161,11 @@ namespace Valum {
 		 * The method will be marked as provided with the {@link Valum.Method.PROVIDED}
 		 * flag.
 		 *
-		 * @since 0.1
-		 *
 		 * @param method flag for allowed HTTP methods
 		 * @param rule   rule matching the request path
 		 * @param cb     callback used to process the pair of request and response
 		 */
+		[Version (since = "0.3")]
 		public void rule (Method method, string rule, owned HandlerCallback cb, string? name = null) {
 			var pattern = new StringBuilder ();
 
@@ -215,12 +194,11 @@ namespace Valum {
 		 * The method will be marked as provided with the {@link Valum.Method.PROVIDED}
 		 * flag.
 		 *
-		 * @since 0.1
-		 *
 		 * @param method flag for allowed HTTP methods
 		 * @param regex  regular expression matching the request path
 		 * @param cb     callback used to process the pair of request and response
 		 */
+		[Version (since = "0.1")]
 		public void regex (Method method, Regex regex, owned HandlerCallback cb) {
 			var pattern = new StringBuilder ();
 
@@ -249,13 +227,12 @@ namespace Valum {
 		 * matches, this helper is more efficient as it does rely on regex
 		 * matching under the hood.
 		 *
-		 * @since 0.3
-		 *
 		 * @param method  flag for allowed HTTP methods
 		 * @param path    the path which must be satisfied by the request
 		 * @param handler callback applied on the pair of request and response
 		 *                objects if the method and path are satisfied
 		 */
+		[Version (since = "0.3")]
 		public void path (Method method, string path, owned HandlerCallback handler, string? name = null) {
 			var path_builder = new StringBuilder ();
 
@@ -274,12 +251,11 @@ namespace Valum {
 		 * The method will be marked as provided with the {@link Valum.Method.PROVIDED}
 		 * flag.
 		 *
-		 * @since 0.1
-		 *
 		 * @param method  HTTP method or 'null' for any
 		 * @param matcher callback used to match the request
 		 * @param cb      callback used to process the pair of request and response.
 		 */
+		[Version (since = "0.1")]
 		public void matcher (Method method, owned MatcherCallback matcher, owned HandlerCallback cb) {
 			route (new MatcherRoute (method | Method.PROVIDED, (owned) matcher, (owned) cb));
 		}
@@ -289,11 +265,10 @@ namespace Valum {
 		/**
 		 * Append a {@link Route} object on the routing sequence.
 		 *
-		 * @since 0.3
-		 *
 		 * @param route an instance of Route defining the matching process and
 		 *              the callback.
 		 */
+		[Version (since = "0.3")]
 		public void route (Route route, string? name = null) {
 			routes.append (route);
 			if (name != null) {
@@ -304,14 +279,13 @@ namespace Valum {
 		/**
 		 * Reverse an URL for a named {@link Valum.Route}.
 		 *
-		 * @since 0.3
-		 *
 		 * @param name
 		 * @param ...  parameters for the {@link Valum.Route.to_url} call
 		 *
 		 * @return 'null' if the route is not found otherwise the return value
 		 *         of {@link Valum.Route.to_url}
 		 */
+		[Version (since = "0.3")]
 		public string url_for_hash (string name, HashTable<string, string>? @params = null) {
 			if (!_named_routes.contains (name)) {
 				error ("No such route named '%s'.", name);
@@ -322,9 +296,8 @@ namespace Valum {
 		/**
 		 * Reverse an URL for a named {@link Valum.Route} using a varidic
 		 * arguments list.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public string url_for_valist (string name, va_list list) {
 			if (!_named_routes.contains (name)) {
 				error ("No such route named '%s'.", name);
@@ -335,9 +308,8 @@ namespace Valum {
 		/**
 		 * Reverse an URL for a named {@link Valum.Route} using varidic
 		 * arguments.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public string url_for (string name, ...) {
 			return url_for_valist (name, va_list ());
 		}
@@ -348,11 +320,10 @@ namespace Valum {
 		 *
 		 * Scoping will only work with rules and regular expressions.
 		 *
-		 * @since 0.0.1
-		 *
 		 * @param fragment fragment to push on the scopes stack
 		 * @param loader   nests a router in the new scoped environment
 		 */
+		[Version (since = "0.1")]
 		public void scope (string fragment, owned LoaderCallback loader) {
 			this.scopes.push_tail (fragment);
 			loader (this);
@@ -417,9 +388,8 @@ namespace Valum {
 		 *
 		 * Parameters and return values are complying with {@link VSGI.ApplicationCallback}
 		 * and meant to be used as such.
-		 *
-		 * @since 0.1
 		 */
+		[Version (since = "0.1")]
 		public bool handle (Request req, Response res) throws Error {
 			return perform_routing (this.routes.get_begin_iter (), req, res, () => {
 				if (req.method == Request.TRACE) {

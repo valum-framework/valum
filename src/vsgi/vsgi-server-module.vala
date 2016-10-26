@@ -19,44 +19,39 @@ using GLib;
 
 /**
  * Load custom {@link VSGI.Server} implementations.
- *
- * @since 0.3
  */
+[Version (since = "0.3")]
 public class VSGI.ServerModule : TypeModule {
 
 	/**
 	 * The directory from which the shared library will be searched, or 'null'
 	 * to search in standard locations.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public string? directory { construct; get; }
 
 	/**
 	 * The name of the server implementation.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public string name { construct; get; }
 
 	/**
 	 * Path from which the module is loaded.
 	 */
+	[Version (since = "0.3")]
 	public string path { construct; get; }
 
 	/**
 	 * Once loaded, this contain the type of the {@link VSGI.Server} provided
 	 * by this.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public Type server_type { get; private set; }
 
 	private Module? module;
 
-	/**
-	 * @since 0.3
-	 */
+	[Version (since = "0.3")]
 	public ServerModule (string? directory, string name) {
 		Object (directory: directory, name: name);
 	}

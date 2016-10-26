@@ -24,19 +24,14 @@ using GLib;
  * Also, The best is done to replicate the written data into the tee stream,
  * erroring only if everything has been attempted. The tee operations are not
  * cancellable.
- *
- * @since 0.3
  */
+[Version (since = "0.3")]
 public class VSGI.TeeOutputStream : FilterOutputStream {
 
-	/**
-	 * @since 0.3
-	 */
+	[Version (since = "0.3")]
 	public OutputStream tee_stream { construct; get; }
 
-	/**
-	 * @since 0.3
-	 */
+	[Version (since = "0.3")]
 	public TeeOutputStream (OutputStream base_stream, OutputStream tee_stream) {
 		Object (base_stream: base_stream, tee_stream: tee_stream);
 	}

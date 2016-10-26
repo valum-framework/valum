@@ -41,31 +41,25 @@ namespace Valum {
 	 *
 	 * The wildcard stands for the '.*' regular expression, which match pretty
 	 * much anything.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public class RuleRoute : RegexRoute {
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		public string rule { construct; get; }
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		public HashTable<string, Regex> types { construct; get; }
 
 		/**
 		 * Create a Route for a given callback from a rule.
-		 *
-		 * @since 0.0.1
 		 *
 		 * @param rule  compiled down ot a regular expression and captures all
 		 *              paths if set to 'null'
 		 * @param types type mapping to figure out types in rule or 'null' to
 		 *              prevent any form of typing
 		 */
+		[Version (since = "0.3")]
 		public RuleRoute (Method                   method,
 		                  string                   rule,
 		                  HashTable<string, Regex> types,

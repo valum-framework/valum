@@ -22,34 +22,41 @@ namespace Valum {
 	 *
 	 * This is used for {@link Valum.Route} to define what methods are allowed
 	 * for a given instance.
-	 *
-	 * @since 0.3
 	 */
 	[Flags]
+	[Version (since = "0.3")]
 	public enum Method {
+		[Version (since = "0.3")]
 		OPTIONS,
+		[Version (since = "0.3")]
 		ONLY_GET,
+		[Version (since = "0.3")]
 		HEAD,
+		[Version (since = "0.3")]
 		GET = ONLY_GET | HEAD,
+		[Version (since = "0.3")]
 		PUT,
+		[Version (since = "0.3")]
 		POST,
+		[Version (since = "0.3")]
 		DELETE,
+		[Version (since = "0.3")]
 		TRACE,
+		[Version (since = "0.3")]
 		CONNECT,
+		[Version (since = "0.3")]
 		PATCH,
 
 		/**
 		 * HTTP methods considered safe according to RFC 7231.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		SAFE = OPTIONS | HEAD | ONLY_GET | TRACE,
 
 		/**
 		 * HTTP methods considered idempotent according to RFC 7231.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		ITEMPOTENT = SAFE | PUT | DELETE,
 
 		/**
@@ -57,31 +64,27 @@ namespace Valum {
 		 *
 		 * POST is considered cacheable because it completely replaces the
 		 * resources. The second call does not change the state of the resource.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		CACHEABLE = GET | HEAD | POST,
 
 		/**
 		 * Mask for all standard HTTP methods.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		ALL = OPTIONS | GET | HEAD | PUT | POST | DELETE | TRACE | CONNECT | PATCH,
 
 		/**
 		 * If this is used, the {@link Valum.Route} object must perform its own
 		 * method matching.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		OTHER,
 
 		/**
 		 * Mask for all methods, including non-standard ones.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		ANY = ALL | OTHER,
 
 		/**
@@ -91,16 +94,16 @@ namespace Valum {
 		 * This has an impact on introspected routes to build the 'Allow'
 		 * header.
 		 */
+		[Version (since = "0.3", experimental = true)]
 		PROVIDED,
 
 		/**
 		 * Mask for all meta flags.
 		 */
+		[Version (since = "0.3", experimental = true)]
 		META = PROVIDED;
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		public static Method from_string (string method) {
 			switch (method) {
 				case "OPTIONS":

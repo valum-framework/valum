@@ -33,11 +33,10 @@ namespace Valum {
 	 * Error which message consist of a 'Location' header are prefixed by
 	 * the basepath.
 	 *
-	 * @since 0.3
-	 *
 	 * @param path    path prefix stripped on forwarded requests
 	 * @param forward callback used to forward the request
 	 */
+	[Version (since = "0.3")]
 	public HandlerCallback basepath (string path, owned HandlerCallback forward) {
 		return (req, res, next, context) => {
 			if (req.uri.get_path ().has_prefix (path)) {

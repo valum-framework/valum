@@ -21,11 +21,11 @@ namespace Valum {
 
 	/**
 	 * Route based on a {@link Valum.MatcherCallback}.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public class MatcherRoute : Route {
 
+		[Version (since = "0.3")]
 		public MatcherRoute (Method method, owned MatcherCallback matcher, owned HandlerCallback handler) {
 			Object (method: method);
 			_match = (owned) matcher;
@@ -34,9 +34,7 @@ namespace Valum {
 
 		private MatcherCallback _match;
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		public void set_matcher_callback (owned MatcherCallback callback) {
 			_match = (owned) callback;
 		}

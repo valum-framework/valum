@@ -27,8 +27,6 @@ public Type server_init (TypeModule type_module) {
 
 /**
  * FastCGI implementation of VSGI.
- *
- * @since 0.1
  */
 namespace VSGI.FastCGI {
 
@@ -136,7 +134,7 @@ namespace VSGI.FastCGI {
 	/**
 	 * {@inheritDoc}
 	 */
-	public class Request : CGI.Request {
+	private class Request : CGI.Request {
 
 		/**
 		 * {@inheritDoc}
@@ -151,7 +149,7 @@ namespace VSGI.FastCGI {
 	/**
 	 * FastCGI Response
 	 */
-	public class Response : CGI.Response {
+	private class Response : CGI.Response {
 
 		/**
 		 * {@inheritDoc}
@@ -161,23 +159,17 @@ namespace VSGI.FastCGI {
 		}
 	}
 
-	/**
-	 * @since 0.3
-	 */
 	private errordomain RequestError {
 		FAILED
 	}
 
 	/**
 	 * FastCGI Server using GLib.MainLoop.
-	 *
-	 * @since 0.1
 	 */
+	[Version (since = "0.1")]
 	public class Server : VSGI.Server {
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (since = "0.3")]
 		[Description (blurb = "Listen queue depth used in the listen() call")]
 		public int backlog { get; construct; default = 10; }
 
@@ -272,14 +264,8 @@ namespace VSGI.FastCGI {
 		 */
 		private class Connection : VSGI.Connection, AsyncInitable {
 
-			/**
-			 * @since 0.2
-			 */
 			public int fd { construct; get; }
 
-			/**
-			 * @since 0.3
-			 */
 			public global::FastCGI.request request;
 
 			private StreamInputStream _input_stream;
@@ -297,16 +283,10 @@ namespace VSGI.FastCGI {
 				}
 			}
 
-			/**
-			 * @since 0.2
-			 */
 			public Connection (Server server, int fd) {
 				Object (server: server, fd: fd);
 			}
 
-			/**
-			 * @since 0.3
-			 */
 			public async bool init_async (int priority = Priority.DEFAULT, Cancellable? cancellable = null) throws GLib.Error {
 				// accept a request
 				var request_status = global::FastCGI.request.init (out request, fd);

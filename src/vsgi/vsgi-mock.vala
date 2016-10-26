@@ -29,6 +29,7 @@ namespace VSGI.Mock {
 	 * stubbed connection so that the produced and consumed messages can be
 	 * easily inspected.
 	 */
+	[Version (experimental = true)]
 	public class Connection : VSGI.Connection {
 
 		private MemoryInputStream _memory_input_stream   = new MemoryInputStream ();
@@ -38,21 +39,18 @@ namespace VSGI.Mock {
 
 		public override OutputStream output_stream { get { return _memory_output_stream; } }
 
+		[Version (experimental = true)]
 		public Connection (Server server) {
 			Object (server: server);
 		}
 
-		/**
-		 * @since 0.2.4
-		 */
+		[Version (experimental = true)]
 		public MemoryInputStream get_memory_input_stream ()
 		{
 			return _memory_input_stream;
 		}
 
-		/**
-		 * @since 0.2.4
-		 */
+		[Version (experimental = true)]
 		public MemoryOutputStream get_memory_output_stream () {
 			return _memory_output_stream;
 		}
@@ -61,6 +59,7 @@ namespace VSGI.Mock {
 	/**
 	 * Test implementation of Request used to stub a request.
 	 */
+	[Version (experimental = true)]
 	public class Request : VSGI.Request {
 
 		private Soup.HTTPVersion _http_version    = Soup.HTTPVersion.@1_1;
@@ -78,9 +77,7 @@ namespace VSGI.Mock {
 
 		public override HashTable<string, string>? query { get { return this._query; } }
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (experimental = true)]
 		public Request (Connection connection, string method, Soup.URI uri, HashTable<string, string>? query = null) {
 			Object (connection: connection, headers: new Soup.MessageHeaders (Soup.MessageHeadersType.REQUEST));
 			this._method = method;
@@ -88,23 +85,17 @@ namespace VSGI.Mock {
 			this._query  = query;
 		}
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (experimental = true)]
 		public Request.with_method (string method, Soup.URI uri, HashTable<string, string>? query = null) {
 			this (new Connection (new Server ()), method, uri, query);
 		}
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (experimental = true)]
 		public Request.with_uri (Soup.URI uri, HashTable<string, string>? query = null) {
 			this (new Connection (new Server ()), "GET", uri, query);
 		}
 
-		/**
-		 * @since 0.3
-		 */
+		[Version (experimental = true)]
 		public Request.with_query (HashTable<string, string>? query) {
 			this (new Connection (new Server ()), "GET", new Soup.URI ("http://localhost/"), query);
 		}
@@ -113,12 +104,15 @@ namespace VSGI.Mock {
 	/**
 	 * Test implementation of VSGI.Response to stub a response.
 	 */
+	[Version (experimental = true)]
 	public class Response : VSGI.Response {
 
+		[Version (experimental = true)]
 		public Response (Request req) {
 			Object (request: req, headers: new Soup.MessageHeaders (Soup.MessageHeadersType.RESPONSE));
 		}
 
+		[Version (experimental = true)]
 		public Response.with_status (Request req, uint status) {
 			Object (request: req, status: status, headers: new Soup.MessageHeaders (Soup.MessageHeadersType.RESPONSE));
 		}
@@ -145,9 +139,7 @@ namespace VSGI.Mock {
 		}
 	}
 
-	/**
-	 *
-	 */
+	[Version (experimental = true)]
 	public class Server : VSGI.Server {
 
 		public override SList<Soup.URI> uris { owned get { return new SList<Soup.URI> (); } }

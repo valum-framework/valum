@@ -19,14 +19,11 @@ using GLib;
 
 /**
  * Hold the necessary state to challenge and emit authentication headers.
- *
- * @since 0.3
  */
+[Version (since = "0.3")]
 public abstract class VSGI.Authentication : Object {
 
-	/**
-	 * @since 0.3
-	 */
+	[Version (since = "0.3")]
 	public string realm { get; construct set; }
 
 	/**
@@ -34,15 +31,12 @@ public abstract class VSGI.Authentication : Object {
 	 * and password.
 	 *
 	 * If not specified, 'UTF-8' is assumed.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public string? charset { get; construct; default = null; }
 
 	/**
 	 * Check and extract the fields from an 'Authorization' header.
-	 *
-	 * @since 0.3
 	 *
 	 * @param authorization_header 'Authorization' header value
 	 * @param authorization        extracted {@link VSGI.Authorization} object
@@ -51,12 +45,12 @@ public abstract class VSGI.Authentication : Object {
 	 * @return 'true' on success, otherwise 'false' and 'authorization' is set
 	 *         to 'null'
 	 */
+	[Version (since = "0.3")]
 	public abstract bool parse_authorization_header (string authorization_header, out Authorization? authorization);
 
 	/**
 	 * Produce a 'WWW-Authenticate' (or 'Proxy-Authenticate') header for this.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public abstract string to_authenticate_header ();
 }

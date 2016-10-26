@@ -20,16 +20,14 @@ using GLib;
 /**
  * Type of function passed to {@link Valum.Context.foreach} to iterate in all
  * context entries depth-wise.
- *
- * @since 0.3
  */
+[Version (since = "0.3")]
 public delegate void Valum.ContextForeachFunc (string key, Value @value, uint depth);
 
 /**
  * Routing context that stores various states for middleware interaction.
- *
- * @since 0.3
  */
+[Version (since = "0.3")]
 public class Valum.Context : Object {
 
 	/**
@@ -39,25 +37,22 @@ public class Valum.Context : Object {
 
 	/**
 	 * Parent's context from which missing keys are resolved.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public Context? parent { construct; get; default = null; }
 
 	/**
 	 * Create a new root context.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public Context () {
 
 	}
 
 	/**
 	 * Create a new child context.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public Context.with_parent (Context parent) {
 		Object (parent: parent);
 	}
@@ -65,11 +60,10 @@ public class Valum.Context : Object {
 	/**
 	 * Obtain a key from this context or its parent if it's not found.
 	 *
-	 * @since 0.3
-	 *
 	 * @param key the key used to retreive the value
 	 * @return    the value, or 'null' if not found
 	 */
+	[Version (since = "0.3")]
 	public new unowned Value? @get (string key) {
 		return states[key] ?? (parent == null ? null : parent.@get (key));
 	}
@@ -79,11 +73,10 @@ public class Valum.Context : Object {
 	 *
 	 * The value is removed from the context and owned by the caller.
 	 *
-	 * @since 0.3
-	 *
 	 * @param key the key used to retreive the value
 	 * @return    the value, or 'null' if not found
 	 */
+	[Version (since = "0.3")]
 	public Value? take (string key) {
 		try {
 			return states.lookup (key);
@@ -95,11 +88,10 @@ public class Valum.Context : Object {
 	/**
 	 * Set a key in this context.
 	 *
-	 * @since 0.3
-	 *
 	 * @param key   the key used to retreive the value once assigned
 	 * @param value the value, which is then owned by the context
 	 */
+	[Version (since = "0.3")]
 	public new void @set (string key, owned Value @value) {
 		states.@set (key, (owned) @value);
 	}
@@ -107,12 +99,11 @@ public class Valum.Context : Object {
 	/**
 	 * Test if this context or its parent has a key.
 	 *
-	 * @since 0.3
-	 *
 	 * @param key the key used to test
 	 *
 	 * @return 'true' if the key is found in the context tree, 'false' otherwise
 	 */
+	[Version (since = "0.3")]
 	public bool contains (string key) {
 		return states.contains (key) || (parent != null && parent.contains (key));
 	}
@@ -120,11 +111,10 @@ public class Valum.Context : Object {
 	/**
 	 * Remove all occurences of a key in the context and its parents.
 	 *
-	 * @since 0.3
-	 *
 	 * @return 'true' if the key was removed from the context, otherwise the key
 	 *          was not found and 'false' is returned
 	 */
+	[Version (since = "0.3")]
 	public bool remove (string key) {
 		var removed = states.remove (key);
 		return (parent != null && parent.remove (key)) || removed;
@@ -140,10 +130,9 @@ public class Valum.Context : Object {
 	/**
 	 * Iterate for each keys in the context tree by depth.
 	 *
-	 * @since 0.3
-	 *
 	 * @param func function called on each key in the context tree
 	 */
+	[Version (since = "0.3")]
 	public void @foreach (owned ContextForeachFunc func) {
 		_foreach ((owned) func, 0);
 	}

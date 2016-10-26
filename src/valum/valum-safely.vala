@@ -5,18 +5,15 @@ namespace Valum {
 	/**
 	 * Define a kind of {@link Valum.HandlerCallback} which may only raise
 	 * status codes so that other errors have to be explicitly handled.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public delegate bool SafeHandlerCallback (Request req, Response res, SafeNextCallback next, Context ctx) throws Informational,
 	                                                                                                                Success,
 	                                                                                                                Redirection,
 	                                                                                                                ClientError,
 	                                                                                                                ServerError;
 
-	/**
-	 * @since 0.3
-	 */
+	[Version (since = "0.3")]
 	public delegate bool SafeNextCallback () throws Informational,
 	                                                Success,
 	                                                Redirection,
@@ -35,9 +32,8 @@ namespace Valum {
 	 * error is raised, it will be thrown upstream but not leaked from invoking
 	 * it. This is useful because one only want to deal with errors in the direct
 	 * scope.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public HandlerCallback safely (owned SafeHandlerCallback forward) {
 		return (req, res, next, ctx) => {
 			Error? err = null;

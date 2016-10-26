@@ -17,15 +17,13 @@
 
 /**
  * Connection available from {@link VSGI.Request} holding raw streams.
- *
- * @since 0.3
  */
+[Version (since = "0.3")]
 public abstract class VSGI.Connection : GLib.IOStream {
 
 	/**
 	 * Server which initiated this connection.
-	 *
-	 * @since 0.3
 	 */
+	[Version (since = "0.3")]
 	public Server server { construct; get; }
 }

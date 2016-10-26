@@ -21,14 +21,11 @@ using GLib;
  * Parse and generate basic authentication headers according to RFC 7617.
  *
  * [[https://tools.ietf.org/html/rfc7617]]
- *
- * @since 0.3
  */
+[Version (since = "0.3")]
 public class VSGI.BasicAuthentication : Authentication {
 
-	/**
-	 * @since 0.3
-	 */
+	[Version (since = "0.3")]
 	public BasicAuthentication (string realm, string? charset = null) {
 		Object (realm: realm, charset: charset);
 	}

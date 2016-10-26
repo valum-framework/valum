@@ -23,19 +23,14 @@ using GLib;
  * It automatically parses the CLI arguments into {@link VSGI.Server.listen}
  * calls, produces pretty logs, run a {@link GLib.MainLoop} and gracefully
  * shutdown if a 'SIGTERM' signal is caught.
- *
- * @since 0.3
  */
+[Version (since = "0.3")]
 public class VSGI.Application : GLib.Application {
 
-	/**
-	 * @since 0.3
-	 */
+	[Version (since = "0.3")]
 	public Server server { get; construct; }
 
-	/**
-	 * @since 0.3
-	 */
+	[Version (since = "0.3")]
 	public Application (Server server) {
 		Object (server: server);
 	}

@@ -18,27 +18,33 @@
 using GLib;
 
 namespace VSGI {
+
 	/**
 	 * Request representing a request of a resource.
-	 *
-	 * @since 0.0.1
 	 */
+	[Version (since = "0.1")]
 	public abstract class Request : Object {
 
 		/**
 		 * HTTP/1.1 standard methods.
 		 *
 		 * [[http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html]]
-		 *
-		 * @since 0.1
 		 */
+		[Version (since = "0.1", experimental = true)]
 		public const string OPTIONS = "OPTIONS";
+		[Version (since = "0.1", experimental = true)]
 		public const string GET     = "GET";
+		[Version (since = "0.1", experimental = true)]
 		public const string HEAD    = "HEAD";
+		[Version (since = "0.1", experimental = true)]
 		public const string POST    = "POST";
+		[Version (since = "0.1", experimental = true)]
 		public const string PUT     = "PUT";
+		[Version (since = "0.1", experimental = true)]
 		public const string DELETE  = "DELETE";
+		[Version (since = "0.1", experimental = true)]
 		public const string TRACE   = "TRACE";
+		[Version (since = "0.1", experimental = true)]
 		public const string CONNECT = "CONNECT";
 
 		/**
@@ -48,30 +54,26 @@ namespace VSGI {
 		 *
 		 * This is a proposed standard, it is not part of the current HTTP/1.1
 		 * protocol.
-		 *
-		 * @since 0.1
 		 */
+		[Version (since = "0.1", experimental = true)]
 		public const string PATCH = "PATCH";
 
 		/**
 		 * List of all supported HTTP methods.
-		 *
-		 * @since 0.1
 		 */
+		[Version (since = "0.1", experimental = true)]
 		public const string[] METHODS = {OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT, PATCH};
 
 		/**
 		 * Connection containing raw streams.
-		 *
-		 * @since 0.2
 		 */
+		[Version (since = "0.2")]
 		public Connection connection { construct; get; }
 
 		/**
 		 * Request HTTP version.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public abstract Soup.HTTPVersion http_version { get; }
 
 		/**
@@ -79,9 +81,8 @@ namespace VSGI {
 		 *
 		 * It is composed of an identifier and a version number separated by a
 		 * slash '/'.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public abstract string gateway_interface { owned get; }
 
 		/**
@@ -92,9 +93,8 @@ namespace VSGI {
 		 *
 		 * Constants for every standard HTTP methods are providen as constants in
 		 * this class.
-		 *
-		 * @since 0.0.1
 		 */
+		[Version (since = "0.1")]
 		public abstract string method { owned get; }
 
 		/**
@@ -102,9 +102,8 @@ namespace VSGI {
          *
 		 * The URI, protocol and HTTP query and other request information is
 		 * made available through this property.
-		 *
-		 * @since 0.1
 		 */
+		[Version (since = "0.1")]
 		public abstract Soup.URI uri { get; }
 
 		/**
@@ -113,9 +112,8 @@ namespace VSGI {
 		 *
 		 * It is 'null' if the query hasn't been set, which is different than an
 		 * empty query (eg. '/path/?' instead of '/path/')
-		 *
-		 * @since 0.1
 		 */
+		[Version (since = "0.1")]
 		public abstract HashTable<string, string>? query { get; }
 
 		/**
@@ -123,26 +121,23 @@ namespace VSGI {
 		 *
 		 * If the query itself is 'null' or the key is not available
 		 *
-		 * @since 0.3
-		 *
 		 * @param key key to lookup
 		 */
+		[Version (since = "0.3")]
 		public string? lookup_query (string key) {
 			return query == null ? null : query[key];
 		}
 
 		/**
 		 * Request headers.
-		 *
-		 * @since 0.0.1
 		 */
+		[Version (since = "0.1")]
 		public Soup.MessageHeaders headers { get; protected construct set; }
 
 		/**
 		 * Request cookies extracted from the 'Cookie' header.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3")]
 		public SList<Soup.Cookie> cookies {
 			owned get {
 				var cookies     = new SList<Soup.Cookie> ();
@@ -166,11 +161,10 @@ namespace VSGI {
 		 *
 		 * The last occurence is returned using a case-sensitive match.
 		 *
-		 * @since 0.3
-		 *
 		 * @param name name of the cookie to lookup
 		 * @return the cookie if found, otherwise 'null'
 		 */
+		[Version (since = "0.3")]
 		public Soup.Cookie? lookup_cookie (string name) {
 			Soup.Cookie? found = null;
 
@@ -189,9 +183,9 @@ namespace VSGI {
 		 *
 		 * @see CookieUtils.verify
 		 *
-		 * @since 0.3
 		 * @return the signed cookie if found, otherwise 'null'
 		 */
+		[Version (since = "0.3")]
 		public Soup.Cookie? lookup_signed_cookie (string       name,
 		                                     ChecksumType checksum_type,
 		                                     uint8[]      key,
@@ -208,9 +202,8 @@ namespace VSGI {
 
 		/**
 		 * Placeholder for the request body.
-		 *
-		 * @since 0.3
 		 */
+		[Version (since = "0.3", experimental = true)]
 		protected InputStream? _body = null;
 
 		/**
@@ -220,9 +213,8 @@ namespace VSGI {
 		 * the 'Transfer-Encoding' header value.
 		 *
 		 * The default implementation returns the connection stream unmodified.
-		 *
-		 * @since 0.2
 		 */
+		[Version (since = "0.2")]
 		public InputStream body {
 			get {
 				return _body ?? this.connection.input_stream;
@@ -235,11 +227,10 @@ namespace VSGI {
 		 * If the payload is chunked, (eg. 'Transfer-Encoding: chunked') and the
 		 * new content length is undetermined, it will remain chunked.
 		 *
-		 * @since 0.3
-		 *
 		 * @param content_length resulting value for the 'Content-Length' header
 		 *                       or '-1' if the length is undetermined
 		 */
+		[Version (since = "0.3")]
 		public void convert (Converter converter, int64 content_length = -1) {
 			if (content_length >= 0) {
 				headers.set_content_length (content_length);
@@ -260,10 +251,9 @@ namespace VSGI {
 		 * If the 'Content-Length' header is set, a fixed-size buffer is used
 		 * instead of dynamically resizing the buffer to fit the stream content.
 		 *
-		 * @since 0.2.3
-		 *
 		 * @return buffer containing the stream data
 		 */
+		[Version (since = "0.2")]
 		public virtual uint8[] flatten (Cancellable? cancellable = null) throws IOError {
 			var buffer = this.headers.get_encoding () == Soup.Encoding.CONTENT_LENGTH ?
 				new MemoryOutputStream (new uint8[this.headers.get_content_length ()], null, free) :
@@ -281,9 +271,8 @@ namespace VSGI {
 
 		/**
 		 * Flatten the request body as a {@link GLib.Bytes}.
-		 *
-		 * @since 0.2.3
 		 */
+		[Version (since = "0.2")]
 		public Bytes flatten_bytes (Cancellable? cancellable = null) throws IOError {
 			return new Bytes.take (flatten (cancellable));
 		}
@@ -293,9 +282,8 @@ namespace VSGI {
 		 *
 		 * The payload is assumed to be encoded according to 'UTF-8'. If it is
 		 * not the case, use {@link VSGI.Request.flatten} directly instead.
-		 *
-		 * @since 0.2.4
 		 */
+		[Version (since = "0.2")]
 		public string flatten_utf8 (Cancellable? cancellable = null) throws IOError {
 			return (string) flatten (cancellable);
 		}
@@ -303,10 +291,9 @@ namespace VSGI {
 		/**
 		 * Buffer the body stream asynchronously.
 		 *
-		 * @since 0.2.3
-		 *
 		 * @return buffer containing the stream data
 		 */
+		[Version (since = "0.2")]
 		public virtual async uint8[] flatten_async (int io_priority = GLib.Priority.DEFAULT,
 		                                    Cancellable? cancellable = null) throws IOError {
 			var buffer = this.headers.get_encoding () == Soup.Encoding.CONTENT_LENGTH ?
@@ -324,17 +311,13 @@ namespace VSGI {
 			return data;
 		}
 
-		/**
-		 * @since 0.2.3
-		 */
+		[Version (since = "0.2")]
 		public async Bytes flatten_bytes_async (int io_priority = GLib.Priority.DEFAULT,
 		                                        Cancellable? cancellable = null) throws IOError {
 			return new Bytes.take (yield flatten_async (io_priority, cancellable));
 		}
 
-		/**
-		 * @since 0.2.4
-		 */
+		[Version (since = "0.2")]
 		public async string flatten_utf8_async (int io_priority = GLib.Priority.DEFAULT,
 		                                        Cancellable? cancellable = null) throws IOError {
 			return (string) yield flatten_async (io_priority, cancellable);
