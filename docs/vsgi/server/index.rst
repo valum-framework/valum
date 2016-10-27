@@ -28,15 +28,6 @@ GObject-style arguments as well.
         return res.expand_utf8 ("Hello world!");
     });
 
-For typical case, use ``Server.new_with_application`` to initialize the
-instance with an application identifier and callback:
-
-::
-
-    var cgi_server = Server.new_with_application ("cgi", (req, res) => {
-        return res.expand_utf8 ("Hello world!");
-    });
-
 Custom implementation
 ---------------------
 
@@ -134,9 +125,7 @@ to start serving incoming requests:
     using GLib;
     using VSGI;
 
-    var server = Server.new_with_application ("http", (req, res) => {
-        return res.expand_utf8 ("Hello world!");
-    });
+    var server = Server.new ("http");
 
     server.listen (new InetSocketAddress (new InetAddress (SocketFamily.IPV4), 3003));
 
@@ -185,10 +174,7 @@ is a shorthand to create and run an application.
     using VSGI;
 
     public int main (string[] args) {
-        var server = Server.new_with_application ("http", (req, res) => {
-            return res.expand_utf8 ("Hello world!");
-        });
-
+        var server = Server.new ("http");
         return new Application (server).run (args);
     }
 

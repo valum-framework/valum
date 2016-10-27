@@ -53,20 +53,10 @@ will be served with :doc:`vsgi/server/http`.
 
 ::
 
-    Server.new_with_application ("http", app.handle).run ({"app", "--port", "3003"});
+    Server.new ("http", handler: app).run ({"app", "--port", "3003"});
 
 :doc:`vsgi/server/index` takes a server implementation and an
 ``ApplicationCallback``, which is respected by the ``handle`` function.
-
-Minimal application can be defined using a simple lambda function taking
-a :doc:`vsgi/request` and :doc:`vsgi/response`.
-
-::
-
-    Server.new_with_application ("http", (req, res) => {
-        res.status = 200;
-        return res.expand_utf8 ("Hello world!");
-    }).run ({"app", "--port", "3003"});
 
 Usually, you would only pass the CLI arguments to ``run``, so that your runtime
 can be parametrized easily, but in this case we just want our application to
@@ -79,6 +69,6 @@ run with fixed parameters. Options are documented per implementation.
 
         // assume some route declarations...
 
-        Server.new_with_application ("http", app.handle).run (args);
+        Server.new ("http", handler: app).run (args);
     }
 

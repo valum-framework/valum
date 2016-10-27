@@ -20,11 +20,8 @@ using the ``convert`` method.
 
 ::
 
-    Server.new_with_application ("http", (req, res) => {
-        res.headers.append ("Content-Encoding", "gzip");
-        res.convert (new ZlibCompressor (ZlibCompressorFormat.GZIP));
-        return res.expand_utf8 ("Hello world!");
-    });
+    res.headers.append ("Content-Encoding", "gzip");
+    res.convert (new ZlibCompressor (ZlibCompressorFormat.GZIP));
 
 .. warning::
 

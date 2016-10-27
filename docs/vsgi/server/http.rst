@@ -8,9 +8,7 @@ test your application or spawn workers in production.
 
     using Valum;
 
-    Server.new_with_application ("http", (req, res) => {
-        return res.expand_utf8 ("Hello world!");
-    }).run ({"app", "--port", "3003"});
+    var https_server = Server.new ("http", https: true);
 
 Parameters
 ----------

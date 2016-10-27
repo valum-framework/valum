@@ -30,13 +30,18 @@ necessary.
 
 ::
 
-    Server.new_with_application ("cgi", (req, res) => {
-        Timeout.add (5000, () => {
-            res.expand_utf8 ("Hello world!");
-            return Source.REMOVE;
-        });
-        return true;
-    }).run ();
+    public class App : Handler {
+
+        public override bool handle (Request req, Response res) {
+            Timeout.add (5000, () => {
+                res.expand_utf8 ("Hello world!");
+                return Source.REMOVE;
+            });
+            return true;
+        }
+    }
+
+    Server.new ("cgi", handler: new App ()).run ();
 
 lighttpd
 --------

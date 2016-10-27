@@ -59,4 +59,4 @@ maintained in nemequ/vala-extra-vapis GitHub repository.
         return res.expand (value, null);
     });
 
-    Server.new_with_application ("http", app.handle).run ();
+    Server.new ("http", handler: app).run ();

@@ -69,4 +69,4 @@ app.delete ("/<key>", (req, res, next, context) => {
 });
 
 
-Server.new_with_application ("http", app.handle).run ();
+Server.@new ("http", handler: app).run ();

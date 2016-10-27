@@ -45,4 +45,4 @@ app.get ("/", (req, res) => {
 	return generator.to_stream (res.body);
 });
 
-Server.new_with_application ("http", app.handle).run ();
+Server.@new ("http", handler: app).run ();

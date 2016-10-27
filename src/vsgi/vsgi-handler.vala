@@ -15,13 +15,26 @@
  * along with Valum.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using Valum;
-using VSGI;
+using GLib;
 
-var app = new Router ();
+[Version (since = "0.3")]
+public abstract class VSGI.Handler : Object {
 
-app.get ("/", (req, res) => {
-	return res.expand_utf8 ("Hello world!");
-});
-
-Server.@new ("cgi", handler: app).run ();
+	/**
+	 * Process a pair of {@link VSGI.Request} and {@link VSGI.Response}.
+	 *
+	 * It is passed to a {@link VSGI.Server} in order to receive request to
+	 * process.
+	 *
+	 * @throws Error unrecoverable error condition can be raised and will be
+	 *               handled by the implementation
+	 *
+	 * @param req a resource being requested
+	 * @param res the response to that request
+	 *
+	 * @return 'true' if the request has been or will eventually be handled,
+	 *         otherwise 'false'
+	 */
+	[Version (since = "0.3")]
+	public abstract bool handle (Request req, Response res) throws Error;
+}

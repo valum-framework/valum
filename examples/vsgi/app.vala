@@ -17,8 +17,13 @@
 
 using VSGI;
 
-public int main (string[] args) {
-	return Server.new_with_application ("http", (req, res) => {
+public class App : Handler  {
+
+	public override bool handle (Request req, Response res) throws Error {
 		return res.expand_utf8 ("Hello world!");
-	}).run (args);
+	}
+}
+
+public int main (string[] args) {
+	return Server.@new ("http", handler: new App ()).run (args);
 }

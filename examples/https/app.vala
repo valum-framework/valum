@@ -18,5 +18,5 @@ public int main (string[] args) {
 		return 1;
 	}
 
-	return Server.new_with_application ("http", app.handle, https: true, tls_certificate: tls_certificate).run (args);
+	return Server.@new ("http", handler: app, https: true, tls_certificate: tls_certificate).run (args);
 }

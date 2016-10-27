@@ -15,7 +15,7 @@ add_global_arguments(['-Wall',
                      language: 'c')
 
 add_global_arguments(['--enable-experimental',
-                      '--enable-deprecated'],
+                      '--enable-deprecated', '--vapi-comments'],
                      language: 'vala')
 endif
 

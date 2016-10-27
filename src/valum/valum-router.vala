@@ -24,7 +24,7 @@ namespace Valum {
 	 * Dispatches incoming requests to the appropriate registered handler.
 	 */
 	[Version (since = "0.1")]
-	public class Router : Object {
+	public class Router : Handler {
 
 		/**
 		 * Global routing context.
@@ -385,12 +385,9 @@ namespace Valum {
 		 * If the request method is {@link VSGI.Request.OPTIONS}, a success
 		 * message will be produced with the 'Allow' header set accordingly. No
 		 * error will be thrown.
-		 *
-		 * Parameters and return values are complying with {@link VSGI.ApplicationCallback}
-		 * and meant to be used as such.
 		 */
 		[Version (since = "0.1")]
-		public bool handle (Request req, Response res) throws Error {
+		public override bool handle (Request req, Response res) throws Error {
 			return perform_routing (this.routes.get_begin_iter (), req, res, () => {
 				if (req.method == Request.TRACE) {
 					var head = new StringBuilder ();

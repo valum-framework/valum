@@ -9,6 +9,8 @@ vsgi_sources = files(
     'vsgi-cgi.vala',
     'vsgi-connection.vala',
     'vsgi-cookie-utils.vala',
+    'vsgi-handler-module.vala',
+    'vsgi-handler.vala',
     'vsgi-mock.vala',
     'vsgi-request.vala',
     'vsgi-response.vala',

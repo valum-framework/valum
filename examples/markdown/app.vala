@@ -29,4 +29,4 @@ app.get ("/", (req, res) => {
 	return res.expand_utf8 (markdown);
 });
 
-Server.new_with_application ("http", app.handle).run ();
+Server.@new ("http", handler: app).run ();

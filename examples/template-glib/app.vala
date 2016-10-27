@@ -17,5 +17,5 @@ app.get ("/", (req, res) => {
 	return home.expand (res.body, scope);
 });
 
-Server.new_with_application ("http", "org.valum.example.TemplateGLib", app.handle).run ();
+Server.new ("http", handler: app).run ();
 

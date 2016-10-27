@@ -36,4 +36,4 @@ app.get ("/", (req, res) => {
 app.rule (Method.ANY, "/user/*", new UserRouter ().handle);
 app.rule (Method.ANY, "/admin/*", new AdminRouter ().handle);
 
-Server.new_with_application ("http", app.handle).run ();
+Server.@new ("http", handler: app).run ();

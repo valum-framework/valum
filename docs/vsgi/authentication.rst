@@ -13,27 +13,21 @@ pattern is highlighted in the following example:
 
 ::
 
-    using VSGI;
+    var authentication = BasicAuthentication ("realm");
 
-    Server.new_for_application ("http", (req, res) => {
-        var authentication = BasicAuthentication ("realm");
+    var authorization_header = req.headers.get_one ("Authorization");
 
-        var authorization_header = req.headers.get_one ("Authorization");
-
-        if (authorization_header != null) {
-            if (authentication.parse_authorization_header (authorization_header,
-                                                           out authorization)) {
-                var user = User.from_username (authorization.username);
-                if (authorization.challenge (user.password)) {
-                    return res.expand_utf8 ("Authentication successful!");
-                }
+    if (authorization_header != null) {
+        if (authentication.parse_authorization_header (authorization_header,
+                                                       out authorization)) {
+            var user = User.from_username (authorization.username);
+            if (authorization.challenge (user.password)) {
+                return res.expand_utf8 ("Authentication successful!");
             }
         }
+    }
 
-        res.headers.replace ("WWW-Authenticate", authentication.to_authenticate_header ());
-
-        return res.end ();
-    }).run ();
+    res.headers.replace ("WWW-Authenticate", authentication.to_authenticate_header ());
 
 Basic
 -----

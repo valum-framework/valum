@@ -24,7 +24,7 @@ the latest changes in the framework.
         return res.expand_utf8 ("Hello world!");
     });
 
-    Server.new_with_application ("http", app.handle).run ({"app", "--port", "3003"});
+    Server.new ("http", handler: app.handle).run ({"app", "--port", "3003"});
 
 Typically, the ``run`` function contains CLI argument to make runtime the
 parametrizable.

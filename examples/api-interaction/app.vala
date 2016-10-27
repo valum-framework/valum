@@ -61,4 +61,4 @@ app.get ("/", (req, res, next, ctx) => {
 	return true;
 });
 
-Server.new_with_application ("http", app.handle).run ();
+Server.@new ("http", handler: app).run ();

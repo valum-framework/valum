@@ -49,10 +49,7 @@ and can be accessed from the ``headers`` property.
 
 ::
 
-    Server.new_with_application ("http", (req) => {
-        var accept = req.headers.get_one ("Accept");
-        return true;
-    });
+    var accept = req.headers.get_one ("Accept");
 
 libsoup-2.4 provides a very extensive set of utilities to process the
 information contained in headers.
@@ -129,10 +126,7 @@ freeing a file resource.
 
 ::
 
-    Server.new_with_application ("http", (req, res) => {
-        var payload = req.flatten ();
-        return true;
-    });
+    var payload = req.flatten ();
 
 Form
 ~~~~
@@ -142,10 +136,7 @@ format, which is submitted by web browsers.
 
 ::
 
-    Server.new_with_application ("http", (req, res) => {
-        var data = Soup.Form.decode (req.flatten_utf8 (out bytes_read));
-        return true;
-    });
+    var data = Soup.Form.decode (req.flatten_utf8 (out bytes_read));
 
 Multipart body
 ~~~~~~~~~~~~~~

@@ -26,24 +26,9 @@ using GLib;
 [CCode (gir_namespace = "VSGI", gir_version = "0.3")]
 namespace VSGI {
 
-	/**
-	 * Process a pair of {@link VSGI.Request} and {@link VSGI.Response}.
-	 *
-	 * This delegate describe the signature of a compliant VSGI application. It
-	 * is passed to a {@link VSGI.Server} in order to receive request to
-	 * process.
-	 *
-	 * @throws Error unrecoverable error condition can be raised and will be
-	 *               handled by the implementation
-	 *
-	 * @param req a resource being requested
-	 * @param res the response to that request
-	 *
-	 * @return 'true' if the request has been or will eventually be handled,
-	 *         otherwise 'false'
-	 */
-	[Version (since = "0.2")]
-	public delegate bool ApplicationCallback (Request req, Response res) throws Error;
+	[Version (since = "0.3")]
+	[CCode (has_target = false)]
+	public delegate Type HandlerInitFunc (TypeModule type_module);
 
 	[Version (since = "0.3")]
 	[CCode (has_target = false)]

@@ -20,8 +20,7 @@ using GLib;
 namespace VSGI {
 
 	/**
-	 * Server that feeds a {@link VSGI.ApplicationCallback} with incoming
-	 * requests.
+	 * Server that feeds a {@link VSGI.Handler} with incoming requests.
 	 *
 	 * Once you have initialized a Server instance, start it by calling
 	 * {@link GLib.Application.run} with the command-line arguments or a set of
@@ -80,49 +79,16 @@ namespace VSGI {
 		}
 
 		/**
-		 * Instantiate a new {@link VSGI.Server} with an initial application
-		 * callback.
-		 *
-		 * @param name     name of the server implementation to load
-		 * @param callback initial application callback
-		 * @param list     arguments to pass to {@link GLib.Object.new}
-		 *
-		 * @return the server instance of loaded successfully, otherwise 'null'
-		 *         and a warning will be emitted
+		 * Handler processing incoming connections.
 		 */
 		[Version (since = "0.3")]
-		public static Server? new_valist_with_application (string name, owned ApplicationCallback callback, va_list list) {
-			var server = @new_valist (name, list);
-			if (server != null) {
-				server.set_application_callback ((owned) callback);
-			}
-			return server;
-		}
-
-		/**
-		 * Instantiate a new {@link VSGI.Server} with an initial application
-		 * callback and varidic arguments.
-		 */
-		[Version (since = "0.3")]
-		public static Server? new_with_application (string name, owned ApplicationCallback callback, ...) {
-			return new_valist_with_application (name, callback, va_list ());
-		}
+		public Handler handler { get; construct set; }
 
 		/**
 		 * URIs this server is listening on.
 		 */
 		[Version (since = "0.3")]
 		public abstract SList<Soup.URI> uris { owned get; }
-
-		private ApplicationCallback? _application = null;
-
-		/**
-		 * Assign the callback used when {@link VSGI.Server.dispatch} is called.
-		 */
-		[Version (since = "0.3")]
-		public void set_application_callback (owned ApplicationCallback application) {
-			_application = (owned) application;
-		}
 
 		/**
 		 * Prepare the server for listening on the provided socket address.
@@ -194,11 +160,7 @@ namespace VSGI {
 		 */
 		[Version (since = "0.3")]
 		protected bool dispatch (Request req, Response res) throws Error {
-			if (unlikely (_application == null)) {
-				error ("Use 'set_application_callback' to assign this an application.");
-			} else {
-				return _application (req, res);
-			}
+			return handler.handle (req, res);
 		}
 
 		/**

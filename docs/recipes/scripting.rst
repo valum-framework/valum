@@ -40,7 +40,7 @@ Lua
         return res.expand_utf8 (lua.do_file ("scripts/hello.lua"));
     });
 
-    Server.new_with_application ("http", app.handle).run ();
+    Server.new ("http", handler: app.handle).run ();
 
 The sample Lua script contains:
 

@@ -26,5 +26,5 @@ public static int main (string[] args) {
 		return res.expand_utf8 ("Hello world!");
 	});
 
-	return Server.new_with_application ("fastcgi", app.handle).run (args);
+	return Server.@new ("fastcgi", handler: app).run (args);
 }

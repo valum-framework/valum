@@ -20,15 +20,10 @@ require the status to be part of the response headers.
 
 .. code::
 
-    using VSGI;
-
-    Server.new_with_application ("http", (req, res) => {
-        var message = req.connection.output_stream;
-        message.write_all ("200 Success HTTP/1.1\r\n".data. null);
-        message.write_all ("Connection: close\r\n");
-        message.write_all ("Content-Type: text/plain\r\n");
-        message.write_all ("\r\n".data);
-        message.write_all ("Hello world!".data);
-        return true;
-    });
+    var message = req.connection.output_stream;
+    message.write_all ("200 Success HTTP/1.1\r\n".data. null);
+    message.write_all ("Connection: close\r\n");
+    message.write_all ("Content-Type: text/plain\r\n");
+    message.write_all ("\r\n".data);
+    message.write_all ("Hello world!".data);
 

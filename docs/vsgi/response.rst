@@ -19,10 +19,7 @@ implementation to call it at a proper moment.
 
 ::
 
-    Server.new_with_application ("http", (req, res) => {
-        res.status = Soup.Status.MALFORMED;
-        return true;
-    });
+    res.status = Soup.Status.MALFORMED;
 
 Reason phrase
 -------------
@@ -36,11 +33,8 @@ status line if ``write_head`` or ``write_head_async`` is invoked.
 
 ::
 
-    Server.new_with_application ("http", (req, res) => {
-        res.status = Soup.Status.OK;
-        res.reason_phrase = "Everything Went Well"
-        return true;
-    });
+    res.status = Soup.Status.OK;
+    res.reason_phrase = "Everything Went Well"
 
 To obtain final status line sent to the user agent, use the ``wrote_status_line``
 signal.
@@ -61,11 +55,7 @@ from the ``headers`` property.
 
 ::
 
-    Server.new_with_application ("http", (req, res) => {
-        res.status = Soup.Status.OK;
-        res.headers.set_content_type ("text/plain", null);
-        return res.body.write_all ("Hello world!".data, null);
-    });
+    res.headers.set_content_type ("text/plain", null);
 
 Headers can be written in the response synchronously by invoking
 ``write_head`` or asynchronously with ``write_head_async``.
@@ -134,9 +124,7 @@ stream and close it properly.
 
 ::
 
-    Server.new_with_application ("http", (req, res) => {
-        res.expand_utf8 ("Hello world!");
-    });
+    res.expand_utf8 ("Hello world!");
 
 Filtering
 ~~~~~~~~~
@@ -212,12 +200,8 @@ provided:
 
 ::
 
-    Server.new_with_application ("http", (req, res, next) => {
-        res.status = Soup.Status.NO_CONTENT;
-        return res.end () && next ();
-    }).then ((req, res) => {
-        // perform blocking operation here...
-    });
+    res.status = Soup.Status.NO_CONTENT;
+    res.end ();
 
 To produce a message before closing, favour ``extend`` utilities.
 
