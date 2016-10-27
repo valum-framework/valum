@@ -51,13 +51,31 @@ namespace VSGI.FastCGI {
 		return "Unknown error code '%d'".printf (error);
 	}
 
-	private class StreamInputStream : UnixInputStream {
+	private class StreamInputStream :
+#if GIO_UNIX
+		UnixInputStream
+#elif GIO_WINDOWS
+		Win32InputStream
+#else
+		InputStream
+#endif
+	{
 
 		public unowned global::FastCGI.Stream @in { construct; get; }
 
+#if GIO_UNIX
 		public StreamInputStream (int fd, global::FastCGI.Stream @in) {
 			Object (fd: fd, close_fd: false, @in: @in);
 		}
+#elif GIO_WINDOWS
+		public StreamInputStream (void* handle, global::FastCGI.Stream @in) {
+			Object (handle: handle, close_handle: false, @in: @in);
+		}
+#else
+		public StreamInputStream (global::FastCGI.Stream @in) {
+			Object (@in: @in);
+		}
+#endif
 
 		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
 			var read = this.in.read (buffer);
@@ -80,15 +98,33 @@ namespace VSGI.FastCGI {
 		}
 	}
 
-	private class StreamOutputStream : UnixOutputStream {
+	private class StreamOutputStream :
+#if GIO_UNIX
+		UnixOutputStream
+#elif GIO_WINDOWS
+		Win32OutputStream
+#else
+		OutputStream
+#endif
+	{
 
 		public unowned global::FastCGI.Stream @out { construct; get; }
 
 		public unowned global::FastCGI.Stream err { construct; get; }
 
+#if GIO_UNIX
 		public StreamOutputStream (int fd, global::FastCGI.Stream @out, global::FastCGI.Stream err) {
 			Object (fd: fd, close_fd: false, @out: @out, err: err);
 		}
+#elif GIO_WINDOWS
+		public StreamOutputStream (void* handle, global::FastCGI.Stream @out, global::FastCGI.Stream err) {
+			Object (handle: handle, close_handle: false, @out: @out, err: err);
+		}
+#else
+		public StreamOutputStream (global::FastCGI.Stream @out, global::FastCGI.Stream err) {
+			Object (@out: @out, err: err);
+		}
+#endif
 
 		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
 			var written = this.out.put_str (buffer);
@@ -165,7 +201,10 @@ namespace VSGI.FastCGI {
 			if (address == null) {
 				fd = global::FastCGI.LISTENSOCK_FILENO;
 				_uris.append (new Soup.URI ("fcgi+fd://%d/".printf (fd)));
-			} else if (address is UnixSocketAddress) {
+			}
+
+#if GIO_UNIX
+			else if (address is UnixSocketAddress) {
 				var socket_address = address as UnixSocketAddress;
 
 				fd = global::FastCGI.open_socket (socket_address.path, backlog);
@@ -175,7 +214,10 @@ namespace VSGI.FastCGI {
 				}
 
 				_uris.append (new Soup.URI ("fcgi+unix://%s/".printf (socket_address.path)));
-			} else if (address is InetSocketAddress) {
+			}
+#endif
+
+			else if (address is InetSocketAddress) {
 				var inet_address = address as InetSocketAddress;
 
 				if (inet_address.get_family () == SocketFamily.IPV6) {
@@ -287,8 +329,16 @@ namespace VSGI.FastCGI {
 
 				yield;
 
-				this._input_stream  = new StreamInputStream (fd, request.in);
-				this._output_stream = new StreamOutputStream (fd, request.out, request.err);
+#if GIO_UNIX
+				_input_stream  = new StreamInputStream (fd, request.in);
+				_output_stream = new StreamOutputStream (fd, request.out, request.err);
+#elif GIO_WINDOWS
+				_input_stream  = new StreamInputStream ((void*) fd, request.in);
+				_output_stream = new StreamOutputStream ((void*) fd, request.out, request.err);
+#else
+				_input_stream  = new StreamInputStream (request.in);
+				_output_stream = new StreamOutputStream (request.out, request.err);
+#endif
 
 				return true;
 			}
