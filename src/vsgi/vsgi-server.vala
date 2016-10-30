@@ -133,12 +133,15 @@ namespace VSGI {
 		 * return value. To disable forking, simply override this and return
 		 * '0'.
 		 *
+		 * Marked as experimental because we might change this for a more
+		 * sophisticated model based in {@link GLib.Subprocess} in the future.
+		 *
 		 * @throws GLib.SpawnError.FORK if the {@link Posix.fork} call fails
 		 *
 		 * @return the process pid if this is the parent process,
 		 *         otherwise '0'
 		 */
-		[Version (since = "0.3")]
+		[Version (since = "0.3", experimental = true)]
 		public virtual Pid fork () throws Error {
 			var pid = Posix.fork ();
 			if (pid == -1) {
