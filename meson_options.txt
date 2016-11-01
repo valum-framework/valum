@@ -1,3 +1,1 @@
-option('enable_docs', type: 'boolean', value: false, description: 'generate user documentation')
-option('enable_api_docs', type: 'boolean', value: false, description: 'generate API documentation')
 option('enable_examples', type: 'boolean', value: false, description: 'build examples')

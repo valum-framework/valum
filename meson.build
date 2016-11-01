@@ -1,7 +1,7 @@
 project('Valum', 'vala', 'c',
         version: '0.3.0-dev',
         license: 'LGPL',
-        meson_version: '>=0.33')
+        meson_version: '>=0.35')
 
 api_version = '0.3'
 
@@ -41,21 +41,7 @@ endif
 subdir('data')
 subdir('src')
 subdir('tests')
-if get_option('enable_docs')
-    subdir('docs')
-endif
-if get_option('enable_api_docs')
-    valadoc = find_program('valadoc')
-    custom_target('api-docs', command: [valadoc, '--package-name',
-                  'valum', '--package-version', meson.project_version(),
-                  '--pkg=glib-2.0', '--pkg=gio-2.0', '--pkg=gio-unix-2.0',
-                  '--pkg=gmodule-2.0', '--pkg=libsoup-2.4', '--pkg=posix',
-                  '--target-glib=2.40', '--force'] +
-                  vala_defines +
-                  [ '--directory', '@OUTPUT@', '@INPUT@'],
-                  input: vsgi_sources + valum_sources,
-                  output: 'api-docs')
-endif
+subdir('docs')
 if get_option('enable_examples')
     subdir('examples')
 endif
