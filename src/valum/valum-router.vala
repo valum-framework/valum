@@ -60,7 +60,7 @@ namespace Valum {
 		 *                         rule pattern
 		 * @param pattern          matches instance of the type in a path
 		 */
-		[Version (since = "0.3")]
+		[Version (since = "0.3", experimental = true)]
 		public void register_type (string name, Regex pattern) {
 			types[name] = pattern;
 		}
