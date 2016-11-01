@@ -237,7 +237,7 @@ Asterisk
 
 The special ``*`` URI is handled by the ``Router.asterisk`` helper. It is
 typically used along with the ``OPTIONS`` method to provide a self-description
-of the web service or application.
+of the Web service or application.
 
 ::
 

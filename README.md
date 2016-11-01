@@ -1,11 +1,11 @@
-Valum web micro-framework
+Valum Web micro-framework
 =========================
 
 [![Build Status](https://travis-ci.org/valum-framework/valum.svg?branch=master)](https://travis-ci.org/valum-framework/valum)
 [![Documentation Status](https://readthedocs.org/projects/valum-framework/badge/?version=latest)](https://readthedocs.org/projects/valum-framework/?badge=latest)
 [![codecov.io](https://codecov.io/github/valum-framework/valum/coverage.svg?branch=master)](https://codecov.io/github/valum-framework/valum?branch=master)
 
-Valum is a web micro-framework entirely written in the
+Valum is a Web micro-framework entirely written in the
 [Vala](https://wiki.gnome.org/Projects/Vala) programming language.
 
 ```vala
@@ -35,7 +35,7 @@ The installation process is fully documented in the
 Features
 --------
 
- - powerful routing mechanism to write expressive web services:
+ - powerful routing mechanism to write expressive Web services:
     - helpers and flags (i.e. `Method.GET | Method.POST`) for common HTTP methods
     - scoping
     - rule system supporting typed parameters, group, optional and wildcard

@@ -2,7 +2,7 @@ Converters
 ==========
 
 VSGI provide stream utilities named converters to convert data according to
-modern web standards.
+modern Web standards.
 
 These are particularly useful to encode and recode request and response bodies
 in VSGI implementations.

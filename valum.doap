@@ -9,7 +9,7 @@
   <shortdesc xml:lang="en">Web micro-framework written in Vala</shortdesc>
 
   <description xml:lang="en">
-      Valum is a web micro-framework written in Vala and licensed under the
+      Valum is a Web micro-framework written in Vala and licensed under the
       LGPLv3. Its source code and releases are available on GitHub:
       valum-framework/valum.
   </description>

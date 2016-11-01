@@ -1,7 +1,7 @@
 Name:       valum
 Version:    @VERSION@
 Release:    1%{?dist}
-Summary:    Valum is a web micro-framework written in Vala
+Summary:    Valum is a Web micro-framework written in Vala
 
 Group:      Development/Libraries
 License:    LGPL
@@ -20,7 +20,7 @@ BuildRequires: vala
 BuildRequires: vala-tools
 
 %description
-Valum is a web micro-framework able to create highly scalable expressive web
+Valum is a Web micro-framework able to create highly scalable expressive Web
 applications or services by taking advantage of machine code execution and
 asynchronous I/O.
 

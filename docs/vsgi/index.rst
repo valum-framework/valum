@@ -1,10 +1,10 @@
 VSGI
 ====
 
-VSGI is a middleware that interfaces different web server technologies under a
+VSGI is a middleware that interfaces different Web server technologies under a
 common and simple set of abstractions.
 
-For the moment, it is developed along with Valum to target the needs of a web
+For the moment, it is developed along with Valum to target the needs of a Web
 framework, but it will eventually be extracted and distributed as a shared
 library.
 

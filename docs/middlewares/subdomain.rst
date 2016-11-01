@@ -60,7 +60,7 @@ amount of labels matching the expectations.
 Skip labels
 -----------
 
-By default, the two first labels are ignored since web applications are
+By default, the two first labels are ignored since Web applications are
 typically served under two domain levels (eg. example.com). If it's not the
 case, the number of skipped labels can be set to any desirable value.
 

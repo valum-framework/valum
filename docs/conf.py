@@ -44,7 +44,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'Valum web micro-framework'
+project = 'Valum Web micro-framework'
 copyright = '2015, Antono Vasiljev, Guillaume Poirier-Morency'
 
 # The version info for the project you're documenting, acts as replacement for

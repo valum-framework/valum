@@ -1,7 +1,7 @@
 JSON
 ====
 
-JSON is a popular data format for web services and :valadoc:`json-glib-1.0/Json`
+JSON is a popular data format for Web services and :valadoc:`json-glib-1.0/Json`
 provide a complete implementation that integrates with the GObject type system.
 
 The following features will be covered in this document with code examples:

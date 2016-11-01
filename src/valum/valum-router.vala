@@ -279,8 +279,8 @@ namespace Valum {
 		/**
 		 * Reverse an URL for a named {@link Valum.Route}.
 		 *
-		 * @param name
-		 * @param ...  parameters for the {@link Valum.Route.to_url} call
+		 * @param name   name of the route
+		 * @param params parameters for the {@link Valum.Route.to_url} call
 		 *
 		 * @return 'null' if the route is not found otherwise the return value
 		 *         of {@link Valum.Route.to_url}

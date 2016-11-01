@@ -1,7 +1,7 @@
 Recipes
 =======
 
-Recipes are documents providing approaches to common web development tasks and
+Recipes are documents providing approaches to common Web development tasks and
 their potential integration with Valum.
 
 .. toctree::

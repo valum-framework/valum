@@ -1,4 +1,4 @@
-Valum web micro-framework
+Valum Web micro-framework
 =========================
 
 .. raw:: html
@@ -11,11 +11,11 @@ Valum web micro-framework
         <img src="https://codecov.io/github/valum-framework/valum/coverage.svg?branch=master" alt="Coverage via Codecov" />
     </a>
 
-Valum is a web micro-framework written in Vala and licensed under the LGPLv3.
+Valum is a Web micro-framework written in Vala and licensed under the LGPLv3.
 Its source code and releases are available on GitHub: `valum-framework/valum`_.
 
 This user documentation aims to be as complete as possible and covers topics
-that are not directly related to the framework, but essential for web
+that are not directly related to the framework, but essential for Web
 development. If you think that this document could be improved,
 `open a ticket on GitHub`_ to let us know.
 

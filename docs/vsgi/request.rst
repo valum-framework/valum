@@ -132,7 +132,7 @@ Form
 ~~~~
 
 :valadoc:`libsoup-2.4/Soup.Form` can be used to parse ``application/x-www-form-urlencoded``
-format, which is submitted by web browsers.
+format, which is submitted by Web browsers.
 
 ::
 
