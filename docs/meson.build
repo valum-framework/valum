@@ -24,5 +24,5 @@ if sphinx.found()
                   command: [sphinx, '-W', '-b', 'html', '@INPUT@', '@OUTPUT@'],
                   input: '.',
                   output: 'en')
-    install_subdir(meson.current_build_dir() + '/en', install_dir: 'share/doc/user/en')
+    install_subdir(meson.current_build_dir() + '/en', install_dir: 'share/doc/valum-@0@/user'.format(api_version))
 endif
