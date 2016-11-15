@@ -17,7 +17,7 @@ endif
 
 sphinx = find_program('sphinx-build-3', required: false)
 if not sphinx.found()
-    sphinx = find_program('sphinx-build')
+    sphinx = find_program('sphinx-build', required: false)
 endif
 if sphinx.found()
     custom_target('en user documentation',
