@@ -68,6 +68,50 @@ Note that due to Meson design, dependencies must be explicitly provided.
     executable('app', 'app.vala',
                dependencies: [glib, gobject, gio, soup, vsgi, valum])
 
+Docker
+------
+
+To use Valum with `Docker`_, use the provided `valum/valum`_ image. It is based
+on the latest stable Ubuntu.
+
+.. _Docker: http://www.docker.com/
+.. _valum/valum: https://hub.docker.com/r/valum/valum/
+
+.. code-block:: docker
+
+    FROM valum/valum:latest
+
+    WORKDIR /app
+    ADD . .
+
+    RUN valac --pkg=valum-0.3 app.vala
+
+    EXPOSE 3003
+
+    ENTRYPOINT /app/app
+
+Vagrant
+-------
+
+You can provision a `Vagrant`_ VM with Valum. There's no ``Vagrantfile``
+provided because each project will likely have it's own setup and deployment
+constraints.
+
+.. _Vagrant: https://www.vagrantup.com/
+
+.. code-block:: bash
+
+    wget https://github.com/valum-framework/valum/archive/v0.3.0.zip
+
+    unzip v0.3.0.zip
+
+    cd valum-0.3.0
+    mkdir build
+    meson --prefix=/usr --buildtype=release build
+    ninja -C build
+    ninja -C build test
+    ninja -C build install
+
 Dependencies
 ------------
 
