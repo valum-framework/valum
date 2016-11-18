@@ -13,7 +13,6 @@ BuildRequires: pkgconfig(gio-2.0)
 BuildRequires: pkgconfig(gio-unix-2.0)
 BuildRequires: pkgconfig(libsoup-2.4)
 BuildRequires: fcgi-devel
-BuildRequires: gobject-introspection-devel
 BuildRequires: meson
 BuildRequires: ninja-build
 BuildRequires: vala
@@ -48,7 +47,9 @@ meta-data.
 %files
 %doc README.md COPYING
 %{_libdir}/*
+%exclude %{_libdir}/pkgconfig
 
 %files devel
 %{_includedir}/*
+%{_libdir}/pkgconfig/*
 %{_datadir}/*
