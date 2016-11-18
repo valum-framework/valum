@@ -24,8 +24,8 @@ various HTTP servers using standardized protocols.
 Handler
 -------
 
-The entry point of any VSGI application implement the ``Handler`` abstract
-class. It provides a function of two arguments: a :doc:`request` and
+The entry point of any VSGI application implement the :valadoc:`vsgi-0.3/VSGI.Handler`
+abstract class. It provides a function of two arguments: a :doc:`request` and
 a :doc:`response` that return a boolean indicating if the request has been or
 will be processed. It may also raise an error.
 
@@ -46,8 +46,8 @@ will be processed. It may also raise an error.
 If a handler indicate that the request has not been processed, it's up to the
 server implementation to decide what will happen.
 
-From now on, examples will consist of ``Handler.handle`` content to remain
-more concise.
+From now on, examples will consist of :valadoc:`vsgi-0.3/VSGI.Handler.handle`
+content to remain more concise.
 
 Error handling
 ~~~~~~~~~~~~~~

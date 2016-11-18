@@ -65,9 +65,9 @@ error raised if no expectation can be satisfied.
 Custom comparison
 -----------------
 
-A custom comparison function can be provided to ``negotiate`` in order to
-handle wildcards and other edge cases. The user agent pattern is the first
-argument and the expectation is the second.
+A custom comparison function can be provided to :valadoc:`valum-0.3/Valum.negotiate`
+in order to handle wildcards and other edge cases. The user agent pattern is
+the first argument and the expectation is the second.
 
 .. warning::
 
@@ -102,8 +102,8 @@ For convenience, helpers are provided to handle common headers:
 | ``accept_ranges``   | ``Content-Ranges``   | none                                               |
 +---------------------+----------------------+----------------------------------------------------+
 
-The ``accept`` middleware will assign the media type and preserve all other
-parameters.
+The :valadoc:`valum-0.3/Valum.accept` middleware will assign the media type and
+preserve all other parameters.
 
 If multiple subtypes are specified (e.g. ``application/vnd.api+json``), the
 middleware will check if the subtypes accepted by the user agent form a subset.
@@ -121,8 +121,8 @@ only state to accept JSON and does not care about the specification itself.
         }
     });
 
-The ``accept_encoding`` middleware will convert the :doc:`../vsgi/response` if
-it's either ``gzip`` or ``deflate``.
+The :valadoc:`valum-0.3/Valum.accept_encoding` middleware will convert the
+:doc:`../vsgi/response` if it's either ``gzip`` or ``deflate``.
 
 ::
 
@@ -130,7 +130,7 @@ it's either ``gzip`` or ``deflate``.
         res.expand_utf8 ("Hello world! (compressed with %s)".printf (encoding));
     });
 
-The ``accept_charset`` middleware will set the ``charset`` parameter of the
-``Content-Type`` header, defaulting to ``application/octet-stream`` if
-undefined.
+The :valadoc:`valum-0.3/Valum.accept_charset` middleware will set the
+``charset`` parameter of the ``Content-Type`` header, defaulting to
+``application/octet-stream`` if undefined.
 

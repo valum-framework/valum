@@ -3,7 +3,8 @@ Sequence
 
 .. versionadded:: 0.3
 
-The ``sequence`` middleware provide a handy way of chaining middlewares.
+The :valadoc:`valum-0.3/Valum.sequence` middleware provide a handy way of
+chaining middlewares.
 
 ::
 

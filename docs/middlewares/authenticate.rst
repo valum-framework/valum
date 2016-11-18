@@ -1,13 +1,13 @@
 Authenticate
 ============
 
-The ``authenticate`` middleware allow one to perform HTTP basic
-authentications.
+The :valadoc:`valum-0.3/Valum.authenticate` middleware allow one to perform
+HTTP basic authentications.
 
 It takes three parameters:
 
--   an ``Authentication`` object described in :doc:`../vsgi/authentication`
--   a callback to challenge a user-provided ``Authorization`` header
+-   an :valadoc:`vsgi-0.3/VSGI.Authentication` object described in :doc:`../vsgi/authentication`
+-   a callback to challenge a user-provided :valadoc:`vsgi-0.3/VSGI.Authorization` header
 -   a forward callback invoked on success with the corresponding authorization
     object
 

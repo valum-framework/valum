@@ -1,8 +1,8 @@
 Subdomain
 =========
 
-The ``subdomain`` middleware matches :doc:`../vsgi/request` which subdomain is conform to
-expectations.
+The :valadoc:`valum-0.3/Valum.subdomain` middleware matches
+:doc:`../vsgi/request` which subdomain is conform to expectations.
 
 .. note::
 

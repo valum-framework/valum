@@ -1,7 +1,8 @@
 Decode
 ======
 
-The ``decode`` middleware is used to unapply various content codings.
+The :valadoc:`valum-0.3/Valum.decode` middleware is used to unapply various
+content codings.
 
 ::
 
@@ -24,8 +25,8 @@ identity        nothing
 If an encoding is not supported, a ``501 Not Implemented`` is raised and
 remaining encodings are *reapplied* on the request.
 
-To prevent this behavior, the ``DecodeFlags.FORWARD_REMAINING_ENCODINGS`` flag
-can be passed to forward unsupported content codings.
+To prevent this behavior, the :valadoc:`valum-0.3/Valum.DecodeFlags.FORWARD_REMAINING_ENCODINGS`
+flag can be passed to forward unsupported content codings.
 
 ::
 

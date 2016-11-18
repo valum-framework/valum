@@ -1,8 +1,8 @@
 Static Resource Delivery
 ========================
 
-Middlewares in the ``Valum.Static`` namespace ensure delivery of static
-resources.
+Middlewares in the :valadoc:`valum-0.3/Valum.Static` namespace ensure delivery
+of static resources.
 
 ::
 
@@ -27,8 +27,8 @@ If a ``HEAD`` request is performed, the payload will be omitted.
 File backend
 -------------
 
-The ``serve_from_file`` middleware will serve resources relative to
-a :valadoc:`gio-2.0/GLib.File` instance.
+The :valadoc:`valum-0.3/Valum.Static.serve_from_file` middleware will serve
+resources relative to a :valadoc:`gio-2.0/GLib.File` instance.
 
 ::
 
@@ -60,8 +60,8 @@ Once done, invoke the ``next`` continuation to send over the content.
 Helpers
 ~~~~~~~
 
-Two helpers are provided for File-based delivery: ``serve_from_path`` and
-``serve_from_uri``.
+Two helpers are provided for File-based delivery: :valadoc:`valum-0.3/Valum.Static.serve_from_path`
+and :valadoc:`valum-0.3/Valum.Static.serve_from_uri`.
 
 ::
 
@@ -72,9 +72,10 @@ Two helpers are provided for File-based delivery: ``serve_from_path`` and
 Resource backend
 -----------------
 
-The ``serve_from_resource`` middleware is provided to serve a resource bundle
-(see :valadoc:`gio-2.0/GLib.Resource`) from a given prefix. Note that the
-prefix must be a valid path, starting and ending with a slash ``/`` character.
+The :valadoc:`valum-0.3/Valum.Static.serve_from_resource` middleware is
+provided to serve a resource bundle (see :valadoc:`gio-2.0/GLib.Resource`) from
+a given prefix. Note that the prefix must be a valid path, starting and ending
+with a slash ``/`` character.
 
 ::
 
@@ -121,8 +122,8 @@ One can use that behaviour to implement a cascading failover with the
     app.get ("/static/<path:path", sequence (serve_from_path ("~/.local/app/static"),
                                              serve_from_path ("/usr/share/app/static")));
 
-To generate a ``404 Not Found``, just raise a ``ClientError.NOT_FOUND`` as
-described in :doc:`../redirection-and-error`.
+To generate a ``404 Not Found``, just raise a :valadoc:`valum-0.3/Valum.ClientError.NOT_FOUND`
+as described in :doc:`../redirection-and-error`.
 
 ::
 
@@ -137,15 +138,16 @@ described in :doc:`../redirection-and-error`.
 Options
 -------
 
-Options are provided as flags from the ``ServeFlags`` enumeration.
+Options are provided as flags from the :valadoc:`valum-0.3/Valum.Static.ServeFlags`
+enumeration.
 
 ETag
 ~~~~
 
-If the ``ServeFlags.ENABLE_ETAG`` is specified, a checksum of the resource will
-be generated in the ``ETag`` header.
+If the :valadoc:`valum-0.3/Valum.Static.ServeFlags.ENABLE_ETAG` is specified,
+a checksum of the resource will be generated in the ``ETag`` header.
 
-If set and available, it will have precedence over ``ServeFlags.ENABLE_LAST_MODIFIED``
+If set and available, it will have precedence over valadoc:`valum-0.3/Valum.Static.ServeFlags.ENABLE_LAST_MODIFIED`
 described below.
 
 Last-Modified
@@ -155,13 +157,14 @@ Unlike ``ETag``, this caching feature is time-based and will indicate the last
 modification on the resource. This is only available for some File backend and
 will fallback to ``ETag`` if enabled as well.
 
-Specify the ``ServeFlags.ENABLE_LAST_MODIFIED`` to enable this feature.
+Specify the :valadoc:`valum-0.3/Valum.Static.ServeFlags.ENABLE_LAST_MODIFIED`
+to enable this feature.
 
 X-Sendfile
 ~~~~~~~~~~
 
 If the application run behind a HTTP server which have access to the resources,
-it might be preferable to let it serve them directly with ``ServeFlags.X_SENDFILE``.
+it might be preferable to let it serve them directly with :valadoc:`valum-0.3/Valum.Static.ServeFlags.X_SENDFILE`.
 
 ::
 
@@ -172,13 +175,13 @@ If files are not locally available, they will be served directly.
 Public caching
 ~~~~~~~~~~~~~~
 
-The ``ServeFlags.ENABLE_CACHE_CONTROL_PUBLIC`` let intermediate HTTP servers
-cache the payload by attaching a ``Cache-Control: public`` header to the
-response.
+The :valadoc:`valum-0.3/Valum.Static.ServeFlags.ENABLE_CACHE_CONTROL_PUBLIC`
+let intermediate HTTP servers cache the payload by attaching a ``Cache-Control: public``
+header to the response.
 
 Expose missing permissions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``ServeFlags.FORBID_ON_MISSING_RIGHTS`` will trigger a ``403 Forbidden`` if
-rights are missing to read a file. This is not a default as it may expose
-information about the existence of certain files.
+The :valadoc:`valum-0.3/Valum.Static.ServeFlags.FORBID_ON_MISSING_RIGHTS` will
+trigger a ``403 Forbidden`` if rights are missing to read a file. This is not
+a default as it may expose information about the existence of certain files.

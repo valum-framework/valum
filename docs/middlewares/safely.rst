@@ -1,8 +1,9 @@
 Safely
 ======
 
-Yet very simple, the ``safely`` middleware provide a powerful way of
-discovering possible error conditions and handle them locally.
+Yet very simple, the :valadoc:`valum-0.3/Valum.safely` middleware provide
+a powerful way of discovering possible error conditions and handle them
+locally.
 
 Only status defined in :doc:`../redirection-and-error` are leaked: the compiler
 will warn for all other unhandled errors.

@@ -6,8 +6,9 @@ stream notifications over a persistent connection.
 
 .. _Server-Sent Events: http://www.w3.org/TR/eventsource/
 
-The ``ServerSentEvents.stream_events`` function creates a handling middleware
-and provide a ``send`` callback to transmit the actual events.
+The :valadoc:`valum-0.3/Valum.ServerSentEvents.stream_events` function creates
+a handling middleware and provide a :valadoc:`valum-0.3/Valum.ServerSentEvents.SendEventCallback`
+callback to transmit the actual events.
 
 .. code-block:: vala
 

@@ -3,9 +3,9 @@ Basic
 
 .. versionadded:: 0.3
 
-Previously know under the name of *default handling*, the ``basic`` middleware
-provide a conforming handling of raised status codes as described in the
-:doc:`../redirection-and-error` document.
+Previously know under the name of *default handling*, the :valadoc:`valum-0.3/Valum.basic`
+middleware provide a conforming handling of raised status codes as described in
+the :doc:`../redirection-and-error` document.
 
 It aims at providing sane defaults for a top-level middleware.
 
@@ -26,9 +26,9 @@ If an error is caught, it will perform the following tasks:
 
 The payload will have the ``text/plain`` content type encoded with ``UTF-8``.
 
-For privacy and security reason, non-status errors (eg. ``IOError``) will not
-be used for the payload. To enable that for specific errors, it's possible to
-convert them into into a raised status, preferably a ``500 Internal Server Error``.
+For privacy and security reason, non-status errors (eg. :valadoc:`gio-2.0/GLib.IOError`)
+will not be used for the payload. To enable that for specific errors, it's
+possible to convert them into into a raised status, preferably a ``500 Internal Server Error``.
 
 ::
 

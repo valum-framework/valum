@@ -64,7 +64,8 @@ used directly from the handler.
     });
 
 Alternatively, a middleware can be used directly instead of being attached to
-a ``Route``, the processing will happen in a ``NextCallback``.
+a :valadoc:`valum-0.3/Valum.Route`, the processing will happen in
+a :valadoc:`valum-0.3/Valum.NextCallback`.
 
 ::
 
@@ -83,8 +84,8 @@ One typical middleware pattern is to take a continuation that is forwarded on
 success (or any other event) with a single value like it's the case for the
 :doc:`content-negotiation` middlewares.
 
-This can be easily done with ``ForwardCallback<T>``. The generic parameter
-specify the type of the forwarded value.
+This can be easily done with :valadoc:`valum-0.3/Valum.ForwardCallback<T>`. The
+generic parameter specify the type of the forwarded value.
 
 ::
 
@@ -99,7 +100,7 @@ specify the type of the forwarded value.
         // produce a response according to 'content_type'...
     }));
 
-Often, one would simply call the ``next`` continuation, so a ``forward``
+Often, one would simply call the ``next`` continuation, so a :valadoc:`valum-0.3/Valum.forward`
 definition is provided to do that. It is used as a default value for various
 middlewares such that all the following examples are equivalent:
 

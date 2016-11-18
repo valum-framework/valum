@@ -2,7 +2,7 @@ Status
 ======
 
 Thrown status codes (see :doc:`../redirection-and-error`) can be handled with the
-``status`` middleware.
+:valadoc:`valum-0.3/Valum.status` middleware.
 
 The received :doc:`../vsgi/request` and :doc:`../vsgi/response` object are in
 the same state they were when the status was thrown. An additional parameter

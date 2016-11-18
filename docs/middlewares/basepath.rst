@@ -1,8 +1,8 @@
 Basepath
 ========
 
-The ``basepath`` middleware allow a better isolation when composing routers by
-stripping a prefix on the :doc:`../vsgi/request` URI.
+The :valadoc:`valum-0.3/Valum.basepath` middleware allow a better isolation
+when composing routers by stripping a prefix on the :doc:`../vsgi/request` URI.
 
 The middleware strips and forwards requests which match the provided base path.
 If the resulting path is empty, it fallbacks to a root ``/``.
@@ -33,7 +33,7 @@ is restored.
 
 ::
 
-    user.get ("/<int:id>", (req, res, next) => { 
+    user.get ("/<int:id>", (req, res, next) => {
         return next (); // path is '/5'
     });
 
