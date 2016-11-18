@@ -23,12 +23,12 @@ vsgi_lib = library('vsgi-' + api_version, vsgi_sources,
                    dependencies: [glib, gobject, gio, gio_unix, gmodule, soup],
                    vala_args: ['--pkg=posix'] + vala_defines,
                    vala_header: 'vsgi.h',
-                   link_args: '-Wl,-rpath,$$ORIGIN/servers',
                    install: true,
                    install_rpath: '$ORIGIN/vsgi-@0@/servers'.format(api_version))
 
 vsgi = declare_dependency(include_directories: include_directories('.'),
-                          link_with: vsgi_lib)
+                          link_with: vsgi_lib,
+                          link_args: '-Wl,-rpath,@0@/servers'.format(meson.current_build_dir()))
 
 install_headers(meson.current_build_dir() + '/vsgi.h', subdir: 'vsgi-' + api_version)
 install_data(meson.current_build_dir() + '/vsgi-@0@.vapi'.format(api_version), install_dir: 'share/vala/vapi')
