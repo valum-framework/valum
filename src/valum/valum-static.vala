@@ -144,7 +144,7 @@ namespace Valum.Static {
 					if (req.method == Request.HEAD)
 						return res.end ();
 
-					return res.body.splice (file_read_stream, OutputStreamSpliceFlags.CLOSE_SOURCE) > 0;
+					return res.expand_stream (file_read_stream);
 				}, ctx, file);
 			} catch (FileError.ACCES fe) {
 				if (ServeFlags.FORBID_ON_MISSING_RIGHTS in serve_flags) {
@@ -240,10 +240,8 @@ namespace Valum.Static {
 				if (req.method == Request.HEAD)
 					return res.end ();
 
-				var file = resource.open_stream (path, ResourceLookupFlags.NONE);
-
 				// transfer the file
-				return res.body.splice (file, OutputStreamSpliceFlags.CLOSE_SOURCE) > 0;
+				return res.expand_stream (resource.open_stream (path, ResourceLookupFlags.NONE));
 			}, ctx);
 		};
 	}
