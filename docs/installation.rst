@@ -25,12 +25,13 @@ RPM packages for Fedora (22, 23, 24 and rawhide) are available from the
 
     dnf copr enable arteymix/valum-framework
 
-The `valum` package contains the shared library and `valum-devel` contains all
-that is necessary to build an application.
+The ``valum-0.3`` package contains the shared libraries, ``valum-0.3-devel``
+contains all that is necessary to build an application and ``valum-0.3-doc``
+deliver user and API documentation.
 
 .. code-block:: bash
 
-    dnf install valum valum-devel
+    dnf install valum-0.3 valum-0.3-devel valum-0.3-doc
 
 Nix
 ~~~
@@ -38,6 +39,20 @@ Nix
 .. code-block:: bash
 
     nix-shell -p valum
+
+Solus
+-----
+
+.. code-block:: bash
+
+    eopkg it valum
+
+Arch Linux (AUR)
+----------------
+
+.. code-block:: bash
+
+    yaourt valum
 
 Subproject
 ----------
