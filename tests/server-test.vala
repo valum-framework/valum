@@ -31,13 +31,8 @@ public int main (string[] args) {
 		assert ("VSGISCGIServer" == server.get_type ().name ());
 	});
 
-	Test.add_func ("/server/new/mock", () => {
-		var server = Server.@new ("mock");
-		assert ("VSGIMockServer" == server.get_type ().name ());
-	});
-
 	Test.add_func ("/server/fork", () => {
-		var server = Server.@new ("mock");
+		var server = Server.@new ("http");
 		Pid pid;
 		try {
 			pid = server.fork ();

@@ -25,9 +25,3 @@ shared_library('vsgi-scgi', 'vsgi-scgi.vala',
         vala_args: vala_defines,
         install: true,
         install_dir: '@0@/vsgi-@1@/servers'.format(get_option('libdir'), api_version))
-
-shared_library('vsgi-mock', 'vsgi-mock.vala',
-        dependencies: [glib, gobject, gio, soup, vsgi],
-        vala_args: vala_defines,
-        install: true,
-        install_dir: '@0@/vsgi-@1@/servers'.format(get_option('libdir'), api_version))

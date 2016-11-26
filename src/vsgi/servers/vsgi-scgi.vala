@@ -44,63 +44,32 @@ namespace VSGI.SCGI {
 		BAD_CONTENT_LENGTH
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * The connection {@link GLib.InputStream} is ignored as it is being
-	 * typically consumed for its netstring. This is why the constructor
-	 * expects a separate body stream.
-	 */
-	private class Request : CGI.Request {
+	private class AutoCloseIOStream : IOStream {
 
-		/**
-		 * {@inheritDoc}
-		 *
-		 * @param reader stream holding the request body
-		 */
-		public Request (Connection connection, InputStream reader, string[] environment) {
-			Object (connection: connection, environment: environment, body: reader);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	private class Response : CGI.Response {
-
-		public Response (Request request) {
-			base (request);
-		}
-	}
-
-	/**
-	 * Provide an auto-closing SCGI connection.
-	 */
-	private class Connection : VSGI.Connection {
-
-		/**
-		 *
-		 */
-		public IOStream base_connection { construct; get; }
+		public IOStream base_stream { construct; get; }
 
 		public override InputStream input_stream {
 			get {
-				return base_connection.input_stream;
+				return base_stream.input_stream;
 			}
 		}
 
 		public override OutputStream output_stream {
 			get {
-				return base_connection.output_stream;
+				return base_stream.output_stream;
 			}
 		}
 
-		public Connection (Server server, IOStream base_connection) {
-			Object (server: server, base_connection: base_connection);
+		public AutoCloseIOStream (IOStream base_stream) {
+			Object (base_stream: base_stream);
 		}
 
-		~Connection ()  {
-			base_connection.close_async ();
+		public override void dispose () {
+			try {
+				base_stream.close ();
+			} catch (IOError err) {
+				critical ("%s (%s, %d)", err.message, err.domain.to_string (), err.code);
+			}
 		}
 	}
 
@@ -240,7 +209,9 @@ namespace VSGI.SCGI {
 				}
 			}
 
-			var req = new Request (new Connection (this, connection), new BoundedInputStream (reader, content_length), environment);
+			var req = new Request.from_cgi_environment (new AutoCloseIOStream (connection),
+			                                            environment,
+			                                            new BoundedInputStream (reader, content_length));
 			var res = new Response (req);
 
 			yield dispatch_async (req, res);

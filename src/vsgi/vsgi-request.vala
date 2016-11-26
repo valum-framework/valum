@@ -23,7 +23,7 @@ namespace VSGI {
 	 * Request representing a request of a resource.
 	 */
 	[Version (since = "0.1")]
-	public abstract class Request : Object {
+	public class Request : Object {
 
 		/**
 		 * HTTP/1.1 standard methods.
@@ -68,13 +68,13 @@ namespace VSGI {
 		 * Connection containing raw streams.
 		 */
 		[Version (since = "0.2")]
-		public Connection connection { construct; get; }
+		public IOStream connection { construct; get; }
 
 		/**
 		 * Request HTTP version.
 		 */
 		[Version (since = "0.3")]
-		public abstract Soup.HTTPVersion http_version { get; }
+		public Soup.HTTPVersion http_version { get; construct; default = Soup.HTTPVersion.@1_1; }
 
 		/**
 		 * Identifier for the gateway (eg. CGI/1.1).
@@ -83,7 +83,18 @@ namespace VSGI {
 		 * slash '/'.
 		 */
 		[Version (since = "0.3")]
-		public abstract string gateway_interface { owned get; }
+		public string gateway_interface { get; construct; }
+
+		/**
+		 * Tell if this is a CGI-like protocol.
+		 */
+		public bool is_cgi { get; construct; default = false; }
+
+		/**
+		 * CGI environment if this is a CGI-like protocol.
+		 */
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] environment { get; construct; default = {}; }
 
 		/**
 		 * Request HTTP method
@@ -95,7 +106,7 @@ namespace VSGI {
 		 * this class.
 		 */
 		[Version (since = "0.1")]
-		public abstract string method { owned get; }
+		public string method { get; construct; default = "GET"; }
 
 		/**
 		 * Request URI.
@@ -104,7 +115,7 @@ namespace VSGI {
 		 * made available through this property.
 		 */
 		[Version (since = "0.1")]
-		public abstract Soup.URI uri { get; }
+		public Soup.URI uri { get; construct; }
 
 		/**
 		 * HTTP query parsed if encoded according to percent-encoding,
@@ -114,7 +125,7 @@ namespace VSGI {
 		 * empty query (eg. '/path/?' instead of '/path/')
 		 */
 		[Version (since = "0.1")]
-		public abstract HashTable<string, string>? query { get; }
+		public HashTable<string, string>? query { get; construct set; default = null; }
 
 		/**
 		 * Lookup a key in the request query.
@@ -132,7 +143,7 @@ namespace VSGI {
 		 * Request headers.
 		 */
 		[Version (since = "0.1")]
-		public Soup.MessageHeaders headers { get; protected construct set; }
+		public Soup.MessageHeaders headers { get; construct; default = new Soup.MessageHeaders (Soup.MessageHeadersType.REQUEST); }
 
 		/**
 		 * Request cookies extracted from the 'Cookie' header.
@@ -217,6 +228,114 @@ namespace VSGI {
 			}
 			construct {
 				_body = value ?? connection.input_stream;
+			}
+		}
+
+		[Version (experimental = true)]
+		public Request (IOStream                   connection,
+		                string                     method,
+		                Soup.URI                   uri,
+		                HashTable<string, string>? query = null,
+		                InputStream?               body  = null) {
+			base (connection: connection,
+			      method:     method,
+			      uri:        uri,
+			      query:      query,
+			      body:       body);
+		}
+
+		[Version (experimental = true)]
+		public Request.with_method (string method, Soup.URI uri) {
+			base (connection: new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ()),
+			      method:     method,
+			      uri:        uri);
+		}
+
+		[Version (experimental = true)]
+		public Request.with_uri (Soup.URI uri) {
+			base (connection: new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ()),
+			      uri:        uri);
+		}
+
+		[Version (experimental = true)]
+		public Request.with_query (HashTable<string, string>? query) {
+			base (connection: new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ()),
+			      query:      query);
+		}
+
+		[Version (experimental = true)]
+		public Request.from_cgi_environment (IOStream connection, string[] environment, InputStream? body = null) {
+			base (connection:        connection,
+			      uri:               new Soup.URI ("http://localhost/"),
+			      http_version:      Environ.get_variable (environment, "SERVER_PROTOCOL") == "HTTP/1.1" ? Soup.HTTPVersion.@1_1 : Soup.HTTPVersion.@1_0,
+			      gateway_interface: Environ.get_variable (environment, "GATEWAY_INTERFACE") ?? "CGI/1.1",
+			      is_cgi:            true,
+			      environment:       environment,
+			      method:            Environ.get_variable (environment, "REQUEST_METHOD") ?? "GET",
+			      body:              body);
+
+			var https           = Environ.get_variable (environment, "HTTPS");
+			var path_translated = Environ.get_variable (environment, "PATH_TRANSLATED");
+			if (https != null && https.length > 0 || path_translated != null && path_translated.has_prefix ("https://"))
+				uri.set_scheme ("https");
+			else
+				uri.set_scheme ("http");
+
+			uri.set_user (Environ.get_variable (environment, "REMOTE_USER"));
+			uri.set_host (Environ.get_variable (environment, "SERVER_NAME"));
+
+			var port = Environ.get_variable (environment, "SERVER_PORT");
+			if (port != null)
+				uri.set_port (int.parse (port));
+
+			var path_info   = Environ.get_variable (environment, "PATH_INFO");
+			var request_uri = Environ.get_variable (environment, "REQUEST_URI");
+			if (path_info != null && path_info.length > 0)
+				uri.set_path (path_info);
+			else if (request_uri != null && request_uri.length > 0)
+				uri.set_path (request_uri.split ("?", 2)[0]); // strip the query
+			else
+				uri.set_path ("/");
+
+			// raw & parsed HTTP query
+			var query_string = Environ.get_variable (environment, "QUERY_STRING");
+			if (query_string != null && query_string.length > 0) {
+				uri.set_query (query_string);
+				query = Soup.Form.decode (query_string);
+			} else if (path_translated != null && "?" in path_translated) {
+				uri.set_query (path_translated.split ("?", 2)[1]);
+				query = Soup.Form.decode (path_translated.split ("?", 2)[1]);
+			} else if (request_uri != null && "?" in request_uri) {
+				uri.set_query (request_uri.split ("?", 2)[1]);
+				query = Soup.Form.decode (request_uri.split ("?", 2)[1]);
+			}
+
+			var content_type = Environ.get_variable (environment, "CONTENT_TYPE") ?? "application/octet-stream";
+			var @params = Soup.header_parse_param_list (content_type);
+			headers.set_content_type (content_type.split (";", 2)[0], @params);
+
+			//
+			int64 content_length;
+			if (int64.try_parse (Environ.get_variable (environment, "CONTENT_LENGTH") ?? "0",
+			                     out content_length)) {
+				headers.set_content_length (content_length);
+			}
+
+			// extract HTTP headers, they are prefixed by 'HTTP_' in environment variables
+			foreach (var variable in environment) {
+				var parts = variable.split ("=", 2);
+				if (parts[0].has_prefix ("HTTP_")) {
+					this.headers.append (parts[0].substring (5).replace ("_", "-").casefold (), parts[1]);
+				}
+			}
+		}
+
+		construct {
+			if (_method == null) {
+				_method = "GET";
+			}
+			if (_headers == null) {
+				_headers = new Soup.MessageHeaders (Soup.MessageHeadersType.REQUEST);
 			}
 		}
 

@@ -63,22 +63,10 @@ namespace VSGI.HTTP {
 	 */
 	private class Request : VSGI.Request {
 
-		private HashTable<string, string>? _query;
-
 		/**
 		 * Message underlying this request.
 		 */
 		public Message message { construct; get; }
-
-		public override HTTPVersion http_version { get { return this.message.http_version; } }
-
-		public override string gateway_interface { owned get { return "HTTP/1.1"; } }
-
-		public override string method { owned get { return this.message.method ; } }
-
-		public override URI uri { get { return this.message.uri; } }
-
-		public override HashTable<string, string>? query { get { return this._query; } }
 
 		/**
 		 * {@inheritDoc}
@@ -90,8 +78,14 @@ namespace VSGI.HTTP {
 		 * @param query      parsed HTTP query provided by {@link Soup.ServerCallback}
 		 */
 		public Request (Connection connection, Message msg, HashTable<string, string>? query) {
-			Object (connection: connection, message: msg, headers: msg.request_headers);
-			this._query = query;
+			Object (connection:        connection,
+			        message:           msg,
+			        http_version:      msg.http_version,
+			        gateway_interface: "HTTP/1.1",
+			        method:            msg.method,
+			        uri:               msg.uri,
+			        query:             query,
+			        headers:           msg.request_headers);
 		}
 	}
 
@@ -147,7 +141,7 @@ namespace VSGI.HTTP {
 		}
 	}
 
-	private class Connection : VSGI.Connection {
+	private class Connection : IOStream {
 
 		public Soup.Server soup_server { construct; get; }
 
@@ -176,8 +170,8 @@ namespace VSGI.HTTP {
 		 *                until the connection lives
 		 * @param message message wrapped to provide the IOStream
 		 */
-		public Connection (Server server, Soup.Server soup_server, Message message) {
-			Object (server: server, soup_server: soup_server, message: message);
+		public Connection (Soup.Server soup_server, Message message) {
+			Object (soup_server: soup_server, message: message);
 
 			this._input_stream  = new MemoryInputStream.from_data (message.request_body.flatten ().data, null);
 			this._output_stream = new MessageBodyOutputStream (soup_server, message);
@@ -264,7 +258,7 @@ namespace VSGI.HTTP {
 
 			// register a catch-all handler
 			server.add_handler (null, (server, msg, path, query, client) => {
-				var connection = new Connection (this, server, msg);
+				var connection = new Connection (server, msg);
 
 				msg.set_status (Status.OK);
 

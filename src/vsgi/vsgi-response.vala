@@ -23,7 +23,7 @@ namespace VSGI {
 	 * Response representing a request resource.
 	 */
 	[Version (since = "0.1")]
-	public abstract class Response : Object {
+	public class Response : Object {
 
 		/**
 		 * Request to which this response is responding.
@@ -47,7 +47,7 @@ namespace VSGI {
 		 * Response headers.
 		 */
 		[Version (since = "0.1")]
-		public MessageHeaders headers { get; protected construct set; }
+		public MessageHeaders headers { get; construct; default = new Soup.MessageHeaders (Soup.MessageHeadersType.RESPONSE); }
 
 		/**
 		 * Response cookies extracted from the 'Set-Cookie' header.
@@ -120,11 +120,41 @@ namespace VSGI {
 		[Version (since = "0.3")]
 		public signal void wrote_headers (Soup.MessageHeaders headers);
 
+		[Version (experimental = true)]
+		public Response (Request request) {
+			base (request: request);
+		}
+
+		[Version (experimental = true)]
+		public Response.with_status (Request request, uint status) {
+			base (request: request, status: status);
+		}
+
+		construct {
+			if (headers == null) {
+				_headers = new MessageHeaders (MessageHeadersType.REQUEST);
+			}
+		}
+
 		/**
 		 * Send the status line to the client.
 		 */
 		[Version (since = "0.3")]
-		protected abstract bool write_status_line (HTTPVersion http_version, uint status, string reason_phrase, out size_t bytes_written, Cancellable? cancellable = null) throws IOError;
+		protected virtual bool write_status_line (HTTPVersion  http_version,
+		                                          uint         status,
+		                                          string       reason_phrase,
+		                                          out size_t   bytes_written,
+		                                          Cancellable? cancellable = null) throws IOError {
+			if (request.is_cgi) {
+				return request.connection.output_stream.write_all ("Status: %u %s\r\n".printf (status, reason_phrase).data,
+				                                                   out bytes_written,
+				                                                   cancellable);
+			} else {
+				return request.connection.output_stream.write_all ("HTTP/%s %u %s\r\n".printf (http_version == Soup.HTTPVersion.@1_0 ? "1.0" : "1.1", status, reason_phrase).data,
+				                                                   out bytes_written,
+				                                                   cancellable);
+			}
+		}
 
 		[Version (since = "0.3")]
 		protected virtual async bool write_status_line_async (HTTPVersion  http_version,
@@ -140,9 +170,21 @@ namespace VSGI {
 		 * Send headers to the client.
 		 */
 		[Version (since = "0.3")]
-		protected abstract bool write_headers (MessageHeaders headers,
+		protected virtual bool write_headers (MessageHeaders headers,
 		                                       out size_t     bytes_written,
-		                                       Cancellable?   cancellable = null) throws IOError;
+		                                       Cancellable?   cancellable = null) throws IOError {
+			var head = new StringBuilder ();
+
+			// headers
+			headers.@foreach ((name, header) => {
+				head.append_printf ("%s: %s\r\n", name, header);
+			});
+
+			// newline preceeding the body
+			head.append ("\r\n");
+
+			return request.connection.output_stream.write_all (head.str.data, out bytes_written, cancellable);
+		}
 
 		[Version (since = "0.3")]
 		protected virtual async bool write_headers_async (MessageHeaders headers,
@@ -507,6 +549,17 @@ namespace VSGI {
 			}
 
 			public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
+				if (response.request.is_cgi) {
+					try {
+						// write head synchronously
+						size_t bytes_written;
+						response.write_head (out bytes_written);
+					} catch (IOError err) {
+						critical ("Could not write the head in the connection stream: %s (%s, %d).", err.message,
+						                                                                             err.domain.to_string (),
+						                                                                             err.code);
+					}
+				}
 				return base_stream.write (buffer, cancellable);
 			}
 

@@ -133,34 +133,6 @@ namespace VSGI.FastCGI {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	private class Request : CGI.Request {
-
-		/**
-		 * {@inheritDoc}
-		 *
-		 * Initialize FastCGI-specific environment variables.
-		 */
-		public Request (Connection connection, string[] environment) {
-			base (connection, environment);
-		}
-	}
-
-	/**
-	 * FastCGI Response
-	 */
-	private class Response : CGI.Response {
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public Response (Request req) {
-			base (req);
-		}
-	}
-
 	private errordomain RequestError {
 		FAILED
 	}
@@ -240,7 +212,7 @@ namespace VSGI.FastCGI {
 
 		private async void accept_loop_async (int fd) {
 			do {
-				var connection = new Connection (this, fd);
+				var connection = new Connection (fd);
 
 				try {
 					if (!yield connection.init_async (Priority.DEFAULT, null))
@@ -250,7 +222,7 @@ namespace VSGI.FastCGI {
 					break;
 				}
 
-				var req = new Request (connection, connection.request.environment);
+				var req = new Request.from_cgi_environment (connection, connection.request.environment);
 				var res = new Response (req);
 
 				dispatch_async.begin (req, res, Priority.DEFAULT, (obj, result) => {
@@ -266,7 +238,7 @@ namespace VSGI.FastCGI {
 		/**
 		 * {@inheritDoc}
 		 */
-		private class Connection : VSGI.Connection, AsyncInitable {
+		private class Connection : IOStream, AsyncInitable {
 
 			public int fd { construct; get; }
 
@@ -287,8 +259,8 @@ namespace VSGI.FastCGI {
 				}
 			}
 
-			public Connection (Server server, int fd) {
-				Object (server: server, fd: fd);
+			public Connection (int fd) {
+				Object (fd: fd);
 			}
 
 			public async bool init_async (int priority = Priority.DEFAULT, Cancellable? cancellable = null) throws GLib.Error {

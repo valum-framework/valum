@@ -18,7 +18,7 @@ soup = dependency('libsoup-2.4', version: '>=2.44')
 
 vala_defines = []
 
-# provide 'OutputStream.write_all_async'
+# provide 'OutputStream.write_all_async' and 'SimpleIOStream'
 if gio.version().version_compare('>=2.44')
     vala_defines += '--define=GIO_2_44'
 endif

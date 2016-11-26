@@ -17,7 +17,7 @@
 
 using Valum;
 using Valum.ContentNegotiation;
-using VSGI.Mock;
+using VSGI;
 
 public int main (string[] args) {
 	Test.init (ref args);

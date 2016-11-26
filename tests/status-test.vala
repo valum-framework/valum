@@ -16,7 +16,7 @@
  */
 
 using GLib;
-using VSGI.Mock;
+using VSGI;
 using Valum;
 
 public int main (string[] args) {

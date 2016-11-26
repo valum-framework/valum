@@ -18,7 +18,7 @@
 using GLib;
 using Valum;
 using Valum.ServerSentEvents;
-using VSGI.Mock;
+using VSGI;
 
 /**
  * @since 0.3
@@ -30,7 +30,7 @@ public void test_server_sent_events_send () {
 		send ("important", "some event", "1234", TimeSpan.MILLISECOND);
 	}));
 
-	var connection = new Connection (new Server ());
+	var connection = new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ());
 	var req = new Request (connection, "GET", new Soup.URI ("http://127.0.0.1:3003/"));
 	var res = new Response (req);
 
@@ -50,8 +50,8 @@ public void test_server_sent_events_send () {
 		var expected_message = resources_lookup_data ("/data/server-sent-events/send-expected-message",
 													  ResourceLookupFlags.NONE);
 
-		var data = connection.get_memory_output_stream ().steal_data ();
-		data.length = (int) connection.get_memory_output_stream ().get_data_size ();
+		var data = (connection.output_stream as MemoryOutputStream).steal_data ();
+		data.length = (int) (connection.output_stream as MemoryOutputStream).get_data_size ();
 
 		assert (expected_message.compare (new Bytes (data)) == 0);
 	} catch (Error err) {
@@ -66,7 +66,7 @@ public void test_server_sent_events_send_multiline () {
 		send (null, "some event\nmore details");
 	}));
 
-	var connection = new Connection (new Server ());
+	var connection = new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ());
 	var req = new Request (connection, "GET", new Soup.URI ("http://127.0.0.1:3003/"));
 	var res = new Response (req);
 
@@ -86,8 +86,8 @@ public void test_server_sent_events_send_multiline () {
 		var expected_message = resources_lookup_data ("/data/server-sent-events/send-multiline-expected-message",
 													  ResourceLookupFlags.NONE);
 
-		var data = connection.get_memory_output_stream ().steal_data ();
-		data.length = (int) connection.get_memory_output_stream ().get_data_size ();
+		var data = (connection.output_stream as MemoryOutputStream).steal_data ();
+		data.length = (int) (connection.output_stream as MemoryOutputStream).get_data_size ();
 
 		assert (expected_message.compare (new Bytes (data)) == 0);
 	} catch (Error err) {
@@ -102,7 +102,7 @@ public void test_server_sent_events_skip_on_head () {
 		assert_not_reached ();
 	}));
 
-	var connection = new Connection (new Server ());
+	var connection = new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ());
 	var req = new Request (connection, "HEAD", new Soup.URI ("http://127.0.0.1:3003/"));
 	var res = new Response (req);
 
