@@ -20,9 +20,10 @@ vsgi_sources = files(
 vsgi_lib = library('vsgi-' + api_version, vsgi_sources,
                    dependencies: [glib, gobject, gio, gio_unix, gmodule, soup, libsystemd, openssl, posix],
                    vala_header: 'vsgi.h',
+                   vala_gir: 'VSGI-@0@.gir'.format(api_version),
                    install: true,
                    install_rpath: '$ORIGIN/vsgi-@0@/servers'.format(api_version),
-                   install_dir: [true, true, true])
+                   install_dir: [true, true, true, true])
 
 install_data('vsgi-@0@.deps'.format(api_version),
              install_dir: 'share/vala/vapi')
@@ -30,6 +31,17 @@ install_data('vsgi-@0@.deps'.format(api_version),
 vsgi = declare_dependency(include_directories: include_directories('.'),
                           link_with: vsgi_lib,
                           link_args: '-Wl,-rpath,@0@/servers'.format(meson.current_build_dir()))
+
+g_ir_compiler = find_program('g-ir-compiler', required: false)
+if g_ir_compiler.found()
+    custom_target('VSGI typelib',
+                  command: [g_ir_compiler, '--shared-library', vsgi_lib.full_path(), '--output', '@OUTPUT@', '@INPUT@'],
+                  input: join_paths(meson.current_build_dir(), 'VSGI-@0@.gir'.format(api_version)),
+                  output: 'VSGI-@0@.typelib'.format(api_version),
+                  depends: vsgi_lib,
+                  install: true,
+                  install_dir: join_paths(get_option('libdir'), 'girepository-1.0'))
+endif
 
 vsgi_private_requires = ['gio-unix-2.0', 'gmodule-2.0']
 

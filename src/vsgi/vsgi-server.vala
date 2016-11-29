@@ -79,6 +79,20 @@ namespace VSGI {
 		}
 
 		/**
+		 * Instantiate a new {@link VSGI.Server} with an initial handler.
+		 *
+		 * This constructor is merely meant for GI, so {@link Server.new} instead
+		 * with a keyword argument for the handler.
+		 *
+		 * This will likely be removed in the future once we binding generation
+		 * will be support the above pattern.
+		 */
+		[Version (since = "0.4", experimental = true)]
+		public static new Server? new_with_handler (string name, Handler handler) {
+			return @new (name, handler: handler);
+		}
+
+		/**
 		 * Handler processing incoming connections.
 		 */
 		[Version (since = "0.3")]
