@@ -38,6 +38,11 @@ test('loader', vsgi_loader,
      args: ['--directory', meson.current_build_dir(), '--server=cgi', 'loader-test'],
      env: ['VSGI_SERVER_PATH=src/vsgi/servers'])
 
+python = find_program('python3')
+test('gi', python,
+     args: meson.current_source_dir() + '/gi-test.py' ,
+     env: ['GI_TYPELIB_PATH=' + meson.current_build_dir() + '/../src/vsgi'])
+
 # Valum tests
 test('authenticate', executable('authenticate-test', ['authenticate-test.vala'],
                             dependencies: [glib, gobject, gio, soup, vsgi, valum]))

@@ -284,10 +284,10 @@ namespace VSGI {
 			string[] empty_env = {}; // this is a hack for 'valac-0.24' and 'valac-0.26'
 			base (connection:  connection,
 			      environment: empty_env,
-			      method:      method,
-			      uri:         uri,
-			      query:       query,
-			      body:        body);
+			      method:     method,
+			      uri:        uri,
+			      query:      query,
+			      body:       body);
 		}
 
 		/**
