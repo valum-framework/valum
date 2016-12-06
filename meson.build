@@ -1,5 +1,5 @@
 project('Valum', 'vala', 'c',
-        version: '0.3.0',
+        version: '0.3.1',
         license: 'LGPL',
         meson_version: '>=0.36')
 
