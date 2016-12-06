@@ -16,8 +16,8 @@ production environment.
 Fedora
 ~~~~~~
 
-RPM packages for Fedora (22, 23, 24 and rawhide) are available from the
-`arteymix/valum-framework`_ Copr repository.
+RPM packages for Fedora (24, 25 and rawhide) and EPEL 7 (CentOS, RHEL) are
+available from the `arteymix/valum-framework`_ Copr repository.
 
 .. _arteymix/valum-framework: https://copr.fedoraproject.org/coprs/arteymix/valum-framework/
 
@@ -41,14 +41,14 @@ Nix
     nix-shell -p valum
 
 Solus
------
+~~~~~
 
 .. code-block:: bash
 
     eopkg it valum
 
 Arch Linux (AUR)
-----------------
+~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
