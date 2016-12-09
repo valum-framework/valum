@@ -235,7 +235,7 @@ namespace VSGI.SCGI {
 					yield reader.fill_async ((ssize_t) content_length - (ssize_t) reader.get_available (), priority, cancellable);
 				}
 
-				if (content_length < reader.get_available ()) {
+				if (reader.get_available () < content_length) {
 					throw new Error.FAILED ("The request body (%sB) could not be buffered.",
 					                        content_length.to_string ());
 				}
