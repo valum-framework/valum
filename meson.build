@@ -5,11 +5,9 @@ project('Valum', 'vala', 'c',
 
 api_version = '0.3'
 
-if not meson.is_subproject()
-add_global_arguments(['--enable-experimental',
-                      '--enable-deprecated'],
-                     language: 'vala')
-endif
+add_project_arguments(['--enable-experimental',
+                       '--enable-deprecated'],
+                      language: 'vala')
 
 glib = dependency('glib-2.0', version: '>=2.40')
 gobject = dependency('gobject-2.0', version: '>=2.40')
