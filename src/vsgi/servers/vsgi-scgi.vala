@@ -168,6 +168,11 @@ namespace VSGI.SCGI {
 					throw new Error.FAILED ("Could not read key at position '%" + size_t.FORMAT + "' in the netstring.",
 					                        read);
 				}
+				int idx = key.index_of_char ('=');
+				if (idx != -1) {
+					throw new Error.MALFORMED_NETSTRING ("The key cannot contain an '=' character at position '%s" + size_t.FORMAT + "' in the netstring.",
+					                                     read + idx);
+				}
 				if (reader.read_byte () != '\0') {
 					throw new Error.MALFORMED_NETSTRING ("Missing EOF following a key at position '%" + size_t.FORMAT + "' in the netstring.",
 					                                     read);
