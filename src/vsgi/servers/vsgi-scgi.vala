@@ -196,7 +196,11 @@ namespace VSGI.SCGI {
 				environment = Environ.set_variable (environment, key, @value);
 			}
 
-			assert (read == size);
+			if (read > size) {
+				throw new Error.MALFORMED_NETSTRING ("The netstring is bigger than declared: expected '%" + size_t.FORMAT + "B' but consumed '" + size_t.FORMAT + "B'.",
+				                                     size,
+				                                     read);
+			}
 
 			// consume the comma following a chunk
 			if (reader.read_byte () != ',') {
