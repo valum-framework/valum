@@ -21,4 +21,4 @@ RUN unzip /tmp/ninja-linux.zip -d /usr/local/bin
 WORKDIR /valum
 ADD . .
 
-RUN mkdir build && meson --prefix=/usr --buildtype=release . build && ninja -C build && ninja -C build install
+RUN mkdir build && meson --prefix=/usr --buildtype=release . build && ninja -C build && ninja -C build test && ninja -C build install
