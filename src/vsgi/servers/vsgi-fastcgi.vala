@@ -253,11 +253,13 @@ namespace VSGI.FastCGI {
 				var req = new Request (connection, connection.request.environment);
 				var res = new Response (req);
 
-				try {
-					dispatch (req, res);
-				} catch (GLib.Error err) {
-					critical (err.message);
-				}
+				dispatch_async.begin (req, res, Priority.DEFAULT, (obj, result) => {
+					try {
+						dispatch_async.end (result);
+					} catch (Error err) {
+						critical ("%s", err.message);
+					}
+				});
 			} while (true);
 		}
 

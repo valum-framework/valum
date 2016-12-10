@@ -69,28 +69,20 @@ namespace VSGI.CGI {
 				throw new IOError.NOT_SUPPORTED ("The CGI server only support listening from standard streams.");
 			}
 
-			Idle.add (() => {
-				var connection = new Connection (this,
-				                                 new UnixInputStream (stdin.fileno (), true),
-				                                 new UnixOutputStream (stdout.fileno (), true));
+			var connection = new Connection (this,
+											 new UnixInputStream (stdin.fileno (), true),
+											 new UnixOutputStream (stdout.fileno (), true));
 
-				var req = new Request (connection, Environ.@get ());
-				var res = new Response (req);
+			var req = new Request (connection, Environ.@get ());
+			var res = new Response (req);
 
-				// handle a single request and quit
+			// handle a single request and quit
+			dispatch_async.begin (req, res, Priority.DEFAULT, (obj, result) => {
 				try {
-					dispatch (req, res);
+					dispatch_async.end (result);
 				} catch (Error err) {
-					critical (err.message);
-				}
-
-				return false;
-			});
-
-			Idle.add (() => {
-				if (MainContext.@default ().pending ()) {
-					return true;
-				} else {
+					critical ("%s", err.message);
+				} finally {
 					Process.exit (0);
 				}
 			});

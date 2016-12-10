@@ -284,11 +284,13 @@ namespace VSGI.HTTP {
 					}
 				}
 
-				try {
-					dispatch (req, res);
-				} catch (GLib.Error err) {
-					critical ("%s", err.message);
-				}
+				dispatch_async.begin (req, res, Priority.DEFAULT, (obj, result) => {
+					try {
+						dispatch_async.end (result);
+					} catch (Error err) {
+						critical ("%s", err.message);
+					}
+				});
 			});
 
 			if (server_header != null)

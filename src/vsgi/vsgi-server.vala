@@ -158,24 +158,27 @@ namespace VSGI {
 		 * Once dispatched, the {@link Response.head_written} property is
 		 * expected to be true unless its reference still held somewhere else
 		 * and the return value is 'true'.
-		 *
-		 * @return true if the request and response were dispatched
 		 */
 		[Version (since = "0.3")]
-		protected bool dispatch (Request req, Response res) throws Error {
-			return handler.handle (req, res);
-		}
-
-		/**
-		 * Dispatch the request asynchronously.
-		 *
-		 * Note that this is equivalent to calling {@link VSGI.Server.dispatch}
-		 * for the moment, but an eventual release with support of asynchronous
-		 * delegates would literally yield from the application callback.
-		 */
-		[Version (since = "0.3")]
-		protected async bool dispatch_async (Request req, Response res) throws Error {
-			return dispatch (req, res);
+		protected async bool dispatch_async (Request req, Response res, int priority = GLib.Priority.DEFAULT) throws Error {
+			var result = false;
+			Error? err = null;
+			IOSchedulerJob.push ((job) => {
+				var _req = req;
+				var _res = res;
+				try {
+					result = handler.handle (_req, _res);
+				} catch (Error _err) {
+					err = _err;
+				}
+				return job.send_to_mainloop (dispatch_async.callback);
+			}, priority);
+			yield;
+			if (err == null) {
+				return result;
+			} else {
+				throw err;
+			}
 		}
 
 		/**
