@@ -101,7 +101,7 @@ namespace VSGI.SCGI {
 		}
 
 		~Connection ()  {
-			base_connection.close ();
+			base_connection.close_async ();
 		}
 	}
 
