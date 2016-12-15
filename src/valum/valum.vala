@@ -21,7 +21,7 @@ using VSGI;
 /**
  * Valum is a Web micro-framework written in Vala.
  */
-[CCode (gir_namespace = "Valum", gir_version = "0.3")]
+[CCode (gir_namespace = "Valum", gir_version = "0.4")]
 namespace Valum {
 
 	/**

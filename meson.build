@@ -1,9 +1,9 @@
 project('Valum', 'vala', 'c',
-        version: '0.3.3',
+        version: '0.4.0-dev',
         license: 'LGPL',
         meson_version: '>=0.36')
 
-api_version = '0.3'
+api_version = '0.4'
 
 add_project_arguments(['--enable-experimental',
                        '--enable-deprecated'],
