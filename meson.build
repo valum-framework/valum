@@ -29,6 +29,7 @@ if soup.version().version_compare('>=2.48')
 endif
 
 subdir('src')
+subdir('bin')
 subdir('tests')
 subdir('docs')
 if get_option('enable_examples')
