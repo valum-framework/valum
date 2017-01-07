@@ -56,22 +56,20 @@ namespace VSGI {
 								"supported for the '--server' option. They correspond to 'http', 'fastcgi' and\n" +
 								"'scgi' values respectively.\n" +
 								"\n" +
-								"MODULE is the shared library name without the 'lib' prefix and extension and\n" +
-								"SYMBOL identifies a symbol in the library respecting the 'ApplicationCallback'\n" +
-								"signature.\n" +
+								"MODULE is the shared library name without the 'lib' prefix and extension suffix.\n" +
 								"\n" +
 								"SERVER_OPTION is forwarded to the server and must be separated from other\n" +
 								"arguments by a '--' delimiter.");
 			parser.add_main_entries (options, null);
 			parser.parse (ref args);
 		} catch (OptionError err) {
-			stderr.puts (err.message);
+			stderr.printf ("%s, specify '--help' for all available options.\n", err.message);
 			return 1;
 		}
 
 		// count the remaining arguments once parsed
 		if (args.length < 2) {
-			stderr.printf ("Module is missing.\n");
+			stderr.printf ("Module is missing, specify '--help' for detailed usage.\n");
 			return 1;
 		}
 
