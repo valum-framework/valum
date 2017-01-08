@@ -171,3 +171,28 @@ beyond.
 
     vsgi-loader --server=fastcgi app -- --help
 
+Initialization
+~~~~~~~~~~~~~~
+
+To perform initialization, one can implement the :valadoc:`gio-2.0/GLib.Initable`
+interface, it will automatically be called by the loader.
+
+::
+
+    [ModuleInit]
+    public Type handler_init (TypeModule type_module) {
+        return typeof (App);
+    }
+
+    public class App : Handler, Initable {
+
+        public Gda.Connection database { get; construct; }
+
+        public bool init (Cancellable? cancellable = null) throws Error {
+            database.open ();
+        }
+
+        public bool handle (Request req, Response res) {
+            return res.expand_utf8 ("Hello world!");
+        }
+    }

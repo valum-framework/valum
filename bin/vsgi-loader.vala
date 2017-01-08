@@ -80,8 +80,6 @@ namespace VSGI {
 			return 1;
 		}
 
-		var app = Object.new (app_module.handler_type) as Handler;
-
 		// use the module:symbol as zeroth argument
 		string[] server_args = {args[1]};
 
@@ -90,7 +88,20 @@ namespace VSGI {
 			foreach (var arg in args[3:args.length])
 				server_args += arg;
 
-		var server = Server.new (server, handler: app);
+		var server = Server.new (server);
+
+		try {
+			if (app_module.handler_type.is_a (typeof (Initable))) {
+				server.handler = Initable.new (app_module.handler_type) as Handler;
+			} else {
+				server.handler = Object.new (app_module.handler_type) as Handler;
+			}
+		} catch (Error err) {
+			stderr.printf ("Could not initialize the handler: %s (%s, %d).", err.message,
+			                                                                 err.domain.to_string (),
+			                                                                 err.code);
+			return 1;
+		}
 
 		if (live_reload) {
 			try {
@@ -105,10 +116,20 @@ namespace VSGI {
 							message ("Reloading '%s'...", file.get_path ());
 							app_module.unload ();
 							if (app_module.load ()) {
-								server.handler = Object.new (app_module.handler_type) as Handler;
-								message ("Reloaded '%s'.", file.get_path ());
+								try {
+									if (app_module.handler_type.is_a (typeof (Initable))) {
+										server.handler = Initable.new (app_module.handler_type) as Handler;
+									} else {
+										server.handler = Object.new (app_module.handler_type) as Handler;
+									}
+									message ("Reloaded '%s'.", file.get_path ());
+								} catch (Error err) {
+									critical ("Could not initialize the reloaded handler: %s (%s, %d).", err.message,
+									                                                                     err.domain.to_string (),
+									                                                                     err.code);
+								}
 							} else {
-								critical ("Failed to reload application.");
+								critical ("Could not reload the handler.");
 							}
 						}
 					});
