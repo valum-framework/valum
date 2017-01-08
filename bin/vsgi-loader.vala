@@ -76,6 +76,7 @@ namespace VSGI {
 		var app_module = new HandlerModule (directory, args[1]);
 
 		if (!app_module.load ()) {
+			stderr.printf ("Could not load the handler module.");
 			return 1;
 		}
 
@@ -114,7 +115,8 @@ namespace VSGI {
 					return false;
 				});
 			} catch (Error err) {
-				warning ("%s", err.message);
+				stderr.printf ("Could not setup live reloading: %s.", err.message);
+				return 1;
 			}
 		}
 
