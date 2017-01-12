@@ -131,12 +131,13 @@ namespace Valum {
 					} else {
 						missing     = true;
 						missing_key = key;
+						url.append (key);
 					}
 				}
 			}
 
 			if (missing) {
-				error ("The parameter '%s' was not provided.", missing_key);
+				critical ("The parameter '%s' was not provided.", missing_key);
 			}
 
 			return url.str;
