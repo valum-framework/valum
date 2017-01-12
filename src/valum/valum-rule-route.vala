@@ -136,7 +136,7 @@ namespace Valum {
 			}
 
 			if (missing) {
-				error ("The parameter '%s' was not provided.", missing_key);
+				critical ("The parameter '%s' was not provided.", missing_key);
 			}
 
 			return url.str;
