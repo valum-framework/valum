@@ -82,11 +82,7 @@ namespace VSGI {
 		[Version (since = "0.2")]
 		public bool head_written { get { return _head_written > 0; } }
 
-		/**
-		 * Placeholder for the response body.
-		 */
-		[Version (since = "0.3", experimental = true)]
-		protected OutputStream? _body = null;
+		private OutputStream _body = null;
 
 		/**
 		 * Response body.
@@ -103,9 +99,12 @@ namespace VSGI {
 		 * return the base_stream.
 		 */
 		[Version (since = "0.2")]
-		public virtual OutputStream body {
-			get {
-				return _body ?? this.request.connection.output_stream;
+		public OutputStream body {
+			owned get {
+				return new BodyOutputStream (this, _body);
+			}
+			construct {
+				_body = value ?? request.connection.output_stream;
 			}
 		}
 
@@ -496,6 +495,27 @@ namespace VSGI {
 				                                                                             err.code);
 			} finally {
 				base.dispose ();
+			}
+		}
+
+		private class BodyOutputStream : FilterOutputStream {
+
+			public Response response { get; construct; }
+
+			public BodyOutputStream (Response response, OutputStream base_stream) {
+				Object (response: response, base_stream: base_stream, close_base_stream: false);
+			}
+
+			public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
+				return base_stream.write (buffer, cancellable);
+			}
+
+			public override bool close (Cancellable? cancellable = null) throws IOError {
+				return base_stream.close (cancellable);
+			}
+
+			public override void dispose () {
+				// prevent close-on-dispose
 			}
 		}
 	}

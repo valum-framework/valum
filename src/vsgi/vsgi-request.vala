@@ -200,11 +200,7 @@ namespace VSGI {
 			return found;
 		}
 
-		/**
-		 * Placeholder for the request body.
-		 */
-		[Version (since = "0.3", experimental = true)]
-		protected InputStream? _body = null;
+		private InputStream _body = null;
 
 		/**
 		 * Request body.
@@ -216,8 +212,11 @@ namespace VSGI {
 		 */
 		[Version (since = "0.2")]
 		public InputStream body {
-			get {
-				return _body ?? this.connection.input_stream;
+			owned get {
+				return new BodyInputStream (this, _body);
+			}
+			construct {
+				_body = value ?? connection.input_stream;
 			}
 		}
 
@@ -321,6 +320,27 @@ namespace VSGI {
 		public async string flatten_utf8_async (int io_priority = GLib.Priority.DEFAULT,
 		                                        Cancellable? cancellable = null) throws IOError {
 			return (string) yield flatten_async (io_priority, cancellable);
+		}
+
+		private class BodyInputStream : FilterInputStream {
+
+			public Request request { get; construct; }
+
+			public BodyInputStream (Request request, InputStream base_stream) {
+				Object (request: request, base_stream: base_stream, close_base_stream: false);
+			}
+
+			public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
+				return base_stream.read (buffer, cancellable);
+			}
+
+			public override bool close (Cancellable? cancellable = null) throws IOError {
+				return base_stream.close (cancellable);
+			}
+
+			public override void dispose () {
+				// prevent close-on-dispose
+			}
 		}
 	}
 }

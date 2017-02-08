@@ -45,7 +45,7 @@ public void test_vsgi_cgi_request () {
 	assert ("b" == request.query["a"]);
 	assert (3003 == request.uri.get_port ());
 	assert ("example.com" == request.headers.get_one ("Host"));
-	assert (connection.input_stream == request.body);
+	assert (connection.input_stream != request.body);
 }
 
 /**

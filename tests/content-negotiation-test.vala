@@ -303,8 +303,6 @@ public int main (string[] args) {
 			accept_encoding ("deflate", (req, res, next, ctx, encoding) => {
 				assert ("deflate" == encoding);
 				assert ("deflate" == res.headers.get_one ("Content-Encoding"));
-				assert (res.body is ConverterOutputStream);
-				assert ((res.body as ConverterOutputStream).converter is ZlibCompressor);
 				return true;
 			}) (req, res, () => {
 				assert_not_reached ();

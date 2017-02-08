@@ -59,8 +59,7 @@ namespace VSGI.SCGI {
 		 * @param reader stream holding the request body
 		 */
 		public Request (Connection connection, InputStream reader, string[] environment) {
-			base (connection, environment);
-			_body = reader;
+			Object (connection: connection, environment: environment, body: reader);
 		}
 	}
 

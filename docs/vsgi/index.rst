@@ -76,24 +76,8 @@ The :doc:`request` holds a reference to the said connection and the
 Generally speaking, holding a reference on any of these two instances is
 sufficient to keep the streams usable.
 
-.. warning::
-
-    As VSGI relies on reference counting to free the resources underlying
-    a request, you must keep a reference to either the :doc:`request` or
-    :doc:`response` during the processing, including in asynchronous callbacks.
-
-It is important that the connection persist until all streams operations are
-done as the following example demonstrates:
-
-::
-
-    res.body.write_async.begin ("Hello world!",
-                                Priority.DEFAULT,
-                                null,
-                                (body, result) => {
-        // the response reference will make the connection persist
-        var written = res.body.write_async.end (result);
-    });
+Additionally, both :doc:`request` and :doc:`response` ``body`` properties also
+internally hold their corresponding objects, making it safe to use them as-is.
 
 Dynamic loading
 ~~~~~~~~~~~~~~~
