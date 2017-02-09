@@ -131,7 +131,6 @@ namespace Valum {
 					} else {
 						missing     = true;
 						missing_key = key;
-						url.append (key);
 					}
 				}
 			}
