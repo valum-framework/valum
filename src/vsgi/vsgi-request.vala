@@ -284,7 +284,7 @@ namespace VSGI {
 		 */
 		[Version (since = "0.2")]
 		public string flatten_utf8 (Cancellable? cancellable = null) throws IOError {
-			return (string) flatten (cancellable);
+			return (string?) flatten (cancellable) ?? "";
 		}
 
 		/**
@@ -319,7 +319,7 @@ namespace VSGI {
 		[Version (since = "0.2")]
 		public async string flatten_utf8_async (int io_priority = GLib.Priority.DEFAULT,
 		                                        Cancellable? cancellable = null) throws IOError {
-			return (string) yield flatten_async (io_priority, cancellable);
+			return ((string?) yield flatten_async (io_priority, cancellable)) ?? "";
 		}
 
 		private class BodyInputStream : FilterInputStream {
