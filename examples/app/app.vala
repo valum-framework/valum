@@ -49,7 +49,7 @@ app.get ("/", (req, res, next) => {
 });
 
 app.get ("/async", (req, res) => {
-	res.body.write_all_async.begin ("Hello world!".data, Priority.DEFAULT, null);
+	res.expand_utf8_async.begin ("Hello world!");
 	return true;
 });
 
