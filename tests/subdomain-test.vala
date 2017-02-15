@@ -23,7 +23,7 @@ using VSGI;
  * @since 0.3
  */
 public void test_subdomain () {
-	var req   = new Request.with_uri (new Soup.URI ("http://127.0.0.1/"));
+	var req   = new Request (null, "GET", new Soup.URI ("http://127.0.0.1/"));
 	var res   = new Response (req);
 
 	try {
@@ -40,7 +40,7 @@ public void test_subdomain () {
  */
 public void test_subdomain_joker () {
 	{
-		var req   = new Request.with_uri (new Soup.URI ("http://api.example.com/"));
+		var req   = new Request (null, "GET", new Soup.URI ("http://api.example.com/"));
 		var res   = new Response (req);
 
 		try {
@@ -56,7 +56,7 @@ public void test_subdomain_joker () {
 	}
 
 	{
-		var req   = new Request.with_uri (new Soup.URI ("http://example.com/"));
+		var req   = new Request (null, "GET", new Soup.URI ("http://example.com/"));
 		var res   = new Response (req);
 
 		try {
@@ -73,7 +73,7 @@ public void test_subdomain_joker () {
  * @since 0.3
  */
 public void test_subdomain_strict () {
-	var req   = new Request.with_uri (new Soup.URI ("http://dev.api.example.com/"));
+	var req   = new Request (null, "GET", new Soup.URI ("http://dev.api.example.com/"));
 	var res   = new Response (req);
 
 	try {

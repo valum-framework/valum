@@ -30,7 +30,7 @@ public Type server_init (TypeModule type_module) {
  */
 namespace VSGI.CGI {
 
-#if !GLIB_2_44
+#if !GIO_2_44
 	private class Connection : GLib.IOStream {
 
 		private InputStream _input_stream;
@@ -40,7 +40,7 @@ namespace VSGI.CGI {
 
 		public override OutputStream output_stream { get { return this._output_stream; } }
 
-		public Connection (Server server, InputStream input_stream, OutputStream output_stream) {
+		public Connection (InputStream input_stream, OutputStream output_stream) {
 			this._input_stream  = input_stream;
 			this._output_stream = output_stream;
 		}
@@ -70,13 +70,11 @@ namespace VSGI.CGI {
 				throw new IOError.NOT_SUPPORTED ("The CGI server only support listening from standard streams.");
 			}
 
-#if GLIB_2_44
-			var connection = new SimpleIOStream (this,
-			                                     new UnixInputStream (stdin.fileno (), true),
+#if GIO_2_44
+			var connection = new SimpleIOStream (new UnixInputStream (stdin.fileno (), true),
 			                                     new UnixOutputStream (stdout.fileno (), true));
 #else
-			var connection = new Connection (this,
-			                                 new UnixInputStream (stdin.fileno (), true),
+			var connection = new Connection (new UnixInputStream (stdin.fileno (), true),
 			                                 new UnixOutputStream (stdout.fileno (), true));
 #endif
 

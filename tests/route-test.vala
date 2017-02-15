@@ -23,7 +23,7 @@ using VSGI;
  */
 public void test_route () {
 	var route   = new MatcherRoute (Method.GET, (req) => { return true; }, (req, res) => { return true; });
-	var req     = new Request.with_uri (new Soup.URI ("http://localhost/5"));
+	var req     = new Request (null, "GET", new Soup.URI ("http://localhost/5"));
 	var context = new Context ();
 
 	assert (route.match (req, context));
@@ -35,7 +35,7 @@ public void test_route () {
 public void test_route_from_rule () {
 	try {
 		var route   = new RuleRoute (Method.GET, "/<id>", new HashTable<string, Regex> (str_hash, str_equal), (req, res) => { return true; });
-		var request = new Request.with_uri (new Soup.URI ("http://localhost/5"));
+		var request = new Request (null, "GET", new Soup.URI ("http://localhost/5"));
 		var context = new Context ();
 
 		message (route.rule);
@@ -55,7 +55,7 @@ public void test_route_from_rule () {
 public void test_route_from_rule_without_captures () {
 	try {
 		var route   = new RuleRoute (Method.GET, "/", new HashTable<string, Regex> (str_hash, str_equal), (req, res) => { return true; });
-		var req     = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var req     = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var context = new Context ();
 
 		var matches = route.match (req, context);
@@ -86,10 +86,10 @@ public void test_route_from_rule_group () {
 	try {
 		var route = new RuleRoute (Method.GET, "/(<id>)?", new HashTable<string, Regex> (str_hash, str_equal), (req, res) => { return true; });
 
-		assert (route.match (new Request.with_uri (new Soup.URI ("http://127.0.0.1:3003/5")), new Context ()));
+		assert (route.match (new Request (null, "GET", new Soup.URI ("http://127.0.0.1:3003/5")), new Context ()));
 
 		var ctx = new Context ();
-		assert (route.match (new Request.with_uri (new Soup.URI ("http://127.0.0.1:3003/")), ctx));
+		assert (route.match (new Request (null, "GET", new Soup.URI ("http://127.0.0.1:3003/")), ctx));
 
 		assert (!ctx.contains ("id"));
 
@@ -106,8 +106,8 @@ public void test_route_from_rule_wildcard () {
 	try {
 		var route = new RuleRoute (Method.GET, "/test/*", new HashTable<string, Regex> (str_hash, str_equal), (req, res) => { return true; });
 
-		assert (route.match (new Request.with_uri (new Soup.URI ("http://127.0.0.1:3003/test/")), new Context ()));
-		assert (route.match (new Request.with_uri (new Soup.URI ("http://127.0.0.1:3003/test/asdf")), new Context ()));
+		assert (route.match (new Request (null, "GET", new Soup.URI ("http://127.0.0.1:3003/test/")), new Context ()));
+		assert (route.match (new Request (null, "GET", new Soup.URI ("http://127.0.0.1:3003/test/asdf")), new Context ()));
 
 	} catch (RegexError err) {
 		assert_not_reached ();
@@ -121,8 +121,8 @@ public void test_route_from_rule_optional () {
 	try {
 		var route = new RuleRoute (Method.GET, "/test/?", new HashTable<string, Regex> (str_hash, str_equal), (req, res) => { return true; });
 
-		assert (route.match (new Request.with_uri (new Soup.URI ("http://127.0.0.1:3003/test")), new Context ()));
-		assert (route.match (new Request.with_uri (new Soup.URI ("http://127.0.0.1:3003/test/")), new Context ()));
+		assert (route.match (new Request (null, "GET", new Soup.URI ("http://127.0.0.1:3003/test")), new Context ()));
+		assert (route.match (new Request (null, "GET", new Soup.URI ("http://127.0.0.1:3003/test/")), new Context ()));
 
 	} catch (RegexError err) {
 		assert_not_reached ();
@@ -134,7 +134,7 @@ public void test_route_from_rule_optional () {
  */
 public void test_route_from_regex () {
 	var route   = new RegexRoute (Method.GET, /\/(?<id>\d+)/, (req, res) => { return true; });
-	var req     = new Request.with_uri (new Soup.URI ("http://localhost/5"));
+	var req     = new Request (null, "GET", new Soup.URI ("http://localhost/5"));
 	var context = new Context ();
 
 	assert ("\\/(?<id>\\d+)" == route.regex.get_pattern ());
@@ -150,7 +150,7 @@ public void test_route_from_regex () {
  */
 public void test_route_from_regex_multiple_captures () {
 	var route   = new RegexRoute (Method.GET, /\/(?<action>\w+)\/(?<id>\d+)/, (req, res) => { return true; });
-	var req     = new Request.with_uri (new Soup.URI ("http://localhost/user/5"));
+	var req     = new Request (null, "GET", new Soup.URI ("http://localhost/user/5"));
 	var context = new Context ();
 
 	assert (route.match (req, context));
@@ -167,7 +167,7 @@ public void test_route_from_regex_multiple_captures () {
  */
 public void test_route_from_regex_without_captures () {
 	var route   = new RegexRoute (Method.GET, /\/.*/, (req, res) => { return true; });
-	var req     = new Request.with_uri (new Soup.URI ("http://localhost/"));
+	var req     = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 	var context = new Context ();
 
 	assert (route.match (req, context));
@@ -182,7 +182,7 @@ public void test_route_from_regex_without_captures () {
 public void test_route_match () {
 	try {
 		var route   = new RuleRoute (Method.GET, "/<id>", new HashTable<string, Regex> (str_hash, str_equal), (req, res) => { return true; });
-		var req     = new Request.with_uri (new Soup.URI ("http://localhost/5"));
+		var req     = new Request (null, "GET", new Soup.URI ("http://localhost/5"));
 		var context = new Context ();
 
 		var matches = route.match (req, context);
@@ -203,7 +203,7 @@ public void test_route_match_not_matching () {
 		var types   = new HashTable<string, Regex> (str_hash, str_equal);
 		types["int"] = /\d+/;
 		var route   = new RuleRoute (Method.GET, "/<int:id>", types, (req, res) => { return true; });
-		var req     = new Request.with_uri (new Soup.URI ("http://localhost/home"));
+		var req     = new Request (null, "GET", new Soup.URI ("http://localhost/home"));
 		var context = new Context ();
 
 		// no match and params remains null
@@ -224,7 +224,7 @@ public void test_route_fire () {
 			return true;
 		});
 
-		var req     = new Request.with_uri (new Soup.URI ("http://localhost/home"));
+		var req     = new Request (null, "GET", new Soup.URI ("http://localhost/home"));
 		var res     = new Response (req);
 		var context = new Context ();
 

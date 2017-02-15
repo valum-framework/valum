@@ -22,7 +22,7 @@ public int main (string[] args) {
 	Test.init (ref args);
 
 	Test.add_func ("/basepath", () => {
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/base/"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/base/"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -39,7 +39,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/basepath/next", () => {
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/other_base/"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/other_base/"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -56,7 +56,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/basepath/empty_path", () => {
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/base"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/base"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -73,7 +73,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/basepath/restore_path_on_next", () => {
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/base"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/base"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -91,7 +91,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/basepath/restore_path_on_error", () => {
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/base"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/base"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -110,7 +110,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/basepath/rewrite_location_header", () => {
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/base"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/base"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -129,7 +129,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/basepath/rewrite_location_header_on_error", () => {
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/base"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/base"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -150,7 +150,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/basepath/keep_location_header_intact_on_head_written", () => {
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/base"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/base"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -170,7 +170,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/basepath/success_created/prefix_message", () => {
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/base"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/base"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -190,7 +190,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/basepath/success_created/omit_non_relative_message", () => {
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/base"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/base"));
 		var res = new Response (req);
 		var ctx = new Context ();
 
@@ -210,7 +210,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/basepath/redirection", () => {
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/base"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/base"));
 		var res = new Response (req);
 		var ctx = new Context ();
 

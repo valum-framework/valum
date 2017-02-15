@@ -42,7 +42,7 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var request  = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		message (request.gateway_interface);
@@ -69,7 +69,7 @@ public int main (string[] args) {
 			return false;
 		});
 
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 
 		try {
@@ -95,7 +95,7 @@ public int main (string[] args) {
 
 		uri.set_path ("*");
 
-		var request  = new Request.with_method ("OPTIONS", uri);
+		var request  = new Request (null, "OPTIONS", uri);
 		var response = new Response (request);
 
 		try {
@@ -118,7 +118,7 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var request  = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -141,7 +141,7 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var request  = new Request.with_method ("HEAD", new Soup.URI ("http://localhost/"));
+		var request  = new Request (null, "HEAD", new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -164,7 +164,7 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var request  = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
+		var request  = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -187,7 +187,7 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var request  = new Request.with_method ("POST", new Soup.URI ("http://localhost/"));
+		var request  = new Request (null, "POST", new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -210,7 +210,7 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var request  = new Request.with_method (VSGI.Request.PUT, new Soup.URI ("http://localhost/"));
+		var request  = new Request (null, VSGI.Request.PUT, new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -233,7 +233,7 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var request  = new Request.with_method (VSGI.Request.DELETE, new Soup.URI ("http://localhost/"));
+		var request  = new Request (null, VSGI.Request.DELETE, new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -256,7 +256,7 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var request  = new Request.with_method (VSGI.Request.HEAD, new Soup.URI ("http://localhost/"));
+		var request  = new Request (null, VSGI.Request.HEAD, new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -279,7 +279,7 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var request  = new Request.with_method (VSGI.Request.OPTIONS, new Soup.URI ("http://localhost/"));
+		var request  = new Request (null, VSGI.Request.OPTIONS, new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -302,7 +302,7 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var request  = new Request.with_method (VSGI.Request.TRACE, new Soup.URI ("http://localhost/"));
+		var request  = new Request (null, VSGI.Request.TRACE, new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -325,7 +325,7 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var request  = new Request.with_method (VSGI.Request.CONNECT, new Soup.URI ("http://localhost/"));
+		var request  = new Request (null, VSGI.Request.CONNECT, new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -348,7 +348,7 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var request  = new Request.with_method (VSGI.Request.PATCH, new Soup.URI ("http://localhost/"));
+		var request  = new Request (null, VSGI.Request.PATCH, new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -371,7 +371,7 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var request  = new Request.with_method (VSGI.Request.POST, new Soup.URI ("http://localhost/"));
+		var request  = new Request (null, VSGI.Request.POST, new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		request.headers.append ("X-Http-Method-Override", "PATCH");
@@ -409,7 +409,7 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/5"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/5"));
 		var res = new Response (req);
 
 		try {
@@ -432,7 +432,7 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 
 		try {
@@ -459,7 +459,7 @@ public int main (string[] args) {
 		string[] bad_paths = {"..", "."};
 
 		foreach (var bad_path in bad_paths) {
-			var req = new Request.with_uri (new Soup.URI ("http://localhost/%s".printf (bad_path)));
+			var req = new Request (null, "GET", new Soup.URI ("http://localhost/%s".printf (bad_path)));
 			var res = new Response (req);
 
 			try {
@@ -481,7 +481,7 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/5"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/5"));
 		var res = new Response (req);
 
 		try {
@@ -507,7 +507,7 @@ public int main (string[] args) {
 		assert ("^\\/home$" == route.regex.get_pattern ());
 		assert (RegexCompileFlags.OPTIMIZE in route.regex.get_compile_flags ());
 
-		var request  = new Request.with_uri (new Soup.URI ("http://localhost/home"));
+		var request  = new Request (null, "GET", new Soup.URI ("http://localhost/home"));
 		var response = new Response (request);
 
 		try {
@@ -534,7 +534,7 @@ public int main (string[] args) {
 
 		assert ("/home" == route.path);
 
-		var request  = new Request.with_uri (new Soup.URI ("http://localhost/home"));
+		var request  = new Request (null, "GET", new Soup.URI ("http://localhost/home"));
 		var response = new Response (request);
 
 		try {
@@ -563,7 +563,7 @@ public int main (string[] args) {
 
 		assert ("/admin/home" == route.path);
 
-		var request  = new Request.with_uri (new Soup.URI ("http://localhost/admin/home"));
+		var request  = new Request (null, "GET", new Soup.URI ("http://localhost/admin/home"));
 		var response = new Response (request);
 
 		try {
@@ -586,7 +586,7 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var request  = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -611,7 +611,7 @@ public int main (string[] args) {
 			});
 		});
 
-		var request = new Request.with_uri (new Soup.URI ("http://localhost/test/test"));
+		var request = new Request (null, "GET", new Soup.URI ("http://localhost/test/test"));
 		var response = new Response (request);
 
 		try {
@@ -635,7 +635,7 @@ public int main (string[] args) {
 
 		var route = router.routes.get_end_iter ().prev ().@get () as RegexRoute;
 
-		var req     = new Request.with_uri (new Soup.URI ("http://localhost/test/5"));
+		var req     = new Request (null, "GET", new Soup.URI ("http://localhost/test/5"));
 		var context = new Context ();
 
 		assert (route != null);
@@ -656,7 +656,7 @@ public int main (string[] args) {
 			throw new Informational.SWITCHING_PROTOCOLS ("HTTP/1.1");
 		});
 
-		var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var request  = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -681,7 +681,7 @@ public int main (string[] args) {
 			throw new Success.CREATED ("/document/5");
 		});
 
-		var request  = new Request.with_method (VSGI.Request.PUT, new Soup.URI ("http://localhost/document"));
+		var request  = new Request (null, VSGI.Request.PUT, new Soup.URI ("http://localhost/document"));
 		var response = new Response (request);
 
 		try {
@@ -706,7 +706,7 @@ public int main (string[] args) {
 			throw new Success.PARTIAL_CONTENT ("bytes 21010-47021/47022");
 		});
 
-		var request  = new Request.with_method (VSGI.Request.PUT, new Soup.URI ("http://localhost/document"));
+		var request  = new Request (null, VSGI.Request.PUT, new Soup.URI ("http://localhost/document"));
 		var response = new Response (request);
 
 		try {
@@ -731,7 +731,7 @@ public int main (string[] args) {
 			throw new Redirection.MOVED_TEMPORARILY ("http://example.com");
 		});
 
-		var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var request = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -760,7 +760,7 @@ public int main (string[] args) {
 			throw new ClientError.METHOD_NOT_ALLOWED ("POST");
 		});
 
-		var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var request  = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -785,7 +785,7 @@ public int main (string[] args) {
 			throw new ClientError.UPGRADE_REQUIRED ("HTTP/1.1");
 		});
 
-		var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var request  = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -810,7 +810,7 @@ public int main (string[] args) {
 			throw new ServerError.INTERNAL_SERVER_ERROR ("Teapot's burning!");
 		});
 
-		var request  = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var request  = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -841,7 +841,7 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var request = new Request.with_method ("TEST", new Soup.URI ("http://localhost/"));
+		var request = new Request (null, "TEST", new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -869,8 +869,8 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var request = new Request.with_method ("POST", new Soup.URI ("http://localhost/"));
-		var response = new Response.with_status (request, Soup.Status.METHOD_NOT_ALLOWED);
+		var request = new Request (null, "POST", new Soup.URI ("http://localhost/"));
+		var response = new Response (request, Soup.Status.METHOD_NOT_ALLOWED);
 
 		try {
 			router.handle (request, response);
@@ -903,8 +903,8 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var request = new Request.with_method ("POST", new Soup.URI ("http://localhost/"));
-		var response = new Response.with_status (request, Soup.Status.METHOD_NOT_ALLOWED);
+		var request = new Request (null, "POST", new Soup.URI ("http://localhost/"));
+		var response = new Response (request, Soup.Status.METHOD_NOT_ALLOWED);
 
 		try {
 			router.handle (request, response);
@@ -930,8 +930,8 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var request = new Request.with_method ("OPTIONS", new Soup.URI ("http://localhost/"));
-		var response = new Response.with_status (request, Soup.Status.METHOD_NOT_ALLOWED);
+		var request = new Request (null, "OPTIONS", new Soup.URI ("http://localhost/"));
+		var response = new Response (request, Soup.Status.METHOD_NOT_ALLOWED);
 
 		try {
 			router.handle (request, response);
@@ -953,7 +953,7 @@ public int main (string[] args) {
 
 		router.use (basic ());
 
-		var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var request = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -980,8 +980,8 @@ public int main (string[] args) {
 
 		router.get ("/", subrouter.handle);
 
-		var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
-		var response = new Response.with_status (request, Soup.Status.NOT_FOUND);
+		var request = new Request (null, "GET", new Soup.URI ("http://localhost/"));
+		var response = new Response (request, Soup.Status.NOT_FOUND);
 
 		try {
 			router.handle (request, response);
@@ -1012,8 +1012,8 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
-		var response = new Response.with_status (request, Soup.Status.NOT_FOUND);
+		var request = new Request (null, "GET", new Soup.URI ("http://localhost/"));
+		var response = new Response (request, Soup.Status.NOT_FOUND);
 
 		try {
 			router.handle (request, response);
@@ -1040,7 +1040,7 @@ public int main (string[] args) {
 
 		// no more route matching
 
-		var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var request = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -1075,7 +1075,7 @@ public int main (string[] args) {
 			throw new ClientError.UNAUTHORIZED ("/");
 		});
 
-		var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var request = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -1109,7 +1109,7 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var request = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -1147,7 +1147,7 @@ public int main (string[] args) {
 			return true;
 		});
 
-		var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var request = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -1177,7 +1177,7 @@ public int main (string[] args) {
 			return true;
 		}));
 
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/5"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/5"));
 		var res = new Response (req);
 
 		try {
@@ -1208,7 +1208,7 @@ public int main (string[] args) {
 			return true;
 		}));
 
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/5"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/5"));
 		var res = new Response (req);
 
 		try {
@@ -1240,7 +1240,7 @@ public int main (string[] args) {
 			throw new IOError.FAILED ("Just failed!");
 		});
 
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 
 		try {

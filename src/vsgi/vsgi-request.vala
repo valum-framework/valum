@@ -19,6 +19,23 @@ using GLib;
 
 namespace VSGI {
 
+#if !GLIB_2_44
+	private class Connection : GLib.IOStream {
+
+		private InputStream _input_stream;
+		private OutputStream _output_stream;
+
+		public override InputStream input_stream { get { return this._input_stream; } }
+
+		public override OutputStream output_stream { get { return this._output_stream; } }
+
+		public Connection (InputStream input_stream, OutputStream output_stream) {
+			this._input_stream  = input_stream;
+			this._output_stream = output_stream;
+		}
+	}
+#endif
+
 	/**
 	 * Request representing a request of a resource.
 	 */
@@ -232,12 +249,16 @@ namespace VSGI {
 		}
 
 		[Version (experimental = true)]
-		public Request (IOStream                   connection,
+		public Request (IOStream?                  connection,
 		                string                     method,
 		                Soup.URI                   uri,
 		                HashTable<string, string>? query = null,
 		                InputStream?               body  = null) {
-			base (connection: connection,
+#if GIO_2_44
+			base (connection: connection ?? new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ()),
+#else
+			base (connection: connection ?? new Connection (new MemoryInputStream (), new MemoryOutputStream.resizable ()),
+#endif
 			      method:     method,
 			      uri:        uri,
 			      query:      query,
@@ -245,27 +266,12 @@ namespace VSGI {
 		}
 
 		[Version (experimental = true)]
-		public Request.with_method (string method, Soup.URI uri) {
-			base (connection: new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ()),
-			      method:     method,
-			      uri:        uri);
-		}
-
-		[Version (experimental = true)]
-		public Request.with_uri (Soup.URI uri) {
-			base (connection: new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ()),
-			      uri:        uri);
-		}
-
-		[Version (experimental = true)]
-		public Request.with_query (HashTable<string, string>? query) {
-			base (connection: new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ()),
-			      query:      query);
-		}
-
-		[Version (experimental = true)]
-		public Request.from_cgi_environment (IOStream connection, string[] environment, InputStream? body = null) {
-			base (connection:        connection,
+		public Request.from_cgi_environment (IOStream? connection, string[] environment, InputStream? body = null) {
+#if GIO_2_44
+			base (connection: connection ?? new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ()),
+#else
+			base (connection: connection ?? new Connection (new MemoryInputStream (), new MemoryOutputStream.resizable ()),
+#endif
 			      uri:               new Soup.URI ("http://localhost/"),
 			      http_version:      Environ.get_variable (environment, "SERVER_PROTOCOL") == "HTTP/1.1" ? Soup.HTTPVersion.@1_1 : Soup.HTTPVersion.@1_0,
 			      gateway_interface: Environ.get_variable (environment, "GATEWAY_INTERFACE") ?? "CGI/1.1",

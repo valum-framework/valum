@@ -23,7 +23,7 @@ public int main (string[] args) {
 	Test.init (ref args);
 
 	Test.add_func ("/authenticate", () => {
-		var req = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 
 		req.headers.replace ("Authorization", "Basic " + Base64.encode ({'t', 'e', 's', 't', ':', '1', '2', '3', '4'}));
@@ -40,7 +40,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/authenticate/no_authorization_header", () => {
-		var req = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 
 		assert (null == req.headers.get_one ("Authorization"));
@@ -59,7 +59,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/authenticate/malformed_authorization_header", () => {
-		var req = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 
 		req.headers.replace ("Authorization", "Basic");
@@ -78,7 +78,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/authenticate/wrong_credentials", () => {
-		var req = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 
 		req.headers.replace ("Authorization", "Basic " + Base64.encode ({'t', 'e', 's', 't', ':', '1', '2', '3'}));

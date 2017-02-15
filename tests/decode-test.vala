@@ -22,7 +22,7 @@ using VSGI;
  * @since 0.3
  */
 public void test_decode_gzip () {
-	var req = new Request.with_method ("POST", new Soup.URI ("http://127.0.0.1/"));
+	var req = new Request (null, "POST", new Soup.URI ("http://127.0.0.1/"));
 	var res = new Response (req);
 
 	req.headers.append ("Content-Encoding", "gzip");
@@ -43,7 +43,7 @@ public void test_decode_gzip () {
  * @since 0.3
  */
 public void test_decode_xgzip () {
-	var req = new Request.with_method ("POST", new Soup.URI ("http://127.0.0.1/"));
+	var req = new Request (null, "POST", new Soup.URI ("http://127.0.0.1/"));
 	var res = new Response (req);
 
 	req.headers.append ("Content-Encoding", "x-gzip");
@@ -64,7 +64,7 @@ public void test_decode_xgzip () {
  * @since 0.3
  */
 public void test_decode_deflate () {
-	var req = new Request.with_method ("POST", new Soup.URI ("http://127.0.0.1/"));
+	var req = new Request (null, "POST", new Soup.URI ("http://127.0.0.1/"));
 	var res = new Response (req);
 
 	req.headers.append ("Content-Encoding", "deflate");
@@ -85,7 +85,7 @@ public void test_decode_deflate () {
  * @since 0.3
  */
 public void test_decode_identity () {
-	var req = new Request.with_method ("POST", new Soup.URI ("http://127.0.0.1/"));
+	var req = new Request (null, "POST", new Soup.URI ("http://127.0.0.1/"));
 	var res = new Response (req);
 
 	req.headers.append ("Content-Encoding", "identity");
@@ -106,7 +106,7 @@ public void test_decode_identity () {
  * @since 0.3
  */
 public void test_decode_unknown_encoding () {
-	var req = new Request.with_method ("POST", new Soup.URI ("http://127.0.0.1/"));
+	var req = new Request (null, "POST", new Soup.URI ("http://127.0.0.1/"));
 	var res = new Response (req);
 
 	req.headers.append ("Content-Encoding", "br, gzip");
@@ -127,7 +127,7 @@ public void test_decode_unknown_encoding () {
  * @since 0.3
  */
 public void test_decode_forward_remaining_encodings () {
-	var req = new Request.with_method ("POST", new Soup.URI ("http://127.0.0.1/"));
+	var req = new Request (null, "POST", new Soup.URI ("http://127.0.0.1/"));
 	var res = new Response (req);
 
 	req.headers.append ("Content-Encoding", "gzip, br, deflate"); // brotli is not handled

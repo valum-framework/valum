@@ -28,7 +28,7 @@ public int main (string[] args) {
 		Request req;
 		Response res;
 
-		req = new Request (new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ()), "GET", new Soup.URI ("http://localhost/"));
+		req = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		res = new Response (req);
 		try {
 			assert (basic () (req, res, () => {
@@ -39,7 +39,7 @@ public int main (string[] args) {
 		}
 		assert ("Already Reported" == res.reason_phrase);
 
-		req = new Request (new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ()), "GET", new Soup.URI ("http://localhost/"));
+		req = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		res = new Response (req);
 		try {
 			assert (basic () (req, res, () => {

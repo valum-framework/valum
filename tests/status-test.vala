@@ -35,7 +35,7 @@ public int main (string[] args) {
 			throw new ClientError.NOT_FOUND ("The request URI / was not found.");
 		});
 
-		var request = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var request = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var response = new Response (request);
 
 		try {
@@ -49,7 +49,7 @@ public int main (string[] args) {
 
 	Test.add_func ("/status/forward_to_default_handler", () => {
 		var router = new Router ();
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 
 		router.use (basic ());
@@ -79,7 +79,7 @@ public int main (string[] args) {
 
 	Test.add_func ("/status/forward_upstream", () => {
 		var router = new Router ();
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 
 		router.use (status (404, (req, res, next, ctx, err) => {
@@ -125,7 +125,7 @@ public int main (string[] args) {
 			throw new IOError.FAILED ("Just failed!");
 		});
 
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 
 		try {
@@ -153,7 +153,7 @@ public int main (string[] args) {
 			throw new ServerError.INTERNAL_SERVER_ERROR ("a");
 		});
 
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 
 		try {
@@ -166,7 +166,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/status/forward_unhandled_error_upstream", () => {
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 
 		try {
@@ -183,7 +183,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/status/try_again_with_next", () => {
-		var req = new Request.with_uri (new Soup.URI ("http://localhost/"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 
 		var router = new Router ();

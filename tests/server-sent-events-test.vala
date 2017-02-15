@@ -30,9 +30,10 @@ public void test_server_sent_events_send () {
 		send ("important", "some event", "1234", TimeSpan.MILLISECOND);
 	}));
 
-	var connection = new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ());
-	var req = new Request (connection, "GET", new Soup.URI ("http://127.0.0.1:3003/"));
-	var res = new Response (req);
+	var req_body = new MemoryInputStream ();
+	var res_body = new MemoryOutputStream.resizable ();
+	var req = new Request (null, "GET", new Soup.URI ("http://127.0.0.1:3003/"), null, req_body);
+	var res = new Response (req, Soup.Status.OK, null, res_body);
 
 	try {
 		router.handle (req, res);
@@ -50,8 +51,8 @@ public void test_server_sent_events_send () {
 		var expected_message = resources_lookup_data ("/data/server-sent-events/send-expected-message",
 													  ResourceLookupFlags.NONE);
 
-		var data = (connection.output_stream as MemoryOutputStream).steal_data ();
-		data.length = (int) (connection.output_stream as MemoryOutputStream).get_data_size ();
+		var data = res_body.steal_data ();
+		data.length = (int) res_body.get_data_size ();
 
 		assert (expected_message.compare (new Bytes (data)) == 0);
 	} catch (Error err) {
@@ -66,9 +67,10 @@ public void test_server_sent_events_send_multiline () {
 		send (null, "some event\nmore details");
 	}));
 
-	var connection = new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ());
-	var req = new Request (connection, "GET", new Soup.URI ("http://127.0.0.1:3003/"));
-	var res = new Response (req);
+	var req_body = new MemoryInputStream ();
+	var res_body = new MemoryOutputStream.resizable ();
+	var req = new Request (null, "GET", new Soup.URI ("http://127.0.0.1:3003/"), null, req_body);
+	var res = new Response (req, Soup.Status.OK, null, res_body);
 
 	try {
 		router.handle (req, res);
@@ -86,8 +88,8 @@ public void test_server_sent_events_send_multiline () {
 		var expected_message = resources_lookup_data ("/data/server-sent-events/send-multiline-expected-message",
 													  ResourceLookupFlags.NONE);
 
-		var data = (connection.output_stream as MemoryOutputStream).steal_data ();
-		data.length = (int) (connection.output_stream as MemoryOutputStream).get_data_size ();
+		var data = res_body.steal_data ();
+		data.length = (int) res_body.get_data_size ();
 
 		assert (expected_message.compare (new Bytes (data)) == 0);
 	} catch (Error err) {
@@ -102,8 +104,7 @@ public void test_server_sent_events_skip_on_head () {
 		assert_not_reached ();
 	}));
 
-	var connection = new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ());
-	var req = new Request (connection, "HEAD", new Soup.URI ("http://127.0.0.1:3003/"));
+	var req = new Request (null, "HEAD", new Soup.URI ("http://127.0.0.1:3003/"));
 	var res = new Response (req);
 
 	try {

@@ -121,13 +121,14 @@ namespace VSGI {
 		public signal void wrote_headers (Soup.MessageHeaders headers);
 
 		[Version (experimental = true)]
-		public Response (Request request) {
-			base (request: request);
-		}
-
-		[Version (experimental = true)]
-		public Response.with_status (Request request, uint status) {
-			base (request: request, status: status);
+		public Response (Request              request,
+		                 uint                 status  = Soup.Status.OK,
+		                 Soup.MessageHeaders? headers = null,
+		                 OutputStream?        body    = null) {
+			base (request: request,
+			      status:  status,
+			      headers: headers,
+			      body:    body);
 		}
 
 		construct {

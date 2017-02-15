@@ -6,7 +6,7 @@ public int main (string[] args) {
 	Test.init (ref args);
 
 	Test.add_func ("/safely/next_errors_thrown_upstream", () => {
-		var req = new Request.with_method ("GET", new Soup.URI ("http://localhost/"));
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var res = new Response (req);
 
 		try {
