@@ -19,8 +19,8 @@ using VSGI;
 
 public class App : Handler  {
 
-	public override bool handle (Request req, Response res) throws Error {
-		return res.expand_utf8 ("Hello world!");
+	public override async bool handle_async (Request req, Response res) throws Error {
+		return yield res.expand_utf8_async ("Hello world!");
 	}
 }
 

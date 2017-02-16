@@ -151,37 +151,6 @@ namespace VSGI {
 		}
 
 		/**
-		 * Dispatch the request to the application callback.
-		 *
-		 * The application must call {@link Response.write_head} at some point.
-		 *
-		 * Once dispatched, the {@link Response.head_written} property is
-		 * expected to be true unless its reference still held somewhere else
-		 * and the return value is 'true'.
-		 */
-		[Version (since = "0.3")]
-		protected async bool dispatch_async (Request req, Response res, int priority = GLib.Priority.DEFAULT) throws Error {
-			var result = false;
-			Error? err = null;
-			IOSchedulerJob.push ((job) => {
-				var _req = req;
-				var _res = res;
-				try {
-					result = handler.handle (_req, _res);
-				} catch (Error _err) {
-					err = _err;
-				}
-				return job.send_to_mainloop (dispatch_async.callback);
-			}, priority);
-			yield;
-			if (err == null) {
-				return result;
-			} else {
-				throw err;
-			}
-		}
-
-		/**
 		 * Create a new {@link VSGI.Application} that cushion the execution of
 		 * this server.
 		 */

@@ -225,9 +225,9 @@ namespace VSGI.FastCGI {
 				var req = new Request.from_cgi_environment (connection, connection.request.environment);
 				var res = new Response (req);
 
-				dispatch_async.begin (req, res, Priority.DEFAULT, (obj, result) => {
+				handler.handle_async.begin (req, res, (obj, result) => {
 					try {
-						dispatch_async.end (result);
+						handler.handle_async.end (result);
 					} catch (Error err) {
 						critical ("%s", err.message);
 					}

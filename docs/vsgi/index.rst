@@ -35,7 +35,7 @@ will be processed. It may also raise an error.
 
     public class App : Handler {
 
-        public override handle (Request req, Response res) throws Error {
+        public override bool handle (Request req, Response res) throws Error {
             // process the request and produce the response...
             return true;
         }
@@ -45,6 +45,28 @@ will be processed. It may also raise an error.
 
 If a handler indicate that the request has not been processed, it's up to the
 server implementation to decide what will happen.
+
+Asynchronous handling
+~~~~~~~~~~~~~~~~~~~~~
+
+.. versionadded:: 0.4
+
+To go asynchronous, one can override the :valadoc:`vsgi-0.3/VSGI.Handler.handle_async`
+symbol instead.
+
+::
+
+    using VSGI;
+
+    public class App : Handler {
+
+        public override async bool handle_async (Request req, Response res) throws Error {
+            // process the request and produce the response...
+            return true;
+        }
+    }
+
+    Server.new ("http", handler: new App ()).run ();
 
 From now on, examples will consist of :valadoc:`vsgi-0.3/VSGI.Handler.handle`
 content to remain more concise.
@@ -60,24 +82,6 @@ which will in turn teardown the connection appropriately.
 ::
 
     throw new IOError.FAILED ("some I/O failed");
-
-Asynchronous processing
-~~~~~~~~~~~~~~~~~~~~~~~
-
-The asynchronous processing model follows the `RAII pattern`_ and wraps all
-resources in a connection that inherits from :valadoc:`gio-2.0/GLib.IOStream`.
-It is therefore important that the said connection is kept alive as long as the
-streams are being used.
-
-.. _RAII pattern: https://en.wikipedia.org/wiki/Resource_Acquisition_Is_Initialization
-
-The :doc:`request` holds a reference to the said connection and the
-:doc:`response` indirectly does as it holds a reference to the request.
-Generally speaking, holding a reference on any of these two instances is
-sufficient to keep the streams usable.
-
-Additionally, both :doc:`request` and :doc:`response` ``body`` properties also
-internally hold their corresponding objects, making it safe to use them as-is.
 
 Dynamic loading
 ~~~~~~~~~~~~~~~

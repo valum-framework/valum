@@ -214,7 +214,7 @@ namespace VSGI.SCGI {
 			                                            new BoundedInputStream (reader, content_length));
 			var res = new Response (req);
 
-			yield dispatch_async (req, res);
+			yield handler.handle_async (req, res);
 		}
 	}
 }

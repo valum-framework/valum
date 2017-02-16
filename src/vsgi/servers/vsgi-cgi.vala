@@ -82,9 +82,9 @@ namespace VSGI.CGI {
 			var res = new Response (req);
 
 			// handle a single request and quit
-			dispatch_async.begin (req, res, Priority.DEFAULT, (obj, result) => {
+			handler.handle_async.begin (req, res, (obj, result) => {
 				try {
-					dispatch_async.end (result);
+					handler.handle_async.end (result);
 				} catch (Error err) {
 					critical ("%s", err.message);
 				} finally {
