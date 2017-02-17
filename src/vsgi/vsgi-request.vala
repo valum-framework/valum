@@ -254,15 +254,17 @@ namespace VSGI {
 		                Soup.URI                   uri,
 		                HashTable<string, string>? query = null,
 		                InputStream?               body  = null) {
+			string[] empty_env = {}; // this is a hack for 'valac-0.24' and 'valac-0.26'
 #if GIO_2_44
 			base (connection: connection ?? new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ()),
 #else
 			base (connection: connection ?? new Connection (new MemoryInputStream (), new MemoryOutputStream.resizable ()),
 #endif
-			      method:     method,
-			      uri:        uri,
-			      query:      query,
-			      body:       body);
+			      environment: empty_env,
+			      method:      method,
+			      uri:         uri,
+			      query:       query,
+			      body:        body);
 		}
 
 		[Version (experimental = true)]
