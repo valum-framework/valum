@@ -142,7 +142,7 @@ namespace VSGI {
 		 * empty query (eg. '/path/?' instead of '/path/')
 		 */
 		[Version (since = "0.1")]
-		public HashTable<string, string>? query { get; construct set; default = null; }
+		public HashTable<string, string>? query { get; construct; default = null; }
 
 		/**
 		 * Lookup a key in the request query.
@@ -263,7 +263,7 @@ namespace VSGI {
 			      environment: empty_env,
 			      method:      method,
 			      uri:         uri,
-			      query:       query,
+			      query:       query ?? (uri.get_query () == null ? null : Soup.Form.decode (uri.get_query ())),
 			      body:        body);
 		}
 
