@@ -273,7 +273,7 @@ namespace VSGI {
 			      environment: empty_env,
 			      method:      method,
 			      uri:         uri,
-			      query:       query ?? (uri.get_query () == null ? null : Soup.Form.decode (uri.get_query ())),
+			      query:       query,
 			      body:        body);
 		}
 
@@ -362,6 +362,11 @@ namespace VSGI {
 			}
 			if (_headers == null) {
 				_headers = new Soup.MessageHeaders (Soup.MessageHeadersType.REQUEST);
+			}
+			if (_query == null) {
+				_query = uri.get_query () == null ? null : Soup.Form.decode (uri.get_query ());
+			} else {
+				_uri.set_query_from_form (_query);
 			}
 		}
 

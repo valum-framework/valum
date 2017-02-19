@@ -21,6 +21,21 @@ using VSGI;
 public int main (string[] args) {
 	Test.init (ref args);
 
+	Test.add_func ("/request/fill_query_from_uri", () => {
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/?a=b"));
+
+		assert (req.query.contains ("a"));
+		assert ("b" == req.query["a"]);
+	});
+
+	Test.add_func ("/request/fill_uri_from_query", () => {
+		var query = new HashTable<string, string> (str_hash, str_equal);
+		query.insert ("a", "b");
+		var req = new Request (null, "GET", new Soup.URI ("http://localhost/"), query);
+
+		assert ("a=b" == req.uri.get_query ());
+	});
+
 	Test.add_func ("/request/convert/new_content_length", () => {
 		var req = new Request (null, "get", new Soup.URI ("http://localhost/"));
 
