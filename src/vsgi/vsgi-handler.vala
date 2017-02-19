@@ -40,25 +40,7 @@ public abstract class VSGI.Handler : Object {
 		error ("Either 'handle' or 'handle_async' must be implemented.");
 	}
 
-	public virtual async bool handle_async (Request req, Response res) throws Error
-	{
-		var result = false;
-		Error? err = null;
-		IOSchedulerJob.push ((job) => {
-			var _req = req;
-			var _res = res;
-			try {
-				result = handle (_req, _res);
-			} catch (Error _err) {
-				err = _err;
-			}
-			return job.send_to_mainloop (handle_async.callback);
-		}, GLib.Priority.DEFAULT);
-		yield;
-		if (err == null) {
-			return result;
-		} else {
-			throw err;
-		}
+	public virtual async bool handle_async (Request req, Response res) throws Error {
+		return handle (req, res);
 	}
 }
