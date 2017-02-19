@@ -248,6 +248,16 @@ namespace VSGI {
 			}
 		}
 
+		/**
+		 * Initialize a {@link Request} objects from scratch.
+		 *
+		 * @param connection request connection or 'null' to allocate in-memory streams
+		 * @param method     request method
+		 * @param uri        request URI
+		 * @param query      request query or parsed from the URI if 'null'
+		 * @param body       a request body or 'null' to use the connection's
+		 *                   {@link GLib.OutputStream}
+		 */
 		[Version (experimental = true)]
 		public Request (IOStream?                  connection,
 		                string                     method,
@@ -267,8 +277,16 @@ namespace VSGI {
 			      body:        body);
 		}
 
+		/**
+		 * Initialize a {@link Request} object from the content of CGI/1.1 environment
+		 * variables.
+		 *
+		 * @param connection  a connection or 'null' to allocate in-memory streams
+		 * @param environment the CGI environment
+		 * @param body        a request body or 'null' to use the connection's {@link GLib.OutputStream}
+		 */
 		[Version (experimental = true)]
-		public Request.from_cgi_environment (IOStream? connection, string[] environment, InputStream? body = null) {
+		public Request.from_cgi_environment (IOStream? connection, [CCode (array_length = false, array_null_terminated = true)] string[] environment, InputStream? body = null) {
 #if GIO_2_44
 			base (connection: connection ?? new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ()),
 #else
