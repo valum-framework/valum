@@ -41,7 +41,7 @@ namespace VSGI {
 		{null}
 	};
 
-	public int main (string[] args) requires (Module.supported ()) {
+	public int main (string[] args) {
 		// default options
 		directory   = null;
 		server      = "http";
@@ -70,6 +70,11 @@ namespace VSGI {
 		// count the remaining arguments once parsed
 		if (args.length < 2) {
 			stderr.printf ("Module is missing, specify '--help' for detailed usage.\n");
+			return 1;
+		}
+
+		if (!Module.supported ()) {
+			stderr.printf ("Loading modules is not supported.");
 			return 1;
 		}
 
