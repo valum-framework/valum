@@ -132,8 +132,8 @@ namespace VSGI {
 		}
 
 		construct {
-			if (headers == null) {
-				_headers = new MessageHeaders (MessageHeadersType.REQUEST);
+			if (_headers == null) {
+				_headers = new Soup.MessageHeaders (Soup.MessageHeadersType.RESPONSE);
 			}
 		}
 
