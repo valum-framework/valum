@@ -32,7 +32,7 @@ public void test_server_sent_events_send () {
 
 	var req_body = new MemoryInputStream ();
 	var res_body = new MemoryOutputStream.resizable ();
-	var req = new Request (null, "GET", new Soup.URI ("http://127.0.0.1:3003/"), null, req_body);
+	var req = new Request (null, "GET", new Soup.URI ("http://127.0.0.1:3003/"), null, Soup.HTTPVersion.@1_1, null, req_body);
 	var res = new Response (req, Soup.Status.OK, null, res_body);
 
 	try {
@@ -69,7 +69,7 @@ public void test_server_sent_events_send_multiline () {
 
 	var req_body = new MemoryInputStream ();
 	var res_body = new MemoryOutputStream.resizable ();
-	var req = new Request (null, "GET", new Soup.URI ("http://127.0.0.1:3003/"), null, req_body);
+	var req = new Request (null, "GET", new Soup.URI ("http://127.0.0.1:3003/"), null, Soup.HTTPVersion.@1_1, null, req_body);
 	var res = new Response (req, Soup.Status.OK, null, res_body);
 
 	try {

@@ -252,8 +252,10 @@ namespace VSGI {
 		public Request (IOStream?                  connection,
 		                string                     method,
 		                Soup.URI                   uri,
-		                HashTable<string, string>? query = null,
-		                InputStream?               body  = null) {
+		                HashTable<string, string>? query        = null,
+		                Soup.HTTPVersion           http_version = Soup.HTTPVersion.@1_1,
+		                Soup.MessageHeaders?       headers      = null,
+		                InputStream?               body         = null) {
 			string[] empty_env = {}; // this is a hack for 'valac-0.24' and 'valac-0.26'
 #if GIO_2_44
 			base (connection: connection ?? new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ()),
@@ -264,6 +266,7 @@ namespace VSGI {
 			      method:      method,
 			      uri:         uri,
 			      query:       query,
+			      headers:     headers,
 			      body:        body);
 		}
 
