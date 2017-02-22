@@ -40,6 +40,7 @@ if sphinx.found()
         'middlewares/status.rst',
         'middlewares/subdomain.rst',
         'recipes/bump.rst',
+        'recipes/caching.rst',
         'recipes/configuration.rst',
         'recipes/index.rst',
         'recipes/json.rst',

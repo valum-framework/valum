@@ -7,6 +7,7 @@ their potential integration with Valum.
 .. toctree::
 
     bump
+    caching
     configuration
     json
     persistence
