@@ -28,13 +28,14 @@ public Type server_init (TypeModule type_module) {
 /**
  * FastCGI implementation of VSGI.
  */
+[CCode (lower_case_cprefix = "vsgi_fastcgi_")]
 namespace VSGI.FastCGI {
 
 	/**
 	 * Produce a significant error message given an error on a
 	 * {@link FastCGI.Stream}.
 	 */
-	private string strerror (int error) {
+	public string strerror (int error) {
 		if (error > 0) {
 			return GLib.strerror (error);
 		}
@@ -49,88 +50,6 @@ namespace VSGI.FastCGI {
 				return "FCGX: Unsupported version";
 		}
 		return "Unknown error code '%d'".printf (error);
-	}
-
-	private class StreamInputStream : UnixInputStream {
-
-		public unowned global::FastCGI.Stream @in { construct; get; }
-
-		public StreamInputStream (int fd, global::FastCGI.Stream @in) {
-			Object (fd: fd, close_fd: false, @in: @in);
-		}
-
-		public override ssize_t read (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
-			var read = this.in.read (buffer);
-
-			if (unlikely (read == GLib.FileStream.EOF)) {
-				critical (strerror (this.in.get_error ()));
-				this.in.clear_error ();
-				return -1;
-			}
-
-			return read;
-		}
-
-		public override bool close (Cancellable? cancellable = null) throws IOError {
-			if (unlikely (in.close () == GLib.FileStream.EOF)) {
-				critical (strerror (this.in.get_error ()));
-				this.in.clear_error ();
-			}
-			return in.is_closed;
-		}
-	}
-
-	private class StreamOutputStream : UnixOutputStream {
-
-		public unowned global::FastCGI.Stream @out { construct; get; }
-
-		public unowned global::FastCGI.Stream err { construct; get; }
-
-		public StreamOutputStream (int fd, global::FastCGI.Stream @out, global::FastCGI.Stream err) {
-			Object (fd: fd, close_fd: false, @out: @out, err: err);
-		}
-
-		public override ssize_t write (uint8[] buffer, Cancellable? cancellable = null) throws IOError {
-			var written = this.out.put_str (buffer);
-
-			if (unlikely (written == GLib.FileStream.EOF)) {
-				critical (strerror (this.out.get_error ()));
-				this.out.clear_error ();
-				return -1;
-			}
-
-			return written;
-		}
-
-		/**
-		 * Headers are written on the first flush call.
-		 */
-		public override bool flush (Cancellable? cancellable = null) {
-			if (unlikely (this.out.flush () == GLib.FileStream.EOF)) {
-				critical (strerror (this.out.get_error ()));
-				this.out.clear_error ();
-				return false;
-			}
-
-			return true;
-		}
-
-		/**
-		 * The 'err' stream is closed before 'out' to avoid an extra write.
-		 */
-		public override bool close (Cancellable? cancellable = null) throws IOError {
-			if (unlikely (this.err.close () == GLib.FileStream.EOF)) {
-				critical (strerror (this.err.get_error ()));
-				this.err.clear_error ();
-			}
-
-			if (unlikely (this.out.close () == GLib.FileStream.EOF)) {
-				critical (strerror (this.out.get_error ()));
-				this.out.clear_error ();
-			}
-
-			return this.out.is_closed;
-		}
 	}
 
 	private errordomain RequestError {
@@ -244,16 +163,16 @@ namespace VSGI.FastCGI {
 
 			public global::FastCGI.request request;
 
-			private StreamInputStream _input_stream;
-			private StreamOutputStream _output_stream;
+			private InputStream _input_stream;
+			private OutputStream _output_stream;
 
-			public override InputStream input_stream {
+			public override GLib.InputStream input_stream {
 				get {
 					return _input_stream;
 				}
 			}
 
-			public override OutputStream output_stream {
+			public override GLib.OutputStream output_stream {
 				get {
 					return this._output_stream;
 				}
@@ -287,8 +206,8 @@ namespace VSGI.FastCGI {
 
 				yield;
 
-				this._input_stream  = new StreamInputStream (fd, request.in);
-				this._output_stream = new StreamOutputStream (fd, request.out, request.err);
+				_input_stream  = new InputStream (fd, request.in);
+				_output_stream = new OutputStream (fd, request.out, request.err);
 
 				return true;
 			}
