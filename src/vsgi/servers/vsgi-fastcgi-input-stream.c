@@ -1,4 +1,3 @@
-#include "vsgi-fastcgi.h"
 #include "vsgi-fastcgi-input-stream.h"
 
 typedef struct
@@ -16,7 +15,32 @@ G_DEFINE_TYPE_WITH_PRIVATE (VSGIFastCGIInputStream,
                             vsgi_fastcgi_input_stream,
                             G_TYPE_UNIX_INPUT_STREAM)
 
-gssize
+static const gchar *
+vsgi_fastcgi_strerror (int err)
+{
+	if (err > 0)
+	{
+		return g_strerror (err);
+	}
+	else
+	{
+		switch (err)
+		{
+			case FCGX_CALL_SEQ_ERROR:
+				return "FCXG: Call seq error";
+			case FCGX_PARAMS_ERROR:
+				return "FCGX: Params error";
+			case FCGX_PROTOCOL_ERROR:
+				return "FCGX: Protocol error";
+			case FCGX_UNSUPPORTED_VERSION:
+				return "FCGX: Unsupported version";
+			default:
+				g_assert_not_reached ();
+		}
+	}
+}
+
+static gssize
 vsgi_fastcgi_input_stream_real_read (GInputStream  *self,
                                      void          *buffer,
                                      gsize          count,
@@ -55,7 +79,7 @@ vsgi_fastcgi_input_stream_real_read (GInputStream  *self,
 	return ret;
 }
 
-gboolean
+static gboolean
 vsgi_fastcgi_input_stream_real_close (GInputStream  *self,
                                       GCancellable  *cancellable,
                                       GError       **error)

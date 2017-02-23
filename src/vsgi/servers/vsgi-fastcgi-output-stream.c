@@ -1,4 +1,3 @@
-#include "vsgi-fastcgi.h"
 #include "vsgi-fastcgi-output-stream.h"
 
 typedef struct
@@ -16,6 +15,31 @@ struct _VSGIFastCGIOutputStream
 G_DEFINE_TYPE_WITH_PRIVATE (VSGIFastCGIOutputStream,
                             vsgi_fastcgi_output_stream,
                             G_TYPE_UNIX_OUTPUT_STREAM)
+
+static const gchar *
+vsgi_fastcgi_strerror (int err)
+{
+	if (err > 0)
+	{
+		return g_strerror (err);
+	}
+	else
+	{
+		switch (err)
+		{
+			case FCGX_CALL_SEQ_ERROR:
+				return "FCXG: Call seq error";
+			case FCGX_PARAMS_ERROR:
+				return "FCGX: Params error";
+			case FCGX_PROTOCOL_ERROR:
+				return "FCGX: Protocol error";
+			case FCGX_UNSUPPORTED_VERSION:
+				return "FCGX: Unsupported version";
+			default:
+				g_assert_not_reached ();
+		}
+	}
+}
 
 static gssize
 vsgi_fastcgi_output_stream_real_write (GOutputStream  *self,

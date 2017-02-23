@@ -31,27 +31,6 @@ public Type server_init (TypeModule type_module) {
 [CCode (lower_case_cprefix = "vsgi_fastcgi_")]
 namespace VSGI.FastCGI {
 
-	/**
-	 * Produce a significant error message given an error on a
-	 * {@link FastCGI.Stream}.
-	 */
-	public string strerror (int error) {
-		if (error > 0) {
-			return GLib.strerror (error);
-		}
-		switch (error) {
-			case global::FastCGI.CALL_SEQ_ERROR:
-				return "FCXG: Call seq error";
-			case global::FastCGI.PARAMS_ERROR:
-				return "FCGX: Params error";
-			case global::FastCGI.PROTOCOL_ERROR:
-				return "FCGX: Protocol error";
-			case global::FastCGI.UNSUPPORTED_VERSION:
-				return "FCGX: Unsupported version";
-		}
-		return "Unknown error code '%d'".printf (error);
-	}
-
 	private errordomain RequestError {
 		FAILED
 	}
