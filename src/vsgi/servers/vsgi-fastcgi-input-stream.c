@@ -31,6 +31,11 @@ vsgi_fastcgi_input_stream_real_read (GInputStream  *self,
 
 	in_stream = VSGI_FASTCGI_INPUT_STREAM (self)->priv->in;
 
+	if (g_cancellable_set_error_if_cancelled (cancellable, error))
+	{
+		return -1;
+	}
+
 	ret = FCGX_GetStr (buffer, count, in_stream);
 
 	if (G_UNLIKELY (ret == -1))
@@ -62,6 +67,11 @@ vsgi_fastcgi_input_stream_real_close (GInputStream  *self,
 	g_return_val_if_fail (VSGI_FASTCGI_IS_INPUT_STREAM (self), FALSE);
 
 	in_stream = VSGI_FASTCGI_INPUT_STREAM (self)->priv->in;
+
+	if (g_cancellable_set_error_if_cancelled (cancellable, error))
+	{
+		return FALSE;
+	}
 
 	ret = FCGX_FClose (in_stream);
 

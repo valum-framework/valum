@@ -32,6 +32,11 @@ vsgi_fastcgi_output_stream_real_write (GOutputStream  *self,
 
 	out_stream = VSGI_FASTCGI_OUTPUT_STREAM (self)->priv->out;
 
+	if (g_cancellable_set_error_if_cancelled (cancellable, error))
+	{
+		return -1;
+	}
+
 	ret = FCGX_PutStr (buffer, count, out_stream);
 
 	if (G_UNLIKELY (ret == -1))
@@ -63,6 +68,11 @@ vsgi_fastcgi_output_stream_real_flush (GOutputStream  *self,
 	g_return_val_if_fail (VSGI_FASTCGI_IS_OUTPUT_STREAM (self), FALSE);
 
 	out_stream = VSGI_FASTCGI_OUTPUT_STREAM (self)->priv->out;
+
+	if (g_cancellable_set_error_if_cancelled (cancellable, error))
+	{
+		return FALSE;
+	}
 
 	ret = FCGX_FFlush (out_stream);
 
@@ -98,6 +108,11 @@ vsgi_fastcgi_output_stream_real_close (GOutputStream  *self,
 	out_stream = VSGI_FASTCGI_OUTPUT_STREAM (self)->priv->out;
 	err_stream = VSGI_FASTCGI_OUTPUT_STREAM (self)->priv->err;
 
+	if (g_cancellable_set_error_if_cancelled (cancellable, error))
+	{
+		return FALSE;
+	}
+
 	/* always close the error stream first */
 
 	ret = FCGX_FClose (err_stream);
@@ -112,6 +127,11 @@ vsgi_fastcgi_output_stream_real_close (GOutputStream  *self,
 		                           g_io_error_from_errno (err));
 
 		FCGX_ClearError (err_stream);
+	}
+
+	if (g_cancellable_set_error_if_cancelled (cancellable, error))
+	{
+		return FALSE;
 	}
 
 	ret = FCGX_FClose (out_stream);
