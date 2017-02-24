@@ -30,6 +30,8 @@ namespace VSGI.HTTP {
 
 	private class MessageBodyOutputStream : OutputStream {
 
+		private bool aborted = false;
+
 		public Soup.Server server { construct; get; }
 
 		public Soup.Message message { construct; get; }
@@ -38,7 +40,18 @@ namespace VSGI.HTTP {
 			Object (server: server, message: message);
 		}
 
-		public override ssize_t write (uint8[] data, Cancellable? cancellable = null) {
+		construct {
+			server.request_aborted.connect ((msg) => {
+				if (msg == message) {
+					aborted = true;
+				}
+			});
+		}
+
+		public override ssize_t write (uint8[] data, Cancellable? cancellable = null) throws IOError {
+			if (unlikely (aborted)) {
+				throw new IOError.CONNECTION_CLOSED ("The request has been aborted.");
+			}
 			message.response_body.append_take (data);
 			return data.length;
 		}
@@ -47,7 +60,10 @@ namespace VSGI.HTTP {
 		 * Resume I/O on the underlying {@link Soup.Message} to flush the
 		 * written chunks.
 		 */
-		public override bool flush (Cancellable? cancellable = null) {
+		public override bool flush (Cancellable? cancellable = null) throws IOError {
+			if (unlikely (aborted)) {
+				throw new IOError.CONNECTION_CLOSED ("The request has been aborted.");
+			}
 			server.unpause_message (message);
 			return true;
 		}
