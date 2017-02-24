@@ -47,7 +47,7 @@ namespace Valum {
 			// initialize default types
 			register_type ("int",    /\d+/);
 			register_type ("string", /\w+/);
-			register_type ("path",   /(?:\.?[\w-\s\/])+/);
+			register_type ("path",   /(?:\.?[\w-\s\/@])+/);
 		}
 
 		/**
