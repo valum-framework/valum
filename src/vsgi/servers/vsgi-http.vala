@@ -50,7 +50,7 @@ namespace VSGI.HTTP {
 
 		public override ssize_t write (uint8[] data, Cancellable? cancellable = null) throws IOError {
 			if (unlikely (aborted)) {
-				throw new IOError.CONNECTION_CLOSED ("The request has been aborted.");
+				return -1;
 			}
 			message.response_body.append_take (data);
 			return data.length;
@@ -62,7 +62,7 @@ namespace VSGI.HTTP {
 		 */
 		public override bool flush (Cancellable? cancellable = null) throws IOError {
 			if (unlikely (aborted)) {
-				throw new IOError.CONNECTION_CLOSED ("The request has been aborted.");
+				return false;
 			}
 			server.unpause_message (message);
 			return true;
