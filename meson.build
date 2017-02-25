@@ -31,6 +31,11 @@ if soup.version().version_compare('>=2.48')
     add_project_arguments('--define=SOUP_2_48', language: 'vala')
 endif
 
+# provide 'Soup.WebsocketConnection'
+if soup.version().version_compare('>=2.50')
+    add_project_arguments(['--define=SOUP_2_50'], language: 'vala')
+endif
+
 subdir('src')
 subdir('tests')
 subdir('docs')

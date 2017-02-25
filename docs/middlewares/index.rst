@@ -18,6 +18,7 @@ from authentication to the delivery of a static resource.
     static
     status
     subdomain
+    websocket
 
 The typical way of declaring them involve closures. It is parametrized and
 returned to perform a specific task:

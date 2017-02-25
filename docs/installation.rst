@@ -207,6 +207,8 @@ Recent dependencies will enable more advanced features:
 +-------------+---------+------------------------------------------------------+
 | libsoup-2.4 | >=2.48  | new server API                                       |
 +-------------+---------+------------------------------------------------------+
+| libsoup-2.4 | >=2.50  | support for WebSocket                                |
++-------------+---------+------------------------------------------------------+
 
 You can also install additional dependencies to build the examples, you will
 have to specify the ``-D enable_examples=true`` flag during the configure step.
