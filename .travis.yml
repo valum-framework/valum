@@ -34,14 +34,11 @@ before_script:
     - ninja -C build -v docs/en
 
 script:
-    - ninja -C build -v test
+    - mesontest -C build --print-errorlogs -v
     - DESTDIR=$(mktemp -d) ninja -C build -v install
 
 after_success:
     - bash <(curl -s https://codecov.io/bash)
-
-after_failure:
-    - cat build/meson-logs/testlog.txt
 
 notifications:
     irc: irc.gnome.org#valum
