@@ -81,11 +81,28 @@ namespace VSGI {
 		[Version (since = "0.1", experimental = true)]
 		public const string[] METHODS = {OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT, PATCH};
 
+		private IOStream _connection;
+
 		/**
 		 * Connection containing raw streams.
 		 */
 		[Version (since = "0.2")]
-		public IOStream connection { construct; get; }
+		public IOStream connection {
+			get {
+				return _connection;
+			}
+			construct {
+				if (value == null) {
+#if GIO_2_44
+					_connection = new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ());
+#else
+					_connection = new Connection (new MemoryInputStream (), new MemoryOutputStream.resizable ());
+#endif
+				} else {
+					_connection = value;
+				}
+			}
+		}
 
 		/**
 		 * Request HTTP version.
@@ -265,11 +282,7 @@ namespace VSGI {
 		                HashTable<string, string>? query = null,
 		                InputStream?               body  = null) {
 			string[] empty_env = {}; // this is a hack for 'valac-0.24' and 'valac-0.26'
-#if GIO_2_44
-			base (connection: connection ?? new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ()),
-#else
-			base (connection: connection ?? new Connection (new MemoryInputStream (), new MemoryOutputStream.resizable ()),
-#endif
+			base (connection:  connection,
 			      environment: empty_env,
 			      method:      method,
 			      uri:         uri,
@@ -287,11 +300,7 @@ namespace VSGI {
 		 */
 		[Version (experimental = true)]
 		public Request.from_cgi_environment (IOStream? connection, [CCode (array_length = false, array_null_terminated = true)] string[] environment, InputStream? body = null) {
-#if GIO_2_44
-			base (connection: connection ?? new SimpleIOStream (new MemoryInputStream (), new MemoryOutputStream.resizable ()),
-#else
-			base (connection: connection ?? new Connection (new MemoryInputStream (), new MemoryOutputStream.resizable ()),
-#endif
+			base (connection:        connection,
 			      uri:               new Soup.URI ("http://localhost/"),
 			      http_version:      Environ.get_variable (environment, "SERVER_PROTOCOL") == "HTTP/1.1" ? Soup.HTTPVersion.@1_1 : Soup.HTTPVersion.@1_0,
 			      gateway_interface: Environ.get_variable (environment, "GATEWAY_INTERFACE") ?? "CGI/1.1",
