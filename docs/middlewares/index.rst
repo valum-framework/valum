@@ -11,6 +11,7 @@ from authentication to the delivery of a static resource.
     basic
     content-negotiation
     decode
+    respond-with
     safely
     sequence
     server-sent-events

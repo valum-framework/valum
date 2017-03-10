@@ -20,6 +20,12 @@ using Valum.ContentNegotiation;
 using Valum.ServerSentEvents;
 using VSGI;
 
+public HandlerCallback respond_with_text (RespondWithCallback<string> respond) {
+	return respond_with<string> (respond, (req, res, next, ctx, text) => {
+		return res.expand_utf8 (text);
+	});
+}
+
 var app = new Router ();
 
 app.use (basic ());
@@ -156,11 +162,10 @@ app.get ("/tee", (req, res) => {
 	}
 });
 
-
 // hello world! (compare with Node.js!)
-app.get ("/hello", (req, res) => {
-	return res.expand_utf8 ("Hello world!");
-});
+app.get ("/hello", respond_with_text (() => {
+	return "Hello world!";
+}));
 
 app.get ("/hello/", (req, res) => {
 	return res.expand_utf8 ("Hello world!");

@@ -14,6 +14,7 @@ valum_sources = files(
     'valum-content-negotiation.vala',
     'valum-path-route.vala',
     'valum-regex-route.vala',
+    'valum-respond-with.vala',
     'valum-route.vala',
     'valum-router.vala',
     'valum-rule-route.vala',

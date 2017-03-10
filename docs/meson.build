@@ -33,6 +33,7 @@ if sphinx.found()
         'middlewares/content-negotiation.rst',
         'middlewares/decode.rst',
         'middlewares/index.rst',
+        'middlewares/respond-with.rst',
         'middlewares/safely.rst',
         'middlewares/sequence.rst',
         'middlewares/server-sent-events.rst',
