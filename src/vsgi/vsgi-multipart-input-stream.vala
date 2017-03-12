@@ -17,10 +17,18 @@
 
 using GLib;
 
-/**
- * Equivalent to {@link Posix.strstr} but for memory blocks.
- */
-private extern unowned void* memmem (void* haystack, size_t haystack_len, void* needle, size_t needle_len);
+#if HAVE_MEMMEM
+private extern void* memmem (uint8[] haystack, uint8[] needle);
+#else
+private void* memmem (uint8[] haystack, uint8[] needle) {
+	for (var i = 0; i < haystack.length - needle.length; i++) {
+		if (Memory.cmp (haystack[i:needle.length], needle, needle.length) == 0) {
+			return &haystack[i];
+		}
+	}
+	return null;
+}
+#endif
 
 /**
  * Multipart input stream conforming to RFC 1341.
@@ -130,14 +138,14 @@ public class VSGI.MultipartInputStream : FilterInputStream {
 		var bytes_read = data_base_stream.peek (peek_buffer);
 
 		// check if the boundary is anywhere in the buffer
-		var needle_in_buffer = memmem (peek_buffer, bytes_read, needle, needle.length);
+		var needle_in_buffer = memmem (peek_buffer[0:bytes_read], needle.data);
 
 		if (needle_in_buffer != null) {
 			return data_base_stream.read (buffer[0:((uint8*) needle_in_buffer - (uint8*) peek_buffer)], cancellable);
 		}
 
 		// check for epilogue boundary
-		var epilogue_needle_in_buffer = memmem (peek_buffer, bytes_read, epilogue_needle, needle.length);
+		var epilogue_needle_in_buffer = memmem (peek_buffer[0:bytes_read], epilogue_needle.data);
 
 		if (epilogue_needle_in_buffer != null) {
 			return data_base_stream.read (buffer[0:((uint8*) epilogue_needle_in_buffer - (uint8*) peek_buffer)], cancellable);
