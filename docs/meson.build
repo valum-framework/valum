@@ -7,11 +7,13 @@ if valadoc.found()
                        '--target-glib=2.40', '--force'] + vala_defines + [ '--directory', '@OUTPUT@', '@INPUT@']
     custom_target('API documentation', command: valadoc_command + ['--doclet=html'],
                  input: vsgi_sources + valum_sources,
-                 output: 'api')
+                 output: 'api',
+                 build_by_default: true)
     install_subdir(meson.current_build_dir() + '/api', install_dir: 'share/doc/valum-@0@'.format(api_version))
     custom_target('Devhelp book', command: valadoc_command + ['--doclet=devhelp'],
                  input: vsgi_sources + valum_sources,
-                 output: 'devhelp')
+                 output: 'devhelp',
+                 build_by_default: true)
     install_subdir(meson.current_build_dir() + '/devhelp/valum-@0@'.format(api_version), install_dir: 'share/devhelp/books')
 endif
 
@@ -66,6 +68,7 @@ if sphinx.found()
     custom_target('en user documentation',
                   command: [sphinx, '-W', '-b', 'html', meson.current_source_dir(), '@OUTPUT@'],
                   input: docs_sources,
-                  output: 'en')
+                  output: 'en',
+                  build_by_default: true)
     install_subdir(meson.current_build_dir() + '/en', install_dir: 'share/doc/valum-@0@/user'.format(api_version))
 endif
