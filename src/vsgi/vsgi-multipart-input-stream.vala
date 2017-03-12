@@ -45,13 +45,6 @@ public class VSGI.MultipartInputStream : FilterInputStream {
 		Object (base_stream: base_stream, boundary: boundary);
 	}
 
-	[Version (since = "0.4")]
-	public MultipartInputStream.from_request (Request req) {
-		HashTable<string, string> @params;
-		req.headers.get_content_type (out @params);
-		this (req.body, @params["boundary"]);
-	}
-
 	construct {
 		data_base_stream = new DataInputStream (base_stream);
 		data_base_stream.set_newline_type (DataStreamNewlineType.CR_LF);

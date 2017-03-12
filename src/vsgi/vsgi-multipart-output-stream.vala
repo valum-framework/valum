@@ -43,13 +43,6 @@ public class VSGI.MultipartOutputStream : FilterOutputStream {
 		Object (base_stream: base_stream, boundary: boundary);
 	}
 
-	[Version (since = "0.4")]
-	public MultipartOutputStream.from_response (Response res) {
-		HashTable<string, string> @params;
-		res.headers.get_content_type (out @params);
-		this (res.body, @params["boundary"]);
-	}
-
 	private uint8[] build_part (Soup.MessageHeaders part_headers) {
 		var part = new StringBuilder ("");
 
