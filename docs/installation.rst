@@ -83,6 +83,37 @@ Note that due to Meson design, dependencies must be explicitly provided.
     executable('app', 'app.vala',
                dependencies: [glib, gobject, gio, soup, vsgi, valum])
 
+Bower
+-----
+
+If you are using Meson subprojects, Bower can be used to install Valum and
+other dependencies in a very simple way.
+
+In ``.bowerrc`` so that packages lands into the ``subprojects`` directory.
+
+.. code-block:: json
+
+    {
+      "directory": "subprojects"
+    }
+
+In ``bower.json``
+
+.. code-block:: json
+
+    {
+      "name": "foo",
+      "dependencies": {
+        "valum": "^0.3.8"
+      }
+    }
+
+To install or update the dependencies issue the following command:
+
+.. code-block:: bash
+
+    bower install
+
 Docker
 ------
 
