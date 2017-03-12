@@ -117,10 +117,6 @@ public class VSGI.MultipartInputStream : FilterInputStream {
 		return next_part (out part_headers, cancellable);
 	}
 
-	/*
-	private ssize_t m = -1;
-	*/
-
 	/**
 	 * Read and skip boundaries, raising a 'EOF' before each occurences.
 	 */
