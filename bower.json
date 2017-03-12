@@ -1,0 +1,14 @@
+{
+  "name": "valum",
+  "description": "Web micro-framework entirely written in Vala",
+  "main": "meson.build",
+  "authors": [
+    "Guillaume Poirier-Morency <guillaumepoiriermorency@gmail.com>"
+  ],
+  "license": "LGPL-3.0",
+  "keywords": [
+    "web-framework",
+    "vala"
+  ],
+  "homepage": "https://github.com/valum-framework/valum"
+}
