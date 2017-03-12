@@ -336,13 +336,13 @@ namespace VSGI {
 			var query_string = Environ.get_variable (environment, "QUERY_STRING");
 			if (query_string != null && query_string.length > 0) {
 				uri.set_query (query_string);
-				query = Soup.Form.decode (query_string);
+				_query = Soup.Form.decode (query_string);
 			} else if (path_translated != null && "?" in path_translated) {
 				uri.set_query (path_translated.split ("?", 2)[1]);
-				query = Soup.Form.decode (path_translated.split ("?", 2)[1]);
+				_query = Soup.Form.decode (path_translated.split ("?", 2)[1]);
 			} else if (request_uri != null && "?" in request_uri) {
 				uri.set_query (request_uri.split ("?", 2)[1]);
-				query = Soup.Form.decode (request_uri.split ("?", 2)[1]);
+				_query = Soup.Form.decode (request_uri.split ("?", 2)[1]);
 			}
 
 			var content_type = Environ.get_variable (environment, "CONTENT_TYPE") ?? "application/octet-stream";
