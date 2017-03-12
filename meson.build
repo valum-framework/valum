@@ -28,6 +28,10 @@ if soup.version().version_compare('>=2.48')
     vala_defines += '--define=SOUP_2_48'
 endif
 
+if meson.get_compiler('c').has_function('memmem')
+    vala_defines += '--define=HAVE_MEMMEM'
+endif
+
 subdir('src')
 subdir('bin')
 subdir('tests')
