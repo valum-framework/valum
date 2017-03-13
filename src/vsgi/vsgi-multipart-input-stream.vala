@@ -21,7 +21,7 @@ using GLib;
 private extern void* memmem (uint8[] haystack, uint8[] needle);
 #else
 private void* memmem (uint8[] haystack, uint8[] needle) {
-	for (var i = 0; i < haystack.length - needle.length; i++) {
+	for (var i = 0; i < haystack.length - needle.length + 1; i++) {
 		if (Memory.cmp (haystack[i:needle.length], needle, needle.length) == 0) {
 			return &haystack[i];
 		}
