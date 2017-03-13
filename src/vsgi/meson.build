@@ -20,7 +20,7 @@ vsgi_sources = files(
     'vsgi-tee-output-stream.vala')
 vsgi_lib = library('vsgi-' + api_version, vsgi_sources,
                    dependencies: [glib, gobject, gio, gio_unix, gmodule, soup],
-                   vala_args: ['--pkg=posix'] + vala_defines,
+                   vala_args: ['--pkg=posix'],
                    vala_header: 'vsgi.h',
                    vala_gir: 'VSGI-@0@.gir'.format(api_version),
                    c_args: '-DGETTEXT_PACKAGE="vsgi-@0@"'.format(api_version),
