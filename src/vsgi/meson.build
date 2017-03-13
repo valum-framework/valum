@@ -19,7 +19,6 @@ vsgi_sources = files(
     'vsgi-tee-output-stream.vala')
 vsgi_lib = library('vsgi-' + api_version, vsgi_sources,
                    dependencies: [glib, gobject, gio, gio_unix, gmodule, soup, libsystemd, openssl, posix],
-                   vala_args: vala_defines,
                    vala_header: 'vsgi.h',
                    install: true,
                    install_rpath: '$ORIGIN/vsgi-@0@/servers'.format(api_version),

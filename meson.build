@@ -20,29 +20,27 @@ libsystemd = dependency('libsystemd', required: false)
 openssl = dependency('openssl')
 posix = meson.get_compiler('vala').find_library('posix')
 
-vala_defines = []
-
-# use structured logging instead of colored output
+# provide structured logging
 if glib.version().version_compare('>=2.50')
-    vala_defines += '--define=GLIB_2_50'
+    add_project_arguments('--define=GLIB_2_50', language: 'vala')
 endif
 
 # provide 'OutputStream.write_all_async' and 'SimpleIOStream'
 if gio.version().version_compare('>=2.44')
-    vala_defines += '--define=GIO_2_44'
+    add_project_arguments('--define=GIO_2_44', language: 'vala')
 endif
 
 # new 'Soup.Server' API
 if soup.version().version_compare('>=2.48')
-    vala_defines += '--define=SOUP_2_48'
+    add_project_arguments('--define=SOUP_2_48', language: 'vala')
 endif
 
 if libsystemd.found()
-    vala_defines += '--define=LIBSYSTEMD'
+    add_project_arguments('--define=LIBSYSTEMD', language: 'vala')
 endif
 
 if meson.get_compiler('c').has_function('memmem')
-    vala_defines += '--define=HAVE_MEMMEM'
+    add_project_arguments('--define=HAVE_MEMMEM', language: 'vala')
 endif
 
 subdir('src')

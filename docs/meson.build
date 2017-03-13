@@ -5,7 +5,7 @@ if valadoc.found()
                        '--pkg=gio-2.0', '--pkg=gio-unix-2.0',
                        '--pkg=gmodule-2.0', '--pkg=libsoup-2.4', '--pkg=posix', '--pkg=openssl',
                        '--vapidir=' + join_paths(meson.current_source_dir(), '..', 'vapi'),
-                       '--target-glib=2.40', '--force'] + vala_defines + [ '--directory', '@OUTPUT@', '@INPUT@']
+                       '--target-glib=2.40', '--force', '--directory', '@OUTPUT@', '@INPUT@']
     custom_target('API documentation', command: valadoc_command + ['--doclet=html'],
                  input: vsgi_sources + valum_sources,
                  output: 'api',

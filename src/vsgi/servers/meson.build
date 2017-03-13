@@ -1,12 +1,10 @@
 shared_module('vsgi-http', ['vsgi-http.vala'],
         dependencies: [glib, gobject, gio, soup, vsgi],
-        vala_args: vala_defines,
         install: true,
         install_dir: join_paths(get_option('libdir'), 'vsgi-@0@/servers'.format(api_version)))
 
 shared_module('vsgi-cgi', 'vsgi-cgi.vala',
         dependencies: [glib, gobject, gio, gio_unix, soup, vsgi],
-        vala_args: vala_defines,
         install: true,
         install_dir: join_paths(get_option('libdir'), 'vsgi-@0@/servers'.format(api_version)))
 
@@ -15,13 +13,11 @@ if fcgi.found()
     fcgi_vapi = meson.get_compiler('vala').find_library('fcgi', dirs: meson.current_source_dir())
     shared_module('vsgi-fastcgi', 'vsgi-fastcgi.vala',
                    dependencies: [glib, gobject, gio, gio_unix, soup, vsgi, fcgi, fcgi_vapi],
-                   vala_args: vala_defines,
                    install: true,
                    install_dir: join_paths(get_option('libdir'), 'vsgi-@0@/servers'.format(api_version)))
 endif
 
 shared_module('vsgi-scgi', 'vsgi-scgi.vala',
         dependencies: [glib, gobject, gio, soup, vsgi],
-        vala_args: vala_defines,
         install: true,
         install_dir: join_paths(get_option('libdir'), 'vsgi-@0@/servers'.format(api_version)))
