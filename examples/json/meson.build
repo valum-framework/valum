@@ -1,5 +1,5 @@
-json = dependency('json-glib-1.0', required: false)
-if json.found()
+json_dep = dependency('json-glib-1.0', required: false)
+if json_dep.found()
     executable('json', 'app.vala',
-               dependencies: [glib, gobject, gio, soup, vsgi, valum, json])
+               dependencies: [glib_dep, gobject_dep, gio_dep, soup_dep, vsgi_dep, valum_dep, json_dep])
 endif

@@ -26,13 +26,13 @@ valum_sources = files(
     'valum-status.vala',
     'valum-subdomain.vala')
 valum_lib = library('valum-' + api_version, valum_sources,
-                    dependencies: [glib, gobject, gio, soup, vsgi],
+                    dependencies: [glib_dep, gobject_dep, gio_dep, soup_dep, vsgi_dep],
                     c_args: '-DGETTEXT_PACKAGE="valum-@0@"'.format(api_version),
                     vala_header: 'valum.h',
                     install: true)
 
-valum = declare_dependency(include_directories: include_directories('.'),
-                           link_with: valum_lib)
+valum_dep = declare_dependency(include_directories: include_directories('.'),
+                               link_with: valum_lib)
 
 meson.add_install_script('install.sh')
 

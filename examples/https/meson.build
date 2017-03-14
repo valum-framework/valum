@@ -1,2 +1,2 @@
 executable('https', 'app.vala',
-           dependencies: [glib, gobject, gio, soup, vsgi, valum])
+           dependencies: [glib_dep, gobject_dep, gio_dep, soup_dep, vsgi_dep, valum_dep])

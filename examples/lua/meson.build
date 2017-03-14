@@ -6,4 +6,4 @@
 #    lua = dependency('lua')
 #endif
 #executable('lua', 'app.vala',
-#           dependencies: [glib, gobject, gio, soup, vsgi, valum, lua])
+#           dependencies: [glib_dep, gobject_dep, gio_dep, soup_dep, vsgi_dep, valum_dep, lua])

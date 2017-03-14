@@ -19,7 +19,7 @@ vsgi_sources = files(
     'vsgi-socket-server.vala',
     'vsgi-tee-output-stream.vala')
 vsgi_lib = library('vsgi-' + api_version, vsgi_sources,
-                   dependencies: [glib, gobject, gio, gio_unix, gmodule, soup],
+                   dependencies: [glib_dep, gobject_dep, gio_dep, gio_unix_dep, gmodule_dep, soup_dep],
                    vala_args: ['--pkg=posix'],
                    vala_header: 'vsgi.h',
                    vala_gir: 'VSGI-@0@.gir'.format(api_version),
@@ -27,9 +27,9 @@ vsgi_lib = library('vsgi-' + api_version, vsgi_sources,
                    install: true,
                    install_rpath: '$ORIGIN/vsgi-@0@/servers'.format(api_version))
 
-vsgi = declare_dependency(include_directories: include_directories('.'),
-                          link_with: vsgi_lib,
-                          link_args: '-Wl,-rpath,@0@/servers'.format(meson.current_build_dir()))
+vsgi_dep = declare_dependency(include_directories: include_directories('.'),
+                              link_with: vsgi_lib,
+                              link_args: '-Wl,-rpath,@0@/servers'.format(meson.current_build_dir()))
 
 meson.add_install_script('install.sh')
 
