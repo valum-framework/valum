@@ -379,7 +379,7 @@ namespace VSGI {
 		                                int          priority    = GLib.Priority.DEFAULT,
 		                                Cancellable? cancellable = null) throws Error {
 			_mark_content_length_as_undetermined ();
-#if GIO_2_44
+#if GIO_2_44 && VALA_0_28
 			size_t bytes_written;
 			return (yield write_head_async (priority, cancellable, out bytes_written)) &&
 			       (yield body.write_all_async (buffer, priority, cancellable, out bytes_written)) &&
@@ -449,7 +449,7 @@ namespace VSGI {
 		                                        int          priority    = GLib.Priority.DEFAULT,
 		                                        Cancellable? cancellable = null) throws Error {
 			_mark_content_length_as_fixed (buffer.length);
-#if GIO_2_44
+#if GIO_2_44 && VALA_0_28
 			size_t bytes_written;
 			return (yield write_head_async (priority, cancellable, out bytes_written)) &&
 			       (buffer.length == 0 || yield body.write_all_async (buffer, priority, cancellable, out bytes_written)) &&

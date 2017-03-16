@@ -75,7 +75,7 @@ public class VSGI.MultipartOutputStream : FilterOutputStream {
 	public async bool new_part_async (Soup.MessageHeaders part_headers,
 	                                  int                 priority    = GLib.Priority.DEFAULT,
 	                                  Cancellable?        cancellable = null) throws Error {
-#if GIO_2_44
+#if GIO_2_44 && VALA_0_28
 		size_t bytes_written;
 		return yield base_stream.write_all_async (build_part (part_headers ?? new Soup.MessageHeaders
 															  (Soup.MessageHeadersType.MULTIPART)), priority, cancellable, out bytes_written);
