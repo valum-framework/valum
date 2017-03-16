@@ -326,9 +326,9 @@ namespace VSGI {
 			var path_info   = Environ.get_variable (environment, "PATH_INFO");
 			var request_uri = Environ.get_variable (environment, "REQUEST_URI");
 			if (path_info != null && path_info.length > 0)
-				uri.set_path (path_info);
+				uri.set_path (Soup.URI.decode (path_info));
 			else if (request_uri != null && request_uri.length > 0)
-				uri.set_path (request_uri.split ("?", 2)[0]); // strip the query
+				uri.set_path (Soup.URI.decode (request_uri.split ("?", 2)[0])); // strip the query
 			else
 				uri.set_path ("/");
 
