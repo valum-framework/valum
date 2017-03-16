@@ -189,7 +189,7 @@ namespace VSGI.CGI {
 			                                                   cancellable);
 		}
 
-#if GIO_2_44
+#if GIO_2_44 && VALA_0_28
 		protected override async bool write_status_line_async (HTTPVersion  http_version,
 		                                                       uint         status,
 		                                                       string       reason_phrase,
@@ -219,7 +219,7 @@ namespace VSGI.CGI {
 			return request.connection.output_stream.write_all (head.str.data, out bytes_written, cancellable);
 		}
 
-#if GIO_2_44
+#if GIO_2_44 && VALA_0_28
 		protected override async bool write_headers_async (MessageHeaders headers,
 		                                                   int            priority    = GLib.Priority.DEFAULT,
 		                                                   Cancellable?   cancellable = null,
