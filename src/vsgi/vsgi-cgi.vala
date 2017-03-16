@@ -101,9 +101,9 @@ namespace VSGI.CGI {
 			var path_info   = Environ.get_variable (environment, "PATH_INFO");
 			var request_uri = Environ.get_variable (environment, "REQUEST_URI");
 			if (path_info != null && path_info.length > 0)
-				this._uri.set_path (path_info);
+				this._uri.set_path (URI.decode (path_info));
 			else if (request_uri != null && request_uri.length > 0)
-				this._uri.set_path (request_uri.split ("?", 2)[0]); // strip the query
+				this._uri.set_path (URI.decode (request_uri.split ("?", 2)[0])); // strip the query
 			else
 				this._uri.set_path ("/");
 
