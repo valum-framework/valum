@@ -1,5 +1,6 @@
 using Tmpl;
 using Valum;
+using Valum.ContentNegotiation;
 using VSGI;
 
 var app = new Router ();
@@ -11,6 +12,9 @@ try {
 } catch (GLib.Error err) {
 	error (err.message);
 }
+
+app.use (basic ());
+app.use ("text/html");
 
 app.get ("/", (req, res) => {
 	var scope = new Scope ();

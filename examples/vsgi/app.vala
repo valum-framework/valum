@@ -20,6 +20,7 @@ using VSGI;
 public class App : Handler  {
 
 	public override async bool handle_async (Request req, Response res) throws Error {
+		res.headers.set_content_type ("text/plain", null);
 		return yield res.expand_utf8_async ("Hello world!");
 	}
 }

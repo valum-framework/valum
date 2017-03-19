@@ -16,6 +16,7 @@
  */
 
 using Valum;
+using Valum.ContentNegotiation;
 using VSGI;
 
 var app = new Router ();
@@ -27,6 +28,9 @@ openweathermap.prefetch_dns ("api.openweathermap.org", null, null);
 openweathermap.authenticate.connect ((msg, auth) => {
     auth.authenticate ("client_id", "secret_id");
 });
+
+app.use (basic ());
+app.use (accept ("text/html"));
 
 app.get ("/", (req, res, next, ctx) => {
 	openweathermap.send_async.begin (new Soup.Message ("GET", "http://api.openweathermap.org/data/2.5/weather?q=Montreal&units=metric"),

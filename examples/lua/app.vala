@@ -17,12 +17,16 @@
 
 using Lua;
 using Valum;
+using Valum.ContentNegotiation;
 using VSGI;
 
 var app = new Router ();
 var vm  = new LuaVM ();
 
 vm.open_libs ();
+
+app.use (basic ());
+app.use (accept ("text/plain"));
 
 app.get ("/", (req, res) => {
 	vm.do_string ("""

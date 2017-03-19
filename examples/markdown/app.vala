@@ -17,9 +17,13 @@
 
 using Markdown;
 using Valum;
+using Valum.ContentNegotiation;
 using VSGI;
 
 var app = new Router ();
+
+app.use (basic ());
+app.use (accept ("text/html"));
 
 app.get ("/", (req, res) => {
 	var doc = new Document.from_string ("# Hello world!".data, DocumentFlags.EMBED);

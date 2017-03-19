@@ -16,9 +16,13 @@
  */
 
 using Valum;
+using Valum.ContentNegotiation;
 using VSGI;
 
 var app = new Router ();
+
+app.use (basic ());
+app.use (accept ("application/json"));
 
 app.get ("/", (req, res) => {
 	var builder   = new Json.Builder ();
@@ -39,8 +43,6 @@ app.get ("/", (req, res) => {
 
 	generator.root   = builder.get_root ();
 	generator.pretty = true;
-
-	res.headers.set_content_type ("application/json", null);
 
 	return generator.to_stream (res.body);
 });

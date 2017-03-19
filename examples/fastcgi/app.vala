@@ -16,11 +16,14 @@
  */
 
 using Valum;
-using Valum.Static;
+using Valum.ContentNegotiation;
 using VSGI;
 
 public static int main (string[] args) {
 	var app = new Router ();
+
+	app.use (basic ());
+	app.use (accept ("text/plain"));
 
 	app.get ("/", (req, res) => {
 		return res.expand_utf8 ("Hello world!");
