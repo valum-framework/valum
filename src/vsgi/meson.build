@@ -11,6 +11,7 @@ vsgi_sources = files(
     'vsgi-handler.vala',
     'vsgi-multipart-input-stream.vala',
     'vsgi-multipart-output-stream.vala',
+    'vsgi-ranges.vala',
     'vsgi-request.vala',
     'vsgi-response.vala',
     'vsgi-security-utils.vala',

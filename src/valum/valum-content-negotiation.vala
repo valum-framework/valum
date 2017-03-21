@@ -278,6 +278,15 @@ namespace Valum.ContentNegotiation {
 	[Version (since = "0.3")]
 	public HandlerCallback accept_ranges (string                        ranges,
 	                                      owned ForwardCallback<string> forward = Valum.forward) {
-		return negotiate ("Accept-Ranges", ranges, (owned) forward);
+		return negotiate ("Accept-Ranges", ranges, (req, res, next, ctx, v) => {
+			Soup.Range[] _ranges;
+			if (req.headers.get_ranges (0, out _ranges)) {
+				res.status = Soup.Status.PARTIAL_CONTENT;
+				res.convert (new Ranges (_ranges));
+				return forward (req, res, next, ctx, v);
+			} else {
+				throw new ClientError.BAD_REQUEST ("");
+			}
+		});
 	}
 }
