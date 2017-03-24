@@ -21,7 +21,7 @@ using VSGI;
 /**
  * Utilities to serve static resources.
  */
-[CCode (gir_namespace = "Valum", gir_version = "0.3")]
+[CCode (gir_namespace = "Valum", gir_version = "0.4")]
 namespace Valum.Static {
 
 	/**

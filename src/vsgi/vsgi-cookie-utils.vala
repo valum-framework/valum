@@ -20,7 +20,7 @@ using Soup;
 /**
  * Cookie-related utilities.
  */
-[CCode (gir_namespace = "VSGI", gir_version = "0.3")]
+[CCode (gir_namespace = "VSGI", gir_version = "0.4")]
 namespace VSGI.CookieUtils {
 
 	/**
