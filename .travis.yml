@@ -10,8 +10,6 @@ compiler:
     - gcc
 
 env:
-    - VALAC=valac-0.26
-    - VALAC=valac-0.28
     - VALAC=valac-0.30
     - VALAC=valac VALAFLAGS=--fatal-warnings
 
