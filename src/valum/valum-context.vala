@@ -57,14 +57,6 @@ public class Valum.Context : Object {
 		Object (parent: parent);
 	}
 
-	private inline unowned Value _fail_if_null (string key, Value? @value) throws ClientError.UNPROCESSABLE_ENTITY {
-		if (@value == null) {
-			throw new ClientError.UNPROCESSABLE_ENTITY ("The key '%s' was not found in the context.", key);
-		} else {
-			return @value;
-		}
-	}
-
 	/**
 	 * Obtain a key from this context or its parent if it's not found.
 	 *
@@ -74,11 +66,6 @@ public class Valum.Context : Object {
 	[Version (since = "0.3")]
 	public new unowned Value? @get (string key) {
 		return states[key] ?? (parent == null ? null : parent.@get (key));
-	}
-
-	[Version (since = "0.4")]
-	public unowned Value get_or_fail (string key) throws ClientError.UNPROCESSABLE_ENTITY {
-		return _fail_if_null (key, @get (key));
 	}
 
 	/**
@@ -96,11 +83,6 @@ public class Valum.Context : Object {
 		} finally {
 			states.steal (key);
 		}
-	}
-
-	[Version (since = "0.4")]
-	public Value take_or_fail (string key) throws ClientError.UNPROCESSABLE_ENTITY {
-		return _fail_if_null (key, take (key));
 	}
 
 	/**
