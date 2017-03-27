@@ -265,6 +265,33 @@ namespace VSGI {
 			}
 		}
 
+		private HashTable<string, string>? _form = null;
+
+		/**
+		 * Consume the request body if the 'Content-Type' is 'application/www-urlencoded'
+		 *
+		 * Subsequent calls will return the same form data.
+		 *
+		 * If a file upload is expected, use {@link MultipartInputStream} instead.
+		 */
+		[Version (since = "0.4")]
+		public HashTable<string, string>? form {
+			get {
+				if (_form == null) {
+					if (headers.get_content_type (null) == "application/x-www-form-urlencoded") {
+						try {
+							_form = Soup.Form.decode (flatten_utf8 ());
+						} catch (Error err) {
+							critical ("%s (%s, %d)", err.message, err.domain.to_string (), err.code);
+						}
+					} else {
+						warning ("The request 'Content-Type' header is not 'application/x-www-form-urlencoded'.");
+					}
+				}
+				return _form;
+			}
+		}
+
 		/**
 		 * Initialize a {@link Request} objects from scratch.
 		 *
