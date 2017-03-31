@@ -36,6 +36,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/fastcgi_server/socket", () => {
+#if GIO_UNIX
 		var server = Server.@new ("fastcgi");
 
 		try {
@@ -48,9 +49,13 @@ public int main (string[] args) {
 
 		assert (1 == server.uris.length ());
 		assert ("fcgi+unix://some-socket.sock/" == server.uris.data.to_string (false));
+#else
+		Test.skip ("This test require 'gio-unix-2.0' installed.");
+#endif
 	});
 
 	Test.add_func ("/fastcgi_server/multiple_listen", () => {
+#if GIO_UNIX
 		var server  = Server.@new ("fastcgi");
 
 		try {
@@ -68,6 +73,9 @@ public int main (string[] args) {
 		} finally {
 			FileUtils.unlink ("some-socket.sock");
 		}
+#else
+		Test.skip ("This test require 'gio-unix-2.0' installed.");
+#endif
 	});
 
 	return Test.run ();

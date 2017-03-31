@@ -74,10 +74,14 @@ public abstract class VSGI.SocketServer : Server {
 					                                                    effective_inet_address.get_address ().to_string (),
 					                                                    effective_inet_address.get_port ())));
 				}
-			} else if (effective_address is UnixSocketAddress) {
+			}
+
+#if GIO_UNIX
+			else if (effective_address is UnixSocketAddress) {
 				var effective_unix_address = effective_address as UnixSocketAddress;
 				_uris.append (new Soup.URI ("%s+unix://%s/".printf (scheme, effective_unix_address.get_path ())));
 			}
+#endif
 		}
 	}
 

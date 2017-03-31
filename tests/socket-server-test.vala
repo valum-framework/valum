@@ -59,6 +59,7 @@ public int main (string[] args) {
 	});
 
 	Test.add_func ("/socket_server/listen/unix_socket", () => {
+#if GIO_UNIX
 		var server = new MockedSocketServer ();
 
 		try {
@@ -70,9 +71,13 @@ public int main (string[] args) {
 		}
 
 		assert ("mock+unix://some-socket.sock/" == server.uris.data.to_string (false));
+#else
+		Test.skip ("This test require 'gio-unix-2.0' installed.");
+#endif
 	});
 
 	Test.add_func ("/socket_server/listen_socket", () => {
+#if GIO_UNIX
 		var server = new MockedSocketServer ();
 
 		try {
@@ -84,6 +89,9 @@ public int main (string[] args) {
 		} finally {
 			FileUtils.unlink ("some-socket.sock");
 		}
+#else
+		Test.skip ("This test require 'gio-unix-2.0' installed.");
+#endif
 	});
 
 	return Test.run ();

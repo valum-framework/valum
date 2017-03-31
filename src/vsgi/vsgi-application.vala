@@ -49,8 +49,10 @@ public class VSGI.Application : GLib.Application {
 			{"any",             'A', 0, OptionArg.NONE,           null, "Listen on any address instead of only from the loopback interface"},
 			{"ipv4-only",       '4', 0, OptionArg.NONE,           null, "Listen only to IPv4 interfaces"},
 			{"ipv6-only",       '6', 0, OptionArg.NONE,           null, "Listen only to IPv6 interfaces"},
+#if GIO_UNIX
 			// socket
 			{"socket",          's', 0, OptionArg.FILENAME_ARRAY, null, "Listen on each UNIX socket paths",     "[]"},
+#endif
 			// file descriptor
 			{"file-descriptor", 'f', 0, OptionArg.STRING_ARRAY,   null, "Listen on each file descriptors",      "[]"},
 			{null}
@@ -91,7 +93,9 @@ public class VSGI.Application : GLib.Application {
 			var any       = options.lookup_value ("any",             VariantType.BOOLEAN);
 			var ipv4_only = options.lookup_value ("ipv4-only",       VariantType.BOOLEAN);
 			var ipv6_only = options.lookup_value ("ipv6-only",       VariantType.BOOLEAN);
+#if GIO_UNIX
 			var sockets   = options.lookup_value ("socket",          VariantType.BYTESTRING_ARRAY);
+#endif
 			var fds       = options.lookup_value ("file-descriptor", VariantType.STRING_ARRAY);
 
 			if (addresses != null) {
@@ -144,12 +148,14 @@ public class VSGI.Application : GLib.Application {
 				}
 			}
 
+#if GIO_UNIX
 			// socket path
 			if (sockets != null) {
 				foreach (var socket in sockets.get_bytestring_array ()) {
 					server.listen (new UnixSocketAddress (socket));
 				}
 			}
+#endif
 
 			// file descriptor
 			if (fds != null) {
@@ -164,7 +170,12 @@ public class VSGI.Application : GLib.Application {
 			}
 
 			// default listening interface
-			if (addresses == null && ports == null && sockets == null && fds == null) {
+			if (addresses == null &&
+			    ports     == null &&
+#if GIO_UNIX
+			    sockets   == null &&
+#endif
+			    fds       == null) {
 				server.listen ();
 			}
 
@@ -205,12 +216,14 @@ public class VSGI.Application : GLib.Application {
 		// keep the process (and workers) alive
 		hold ();
 
+#if GIO_UNIX
 		// release on 'SIGTERM'
 		Unix.signal_add (ProcessSignal.TERM, () => {
 			release ();
 			server.stop ();
 			return false;
 		}, Priority.LOW);
+#endif
 
 		return 0;
 	}

@@ -143,11 +143,15 @@ namespace VSGI {
 		 */
 		[Version (since = "0.3", experimental = true)]
 		public virtual Pid fork () throws Error {
+#if HAVE_FORK
 			var pid = Posix.fork ();
 			if (pid == -1) {
 				throw new SpawnError.FORK (strerror (errno));
 			}
 			return pid;
+#else
+			return 0;
+#endif
 		}
 
 		/**

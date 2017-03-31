@@ -1,0 +1,11 @@
+[binaries]
+exe_wrapper = 'wine'
+c = '/usr/bin/x86_64-w64-mingw32-gcc'
+strip = '/usr/bin/x86_64-w64-mingw32-strip'
+pkgconfig = '/usr/bin/x86_64-w64-mingw32-pkg-config'
+
+[host_machine]
+system = 'windows'
+cpu_family = 'x86_64'
+cpu = 'x86_64'
+endian = 'little'
