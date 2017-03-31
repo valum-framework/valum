@@ -1,3 +1,4 @@
+subdir('ajp')
 subdir('api-interaction')
 subdir('app')
 # subdir('c')

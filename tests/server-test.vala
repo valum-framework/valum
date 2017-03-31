@@ -31,6 +31,11 @@ public int main (string[] args) {
 		assert ("VSGISCGIServer" == server.get_type ().name ());
 	});
 
+	Test.add_func ("/server/new/ajp", () => {
+		var server = Server.@new ("ajp");
+		assert ("VSGIAjpServer" == server.get_type ().name ());
+	});
+
 	Test.add_func ("/server/fork", () => {
 		var server = Server.@new ("http");
 		Pid pid;
