@@ -170,8 +170,11 @@ namespace Valum {
 				return next ();
 			} catch (Error err) {
 				if (is_status (err) && err.code == status) {
-						var _err = (owned) err;
-						return forward (req, res, next, ctx, _err);
+					var _err = (owned) err;
+					return forward (req, res, next, ctx, _err);
+				} else if (err.code == Soup.Status.INTERNAL_SERVER_ERROR) {
+					var _err = (owned) err;
+					return forward (req, res, next, ctx, _err);
 				} else {
 					throw err;
 				}
