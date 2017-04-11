@@ -63,7 +63,7 @@ public class VSGI.Application : GLib.Application {
 
 		// per-worker logging
 		if (Posix.isatty (stderr.fileno ())) {
-			Log.set_handler (null, LogLevelFlags.LEVEL_MASK, (domain, level, message) => {
+			Log.set_default_handler ((domain, level, message) => {
 				stderr.printf ("[%s] %s%s:%s %s%s%s%s\n",
 				               new DateTime.now_utc ().format ("%FT%H:%M:%S.000Z"),
 				               "\x1b[33m",
@@ -80,7 +80,7 @@ public class VSGI.Application : GLib.Application {
 				               "\x1b[0m");
 			});
 		} else {
-			Log.set_handler (null, LogLevelFlags.LEVEL_MASK, (domain, level, message) => {
+			Log.set_default_handler ((domain, level, message) => {
 				Log.default_handler (domain, level, "[%s] %s".printf (new DateTime.now_utc ().format ("%FT%H:%M:%S.000Z"), message));
 			});
 		}
