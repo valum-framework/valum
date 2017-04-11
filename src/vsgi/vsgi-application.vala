@@ -110,7 +110,7 @@ public class VSGI.Application : GLib.Application {
 							level >>= 1;
 							priority += 1;
 						}
-						Systemd.journal_send ("MESSAGE="  + message,
+						Systemd.Journal.send ("MESSAGE="  + message,
 						                      "PRIORITY=" + priority.to_string ());
 					});
 					break;

@@ -1,4 +1,8 @@
 [CCode (lower_case_cprefix = "sd_")]
 namespace Systemd {
-	public int journal_send (string format, ...);
+
+	[CCode (cheader_filename = "systemd/sd-journal.h")]
+	namespace Journal {
+		public int send (string format, ...);
+	}
 }

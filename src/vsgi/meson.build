@@ -33,7 +33,7 @@ meson.add_install_script('install.sh')
 
 pkgconfig = import('pkgconfig')
 pkgconfig.generate(requires: 'glib-2.0 gobject-2.0 gio-2.0 libsoup-2.4',
-                   requires_private: 'gio-unix-2.0 gmodule-2.0',
+                   requires_private: 'gio-unix-2.0 gmodule-2.0 libsystemd',
                    libraries: vsgi_lib,
                    version: meson.project_version(),
                    name: 'VSGI',
