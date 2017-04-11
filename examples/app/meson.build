@@ -4,7 +4,8 @@ bower = find_program('bower', required: false)
 if bower.found() and ctpl.found() and gee.found()
     custom_target('static assets', command: [bower, 'install', '--config.cwd=' + meson.current_source_dir()],
                   input: 'bower.json',
-                  output: 'static')
+                  output: 'static',
+                  build_by_default: true)
     app_sources = [
         'app.vala',
         'view.vala',

@@ -333,7 +333,8 @@ app.get ("/ctpl/<foo>/<bar>", (req, res, next, context) => {
 });
 
 // serve static resource using a path route parameter
-app.get ("/static/<path:path>", Static.serve_from_file (File.new_for_uri ("resource://static/"), Static.ServeFlags.ENABLE_ETAG));
+app.get ("/static/<path:path>", Static.serve_from_file (File.new_for_path ("examples/app/static"),
+                                                        Static.ServeFlags.ENABLE_ETAG));
 
 app.get ("/server-sent-events", stream_events ((req, send) => {
 	send (null, "now!");
