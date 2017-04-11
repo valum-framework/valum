@@ -188,6 +188,8 @@ The following options are made available:
 +=======================+===========+=======================================+
 | ``--forks``           | none      | number of forks to create             |
 +-----------------------+-----------+---------------------------------------+
+| ``--log-writer``      | none      | log writer to use                     |
++-----------------------+-----------+---------------------------------------+
 | ``--address``         | none      | listen on each addresses              |
 +-----------------------+-----------+---------------------------------------+
 | ``--port``            | none      | listen on each ports, '0' for random  |
@@ -203,6 +205,15 @@ The following options are made available:
 +-----------------------+-----------+---------------------------------------+
 | ``--file-descriptor`` | none      | listen on each file descriptors       |
 +-----------------------+-----------+---------------------------------------+
+
+The ``--log-writer`` flag allow one to chose among various log writer
+implementations:
+
+-   ``standard-streams``
+-   ``journald``
+-   ``default``
+
+If no choice is made, no specific log writer is attached.
 
 If none of ``--address``, ``--port``, ``--socket`` nor ``--file-descriptor``
 flags are provided, it will fallback on the default listening interface for the
