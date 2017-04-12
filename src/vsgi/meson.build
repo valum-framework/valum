@@ -31,9 +31,15 @@ vsgi = declare_dependency(include_directories: include_directories('.'),
 
 meson.add_install_script('install.sh')
 
+vsgi_private_requires = ['gio-unix-2.0', 'gmodule-2.0']
+
+if libsystemd.found()
+    vsgi_private_requires += 'libsystemd'
+endif
+
 pkgconfig = import('pkgconfig')
 pkgconfig.generate(requires: 'glib-2.0 gobject-2.0 gio-2.0 libsoup-2.4',
-                   requires_private: 'gio-unix-2.0 gmodule-2.0 libsystemd',
+                   requires_private: vsgi_private_requires,
                    libraries: vsgi_lib,
                    version: meson.project_version(),
                    name: 'VSGI',
