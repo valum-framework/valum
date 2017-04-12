@@ -86,20 +86,36 @@ public int main (string[] args) {
 
 		@out.epilogue = "foo bar";
 
-		@out.close ();
+		try {
+			@out.close ();
+		} catch (IOError err) {
+			assert_not_reached ();
+		}
 
 		var @in = new MultipartInputStream (new MemoryInputStream.from_bytes (mos.steal_as_bytes ()), "simple boundary");
 
 		Soup.MessageHeaders part_headers;
-		assert (@in.next_part (out part_headers));
+		try {
+			assert (@in.next_part (out part_headers));
+		} catch (Error err) {
+			assert_not_reached ();
+		}
 		uint8 buffer[1024];
 		size_t bytes_read;
-		@in.read_all (buffer, out bytes_read);
+		try {
+			@in.read_all (buffer, out bytes_read);
+		} catch (IOError err) {
+			assert_not_reached ();
+		}
 		assert (12 == bytes_read);
 		assert (Memory.cmp ("Hello world!".data, buffer, 12) == 0);
 
-		assert (!@in.next_part (out part_headers));
-		@in.read_all (buffer, out bytes_read);
+		try {
+			assert (!@in.next_part (out part_headers));
+			@in.read_all (buffer, out bytes_read);
+		} catch (IOError err) {
+			assert_not_reached ();
+		}
 		assert (7 == bytes_read);
 		assert (Memory.cmp ("foo bar".data, buffer, 7) == 0);
 	});
