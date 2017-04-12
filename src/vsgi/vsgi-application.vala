@@ -42,6 +42,7 @@ public class VSGI.Application : GLib.Application {
 		const OptionEntry[] entries = {
 			// general options
 			{"forks",           0,   0, OptionArg.INT,            null, "Number of forks to create",            "0"},
+			{"log-writer",      0,   0, OptionArg.STRING,         null, "Log writer to use (i.e. 'standard-streams', 'journald', 'default')"},
 			// address
 			{"address",         'a', 0, OptionArg.STRING_ARRAY,   null, "Listen on each addresses",             "[]"},
 			// port
@@ -61,28 +62,67 @@ public class VSGI.Application : GLib.Application {
 	public override int command_line (ApplicationCommandLine command_line) {
 		var options = command_line.get_options_dict ().end ();
 
-		// per-worker logging
-		if (Posix.isatty (stderr.fileno ())) {
-			Log.set_default_handler ((domain, level, message) => {
-				stderr.printf ("[%s] %s%s:%s %s%s%s%s\n",
-				               new DateTime.now_utc ().format ("%FT%H:%M:%S.000Z"),
-				               "\x1b[33m",
-				               "worker %d".printf (Posix.getpid ()),
-				               "\x1b[0m",
-				               domain == null ? "" : "%s: ".printf (domain),
-				               LogLevelFlags.LEVEL_ERROR    in level ? "\x1b[31m" :
-				               LogLevelFlags.LEVEL_CRITICAL in level ? "\x1b[31m" :
-				               LogLevelFlags.LEVEL_WARNING  in level ? "\x1b[33m" :
-				               LogLevelFlags.LEVEL_MESSAGE  in level ? "\x1b[32m" :
-				               LogLevelFlags.LEVEL_INFO     in level ? "\x1b[34m" :
-				               LogLevelFlags.LEVEL_DEBUG    in level ? "\x1b[36m" : "",
-				               message.replace ("\n", "\n\t\t"),
-				               "\x1b[0m");
-			});
-		} else {
-			Log.set_default_handler ((domain, level, message) => {
-				Log.default_handler (domain, level, "[%s] %s".printf (new DateTime.now_utc ().format ("%FT%H:%M:%S.000Z"), message));
-			});
+		var log_writer = options.lookup_value ("log-writer", VariantType.STRING);
+
+		if (log_writer != null) {
+			switch (log_writer.get_string ()) {
+#if GLIB_2_50
+				case "standard-stream":
+					Log.set_writer_func ((LogWriterFunc) Log.writer_standard_streams);
+					break;
+				case "journald":
+					Log.set_writer_func ((LogWriterFunc) Log.writer_journald);
+					break;
+				case "default":
+					Log.set_writer_func ((LogWriterFunc) Log.writer_default);
+					break;
+#else
+				case "standard-streams":
+					if (Posix.isatty (stderr.fileno ())) {
+						Log.set_default_handler ((domain, level, message) => {
+							stderr.printf ("[%s] %s%s:%s %s%s%s%s\n",
+							               new DateTime.now_utc ().format ("%FT%H:%M:%S.000Z"),
+							               "\x1b[33m",
+							               "worker %d".printf (Posix.getpid ()),
+							               "\x1b[0m",
+							               domain == null ? "" : "%s: ".printf (domain),
+							               LogLevelFlags.LEVEL_ERROR    in level ? "\x1b[31m" :
+							               LogLevelFlags.LEVEL_CRITICAL in level ? "\x1b[31m" :
+							               LogLevelFlags.LEVEL_WARNING  in level ? "\x1b[33m" :
+							               LogLevelFlags.LEVEL_MESSAGE  in level ? "\x1b[32m" :
+							               LogLevelFlags.LEVEL_INFO     in level ? "\x1b[34m" :
+							               LogLevelFlags.LEVEL_DEBUG    in level ? "\x1b[36m" : "",
+							               message.replace ("\n", "\n\t\t"),
+							               "\x1b[0m");
+						});
+					} else {
+						Log.set_default_handler ((domain, level, message) => {
+							Log.default_handler (domain, level, "[%s] %s".printf (new DateTime.now_utc ().format ("%FT%H:%M:%S.000Z"), message));
+						});
+					}
+					break;
+#if LIBSYSTEMD
+				case "journald":
+					Log.set_default_handler ((domain, level, message) => {
+						int priority = 0;
+						level = (level & LogLevelFlags.LEVEL_MASK) >> 1;
+						while (level > 0) {
+							level >>= 1;
+							priority += 1;
+						}
+						Systemd.Journal.send ("MESSAGE="  + message,
+						                      "PRIORITY=" + priority.to_string ());
+					});
+					break;
+#endif
+				case "default":
+						Log.set_default_handler (Log.default_handler);
+					break;
+#endif
+				default:
+					critical ("Unsupported log writer '%s'.", log_writer.get_string ());
+					return 1;
+			}
 		}
 
 		try {

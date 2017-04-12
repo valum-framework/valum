@@ -6,7 +6,8 @@ project('Valum', 'vala', 'c',
 api_version = '0.4'
 
 add_project_arguments(['--enable-experimental',
-                       '--enable-deprecated'],
+                       '--enable-deprecated',
+                       '--vapidir=' + meson.current_source_dir() + '/vapi'],
                       language: 'vala')
 
 glib = dependency('glib-2.0', version: '>=2.40')
@@ -15,8 +16,14 @@ gio = dependency('gio-2.0', version: '>=2.40')
 gio_unix = dependency('gio-unix-2.0', version: '>=2.40')
 gmodule = dependency('gmodule-2.0', version: '>=2.40')
 soup = dependency('libsoup-2.4', version: '>=2.44')
+libsystemd = dependency('libsystemd', required: false)
 
 vala_defines = []
+
+# use structured logging instead of colored output
+if glib.version().version_compare('>=2.50')
+    vala_defines += '--define=GLIB_2_50'
+endif
 
 # provide 'OutputStream.write_all_async' and 'SimpleIOStream'
 if gio.version().version_compare('>=2.44')
@@ -26,6 +33,10 @@ endif
 # new 'Soup.Server' API
 if soup.version().version_compare('>=2.48')
     vala_defines += '--define=SOUP_2_48'
+endif
+
+if libsystemd.found()
+    vala_defines += '--define=LIBSYSTEMD'
 endif
 
 if meson.get_compiler('c').has_function('memmem')
