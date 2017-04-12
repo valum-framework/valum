@@ -110,8 +110,16 @@ public class VSGI.Application : GLib.Application {
 							level >>= 1;
 							priority += 1;
 						}
-						Systemd.Journal.send ("MESSAGE="  + message,
-						                      "PRIORITY=" + priority.to_string ());
+						MatchInfo match_info;
+						if (/^(?<file>.+):(?<line>\d+): (?<message>.*)$/.match (message, 0, out match_info)) {
+							Systemd.Journal.send ("MESSAGE="   + match_info.fetch_named ("message"),
+							                      "PRIORITY="  + priority.to_string (),
+							                      "CODE_FILE=" + match_info.fetch_named ("file"),
+							                      "CODE_LINE=" + match_info.fetch_named ("line"));
+						} else {
+							Systemd.Journal.send ("MESSAGE="   + message,
+							                      "PRIORITY="  + priority.to_string ());
+						}
 					});
 					break;
 #endif
