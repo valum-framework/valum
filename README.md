@@ -1,5 +1,4 @@
-Valum Web micro-framework
-=========================
+# Valum Web micro-framework
 
 [![Build Status](https://travis-ci.org/valum-framework/valum.svg?branch=master)](https://travis-ci.org/valum-framework/valum)
 [![Documentation Status](https://readthedocs.org/projects/valum-framework/badge/?version=latest)](https://readthedocs.org/projects/valum-framework/?badge=latest)
@@ -14,26 +13,40 @@ using VSGI;
 
 var app = new Router ();
 
-app.use (basic ());
+app.use (basic ()); /* handle stuff like 404 errors and more */
 
 app.get ("/", (req, res) => {
     res.headers.set_content_type ("text/plain", null);
     return res.extend_utf8 ("Hello world!");
 });
 
-Server.@new ("http", handler: app).run ({"app", "--forks=4"});
+Server.@new ("http", handler: app).run ({"app", "--address=0.0.0.0:3003", "--forks=4"});
 ```
 
 
-Installation
-------------
+## Installation
 
-The installation process is fully documented in the
-[user documentation](http://valum-framework.readthedocs.org/en/latest/installation.html).
+### Docker
 
+We maintain [Docker images](https://hub.docker.com/r/valum/valum/) already setup with Valum and the latest LTS version of Ubuntu.
 
-Features
---------
+```
+docker pull valum/valum
+```
+
+### Bower
+
+If you use [Meson](http://mesonbuild.com/), you can install Valum as a subproject using [Bower](https://bower.io/):
+
+```
+bower install valum
+```
+
+For other installation procedures, head to the [user documentation](http://valum-framework.readthedocs.org/en/latest/installation.html).
+
+## Features
+
+Valum has a two layer architecture: VSGI a middleware that abstract away various network protocols under a simple interface and Valum itself, a Web micro-framework that provide all the features needed for writing applications and services. In short it provides:
 
  - powerful routing mechanism to write expressive Web services:
     - helpers and flags (i.e. `Method.GET | Method.POST`) for common HTTP methods
@@ -43,10 +56,9 @@ Features
     - automatic `HEAD` and `OPTIONS`
     - subrouting
     - status codes through error domains (i.e. `throw new Redirection.PERMANENT ("http://example.com/");`
-    - filtering by composition
     - context to hold states
  - middlewares for subdomains, server-sent events, content negotiation and much more
- - written upon VSGI, an abstraction layer for various protocols:
+ - VSGI, an abstraction layer for various protocols:
      - fast, asynchronous and elegant
      - streaming-first API
      - listen on multiple interfaces (e.g. port, UNIX socket, file descriptor)
@@ -56,11 +68,10 @@ Features
      - support plugin for custom server implementation
      - `fork` to scale on multi-core architecture
      - cushion for parsing CLI, logging and running a Web application
- - extensively documented at [docs.valum-framework.org](http://docs.valum-framework.org/en/latest/)
+ - extensive documentation at [docs.valum-framework.org](http://docs.valum-framework.org/en/latest/)
 
 
-Contributing
-------------
+## Contributing
 
 Valum is built by the community under the [LGPL](https://www.gnu.org/licenses/lgpl.html)
 license, so anyone can use or contribute to the framework.
@@ -80,8 +91,7 @@ changes
  * breaks api in major (we like it that way!)
 
 
-Discussions and help
---------------------
+# Discussions and help
 
 You can get help with Valum from different sources:
 
