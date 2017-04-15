@@ -43,7 +43,7 @@ namespace Valum {
 		[Version (since = "0.3")]
 		public RegexRoute (Method method, Regex regex, owned HandlerCallback handler) {
 			Object (method: method, regex: regex);
-			_fire = (owned) handler;
+			set_handler_callback ((owned) handler);
 		}
 
 		construct {
@@ -76,12 +76,6 @@ namespace Valum {
 				return true;
 			}
 			return false;
-		}
-
-		private HandlerCallback _fire;
-
-		public override bool fire (Request req, Response res, NextCallback next, Context ctx) throws Error {
-			return _fire (req, res, next, ctx);
 		}
 
 		public override string to_url_from_hash (HashTable<string, string>? @params = null) {

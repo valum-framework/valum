@@ -41,17 +41,34 @@ namespace Valum {
 		[Version (since = "0.1")]
 		public abstract bool match (Request req, Context ctx);
 
+		private HandlerCallback _handler = null;
+
+		[Version (since = "0.4")]
+		public void set_handler_callback (owned HandlerCallback handler)
+		{
+			_handler = (owned) handler;
+		}
+
 		/**
-		 * Apply the handler on the request and response.
+		 * Apply the handler on the pair of {@link VSGI.Request} and {@link VSGI.Response}
+		 * objects if the route match, otherwise invoke the {@link NextCallback}.
 		 *
-		 * @return the return value of the callback if set, otherwise 'false'
+		 * @return the return value of either the handler callback or the next
+		 *         callback depending on the match
 		 */
 		[Version (since = "0.1")]
-		public abstract bool fire (Request req, Response res, NextCallback next, Context ctx) throws Success,
-		                                                                                             Redirection,
-		                                                                                             ClientError,
-		                                                                                             ServerError,
-		                                                                                             Error;
+		public bool fire (Request req, Response res, NextCallback next, Context ctx) throws Success,
+		                                                                                    Redirection,
+		                                                                                    ClientError,
+		                                                                                    ServerError,
+		                                                                                    Error
+		{
+			if (match (req, ctx) && unlikely (_handler != null)) {
+				return _handler (req, res, next, ctx);
+			} else {
+				return next ();
+			}
+		}
 
 		/**
 		 * Reverse the route into an URL.

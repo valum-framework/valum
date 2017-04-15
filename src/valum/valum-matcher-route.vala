@@ -28,11 +28,11 @@ namespace Valum {
 		[Version (since = "0.3")]
 		public MatcherRoute (Method method, owned MatcherCallback matcher, owned HandlerCallback handler) {
 			Object (method: method);
-			_match = (owned) matcher;
-			_fire  = (owned) handler;
+			set_matcher_callback ((owned) matcher);
+			set_handler_callback ((owned) handler);
 		}
 
-		private MatcherCallback _match;
+		private MatcherCallback _match = null;
 
 		[Version (since = "0.3")]
 		public void set_matcher_callback (owned MatcherCallback callback) {
@@ -40,13 +40,7 @@ namespace Valum {
 		}
 
 		public override bool match (Request req, Context ctx) {
-			return _match (req, ctx);
-		}
-
-		private HandlerCallback _fire;
-
-		public override bool fire (Request req, Response res, NextCallback next, Context ctx) throws Error {
-			return _fire (req, res, next, ctx);
+			return unlikely (_match == null) ? false : _match (req, ctx);
 		}
 
 		public override string to_url_from_hash (HashTable<string, string>? @params = null) {

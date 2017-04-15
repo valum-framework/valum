@@ -356,7 +356,7 @@ namespace Valum {
 			for (SequenceIter<Route> node = routes; !node.is_end (); node = node.next ()) {
 				var req_method = Method.from_string (req.headers.get_one ("X-Http-Method-Override") ?? req.method);
 				var local_context = new Context.with_parent (context);
-				if (req_method in node.@get ().method && node.@get ().match (req, local_context)) {
+				if (req_method in node.@get ().method) {
 					return node.@get ().fire (req, res, () => {
 						// keep routing if there are more routes to explore
 						if (node.next ().is_end ()) {
