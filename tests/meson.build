@@ -32,6 +32,8 @@ if fcgi.found()
     test('fastcgi server', executable('fastcgi-server-test', 'fastcgi-server-test.vala',
                                       dependencies: [glib, gobject, gio, gio_unix, soup, vsgi]))
 endif
+test('application', executable('application-test', 'application-test.vala',
+                                          dependencies: [glib, gobject, gio, gio_unix,  soup, vsgi]))
 loader_test_lib = shared_library('loader-test', 'loader-test.vala',
                                  dependencies: [glib, gobject, gio, gio_unix, soup, vsgi])
 test('loader', vsgi_loader,
