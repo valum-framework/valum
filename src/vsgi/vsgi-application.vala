@@ -111,8 +111,8 @@ public class VSGI.Application : GLib.Application {
 							priority += 1;
 						}
 						MatchInfo match_info;
-						if (/^(?<file>.+):(?<line>\d+): (?<message>.*)$/.match (message, 0, out match_info)) {
-							Systemd.Journal.send ("MESSAGE="   + match_info.fetch_named ("message"),
+						if (/^(?<file>.+):(?<line>\d+): .*$/.match (message, 0, out match_info)) {
+							Systemd.Journal.send ("MESSAGE="   + message,
 							                      "PRIORITY="  + priority.to_string (),
 							                      "CODE_FILE=" + match_info.fetch_named ("file"),
 							                      "CODE_LINE=" + match_info.fetch_named ("line"));
