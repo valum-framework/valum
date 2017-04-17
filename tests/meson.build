@@ -12,28 +12,27 @@ test('legacy', executable('legacy-test', legacy_test_sources,
                           dependencies: [glib, gobject, gio, soup, vsgi, valum]))
 
 # VSGI tests
-test('auth', executable('auth-test', 'auth-test.vala',
-                        dependencies: [glib, gobject, gio, soup, vsgi]))
-test('multipart', executable('multipart-test', 'multipart-test.vala',
-                             dependencies: [glib, gobject, gio, soup, vsgi]),
-     env: ['G_TEST_SRCDIR=' + meson.current_source_dir()])
-test('request', executable('request-test', 'request-test.vala',
-                           dependencies: [glib, gobject, gio, soup, vsgi]))
-test('response', executable('response-test', 'response-test.vala',
-                           dependencies: [glib, gobject, gio, soup, vsgi]))
-test('server', executable('server-test', 'server-test.vala',
-                           dependencies: [glib, gobject, gio, soup, vsgi]))
-test('http server', executable('http-server-test', 'http-server-test.vala',
-                               dependencies: [glib, gobject, gio, gio_unix,  soup, vsgi]),
-     env: ['G_TEST_SRCDIR=' + meson.current_source_dir()])
-test('socket server', executable('socket-server-test', 'socket-server-test.vala',
-                                          dependencies: [glib, gobject, gio, gio_unix,  soup, vsgi]))
+vsgi_tests = [
+    'application',
+    'auth',
+    'http-server',
+    'multipart',
+    'request',
+    'response',
+    'server',
+    'socket-server']
+
+foreach name : vsgi_tests
+    test(name, executable(name + '-test', name + '-test.vala',
+                          dependencies: [glib, gobject, gio, gio_unix, soup, vsgi]),
+         env: ['G_TEST_SRCDIR=' + meson.current_source_dir()])
+endforeach
+
 if fcgi.found()
     test('fastcgi server', executable('fastcgi-server-test', 'fastcgi-server-test.vala',
                                       dependencies: [glib, gobject, gio, gio_unix, soup, vsgi]))
 endif
-test('application', executable('application-test', 'application-test.vala',
-                                          dependencies: [glib, gobject, gio, gio_unix,  soup, vsgi]))
+
 loader_test_lib = shared_library('loader-test', 'loader-test.vala',
                                  dependencies: [glib, gobject, gio, gio_unix, soup, vsgi])
 test('loader', vsgi_loader,
@@ -41,21 +40,19 @@ test('loader', vsgi_loader,
      env: ['VSGI_SERVER_PATH=src/vsgi/servers'])
 
 # Valum tests
-test('authenticate', executable('authenticate-test', ['authenticate-test.vala'],
-                            dependencies: [glib, gobject, gio, soup, vsgi, valum]))
-test('basepath', executable('basepath-test', ['basepath-test.vala'],
-                            dependencies: [glib, gobject, gio, soup, vsgi, valum]))
-test('basic', executable('basic-test', 'basic-test.vala',
-                            dependencies: [glib, gobject, gio, soup, vsgi, valum]))
-test('content negotiation', executable('content-negotiation-test', ['content-negotiation-test.vala'],
-                                       dependencies: [glib, gobject, gio, soup, vsgi, valum]))
-test('context', executable('context-test', ['context-test.vala'],
-                                       dependencies: [glib, gobject, gio, soup, vsgi, valum]))
-test('safely', executable('safely-test', 'safely-test.vala',
-                          dependencies: [glib, gobject, gio, soup, vsgi, valum]))
-test('router', executable('router-test', 'router-test.vala',
-                          dependencies: [glib, gobject, gio, soup, vsgi, valum]))
-test('rule route', executable('rule-route-test', 'rule-route-test.vala',
-                              dependencies: [glib, gobject, gio, soup, vsgi, valum]))
-test('status', executable('status-test', ['status-test.vala'],
-                                       dependencies: [glib, gobject, gio, soup, vsgi, valum]))
+valum_tests = [
+    'authenticate',
+    'basepath',
+    'basic',
+    'content-negotiation',
+    'context',
+    'router',
+    'rule-route',
+    'safely',
+    'status']
+
+foreach name : valum_tests
+    test(name, executable(name + '-test', name + '-test.vala',
+                          dependencies: [glib, gobject, gio, soup, vsgi, valum]),
+         env: ['G_TEST_SRCDIR=' + meson.current_source_dir()])
+endforeach
