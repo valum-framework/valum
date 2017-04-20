@@ -76,6 +76,35 @@ a :valadoc:`valum-0.3/Valum.NextCallback`.
         }, new Context.with_parent (context));
     });
 
+Class-based
+~~~~~~~~~~~
+
+.. versionadded:: 0.4
+
+In some scenarios, using purely callbacks can become messy and a class-based
+approach would make a more efficient usage of Vala features.
+
+The :valadoc:`valum-0.4/Valum.Middleware` class, which inherit from
+:valadoc:`vsgi-0.4/VSGI.Handler`, can be used for this purpose.
+
+::
+
+    public class FooMiddleware : Middleware {
+
+        public override bool fire (Request req, Response res, NextCallback next, Context ctx) {
+            return res.expand_utf8 ("Hello world!");
+        }
+    }
+
+The usage is really similar to regualar middleware, with the difference that
+the ``fire`` function has to be passed to functions expecting a :valadoc:`valum-0.4/Valum.HandlerCallback`.
+
+::
+
+    var app = new Router ();
+
+    app.use (new FooMiddleware ().fire);
+
 Forward
 ~~~~~~~
 

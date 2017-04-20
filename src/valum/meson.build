@@ -11,6 +11,7 @@ valum_sources = files(
     'valum-forward-with.vala',
     'valum-matcher-route.vala',
     'valum-method.vala',
+    'valum-middleware.vala',
     'valum-content-negotiation.vala',
     'valum-multipart.vala',
     'valum-path-route.vala',

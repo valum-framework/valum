@@ -26,6 +26,13 @@ public HandlerCallback respond_with_text (RespondWithCallback<string> respond) {
 	});
 }
 
+public class FooMiddleware : Middleware {
+
+	public override bool fire (Request req, Response res, NextCallback next, Context ctx) throws Error {
+		return res.expand_utf8 ("foo");
+	}
+}
+
 var app = new Router ();
 
 app.use (basic ());
@@ -372,5 +379,7 @@ app.get ("/auth", authenticate (new BasicAuthentication (""), (a) => {
 }, (req, res, next, ctx, username) => {
 	return res.expand_utf8 ("Hello %s!".printf (username));
 }));
+
+app.get ("/middleware", accept ("text/plain", forward_with<string> (new FooMiddleware ().fire)));
 
 Server.@new ("http", handler: app).run ();
