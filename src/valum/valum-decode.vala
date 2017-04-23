@@ -40,7 +40,21 @@ namespace Valum {
 	 */
 	[Version (since = "0.3")]
 	public HandlerCallback decode (DecodeFlags flags = DecodeFlags.NONE) {
-		return (req, res, next, ctx) => {
+		return new Decode (flags).fire;
+	}
+
+	[Version (since = "0.4")]
+	public class Decode : Middleware {
+
+		[Version (since = "0.4")]
+		public DecodeFlags flags { construct; get; }
+
+		[Version (since = "0.4")]
+		public Decode (DecodeFlags flags) {
+			Object (flags: flags);
+		}
+
+		public override bool fire (Request req, Response res, NextCallback next, Context ctx) throws Error {
 			var encodings = Soup.header_parse_list (req.headers.get_list ("Content-Encoding") ?? "");
 
 			// decode is in the opposite order of application
@@ -76,6 +90,6 @@ namespace Valum {
 			}
 
 			return next ();
-		};
+		}
 	}
 }
