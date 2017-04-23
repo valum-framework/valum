@@ -68,7 +68,7 @@ namespace Valum {
 		[Version (since = "0.3")]
 		public void once (owned HandlerCallback cb) {
 			size_t _once_init = 0;
-			route (new MatcherRoute (Method.ANY, () => { return _once_init == 0; }, (req, res, next, ctx) => {
+			matcher (Method.ANY, () => { return _once_init == 0; }, (req, res, next, ctx) => {
 				if (Once.init_enter (&_once_init)) {
 					try {
 						return cb (req, res, next, ctx);
@@ -78,7 +78,7 @@ namespace Valum {
 				} else {
 					return next ();
 				}
-			}));
+			});
 		}
 
 		/**
@@ -86,7 +86,7 @@ namespace Valum {
 		 */
 		[Version (since = "0.3")]
 		public void use (owned HandlerCallback cb) {
-			route (new MatcherRoute (Method.ANY, () => { return true; }, (owned) cb));
+			route (new MatcherRoute (Method.ANY, () => { return true; }, new CallbackMiddleware ((owned) cb)));
 		}
 
 		/**
@@ -97,7 +97,7 @@ namespace Valum {
 		 */
 		[Version (since = "0.3")]
 		public void asterisk (Method method, owned HandlerCallback cb) {
-			route (new AsteriskRoute (method, (owned) cb));
+			route (new AsteriskRoute (method, new CallbackMiddleware ((owned) cb)));
 		}
 
 		/**
@@ -177,7 +177,7 @@ namespace Valum {
 			pattern.append (rule);
 
 			try {
-				route (new RuleRoute (method | Method.PROVIDED, pattern.str, types, (owned) cb), name);
+				route (new RuleRoute (method | Method.PROVIDED, pattern.str, types, new CallbackMiddleware ((owned) cb)), name);
 			} catch (RegexError err) {
 				error ("%s (%s, %d)", err.message, err.domain.to_string (), err.code);
 			}
@@ -214,7 +214,9 @@ namespace Valum {
 			pattern.append ("$");
 
 			try {
-				route (new RegexRoute (method | Method.PROVIDED, new Regex (pattern.str, RegexCompileFlags.OPTIMIZE), (owned) cb));
+				route (new RegexRoute (method | Method.PROVIDED,
+				                       new Regex (pattern.str, RegexCompileFlags.OPTIMIZE),
+				                       new CallbackMiddleware ((owned) cb)));
 			} catch (RegexError err) {
 				error ("%s (%s, %d)", err.message, err.domain.to_string (), err.code);
 			}
@@ -242,7 +244,7 @@ namespace Valum {
 
 			path_builder.append (path);
 
-			route (new PathRoute (method | Method.PROVIDED, path_builder.str, (owned) handler), name);
+			route (new PathRoute (method | Method.PROVIDED, path_builder.str, new CallbackMiddleware ((owned) handler)), name);
 		}
 
 		/**
@@ -257,7 +259,7 @@ namespace Valum {
 		 */
 		[Version (since = "0.1")]
 		public void matcher (Method method, owned MatcherCallback matcher, owned HandlerCallback cb) {
-			route (new MatcherRoute (method | Method.PROVIDED, (owned) matcher, (owned) cb));
+			route (new MatcherRoute (method | Method.PROVIDED, (owned) matcher, new CallbackMiddleware ((owned) cb)));
 		}
 
 		private HashTable<string, Route> _named_routes = new HashTable<string, Route> (str_hash, str_equal);

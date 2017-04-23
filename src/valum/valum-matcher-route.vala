@@ -26,10 +26,9 @@ namespace Valum {
 	public class MatcherRoute : Route {
 
 		[Version (since = "0.3")]
-		public MatcherRoute (Method method, owned MatcherCallback matcher, owned HandlerCallback handler) {
-			Object (method: method);
+		public MatcherRoute (Method method, owned MatcherCallback matcher, Middleware middleware) {
+			Object (method: method, middleware: middleware);
 			set_matcher_callback ((owned) matcher);
-			set_handler_callback ((owned) handler);
 		}
 
 		private MatcherCallback _match = null;

@@ -35,19 +35,14 @@ namespace Valum {
 		[Version (since = "0.2")]
 		public Method method { construct; get; }
 
+		[Version (since = "0.4")]
+		public Middleware middleware { construct; get; }
+
 		/**
 		 * Matches the given request and populate its parameters on success.
 		 */
 		[Version (since = "0.1")]
 		public abstract bool match (Request req, Context ctx);
-
-		private HandlerCallback _handler = null;
-
-		[Version (since = "0.4")]
-		public void set_handler_callback (owned HandlerCallback handler)
-		{
-			_handler = (owned) handler;
-		}
 
 		/**
 		 * Apply the handler on the pair of {@link VSGI.Request} and {@link VSGI.Response}
@@ -63,8 +58,8 @@ namespace Valum {
 		                                                                                    ServerError,
 		                                                                                    Error
 		{
-			if (match (req, ctx) && unlikely (_handler != null)) {
-				return _handler (req, res, next, ctx);
+			if (match (req, ctx)) {
+				return middleware.fire (req, res, next, ctx);
 			} else {
 				return next ();
 			}

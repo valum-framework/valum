@@ -41,9 +41,8 @@ namespace Valum {
 		public SList<string> captures { owned construct; get; }
 
 		[Version (since = "0.3")]
-		public RegexRoute (Method method, Regex regex, owned HandlerCallback handler) {
-			Object (method: method, regex: regex);
-			set_handler_callback ((owned) handler);
+		public RegexRoute (Method method, Regex regex, Middleware middleware) {
+			Object (method: method, regex: regex, middleware: middleware);
 		}
 
 		construct {

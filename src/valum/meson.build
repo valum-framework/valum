@@ -5,6 +5,7 @@ valum_sources = files(
     'valum-basepath.vala',
     'valum-basic.vala',
     'valum-cache-control.vala',
+    'valum-callback-middleware.vala',
     'valum-context.vala',
     'valum-decode.vala',
     'valum-forward.vala',

@@ -18,25 +18,20 @@
 using GLib;
 using VSGI;
 
-namespace Valum {
+/**
+ * Middleware wrapping a {@link HandlerCallback}.
+ */
+[Version (since = "0.4")]
+public class Valum.CallbackMiddleware : Middleware {
 
-	/**
-	 * Route supporting the asterisk '*' path.
-	 */
-	[Version (since = "0.3")]
-	public class AsteriskRoute : Route {
+	private HandlerCallback _fire;
 
-		[Version (since = "0.3")]
-		public AsteriskRoute (Method method, Middleware middleware) {
-			Object (method: method, middleware: middleware);
-		}
+	[Version (since = "0.4")]
+	public CallbackMiddleware (owned HandlerCallback fire) {
+		_fire = (owned) fire;
+	}
 
-		public override bool match (Request req, Context ctx) {
-			return "*" == req.uri.get_path ();
-		}
-
-		public override string to_url_from_hash (HashTable<string, string>? @params = null) {
-			return "*";
-		}
+	public override bool fire (Request req, Response res, NextCallback next, Context ctx) throws Error {
+		return _fire (req, res, next, ctx);
 	}
 }

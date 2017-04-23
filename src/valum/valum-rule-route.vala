@@ -63,7 +63,7 @@ namespace Valum {
 		public RuleRoute (Method                   method,
 		                  string                   rule,
 		                  HashTable<string, Regex> types,
-		                  owned HandlerCallback    handler) throws RegexError {
+		                  Middleware               middleware) throws RegexError {
 			var pattern = new StringBuilder ();
 
 			var @params = /([\*\?\(\)]|<(?:\w+:)?\w+>)/.split_full (rule);
@@ -98,8 +98,7 @@ namespace Valum {
 
 			pattern.append_c ('$');
 
-			Object (method: method, rule: rule, types: types, regex: new Regex (pattern.str, RegexCompileFlags.OPTIMIZE));
-			set_handler_callback ((owned) handler);
+			Object (method: method, rule: rule, types: types, regex: new Regex (pattern.str, RegexCompileFlags.OPTIMIZE), middleware: middleware);
 		}
 
 		public override string to_url_from_hash (HashTable<string, string>? @params = null) {

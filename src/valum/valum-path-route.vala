@@ -13,9 +13,8 @@ public class Valum.PathRoute : Valum.Route {
 	public string path { construct; get; }
 
 	[Version (since = "0.3")]
-	public PathRoute (Method method, string path, owned HandlerCallback handler) {
-		Object (method: method, path: path);
-		set_handler_callback ((owned) handler);
+	public PathRoute (Method method, string path, Middleware middleware) {
+		Object (method: method, path: path, middleware: middleware);
 	}
 
 	public override bool match (Request req, Context ctx) {
