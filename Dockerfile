@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     libfcgi-dev                          \
     libglib2.0-dev                       \
     libsoup2.4-dev                       \
+    libssl-dev                           \
     python3-pip                          \
     unzip                                \
     valac                                \
