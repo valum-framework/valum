@@ -15,6 +15,7 @@
  * along with Valum.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using GLib;
 using VSGI;
 
 /**
@@ -24,12 +25,26 @@ using VSGI;
 public abstract class Valum.Middleware : VSGI.Handler {
 
 	[Version (since = "0.4")]
-	public abstract bool fire (Request      req,
-	                           Response     res,
-	                           NextCallback next,
-	                           Context      ctx) throws Error;
+	public virtual bool fire (Request      req,
+	                          Response     res,
+	                          NextCallback next,
+	                          Context      ctx) throws Error
+	{
+		error ("Either 'fire' or 'fire_async' must be implemented.");
+	}
 
+	[Version (since = "0.4")]
+	public virtual async bool fire_async (Request req, Response res, NextCallback next, Context ctx) throws Error {
+		return fire (req, res, next, ctx);
+	}
+
+	[Version (since = "0.4")]
 	public override bool handle (Request req, Response res) throws Error {
 		return fire (req, res, () => { return true; }, new Context ());
+	}
+
+	[Version (since = "0.4")]
+	public override async bool handle_async (Request req, Response res) throws Error {
+		return yield fire_async (req, res, () => { return true; }, new Context ());
 	}
 }
