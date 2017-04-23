@@ -16,6 +16,7 @@
  */
 
 using GLib;
+using VSGI;
 
 namespace Valum {
 	/**
@@ -29,7 +30,13 @@ namespace Valum {
 	 */
 	[Version (since = "0.3")]
 	public HandlerCallback basic () {
-		return (req, res, next) => {
+		return new Basic ().fire;
+	}
+
+	[Version (since = "0.4")]
+	public class Basic : Middleware {
+
+		public override bool fire (Request req, Response res, NextCallback next, Context ctx) {
 			try {
 				return next ();
 			} catch (Error err) {
@@ -182,6 +189,6 @@ namespace Valum {
 					return true;
 				}
 			}
-		};
+		}
 	}
 }
