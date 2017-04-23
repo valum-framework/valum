@@ -16,6 +16,7 @@
  */
 
 using GLib;
+using VSGI;
 
 namespace Valum {
 
@@ -38,13 +39,27 @@ namespace Valum {
 	 */
 	[Version (since = "0.3")]
 	public HandlerCallback basepath (string path, owned HandlerCallback forward) {
-		return (req, res, next, context) => {
+		return new Basepath (path, new CallbackMiddleware (forward)).fire;
+	}
+
+	[Version (since = "0.4")]
+	public class Basepath : Middleware {
+
+		public string path { construct; get; }
+
+		public Middleware forward { construct; get; }
+
+		public Basepath (string path, Middleware forward) {
+			Object (path: path, forward: forward);
+		}
+
+		public override bool fire (Request req, Response res, NextCallback next, Context context) throws Error {
 			if (req.uri.get_path ().has_prefix (path)) {
 				var original_path = req.uri.get_path ();
 				req.uri.set_path (req.uri.get_path ().length > path.length ?
 				                  req.uri.get_path ().substring (path.length) : "/");
 				try {
-					return forward (req, res, () => {
+					return forward.fire (req, res, () => {
 						req.uri.set_path (original_path);
 						var location = res.headers.get_one ("Location");
 						if (!res.head_written && location != null && location[0] == '/')
@@ -70,6 +85,6 @@ namespace Valum {
 			} else {
 				return next ();
 			}
-		};
+		}
 	}
 }
