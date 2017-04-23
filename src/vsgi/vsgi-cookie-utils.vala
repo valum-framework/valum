@@ -62,10 +62,11 @@ namespace VSGI.CookieUtils {
 	[Version (since = "0.3")]
 	public bool verify (Cookie cookie, ChecksumType checksum_type, uint8[] key, out string? @value) {
 		var checksum_length = Hmac.compute_for_string (checksum_type, key, "").length;
-		@value              = null;
 
-		if (cookie.@value.length < checksum_length)
+		if (cookie.@value.length < checksum_length) {
+			@value = null;
 			return false;
+		}
 
 		var checksum = Hmac.compute_for_string (checksum_type,
 		                                        key,
@@ -73,10 +74,11 @@ namespace VSGI.CookieUtils {
 
 		assert (checksum_length == checksum.length);
 
-		if (str_const_equal (checksum, cookie.@value.substring (0, checksum_length))) {
+		if (OpenSSL.Crypto.memcmp (checksum, cookie.@value, checksum_length) == 0) {
 			@value = cookie.@value.substring (checksum_length);
 			return true;
 		} else {
+			@value = null;
 			return false;
 		}
 	}

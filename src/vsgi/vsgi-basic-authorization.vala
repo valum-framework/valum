@@ -32,7 +32,8 @@ public class VSGI.BasicAuthorization : Authorization {
 	}
 
 	public override bool challenge_with_password (string password) {
-		return str_const_equal (password, this.password);
+		return password.data.length == this.password.data.length &&
+		       OpenSSL.Crypto.memcmp (password.data, this.password.data, this.password.data.length) == 0;
 	}
 
 	public override string to_authorization_header () {

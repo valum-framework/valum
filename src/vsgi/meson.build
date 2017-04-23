@@ -13,13 +13,12 @@ vsgi_sources = files(
     'vsgi-multipart-output-stream.vala',
     'vsgi-request.vala',
     'vsgi-response.vala',
-    'vsgi-security-utils.vala',
     'vsgi-server-module.vala',
     'vsgi-server.vala',
     'vsgi-socket-server.vala',
     'vsgi-tee-output-stream.vala')
 vsgi_lib = library('vsgi-' + api_version, vsgi_sources,
-                   dependencies: [glib, gobject, gio, gio_unix, gmodule, soup, libsystemd],
+                   dependencies: [glib, gobject, gio, gio_unix, gmodule, soup, libsystemd, openssl],
                    vala_args: ['--pkg=posix'] + vala_defines,
                    vala_header: 'vsgi.h',
                    install: true,
@@ -36,6 +35,8 @@ vsgi_private_requires = ['gio-unix-2.0', 'gmodule-2.0']
 if libsystemd.found()
     vsgi_private_requires += 'libsystemd'
 endif
+
+vsgi_private_requires += 'openssl'
 
 pkgconfig = import('pkgconfig')
 pkgconfig.generate(requires: 'glib-2.0 gobject-2.0 gio-2.0 libsoup-2.4',

@@ -17,6 +17,7 @@ gio_unix = dependency('gio-unix-2.0', version: '>=2.40')
 gmodule = dependency('gmodule-2.0', version: '>=2.40')
 soup = dependency('libsoup-2.4', version: '>=2.44')
 libsystemd = dependency('libsystemd', required: false)
+openssl = dependency('openssl')
 
 vala_defines = []
 
