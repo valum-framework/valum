@@ -17,14 +17,6 @@ gio_windows = dependency('gio-windows-2.0', version: '>=2.40', required: false)
 gmodule = dependency('gmodule-2.0', version: '>=2.40')
 soup = dependency('libsoup-2.4', version: '>=2.44')
 
-if gio_unix.found()
-    gio_platform = gio_unix
-elif gio_windows.found()
-    gio_platform = gio_windows
-else
-    error('Either \'gio-unix-2.0\' or \'gio-windows-2.0\' must be available.')
-endif
-
 # provide 'OutputStream.write_all_async' and 'SimpleIOStream'
 if gio.version().version_compare('>=2.44')
     add_project_arguments('--define=GIO_2_44', language: 'vala')

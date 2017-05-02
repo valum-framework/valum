@@ -24,16 +24,16 @@ test('response', executable('response-test', 'response-test.vala',
 test('server', executable('server-test', 'server-test.vala',
                            dependencies: [glib, gobject, gio, soup, vsgi]))
 test('http server', executable('http-server-test', 'http-server-test.vala',
-                               dependencies: [glib, gobject, gio, gio_platform,  soup, vsgi]),
+                               dependencies: [glib, gobject, gio, gio_unix, gio_windows,  soup, vsgi]),
      env: ['G_TEST_SRCDIR=' + meson.current_source_dir()])
 test('socket server', executable('socket-server-test', 'socket-server-test.vala',
-                                          dependencies: [glib, gobject, gio, gio_platform,  soup, vsgi]))
+                                          dependencies: [glib, gobject, gio, gio_unix, gio_windows,  soup, vsgi]))
 if fcgi.found()
     test('fastcgi server', executable('fastcgi-server-test', 'fastcgi-server-test.vala',
-                                      dependencies: [glib, gobject, gio, gio_platform, soup, vsgi]))
+                                      dependencies: [glib, gobject, gio, gio_unix, gio_windows, soup, vsgi]))
 endif
 loader_test_lib = shared_library('loader-test', 'loader-test.vala',
-                                 dependencies: [glib, gobject, gio, gio_platform, soup, vsgi])
+                                 dependencies: [glib, gobject, gio, gio_unix, gio_windows, soup, vsgi])
 test('loader', vsgi_loader,
      args: ['--directory', meson.current_build_dir(), '--server=cgi', 'loader-test'],
      env: ['VSGI_SERVER_PATH=src/vsgi/servers'])
