@@ -35,8 +35,7 @@ vsgi = declare_dependency(include_directories: include_directories('.'),
 g_ir_compiler = find_program('g-ir-compiler', required: false)
 if g_ir_compiler.found()
     custom_target('VSGI typelib',
-                  command: [g_ir_compiler, '--shared-library', vsgi_lib.full_path(), '--output', '@OUTPUT@', '@INPUT@'],
-                  input: join_paths(meson.current_build_dir(), 'VSGI-@0@.gir'.format(api_version)),
+                  command: [g_ir_compiler, '--shared-library', vsgi_lib.full_path(), '--output', '@OUTPUT@', join_paths(meson.current_build_dir(), 'VSGI-@0@.gir'.format(api_version))],
                   output: 'VSGI-@0@.typelib'.format(api_version),
                   depends: vsgi_lib,
                   install: true,
