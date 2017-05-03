@@ -1,7 +1,7 @@
 project('Valum', 'vala', 'c',
         version: '0.4.0-dev',
         license: 'LGPL',
-        meson_version: '>=0.38.0')
+        meson_version: '>=0.40.0')
 
 api_version = '0.4'
 
@@ -18,6 +18,7 @@ gmodule = dependency('gmodule-2.0', version: '>=2.40')
 soup = dependency('libsoup-2.4', version: '>=2.44')
 libsystemd = dependency('libsystemd', required: false)
 openssl = dependency('openssl')
+posix = meson.get_compiler('vala').find_library('posix')
 
 vala_defines = []
 

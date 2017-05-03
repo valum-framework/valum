@@ -30,12 +30,14 @@ valum_lib = library('valum-' + api_version, valum_sources,
                     dependencies: [glib, gobject, gio, soup, vsgi],
                     vala_args: vala_defines,
                     vala_header: 'valum.h',
-                    install: true)
+                    install: true,
+                    install_dir: [true, true, true])
+
+install_data('valum-@0@.deps'.format(api_version),
+             install_dir: 'share/vala/vapi')
 
 valum = declare_dependency(include_directories: include_directories('.'),
                            link_with: valum_lib)
-
-meson.add_install_script('install.sh')
 
 pkgconfig = import('pkgconfig')
 pkgconfig.generate(requires: 'vsgi-' + api_version,

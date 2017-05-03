@@ -18,17 +18,19 @@ vsgi_sources = files(
     'vsgi-socket-server.vala',
     'vsgi-tee-output-stream.vala')
 vsgi_lib = library('vsgi-' + api_version, vsgi_sources,
-                   dependencies: [glib, gobject, gio, gio_unix, gmodule, soup, libsystemd, openssl],
-                   vala_args: ['--pkg=posix'] + vala_defines,
+                   dependencies: [glib, gobject, gio, gio_unix, gmodule, soup, libsystemd, openssl, posix],
+                   vala_args: vala_defines,
                    vala_header: 'vsgi.h',
                    install: true,
-                   install_rpath: '$ORIGIN/vsgi-@0@/servers'.format(api_version))
+                   install_rpath: '$ORIGIN/vsgi-@0@/servers'.format(api_version),
+                   install_dir: [true, true, true])
+
+install_data('vsgi-@0@.deps'.format(api_version),
+             install_dir: 'share/vala/vapi')
 
 vsgi = declare_dependency(include_directories: include_directories('.'),
                           link_with: vsgi_lib,
                           link_args: '-Wl,-rpath,@0@/servers'.format(meson.current_build_dir()))
-
-meson.add_install_script('install.sh')
 
 vsgi_private_requires = ['gio-unix-2.0', 'gmodule-2.0']
 
