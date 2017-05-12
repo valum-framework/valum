@@ -64,7 +64,6 @@ public void test_vsgi_cgi_request_content_type () {
 	var request = new Request.from_cgi_environment (null, {"CONTENT_TYPE=text/html; charset=UTF-8"});
 
 	HashTable<string, string> @params;
-	message (request.headers.get_content_type (out @params));
 	assert ("text/html" == request.headers.get_content_type (out @params));
 	assert ("UTF-8" == @params["charset"]);
 }
