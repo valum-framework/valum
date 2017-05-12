@@ -26,7 +26,16 @@
 G_BEGIN_DECLS
 
 #define VSGI_FASTCGI_TYPE_INPUT_STREAM (vsgi_fastcgi_input_stream_get_type ())
-G_DECLARE_FINAL_TYPE (VSGIFastCGIInputStream, vsgi_fastcgi_input_stream, VSGI_FASTCGI, INPUT_STREAM, GUnixInputStream)
+GType vsgi_fastcgi_input_stream_get_type (void);
+
+typedef struct _VSGIFastCGIInputStream VSGIFastCGIInputStream;
+
+typedef struct {
+    GUnixInputStreamClass parent_class;
+} VSGIFastCGIInputStreamClass;
+
+#define VSGI_FASTCGI_INPUT_STREAM(ptr) G_TYPE_CHECK_INSTANCE_CAST (ptr, vsgi_fastcgi_input_stream_get_type (), VSGIFastCGIInputStream)
+#define VSGI_FASTCGI_IS_INPUT_STREAM(ptr) G_TYPE_CHECK_INSTANCE_TYPE (ptr, vsgi_fastcgi_input_stream_get_type ())
 
 VSGIFastCGIInputStream * vsgi_fastcgi_input_stream_new (gint fd, FCGX_Stream *in);
 
