@@ -80,5 +80,15 @@ public int main (string[] args) {
 		route.to_url ("i");
 	});
 
+	Test.add_func ("/rule_route/to_url/replace_dash_with_underscore", () => {
+		RuleRoute route;
+		try {
+			route = new RuleRoute (Method.GET, "/foo/<some_id>", new HashTable<string, Regex> (str_hash, str_equal), () => { return true; });
+		} catch (RegexError err) {
+			assert_not_reached ();
+		}
+		assert ("/foo/5" == route.to_url (some_id: "5"));
+	});
+
 	return Test.run ();
 }
