@@ -90,9 +90,10 @@ namespace Valum {
 			var hash = new HashTable<string, string> (str_hash, str_equal);
 			// potential compiler bug here: SEGFAULT if 'var' is used instead of 'unowned string'
 			for (unowned string key = list.arg<string> (), val = list.arg<string> ();
-			     key != null && val != null;
-			     key = list.arg<string> (), val = list.arg<string> ()) {
-				hash.insert (key, val);
+				key != null && val != null;
+				key = list.arg<string> (), val = list.arg<string> ()) {
+				message (key.replace ("-", "_"));
+				hash.insert (key.replace ("-", "_"), val);
 			}
 			return to_url_from_hash (hash);
 		}
