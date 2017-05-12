@@ -38,7 +38,6 @@ public void test_route_from_rule () {
 		var request = new Request.with_uri (new Soup.URI ("http://localhost/5"));
 		var context = new Context ();
 
-		message (route.rule);
 		assert ("/<id>" == route.rule);
 		assert ("^/(?<id>\\w+)$" == route.regex.get_pattern ());
 		assert (RegexCompileFlags.OPTIMIZE in route.regex.get_compile_flags ());
@@ -94,7 +93,6 @@ public void test_route_from_rule_group () {
 		assert (!ctx.contains ("id"));
 
 	} catch (RegexError err) {
-		message (err.message);
 		assert_not_reached ();
 	}
 }

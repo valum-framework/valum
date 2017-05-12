@@ -75,7 +75,6 @@ namespace Valum {
 			for (unowned string key = list.arg<string> (), val = list.arg<string> ();
 				key != null && val != null;
 				key = list.arg<string> (), val = list.arg<string> ()) {
-				message (key.replace ("-", "_"));
 				hash.insert (key.replace ("-", "_"), val);
 			}
 			return to_url_from_hash (hash);
