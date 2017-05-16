@@ -39,7 +39,7 @@ namespace Valum {
 	 */
 	[Version (since = "0.3")]
 	public HandlerCallback basepath (string path, owned HandlerCallback forward) {
-		return new Basepath (path, new CallbackMiddleware (forward)).fire;
+		return new Basepath (path, Middleware.from_handler_callback (forward)).fire;
 	}
 
 	[Version (since = "0.4")]

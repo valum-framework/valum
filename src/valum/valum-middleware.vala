@@ -24,6 +24,24 @@ using VSGI;
 [Version (since = "0.4")]
 public abstract class Valum.Middleware : VSGI.Handler {
 
+	private class FromHandlerCallback : Middleware {
+
+		private HandlerCallback _fire;
+
+		public FromHandlerCallback (owned HandlerCallback fire) {
+			_fire = (owned) fire;
+		}
+
+		public override bool fire (Request req, Response res, NextCallback next, Context ctx) throws Error {
+			return _fire (req, res, next, ctx);
+		}
+	}
+
+	[Version (since = "0.4")]
+	public static Middleware from_handler_callback (owned HandlerCallback callback) {
+		return new FromHandlerCallback ((owned) callback);
+	}
+
 	[Version (since = "0.4")]
 	public virtual bool fire (Request      req,
 	                          Response     res,

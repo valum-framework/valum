@@ -7,7 +7,7 @@ public int main (string[] args) {
 	Test.add_func ("/rule_route/to_url_from_hash", () => {
 		RuleRoute route;
 		try {
-			route = new RuleRoute (Method.GET, "/hello/<i>", new HashTable<string, Regex> (str_hash, str_equal), new CallbackMiddleware (() => { return true; }));
+			route = new RuleRoute (Method.GET, "/hello/<i>", new HashTable<string, Regex> (str_hash, str_equal), Middleware.from_handler_callback (() => { return true; }));
 		} catch (RegexError err) {
 			assert_not_reached ();
 		}
@@ -20,7 +20,7 @@ public int main (string[] args) {
 	Test.add_func ("/rule_route/to_url", () => {
 		RuleRoute route;
 		try {
-			route = new RuleRoute (Method.GET, "/hello/<i>", new HashTable<string, Regex> (str_hash, str_equal), new CallbackMiddleware (() => { return true; }));
+			route = new RuleRoute (Method.GET, "/hello/<i>", new HashTable<string, Regex> (str_hash, str_equal), Middleware.from_handler_callback (() => { return true; }));
 		} catch (RegexError err) {
 			assert_not_reached ();
 		}
@@ -31,7 +31,7 @@ public int main (string[] args) {
 	Test.add_func ("/rule_route/to_url/exclude_rule_specific_characters", () => {
 		RuleRoute route;
 		try {
-			route = new RuleRoute (Method.GET, "/hello/(a)/*b?", new HashTable<string, Regex> (str_hash, str_equal), new CallbackMiddleware (() => { return true; }));
+			route = new RuleRoute (Method.GET, "/hello/(a)/*b?", new HashTable<string, Regex> (str_hash, str_equal), Middleware.from_handler_callback (() => { return true; }));
 		} catch (RegexError err) {
 			assert_not_reached ();
 		}
@@ -42,7 +42,7 @@ public int main (string[] args) {
 	Test.add_func ("/rule_route/to_url/optional", () => {
 		RuleRoute route;
 		try {
-			route = new RuleRoute (Method.GET, "/hello/<i>?", new HashTable<string, Regex> (str_hash, str_equal), new CallbackMiddleware (() => { return true; }));
+			route = new RuleRoute (Method.GET, "/hello/<i>?", new HashTable<string, Regex> (str_hash, str_equal), Middleware.from_handler_callback (() => { return true; }));
 		} catch (RegexError err) {
 			assert_not_reached ();
 		}
@@ -58,7 +58,7 @@ public int main (string[] args) {
 	Test.add_func ("/rule_route/to_url/error_on_missing_parameter/subprocess", () => {
 		RuleRoute route;
 		try {
-			route = new RuleRoute (Method.GET, "/hello/<i>", new HashTable<string, Regex> (str_hash, str_equal), new CallbackMiddleware (() => { return true; }));
+			route = new RuleRoute (Method.GET, "/hello/<i>", new HashTable<string, Regex> (str_hash, str_equal), Middleware.from_handler_callback (() => { return true; }));
 		} catch (RegexError err) {
 			assert_not_reached ();
 		}
@@ -73,7 +73,7 @@ public int main (string[] args) {
 	Test.add_func ("/rule_route/to_url/error_on_missing_value/subprocess", () => {
 		RuleRoute route;
 		try {
-			route = new RuleRoute (Method.GET, "/hello/<i>", new HashTable<string, Regex> (str_hash, str_equal), new CallbackMiddleware (() => { return true; }));
+			route = new RuleRoute (Method.GET, "/hello/<i>", new HashTable<string, Regex> (str_hash, str_equal), Middleware.from_handler_callback (() => { return true; }));
 		} catch (RegexError err) {
 			assert_not_reached ();
 		}

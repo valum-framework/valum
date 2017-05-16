@@ -22,7 +22,7 @@ using VSGI;
  * @since 0.1
  */
 public void test_route () {
-	var route   = new MatcherRoute (Method.GET, (req) => { return true; }, new CallbackMiddleware ((req, res) => { return true; }));
+	var route   = new MatcherRoute (Method.GET, (req) => { return true; }, Middleware.from_handler_callback ((req, res) => { return true; }));
 	var req     = new Request (null, "GET", new Soup.URI ("http://localhost/5"));
 	var context = new Context ();
 
@@ -34,7 +34,7 @@ public void test_route () {
  */
 public void test_route_from_rule () {
 	try {
-		var route   = new RuleRoute (Method.GET, "/<id>", new HashTable<string, Regex> (str_hash, str_equal), new CallbackMiddleware ((req, res) => { return true; }));
+		var route   = new RuleRoute (Method.GET, "/<id>", new HashTable<string, Regex> (str_hash, str_equal), Middleware.from_handler_callback ((req, res) => { return true; }));
 		var request = new Request (null, "GET", new Soup.URI ("http://localhost/5"));
 		var context = new Context ();
 
@@ -54,7 +54,7 @@ public void test_route_from_rule () {
  */
 public void test_route_from_rule_without_captures () {
 	try {
-		var route   = new RuleRoute (Method.GET, "/", new HashTable<string, Regex> (str_hash, str_equal), new CallbackMiddleware ((req, res) => { return true; }));
+		var route   = new RuleRoute (Method.GET, "/", new HashTable<string, Regex> (str_hash, str_equal), Middleware.from_handler_callback ((req, res) => { return true; }));
 		var req     = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 		var context = new Context ();
 
@@ -75,7 +75,7 @@ public void test_route_from_rule_undefined_type () {
 		new RuleRoute (Method.GET,
 		               "/<uint:unknown_type>",
 		               new HashTable<string, Regex> (str_hash, str_equal),
-		               new CallbackMiddleware ((req, res) => { return true; }));
+		               Middleware.from_handler_callback ((req, res) => { return true; }));
 		assert_not_reached ();
 	} catch (RegexError err) {
 		assert (err is RegexError.COMPILE);
@@ -84,7 +84,7 @@ public void test_route_from_rule_undefined_type () {
 
 public void test_route_from_rule_group () {
 	try {
-		var route = new RuleRoute (Method.GET, "/(<id>)?", new HashTable<string, Regex> (str_hash, str_equal), new CallbackMiddleware ((req, res) => { return true; }));
+		var route = new RuleRoute (Method.GET, "/(<id>)?", new HashTable<string, Regex> (str_hash, str_equal), Middleware.from_handler_callback ((req, res) => { return true; }));
 
 		assert (route.match (new Request (null, "GET", new Soup.URI ("http://127.0.0.1:3003/5")), new Context ()));
 
@@ -104,7 +104,7 @@ public void test_route_from_rule_group () {
  */
 public void test_route_from_rule_wildcard () {
 	try {
-		var route = new RuleRoute (Method.GET, "/test/*", new HashTable<string, Regex> (str_hash, str_equal), new CallbackMiddleware ((req, res) => { return true; }));
+		var route = new RuleRoute (Method.GET, "/test/*", new HashTable<string, Regex> (str_hash, str_equal), Middleware.from_handler_callback ((req, res) => { return true; }));
 
 		assert (route.match (new Request (null, "GET", new Soup.URI ("http://127.0.0.1:3003/test/")), new Context ()));
 		assert (route.match (new Request (null, "GET", new Soup.URI ("http://127.0.0.1:3003/test/asdf")), new Context ()));
@@ -119,7 +119,7 @@ public void test_route_from_rule_wildcard () {
  */
 public void test_route_from_rule_optional () {
 	try {
-		var route = new RuleRoute (Method.GET, "/test/?", new HashTable<string, Regex> (str_hash, str_equal), new CallbackMiddleware ((req, res) => { return true; }));
+		var route = new RuleRoute (Method.GET, "/test/?", new HashTable<string, Regex> (str_hash, str_equal), Middleware.from_handler_callback ((req, res) => { return true; }));
 
 		assert (route.match (new Request (null, "GET", new Soup.URI ("http://127.0.0.1:3003/test")), new Context ()));
 		assert (route.match (new Request (null, "GET", new Soup.URI ("http://127.0.0.1:3003/test/")), new Context ()));
@@ -133,7 +133,7 @@ public void test_route_from_rule_optional () {
  * @since 0.1
  */
 public void test_route_from_regex () {
-	var route   = new RegexRoute (Method.GET, /\/(?<id>\d+)/, new CallbackMiddleware ((req, res) => { return true; }));
+	var route   = new RegexRoute (Method.GET, /\/(?<id>\d+)/, Middleware.from_handler_callback ((req, res) => { return true; }));
 	var req     = new Request (null, "GET", new Soup.URI ("http://localhost/5"));
 	var context = new Context ();
 
@@ -149,7 +149,7 @@ public void test_route_from_regex () {
  * @since 0.2
  */
 public void test_route_from_regex_multiple_captures () {
-	var route   = new RegexRoute (Method.GET, /\/(?<action>\w+)\/(?<id>\d+)/, new CallbackMiddleware ((req, res) => { return true; }));
+	var route   = new RegexRoute (Method.GET, /\/(?<action>\w+)\/(?<id>\d+)/, Middleware.from_handler_callback ((req, res) => { return true; }));
 	var req     = new Request (null, "GET", new Soup.URI ("http://localhost/user/5"));
 	var context = new Context ();
 
@@ -166,7 +166,7 @@ public void test_route_from_regex_multiple_captures () {
  * @since 0.1
  */
 public void test_route_from_regex_without_captures () {
-	var route   = new RegexRoute (Method.GET, /\/.*/, new CallbackMiddleware ((req, res) => { return true; }));
+	var route   = new RegexRoute (Method.GET, /\/.*/, Middleware.from_handler_callback ((req, res) => { return true; }));
 	var req     = new Request (null, "GET", new Soup.URI ("http://localhost/"));
 	var context = new Context ();
 
@@ -181,7 +181,7 @@ public void test_route_from_regex_without_captures () {
  */
 public void test_route_match () {
 	try {
-		var route   = new RuleRoute (Method.GET, "/<id>", new HashTable<string, Regex> (str_hash, str_equal), new CallbackMiddleware ((req, res) => { return true; }));
+		var route   = new RuleRoute (Method.GET, "/<id>", new HashTable<string, Regex> (str_hash, str_equal), Middleware.from_handler_callback ((req, res) => { return true; }));
 		var req     = new Request (null, "GET", new Soup.URI ("http://localhost/5"));
 		var context = new Context ();
 
@@ -202,7 +202,7 @@ public void test_route_match_not_matching () {
 	try {
 		var types   = new HashTable<string, Regex> (str_hash, str_equal);
 		types["int"] = /\d+/;
-		var route   = new RuleRoute (Method.GET, "/<int:id>", types, new CallbackMiddleware ((req, res) => { return true; }));
+		var route   = new RuleRoute (Method.GET, "/<int:id>", types, Middleware.from_handler_callback ((req, res) => { return true; }));
 		var req     = new Request (null, "GET", new Soup.URI ("http://localhost/home"));
 		var context = new Context ();
 
@@ -219,7 +219,7 @@ public void test_route_match_not_matching () {
 public void test_route_fire () {
 	try {
 		var setted = false;
-		var route = new RuleRoute (Method.GET, "/<id>",  new HashTable<string, Regex> (str_hash, str_equal), new CallbackMiddleware ((req, res) => {
+		var route = new RuleRoute (Method.GET, "/<id>",  new HashTable<string, Regex> (str_hash, str_equal), Middleware.from_handler_callback ((req, res) => {
 			setted = true;
 			return true;
 		}));
