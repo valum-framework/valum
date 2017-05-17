@@ -33,7 +33,7 @@ public abstract class Valum.ForwardMiddleware<T> : Valum.Middleware {
 		}
 	}
 
-	public static ForwardMiddleware<T> from_forward_callback<T> (owned ForwardCallback callback) {
+	public static ForwardMiddleware<T> from_forward_callback<T> (owned ForwardCallback<T> callback) {
 		return new FromForwardCallback<T> (callback);
 	}
 
