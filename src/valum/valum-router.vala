@@ -33,7 +33,7 @@ namespace Valum {
 		public Context context { get; construct; }
 
 		[Version (since = "0.3", experimental = true)]
-		public Sequence<Route> routes = new Sequence<Route> ();
+		public GLib.Sequence<Route> routes = new GLib.Sequence<Route> ();
 
 		private HashTable<string, Regex> types  = new HashTable<string, Regex> (str_hash, str_equal);
 		private Queue<string>            scopes = new Queue<string> ();
