@@ -33,7 +33,7 @@ namespace Valum {
 		return (req, res, next, ctx) => {
 			HashTable<string, string> @params;
 			if (req.headers.get_content_type (out @params).has_prefix ("multipart/")) {
-				if (!@params.contains ("boundary")) {
+				if (@params == null || !@params.contains ("boundary")) {
 					throw new ClientError.BAD_REQUEST ("The 'boundary' parameter is missing in the 'Content-Type' header.");
 				}
 				return forward (req, res, next, ctx, new MultipartInputStream (req.body, @params["boundary"]));
