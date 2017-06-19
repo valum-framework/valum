@@ -54,8 +54,8 @@ Arch Linux (AUR)
 
     yaourt valum
 
-Subproject
-----------
+Meson
+-----
 
 If your project uses the Meson build system, you may integrate the framework as
 a subproject. The project must be cloned in the ``subprojects`` folder,
@@ -82,6 +82,20 @@ Note that due to Meson design, dependencies must be explicitly provided.
 
     executable('app', 'app.vala',
                dependencies: [glib, gobject, gio, soup, vsgi, valum])
+
+Alternatively, you can use the ``[wrap-git]`` feature instead of introducing
+and tracking a git submodule. Simply add ``subprojects/valum.wrap`` in your
+tree with the following content:
+
+::
+
+    [wrap-git]
+    directory=valum
+    url=https://github.com/valum-framework/valum.git
+    revision=v0.3.13
+
+Then, invoking `meson` to configure the project will automatically clone the
+repository and checkout the specified revision.
 
 Bower
 -----
