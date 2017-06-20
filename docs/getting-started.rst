@@ -9,7 +9,7 @@ Simple 'Hello world!' application
 
 You can use this sample application and project structure as a basis. The full
 `valum-framework/example`_ is available on GitHub and is kept up-to-date with
-the latest changes in the framework.
+the latest release of the framework.
 
 .. _valum-framework/example: https://github.com/valum-framework/example
 
@@ -21,10 +21,11 @@ the latest changes in the framework.
     var app = new Router ();
 
     app.get ("/", (req, res) => {
+        res.headers.set_content_type ("text/plain", null);
         return res.expand_utf8 ("Hello world!");
     });
 
-    Server.new ("http", handler: app.handle).run ({"app", "--port", "3003"});
+    Server.new ("http", handler: app).run ({"app", "--port", "3003"});
 
 Typically, the ``run`` function contains CLI argument to make runtime the
 parametrizable.
@@ -66,20 +67,21 @@ as flexible as waf, but it will handle most projects very well.
 
     project('example', 'c', 'vala')
 
-    glib = dependency('glib-2.0')
-    gobject = dependency('gobject-2.0')
-    gio = dependency('gio-2.0')
-    soup = dependency('libsoup-2.4')
-    vsgi = dependency('vsgi-0.3')   # or subproject('valum').get_variable('vsgi')
-    valum = dependency('valum-0.3') # or subproject('valum').get_variable('valum')
+    glib_dep = dependency('glib-2.0')
+    gobject_dep = dependency('gobject-2.0')
+    gio_dep = dependency('gio-2.0')
+    soup_dep = dependency('libsoup-2.4')
+    vsgi_dep = dependency('vsgi-0.3')   # or subproject('valum').get_variable('vsgi')
+    valum_dep = dependency('valum-0.3') # or subproject('valum').get_variable('valum')
 
-    executable('app', 'src/app.vala', dependencies: [glib, gobject, gio, soup, vsgi, valum])
-    valum = dependency('valum-0.3')
+    executable('app', 'src/app.vala',
+               dependencies: [glib_dep, gobject_dep, gio_dep, soup_dep, vsgi_dep, valum_dep])
 
 .. code-block:: bash
 
-    meson . build
-    ninja -C build
+    mkdir build && cd build
+    meson ..
+    ninja
 
 To include Valum as a subproject, it is sufficient to clone the repository into
 ``subprojects/valum``.
