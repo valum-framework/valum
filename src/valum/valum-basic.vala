@@ -158,8 +158,10 @@ namespace Valum {
 
 					// basic handling
 					default:
-						var @params = new HashTable<string, string> ((HashFunc<string>) Soup.str_case_hash,
-						                                             (EqualFunc<string>) Soup.str_case_equal);
+						var @params = new HashTable<string, string>.full ((HashFunc<string>) Soup.str_case_hash,
+						                                                  (EqualFunc<string>) Soup.str_case_equal,
+						                                                  free,
+						                                                  free);
 						@params["charset"] = "utf-8";
 						res.headers.set_content_type ("text/plain", @params);
 						try {

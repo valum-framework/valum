@@ -198,7 +198,7 @@ namespace Valum.Static {
 	                                            ServeFlags            serve_flags = ServeFlags.NONE,
 	                                            owned HandlerCallback forward     = Valum.forward) {
 		// cache for already computed 'ETag' values
-		var etag_cache = new HashTable <string, string> (str_hash, str_equal);
+		var etag_cache = new HashTable <string, string>.full (str_hash, str_equal, free, free);
 
 		return (req, res, next, ctx) => {
 			var path = "%s%s".printf (prefix, ctx["path"].get_string ());
