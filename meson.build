@@ -1,4 +1,4 @@
-project('Valum', 'vala', 'c',
+project('valum', 'vala', 'c',
         version: '0.4.0-dev',
         license: 'LGPL',
         meson_version: '>=0.42.0')
