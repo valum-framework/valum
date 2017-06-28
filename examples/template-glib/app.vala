@@ -14,7 +14,7 @@ try {
 }
 
 app.use (basic ());
-app.use ("text/html");
+app.use (accept ("text/html"));
 
 app.get ("/", (req, res) => {
 	var scope = new Scope ();
