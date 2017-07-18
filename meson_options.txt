@@ -1,1 +1,2 @@
-option('enable_examples', type: 'boolean', value: false, description: 'build examples')
+option('enable_examples', type: 'boolean', value: false)
+option('with_introspection', type: 'boolean', value: false)

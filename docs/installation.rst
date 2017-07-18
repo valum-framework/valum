@@ -208,6 +208,15 @@ Recent dependencies will enable more advanced features:
 | libsoup-2.4 | >=2.48  | new server API                                       |
 +-------------+---------+------------------------------------------------------+
 
+GObject introspection can be toggled with ``-D with_introspection=true``. It
+requires a couple of dependencies:
+
++---------------------------+----------------------------------------------+
+| Package                   | Description                                  |
++===========================+==============================================+
+| gobject-introspection-1.0 | introspection and Python/JavaScript bindings |
++---------------------------+----------------------------------------------+
+
 You can also install additional dependencies to build the examples, you will
 have to specify the ``-D enable_examples=true`` flag during the configure step.
 

@@ -23,7 +23,7 @@ vsgi_lib = library('vsgi-' + api_version, vsgi_sources,
                    vala_gir: 'VSGI-@0@.gir'.format(api_version),
                    link_args: '-Wl,-rpath,' + join_paths(meson.current_build_dir(), 'servers'),
                    install: true,
-                   install_dir: [true, true, true, true],
+                   install_dir: [true, true, true, get_option('with_introspection')],
                    install_rpath: join_paths(get_option('prefix'), get_option('libdir'), 'vsgi-@0@/servers'.format(api_version)))
 
 install_data('vsgi-@0@.deps'.format(api_version),
@@ -32,8 +32,8 @@ install_data('vsgi-@0@.deps'.format(api_version),
 vsgi = declare_dependency(include_directories: include_directories('.'),
                           link_with: vsgi_lib)
 
-g_ir_compiler = find_program('g-ir-compiler', required: false)
-if g_ir_compiler.found()
+if get_option('with_introspection')
+    g_ir_compiler = find_program('g-ir-compiler')
     custom_target('VSGI typelib',
                   command: [g_ir_compiler, '--shared-library', vsgi_lib.full_path(), '--output', '@OUTPUT@', join_paths(meson.current_build_dir(), 'VSGI-@0@.gir'.format(api_version))],
                   output: 'VSGI-@0@.typelib'.format(api_version),

@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     libfcgi-dev                          \
     libglib2.0-dev                       \
     libsoup2.4-dev                       \
+    gobject-introspection                \
     python3-pip                          \
     unzip                                \
     valac                                \
@@ -21,4 +22,4 @@ RUN unzip /tmp/ninja-linux.zip -d /usr/local/bin
 WORKDIR /valum
 ADD . .
 
-RUN mkdir build && meson --prefix=/usr --buildtype=release . build && ninja -C build && ninja -C build test && ninja -C build install
+RUN mkdir build && meson --prefix=/usr --buildtype=release -D with_introspection=true . build && ninja -C build && ninja -C build test && ninja -C build install
