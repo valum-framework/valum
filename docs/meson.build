@@ -3,7 +3,7 @@ if valadoc.found()
     valadoc_command = [valadoc, '--package-name', 'valum-@0@'.format(api_version),
                        '--package-version', meson.project_version(), '--pkg=glib-2.0',
                        '--pkg=gio-2.0', '--pkg=gio-unix-2.0',
-                       '--pkg=gmodule-2.0', '--pkg=libsoup-2.4', '--pkg=posix', '--pkg=openssl',
+                       '--pkg=gmodule-2.0', '--pkg=libsoup-2.4', '--pkg=posix', '--pkg=gnutls',
                        '--vapidir=' + join_paths(meson.current_source_dir(), '..', 'vapi'),
                        '--target-glib=2.40', '--force', '--directory', '@OUTPUT@', '@INPUT@']
     custom_target('API documentation', command: valadoc_command + ['--doclet=html'],

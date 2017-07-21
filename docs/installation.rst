@@ -197,6 +197,8 @@ The following dependencies are minimal to build the framework under Ubuntu
 +--------------+----------+
 | libsoup-2.4  | >=2.44   |
 +--------------+----------+
+| gnutls       | >=2.12   |
++--------------+----------+
 
 Recent dependencies will enable more advanced features:
 

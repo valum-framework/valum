@@ -74,7 +74,7 @@ namespace VSGI.CookieUtils {
 
 		assert (checksum_length == checksum.length);
 
-		if (OpenSSL.Crypto.memcmp (checksum, cookie.@value, checksum_length) == 0) {
+		if (GnuTLS.memcmp (checksum, cookie.@value, checksum_length) == 0) {
 			@value = cookie.@value.substring (checksum_length);
 			return true;
 		} else {

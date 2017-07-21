@@ -18,7 +18,7 @@ vsgi_sources = files(
     'vsgi-socket-server.vala',
     'vsgi-tee-output-stream.vala')
 vsgi_lib = library('vsgi-' + api_version, vsgi_sources,
-                   dependencies: [glib, gobject, gio, gio_unix, gmodule, soup, libsystemd, openssl, posix],
+                   dependencies: [glib, gobject, gio, gio_unix, gmodule, soup, libsystemd, gnutls, posix],
                    vala_header: 'vsgi.h',
                    vala_gir: 'VSGI-@0@.gir'.format(api_version),
                    link_args: '-Wl,-rpath,' + join_paths(meson.current_build_dir(), 'servers'),
@@ -48,7 +48,7 @@ if libsystemd.found()
     vsgi_private_requires += 'libsystemd'
 endif
 
-vsgi_private_requires += 'openssl'
+vsgi_private_requires += 'gnutls'
 
 pkgconfig = import('pkgconfig')
 pkgconfig.generate(requires: 'glib-2.0 gobject-2.0 gio-2.0 libsoup-2.4',

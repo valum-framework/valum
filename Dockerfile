@@ -5,6 +5,7 @@ MAINTAINER Guillaume Poirier-Morency <guillaumepoiriermorency@gmail.com>
 RUN apt-get update && apt-get install -y \
     libfcgi-dev                          \
     libglib2.0-dev                       \
+    libgnutls-dev                        \
     libsoup2.4-dev                       \
     python3-pip                          \
     unzip                                \
