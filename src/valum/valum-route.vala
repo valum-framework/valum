@@ -27,7 +27,7 @@ namespace Valum {
 	 * It holds metadata as well to optimize the routing process.
 	 */
 	[Version (since = "0.1")]
-	public abstract class Route : Object {
+	public abstract class Route : Middleware {
 
 		/**
 		 * Flag describing allowed HTTP methods.
@@ -57,11 +57,11 @@ namespace Valum {
 		 *         callback depending on the match
 		 */
 		[Version (since = "0.1")]
-		public bool fire (Request req, Response res, NextCallback next, Context ctx) throws Success,
-		                                                                                    Redirection,
-		                                                                                    ClientError,
-		                                                                                    ServerError,
-		                                                                                    Error
+		public override bool fire (Request req, Response res, NextCallback next, Context ctx) throws Success,
+		                                                                                             Redirection,
+		                                                                                             ClientError,
+		                                                                                             ServerError,
+		                                                                                             Error
 		{
 			if (match (req, ctx) && unlikely (_handler != null)) {
 				return _handler (req, res, next, ctx);
