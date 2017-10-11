@@ -16,7 +16,7 @@ before_install:
       libglib2.0-dev libsoup2.4-dev libsystemd-journal-dev libfcgi-dev
       python3-pip gcovr libgee-0.8-dev libctpl-dev libjson-glib-dev
       libmemcached-dev libmarkdown2-dev liblua5.2-dev valgrind
-    - pip3 install meson sphinx sphinx_rtd_theme PyYAML
+    - pip3 install --user meson sphinx sphinx_rtd_theme PyYAML
     - wget https://github.com/ninja-build/ninja/releases/download/v1.6.0/ninja-linux.zip
     - unzip ninja-linux.zip -d ${HOME}/.local/bin
 
