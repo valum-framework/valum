@@ -25,7 +25,7 @@ namespace Valum {
 	 * continuation.
 	 */
 	[Version (since = "0.3")]
-	public bool forward (Request req, Response res, NextCallback next) throws Error {
+	public bool forward (Request req, Response res, owned NextCallback next) throws Error {
 		return next ();
 	}
 }

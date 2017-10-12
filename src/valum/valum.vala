@@ -64,10 +64,15 @@ namespace Valum {
 	 *         otherwise 'false'
 	 */
 	[Version (since = "0.1")]
-	public delegate bool HandlerCallback (Request      req,
-	                                      Response     res,
-	                                      NextCallback next,
-	                                      Context      context) throws Error;
+	public delegate bool HandlerCallback (Request req,
+	                                      Response res,
+	                                      owned NextCallback next,
+	                                      Context context) throws Informational,
+	                                                              Success,
+	                                                              Redirection,
+	                                                              ClientError,
+	                                                              ServerError,
+	                                                              Error;
 
 	/**
 	 * Define a type of {@link Valum.HandlerCallback} that forward a generic
@@ -76,7 +81,7 @@ namespace Valum {
 	[Version (since = "0.3")]
 	public delegate bool ForwardCallback<T> (Request      req,
 	                                         Response     res,
-	                                         NextCallback next,
+	                                         owned NextCallback next,
 	                                         Context      context,
 	                                         T            @value) throws Error;
 
