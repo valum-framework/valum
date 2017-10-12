@@ -30,10 +30,16 @@ public delegate void Valum.ContextForeachFunc (string key, Value @value, uint de
 [Version (since = "0.3")]
 public class Valum.Context : Object {
 
+	private static void _reset_and_free_value (void* @val)
+	{
+		((Value?) @val).reset ();
+		free (@val);
+	}
+
 	/**
 	 * Internal mapping of states.
 	 */
-	private HashTable<string, Value?> states = new HashTable<string, Value?> (str_hash, str_equal);
+	private HashTable<string, Value?> states = new HashTable<string, Value?>.full (str_hash, str_equal, free, _reset_and_free_value);
 
 	/**
 	 * Parent's context from which missing keys are resolved.
@@ -93,7 +99,7 @@ public class Valum.Context : Object {
 	 */
 	[Version (since = "0.3")]
 	public new void @set (string key, owned Value @value) {
-		states.@set (key, (owned) @value);
+		states.insert (key, (owned) @value);
 	}
 
 	/**

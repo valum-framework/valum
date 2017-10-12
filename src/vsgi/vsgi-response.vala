@@ -313,6 +313,15 @@ namespace VSGI {
 			_body = new TeeOutputStream (_body ?? request.connection.output_stream, tee_stream);
 		}
 
+		private inline HashTable<string, string> _copy_params_hash (HashTable<string, string> @params) {
+			var params_copy = new HashTable<string, string>.full ((HashFunc) Soup.str_case_hash,
+			                                                      (EqualFunc) Soup.str_case_equal,
+			                                                      free,
+			                                                      free);
+			@params.foreach ((k, v) => params_copy.insert (k, v));
+			return params_copy;
+		}
+
 		private inline void _mark_content_as_utf8 () {
 			if (head_written) {
 				return;
@@ -321,9 +330,14 @@ namespace VSGI {
 			var content_type = headers.get_content_type (out @params);
 			if (content_type == null) {
 				headers.set_content_type ("application/octet-stream", Soup.header_parse_param_list ("charset=UTF-8"));
+			} else if (@params == null) {
+				headers.set_content_type (content_type, Soup.header_parse_param_list ("charset=UTF-8"));
 			} else if (@params["charset"] == null) {
-				@params["charset"] = "UTF-8";
-				headers.set_content_type (content_type, @params);
+				var @params_copy = _copy_params_hash (@params);
+				params_copy["charset"] = "UTF-8";
+				headers.set_content_type (content_type, params_copy);
+			} else {
+				// charset is already set, so we assume a converter is applied appropriately
 			}
 		}
 

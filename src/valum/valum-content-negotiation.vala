@@ -181,8 +181,10 @@ namespace Valum.ContentNegotiation {
 			HashTable<string, string> @params;
 			var content_type   = res.headers.get_content_type (out @params) ?? "application/octet-stream";
 			if (@params == null) {
-				@params = new HashTable<string, string> ((GLib.HashFunc<string>) Soup.str_case_hash,
-				                                         (GLib.EqualFunc<string>) Soup.str_case_equal);
+				@params = new HashTable<string, string>.full ((GLib.HashFunc<string>) Soup.str_case_hash,
+				                                              (GLib.EqualFunc<string>) Soup.str_case_equal,
+				                                              free,
+				                                              free);
 			}
 			@params["charset"] = charset;
 			res.headers.set_content_type (content_type, @params);

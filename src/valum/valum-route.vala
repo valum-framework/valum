@@ -87,7 +87,7 @@ namespace Valum {
 		 */
 		[Version (since = "0.3")]
 		public string to_url_from_valist (va_list list) {
-			var hash = new HashTable<string, string> (str_hash, str_equal);
+			var hash = new HashTable<string, string>.full (str_hash, str_equal, free, free);
 			// potential compiler bug here: SEGFAULT if 'var' is used instead of 'unowned string'
 			for (unowned string key = list.arg<string> (), val = list.arg<string> ();
 				key != null && val != null;

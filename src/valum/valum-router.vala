@@ -35,7 +35,7 @@ namespace Valum {
 		[Version (since = "0.3", experimental = true)]
 		public Sequence<Route> routes = new Sequence<Route> ();
 
-		private HashTable<string, Regex> types  = new HashTable<string, Regex> (str_hash, str_equal);
+		private HashTable<string, Regex> types  = new HashTable<string, Regex>.full (str_hash, str_equal, free, null);
 		private Queue<string>            scopes = new Queue<string> ();
 
 		[Version (since = "0.3")]
@@ -62,7 +62,7 @@ namespace Valum {
 		 */
 		[Version (since = "0.3", experimental = true)]
 		public void register_type (string name, Regex pattern) {
-			types[name] = pattern;
+			types.insert (name, pattern);
 		}
 
 		[Version (since = "0.3")]
@@ -260,7 +260,10 @@ namespace Valum {
 			route (new MatcherRoute (method | Method.PROVIDED, (owned) matcher, (owned) cb));
 		}
 
-		private HashTable<string, Route> _named_routes = new HashTable<string, Route> (str_hash, str_equal);
+		private HashTable<string, Route> _named_routes = new HashTable<string, Route>.full (str_hash,
+		                                                                                    str_equal,
+		                                                                                    free,
+		                                                                                    null); /* owned by 'routes' */
 
 		/**
 		 * Append a {@link Route} object on the routing sequence.
