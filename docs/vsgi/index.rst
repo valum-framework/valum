@@ -4,9 +4,9 @@ VSGI
 VSGI is a middleware that interfaces different Web server technologies under a
 common and simple set of abstractions.
 
-For the moment, it is developed along with Valum to target the needs of a Web
-framework, but it will eventually be extracted and distributed as a shared
-library.
+As of Valum 0.4, VSGI is distributed in its `own repository <https://github.com/valum-framework/vsgi>`_
+and can be used as-is. Efforts are put toward making it portable (i.e. work on
+Windows) and more efficient.
 
 .. toctree::
 

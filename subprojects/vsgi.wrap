@@ -1,0 +1,4 @@
+[wrap-git]
+directory=vsgi
+url=https://github.com/valum-framework/vsgi.git
+revision=master
