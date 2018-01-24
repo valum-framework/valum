@@ -14,7 +14,7 @@ glib = dependency('glib-2.0', version: '>=2.40')
 gobject = dependency('gobject-2.0', version: '>=2.40')
 gio = dependency('gio-2.0', version: '>=2.40')
 soup = dependency('libsoup-2.4', version: '>=2.44')
-vsgi = dependency('vsgi', fallback: ['vsgi', 'vsgi'])
+vsgi = dependency('vsgi', fallback: ['vsgi', 'vsgi_dep'])
 
 # provide structured logging
 if glib.version().version_compare('>=2.50')
