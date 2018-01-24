@@ -54,27 +54,5 @@ public int main (string[] args) {
 	Test.add_func ("/server_sent_events/send_multiline", test_server_sent_events_send_multiline);
 	Test.add_func ("/server_sent_events/skip_on_head", test_server_sent_events_skip_on_head);
 
-	Test.add_func ("/vsgi/cookies/from_request", test_vsgi_cookies_from_request);
-	Test.add_func ("/vsgi/cookies/from_response", test_vsgi_cookies_from_response);
-	Test.add_func ("/vsgi/cookies/lookup", test_vsgi_cookies_lookup);
-	Test.add_func ("/vsgi/cookies/sign", test_vsgi_cookies_sign);
-	Test.add_func ("/vsgi/cookies/sign/empty_cookie", test_vsgi_cookies_sign_empty_cookie);
-	Test.add_func ("/vsgi/cookies/sign_and_verify", test_vsgi_cookies_sign_and_verify);
-	Test.add_func ("/vsgi/cookies/verify", test_vsgi_cookies_verify);
-	Test.add_func ("/vsgi/cookies/verify/bad_signature", test_vsgi_cookies_verify_bad_signature);
-	Test.add_func ("/vsgi/cookies/verify/too_small_value", test_vsgi_cookies_verify_too_small_value);
-
-	Test.add_func ("/vsgi/cgi/request", test_vsgi_cgi_request);
-	Test.add_func ("/vsgi/cgi/request/gateway_interface", test_vsgi_cgi_request_gateway_interface);
-	Test.add_func ("/vsgi/cgi/request/content_type", test_vsgi_cgi_request_content_type);
-	Test.add_func ("/vsgi/cgi/request/content_length", test_vsgi_cgi_request_content_length);
-	Test.add_func ("/vsgi/cgi/request/content_length/malformed", test_vsgi_cgi_request_content_length_malformed);
-	Test.add_func ("/vsgi/cgi/request/missing_path_info", test_vsgi_cgi_request_missing_path_info);
-	Test.add_func ("/vsgi/cgi/request/http_1_1", test_vsgi_cgi_request_http_1_1);
-	Test.add_func ("/vsgi/cgi/request/https_detection", test_vsgi_cgi_request_https_detection);
-	Test.add_func ("/vsgi/cgi/request/https_on", test_vsgi_cgi_request_https_on);
-	Test.add_func ("/vsgi/cgi/request/request_uri", test_vsgi_cgi_request_request_uri);
-	Test.add_func ("/vsgi/cgi/request/uri_with_query", test_vsgi_cgi_request_uri_with_query);
-
 	return Test.run ();
 }

@@ -1,8 +1,6 @@
 gnome = import('gnome')
 legacy_test_sources = [
     'tests.vala',
-    'cgi-test.vala',
-    'cookies-test.vala',
     'decode-test.vala',
     'route-test.vala',
     'server-sent-events-test.vala',
