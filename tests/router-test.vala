@@ -452,7 +452,7 @@ public int main (string[] args) {
 
 		router.use (basic ());
 
-		router.get ("<path:path>", (req, res, next, context) => {
+		router.get ("/<path:path>", (req, res, next, context) => {
 			assert_not_reached ();
 		});
 
