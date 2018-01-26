@@ -35,8 +35,8 @@ valum_lib = library('valum-' + api_version, valum_sources,
 install_data('valum-@0@.deps'.format(api_version),
              install_dir: 'share/vala/vapi')
 
-valum = declare_dependency(include_directories: include_directories('.'),
-                           link_with: valum_lib)
+valum_dep = declare_dependency(include_directories: include_directories('.'),
+                               link_with: valum_lib)
 
 pkgconfig = import('pkgconfig')
 pkgconfig.generate(requires: 'vsgi-' + api_version,

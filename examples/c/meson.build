@@ -1,1 +1,1 @@
-executable('c', 'app.c', dependencies: [glib, gobject, gio, soup, vsgi, valum])
+executable('c', 'app.c', dependencies: [glib, gobject, gio, soup, vsgi, valum_dep])
