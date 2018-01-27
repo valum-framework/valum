@@ -83,7 +83,7 @@ license, so anyone can use or contribute to the framework.
  5. make a pull request of your amazing changes
  6. let everyone enjoy :)
 
-We use [semantic versionning](http://semver.org/), so make sure that your
+We use [semantic versioning](http://semver.org/), so make sure that your
 changes
 
  * does not alter api in bugfix release
