@@ -19,7 +19,8 @@ valum_tests = [
     'router',
     'rule-route',
     'safely',
-    'status']
+    'status',
+    'websocket']
 
 foreach name : valum_tests
     test(name, executable(name + '-test', name + '-test.vala',
