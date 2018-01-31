@@ -30,7 +30,7 @@ valum_lib = library('valum-' + api_version, valum_sources,
                     dependencies: [glib, gobject, gio, soup, vsgi],
                     vala_header: 'valum.h',
                     install: true,
-                    install_dir: [true, true, true])
+                    install_dir: [true, 'include/valum-' + api_version, true])
 
 install_data('valum-@0@.deps'.format(api_version),
              install_dir: 'share/vala/vapi')
