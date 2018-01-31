@@ -48,14 +48,15 @@ public void test_server_sent_events_send () {
 	}
 
 	try {
-		var expected_message = resources_lookup_data ("/data/server-sent-events/send-expected-message",
-													  ResourceLookupFlags.NONE);
+		uint8[] expected_message;
+		FileUtils.get_data (Test.get_filename (Test.FileType.DIST, "data", "server-sent-events", "send-expected-message"),
+		                    out expected_message);
 
 		var data = res_body.steal_data ();
 		data.length = (int) res_body.get_data_size ();
 
-		assert (expected_message.compare (new Bytes (data)) == 0);
-	} catch (Error err) {
+		assert (new Bytes (expected_message).compare (new Bytes (data)) == 0);
+	} catch (FileError err) {
 		assert_not_reached ();
 	}
 }
@@ -85,13 +86,14 @@ public void test_server_sent_events_send_multiline () {
 	}
 
 	try {
-		var expected_message = resources_lookup_data ("/data/server-sent-events/send-multiline-expected-message",
-													  ResourceLookupFlags.NONE);
+		uint8[] expected_message;
+		FileUtils.get_data (Test.get_filename (Test.FileType.DIST, "data", "server-sent-events", "send-multiline-expected-message"),
+		                    out expected_message);
 
 		var data = res_body.steal_data ();
 		data.length = (int) res_body.get_data_size ();
 
-		assert (expected_message.compare (new Bytes (data)) == 0);
+		assert (new Bytes (expected_message).compare (new Bytes (data)) == 0);
 	} catch (Error err) {
 		assert_not_reached ();
 	}
