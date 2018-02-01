@@ -38,7 +38,8 @@ namespace Valum {
 			}
 
 			var connection = req.headers.get_one ("Connection");
-			if (connection == null || !Soup.str_case_equal (connection, "Upgrade")) {
+			if (connection == null ||
+				Soup.header_parse_list (connection).find_custom ("Upgrade", (a, b) => Soup.str_case_equal (a, b) ? 0 : 1) == null) {
 				return next ();
 			}
 
