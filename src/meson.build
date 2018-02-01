@@ -25,7 +25,8 @@ valum_sources = files(
     'valum-server-sent-events.vala',
     'valum-static.vala',
     'valum-status.vala',
-    'valum-subdomain.vala')
+    'valum-subdomain.vala',
+    'valum-websocket.vala')
 valum_lib = library('valum-' + api_version, valum_sources,
                     dependencies: [glib, gobject, gio, soup, vsgi],
                     vala_header: 'valum.h',

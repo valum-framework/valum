@@ -382,4 +382,21 @@ app.get ("/auth", authenticate (new BasicAuthentication (""), (a) => {
 
 app.get ("/middleware", accept ("text/plain", forward_with<string> (new FooMiddleware ().fire)));
 
+#if SOUP_2_50
+app.get ("/websocket", websocket ({}, (req, res, next, ctx, ws) => {
+	ws.message.connect ((type, msg) => {
+		print ("incoming message: %s\n".printf ((string) msg.get_data ()));
+		ws.close (Soup.WebsocketCloseCode.NORMAL, "Goodbye world!");
+	});
+	ws.closing.connect (() => {
+		print ("closing\n");
+	});
+	ws.closed.connect ((data) => {
+		print ("closed: %s (%d)\n".printf (ws.get_close_data (), ws.get_close_code ()));
+	});
+	ws.send_text ("Hello world!");
+	return true;
+}));
+#endif
+
 Server.@new ("http", handler: app).run ();
