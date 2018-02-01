@@ -27,7 +27,7 @@ before_script:
     - ninja -C build -v docs/en
 
 script:
-    - meson test -C build --wrapper valgrind --print-errorlogs -v
+    - meson test -C build --wrapper valgrind --print-errorlogs --num-processes=1 -v
     - DESTDIR=$(mktemp -d) ninja -C build -v install
 
 after_success:
