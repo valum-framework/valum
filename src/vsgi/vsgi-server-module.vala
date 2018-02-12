@@ -57,7 +57,11 @@ public class VSGI.ServerModule : TypeModule {
 	}
 
 	construct {
+#if DARWIN
+		path = Module.build_path (directory, "vsgi-%s.dylib".printf (name))[0:-Module.SUFFIX.length-1];
+#else
 		path = Module.build_path (directory, "vsgi-%s".printf (name));
+#endif
 	}
 
 	public override bool load () {

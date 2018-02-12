@@ -9,6 +9,10 @@ add_project_arguments(['--enable-experimental',
                        '--enable-deprecated'],
                       language: 'vala')
 
+if host_machine.system() == 'darwin'
+    add_project_arguments('--define=DARWIN', language: 'vala')
+endif
+
 glib = dependency('glib-2.0', version: '>=2.40')
 gobject = dependency('gobject-2.0', version: '>=2.40')
 gio = dependency('gio-2.0', version: '>=2.40')
