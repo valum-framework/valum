@@ -64,9 +64,9 @@ public int main (string[] args) {
 
 	Test.add_func ("/request/lookup_query", () => {
 		assert (null == new Request.with_query (null).lookup_query ("a"));
-		assert (null == new Request.with_query (Soup.Form.decode ("b")).lookup_query ("a"));
-		assert (null == new Request.with_query (Soup.Form.decode ("a")).lookup_query ("a"));
-		assert ("b" == new Request.with_query (Soup.Form.decode ("a=b")).lookup_query ("a"));
+		assert (null == new Request.with_query ((HashTable<string,string>) Soup.Form.decode ("b")).lookup_query ("a"));
+		assert (null == new Request.with_query ((HashTable<string,string>) Soup.Form.decode ("a")).lookup_query ("a"));
+		assert ("b" == new Request.with_query ((HashTable<string,string>) Soup.Form.decode ("a=b")).lookup_query ("a"));
 	});
 
 	return Test.run ();
