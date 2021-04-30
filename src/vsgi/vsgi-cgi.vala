@@ -111,13 +111,13 @@ namespace VSGI.CGI {
 			var query_string = Environ.get_variable (environment, "QUERY_STRING");
 			if (query_string != null && query_string.length > 0) {
 				this._uri.set_query (query_string);
-				this._query = Form.decode (query_string);
+				this._query = (HashTable<string, string>) Form.decode (query_string);
 			} else if (path_translated != null && "?" in path_translated) {
 				this._uri.set_query (path_translated.split ("?", 2)[1]);
-				this._query = Form.decode (path_translated.split ("?", 2)[1]);
+				this._query = (HashTable<string, string>) Form.decode (path_translated.split ("?", 2)[1]);
 			} else if (request_uri != null && "?" in request_uri) {
 				this._uri.set_query (request_uri.split ("?", 2)[1]);
-				this._query = Form.decode (request_uri.split ("?", 2)[1]);
+				this._query = (HashTable<string, string>) Form.decode (request_uri.split ("?", 2)[1]);
 			}
 
 			headers = new Soup.MessageHeaders (Soup.MessageHeadersType.REQUEST);
