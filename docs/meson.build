@@ -1,4 +1,7 @@
+libsystemd = dependency('libsystemd', required: false)
+
 valadoc = find_program('valadoc', required: false)
+
 if valadoc.found()
     valadoc_command = [valadoc, '--package-name', 'valum-@0@'.format(api_version),
                        '--package-version', meson.project_version(), '--pkg=glib-2.0',
@@ -6,6 +9,31 @@ if valadoc.found()
                        '--pkg=gmodule-2.0', '--pkg=libsoup-2.4', '--pkg=posix', '--pkg=openssl',
                        '--vapidir=' + join_paths(meson.current_source_dir(), '..', 'vapi'),
                        '--target-glib=2.40', '--force', '--directory', '@OUTPUT@', '@INPUT@']
+
+    # provide structured logging
+    if glib.version().version_compare('>=2.50')
+        valadoc_command += '--define=GLIB_2_50'
+    endif
+
+    # provide 'OutputStream.write_all_async' and 'SimpleIOStream'
+    if gio.version().version_compare('>=2.44')
+        valadoc_command += '--define=GIO_2_44'
+    endif
+
+    # new 'Soup.Server' API
+    if soup.version().version_compare('>=2.48')
+        valadoc_command += '--define=SOUP_2_48'
+    endif
+
+    # 'Soup.ClientContext.steal_connection'
+    if soup.version().version_compare('>=2.50')
+        valadoc_command += '--define=SOUP_2_50'
+    endif
+
+    if libsystemd.found()
+        valadoc_command += '--define=LIBSYSTEMD'
+    endif
+
     custom_target('API documentation', command: valadoc_command + ['--doclet=html'],
                  input: subproject('vsgi').get_variable('vsgi_sources') + valum_sources,
                  output: 'api',
