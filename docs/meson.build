@@ -3,6 +3,10 @@ libsystemd = dependency('libsystemd', required: false)
 valadoc = find_program('valadoc', required: false)
 
 if valadoc.found()
+    if libsystemd.found()
+        vala_defines += '--define=LIBSYSTEMD'
+    endif
+
     valadoc_command = [valadoc, '--package-name', 'valum-@0@'.format(api_version),
                        '--package-version', meson.project_version(), '--pkg=glib-2.0',
                        '--pkg=gio-2.0', '--pkg=gio-unix-2.0',
@@ -10,29 +14,7 @@ if valadoc.found()
                        '--vapidir=' + join_paths(meson.current_source_dir(), '..', 'vapi'),
                        '--target-glib=2.40', '--force', '--directory', '@OUTPUT@', '@INPUT@']
 
-    # provide structured logging
-    if glib.version().version_compare('>=2.50')
-        valadoc_command += '--define=GLIB_2_50'
-    endif
-
-    # provide 'OutputStream.write_all_async' and 'SimpleIOStream'
-    if gio.version().version_compare('>=2.44')
-        valadoc_command += '--define=GIO_2_44'
-    endif
-
-    # new 'Soup.Server' API
-    if soup.version().version_compare('>=2.48')
-        valadoc_command += '--define=SOUP_2_48'
-    endif
-
-    # 'Soup.ClientContext.steal_connection'
-    if soup.version().version_compare('>=2.50')
-        valadoc_command += '--define=SOUP_2_50'
-    endif
-
-    if libsystemd.found()
-        valadoc_command += '--define=LIBSYSTEMD'
-    endif
+    valadoc_command += vala_defines
 
     custom_target('API documentation', command: valadoc_command + ['--doclet=html'],
                  input: subproject('vsgi').get_variable('vsgi_sources') + valum_sources,
@@ -47,9 +29,11 @@ if valadoc.found()
 endif
 
 sphinx = find_program('sphinx-build-3', required: false)
+
 if not sphinx.found()
     sphinx = find_program('sphinx-build', required: false)
 endif
+
 if sphinx.found()
     docs_sources = [
         'about/gnu-lgpl-v3.0.rst',
@@ -95,6 +79,7 @@ if sphinx.found()
         'vsgi/server/http.rst',
         'vsgi/server/index.rst',
         'vsgi/server/scgi.rst']
+
     custom_target('en user documentation',
                   command: [sphinx, '-W', '-b', 'html', meson.current_source_dir(), '@OUTPUT@'],
                   input: docs_sources,
