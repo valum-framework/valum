@@ -3,8 +3,8 @@ Valum Web micro-framework
 
 .. raw:: html
 
-    <a href="https://travis-ci.org/valum-framework/valum">
-        <img src="https://travis-ci.org/valum-framework/valum.svg?branch=master" alt="Build Status">
+    <a href="https://github.com/valum-framework/valum/actions/workflows/main.yml">
+        <img src="https://github.com/valum-framework/valum/actions/workflows/main.yml/badge.svg?branch=master" alt="Build Status">
     </a>
 
     <a href="https://codecov.io/github/valum-framework/valum?branch=master">
