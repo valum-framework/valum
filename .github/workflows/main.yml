@@ -35,3 +35,6 @@ jobs:
 
       - name: Report coverage to Codecov
         uses: codecov/codecov-action@v2.1.0
+        with:
+          directory: build
+          fail_ci_if_error: true
