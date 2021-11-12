@@ -13,4 +13,6 @@ if bower.found() and ctpl.found() and gee.found()
     executable('app', app_sources,
                dependencies: [glib, gobject, gio, soup, vsgi, valum_dep, ctpl, gee],
                vala_args: ['--vapidir=' + meson.current_source_dir() + '/vapi'])
+else
+    warning('The example will not be built: one of ctpl, gee-0.8 or bower is missing.')
 endif

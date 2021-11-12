@@ -3,4 +3,6 @@ if markdown.found()
     executable('markdown', 'app.vala',
                dependencies: [glib, gobject, gio, soup, vsgi, valum_dep, markdown],
                vala_args: ['--pkg=libmarkdown', '--vapidir=' + meson.current_source_dir() + '/vapi'])
+else
+    warning('This example will not be built: libmarkdown is missing.')
 endif
