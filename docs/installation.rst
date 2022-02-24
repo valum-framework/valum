@@ -176,7 +176,7 @@ Dependencies
 ------------
 
 The following dependencies are minimal to build the framework under Ubuntu
-12.04 LTS and should be satisfied by most recent Linux distributions.
+14.04 LTS and should be satisfied by most recent Linux distributions.
 
 +--------------+----------+
 | Package      | Version  |
