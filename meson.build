@@ -1,7 +1,7 @@
 project('valum', 'vala', 'c',
         version: '0.4.0-dev',
         license: 'LGPL',
-        meson_version: '>=0.44.0')
+        meson_version: '>=0.46.0')
 
 api_version = '0.4'
 

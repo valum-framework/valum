@@ -40,8 +40,7 @@ valum_dep = declare_dependency(include_directories: include_directories('.'),
                                link_with: valum_lib)
 
 pkgconfig = import('pkgconfig')
-pkgconfig.generate(requires: 'vsgi-' + api_version,
-                   libraries: valum_lib,
+pkgconfig.generate(valum_lib,
                    version: meson.project_version(),
                    name: 'Valum',
                    filebase: 'valum-' + api_version,
