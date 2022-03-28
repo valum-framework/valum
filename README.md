@@ -68,7 +68,7 @@ Valum has a two layer architecture: VSGI a middleware that abstract away various
      - support plugin for custom server implementation
      - `fork` to scale on multi-core architecture
      - cushion for parsing CLI, logging and running a Web application
- - extensive documentation at [docs.valum-framework.org](http://docs.valum-framework.org/en/latest/)
+ - extensive documentation at [valum-framework.readthedocs.io](https://valum-framework.readthedocs.io/en/latest/)
 
 
 ## Contributing
@@ -77,7 +77,7 @@ Valum is built by the community under the [LGPL](https://www.gnu.org/licenses/lg
 license, so anyone can use or contribute to the framework.
 
  1. fork repository
- 2. pick one task from TODO.md or [GitHub issues](https://github.com/antono/valum/issues)
+ 2. pick one task from TODO.md or [GitHub issues](https://github.com/valum-framework/valum/issues)
  3. let us know what you will do (or attempt!)
  4. code
  5. make a pull request of your amazing changes
@@ -97,6 +97,5 @@ You can get help with Valum from different sources:
 
  - mailing list: [vala-list](https://mail.gnome.org/mailman/listinfo/vala-list).
  - IRC channel: #vala and #valum at irc.gimp.net
- - [Google+ page for Vala](https://plus.google.com/115393489934129239313/)
- - issues on [GitHub](https://github.com/antono/valum/issues) with the
+ - issues on [GitHub](https://github.com/valum-framework/valum/issues) with the
    `question` label
