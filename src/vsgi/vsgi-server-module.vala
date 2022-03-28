@@ -61,7 +61,7 @@ public class VSGI.ServerModule : TypeModule {
 	}
 
 	public override bool load () {
-		module = Module.open (path, ModuleFlags.BIND_LAZY);
+		module = Module.open (path, ModuleFlags.LAZY);
 
 		if (module == null) {
 			critical (Module.error ());
