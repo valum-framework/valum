@@ -19,7 +19,6 @@ using GLib;
 
 namespace Valum {
 
-#if SOUP_2_50
 	/**
 	 * Perform a handshake and promote the {@link Request.connection} to
 	 * communicate using the WebSocket protocol.
@@ -127,5 +126,4 @@ namespace Valum {
 			return true;
 		};
 	}
-#endif
 }

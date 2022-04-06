@@ -23,7 +23,6 @@ public int main (string[] args) {
 		Test.trap_assert_stderr ("*Listening on 'http://127.0.0.1:3003/'.*");
 	});
 
-#if GLIB_2_50 || LIBSYSTEMD
 	Test.add_func ("/application/log-writer/journald", () => {
 		if (Test.subprocess ()) {
 			var app = new VSGI.Application (Server.new ("http"));
@@ -42,7 +41,6 @@ public int main (string[] args) {
 		Test.trap_assert_passed ();
 		Test.trap_assert_stderr ("");
 	});
-#endif
 
 	return Test.run ();
 }
