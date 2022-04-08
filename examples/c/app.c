@@ -35,8 +35,8 @@ home_handler (VSGIRequest        *req,
 int
 main (int argc, char** argv)
 {
-	ValumRouter *app;
-	VSGIServer *server;
+	g_autoptr (ValumRouter) app;
+	g_autoptr (VSGIServer) server;
 	gint ret;
 
 	app = valum_router_new ();
@@ -46,8 +46,6 @@ main (int argc, char** argv)
 	server = vsgi_server_new ("http", "handler", app, NULL);
 
 	ret = vsgi_server_run (server, argv, argc);
-
-	g_object_unref (server);
 
 	return ret;
 }
