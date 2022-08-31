@@ -1,4 +1,4 @@
-FROM ubuntu:xenial
+FROM ubuntu:22.04
 
 MAINTAINER Guillaume Poirier-Morency <guillaumepoiriermorency@gmail.com>
 
@@ -10,9 +10,8 @@ RUN apt-get update && apt-get install -y \
     python3-pip                          \
     unzip                                \
     valac                                \
+    meson                                \
     && rm -rf /var/lib/apt/lists/*
-
-RUN pip3 install meson
 
 WORKDIR /valum
 ADD . .
