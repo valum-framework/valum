@@ -77,8 +77,8 @@ Note that due to Meson design, dependencies must be explicitly provided.
     gobject = dependency('gobject-2.0')
     gio = dependency('gio-2.0')
     soup = dependency('libsoup-2.4')
-    vsgi = subproject('valum').get_variable('vsgi')
-    valum = subproject('valum').get_variable('valum')
+    vsgi = subproject('valum').get_variable('vsgi_dep')
+    valum = subproject('valum').get_variable('valum_dep')
 
     executable('app', 'app.vala',
                dependencies: [glib, gobject, gio, soup, vsgi, valum])
