@@ -101,32 +101,11 @@ tree with the following content:
     [wrap-git]
     directory=valum
     url=https://github.com/valum-framework/valum.git
-    revision=v0.3.13
+    revision=master
 
 Then, invoking `meson` to configure the project will automatically clone the
 repository and checkout the specified revision.
 
-Docker
-------
-
-To use Valum with `Docker`_, use the provided `valum/valum`_ image. It is based
-on the latest stable Ubuntu.
-
-.. _Docker: http://www.docker.com/
-.. _valum/valum: https://hub.docker.com/r/valum/valum/
-
-.. code-block:: docker
-
-    FROM valum/valum:latest
-
-    WORKDIR /app
-    ADD . .
-
-    RUN valac --pkg=valum-0.3 app.vala
-
-    EXPOSE 3003
-
-    ENTRYPOINT /app/app
 
 Vagrant
 -------
@@ -139,11 +118,11 @@ constraints.
 
 .. code-block:: bash
 
-    wget https://github.com/valum-framework/valum/archive/v0.3.0.zip
+    curl -Lo valum-master.zip https://github.com/valum-framework/valum/archive/master.zip
 
-    unzip v0.3.0.zip
+    unzip valum-master.zip
 
-    cd valum-0.3.0
+    cd valum-master
     mkdir build
     meson --prefix=/usr --buildtype=release build
     ninja -C build
