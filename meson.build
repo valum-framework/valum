@@ -10,11 +10,11 @@ add_project_arguments(['--enable-experimental',
                        '--vapidir=' + meson.current_source_dir() / 'vapi'],
                       language: 'vala')
 
-glib = dependency('glib-2.0', version: '>=2.80')
-gobject = dependency('gobject-2.0', version: '>=2.80')
-gio = dependency('gio-2.0', version: '>=2.80')
-soup = dependency('libsoup-2.4', version: '>=2.74')
-vsgi = dependency('vsgi')
+glib_dep = dependency('glib-2.0', version: '>=2.80')
+gobject_dep = dependency('gobject-2.0', version: '>=2.80')
+gio_dep = dependency('gio-2.0', version: '>=2.80')
+soup_dep = dependency('libsoup-2.4', version: '>=2.74')
+vsgi_dep = dependency('vsgi')
 
 vala_defines = []
 
