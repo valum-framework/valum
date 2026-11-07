@@ -46,28 +46,6 @@ tree with the following content:
 Then, invoking `meson` to configure the project will automatically clone the
 repository and checkout the specified revision.
 
-Vagrant
--------
-
-You can provision a `Vagrant`_ VM with Valum. There's no ``Vagrantfile``
-provided because each project will likely have it's own setup and deployment
-constraints.
-
-.. _Vagrant: https://www.vagrantup.com/
-
-.. code-block:: bash
-
-    curl -Lo valum-master.zip https://github.com/valum-framework/valum/archive/master.zip
-
-    unzip valum-master.zip
-
-    cd valum-master
-    mkdir build
-    meson --prefix=/usr --buildtype=release build
-    ninja -C build
-    ninja -C build test
-    ninja -C build install
-
 Dependencies
 ------------
 
