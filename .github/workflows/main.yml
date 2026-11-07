@@ -14,9 +14,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: Setup Vala PPA repository
-        run: sudo add-apt-repository --yes ppa:vala-team
-
       - name: Update APT cache
         run: sudo apt-get update --quiet
 
