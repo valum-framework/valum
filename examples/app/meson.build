@@ -1,18 +1,14 @@
+fs = import('fs')
 ctpl_dep = dependency('ctpl', required: false)
 gee_dep = dependency('gee-0.8', required: false)
-if ctpl_dep.found() and gee_dep.found()
-    app_sources = [
-        'app.vala',
-        'view.vala',
-        gnome.compile_resources(
-            'app-resources',
-            'app.gresource.xml',
-            source_dir: '.',
-        ),
-    ]
+npm_exe = find_program('npm', required: false)
+if ctpl_dep.found() and gee_dep.found() and npm_exe.found()
+    app_sources = ['app.vala', 'view.vala']
+    subdir('frontend')
+    subdir('templates')
     executable(
         'app',
-        app_sources,
+        app_sources + templates_resources + frontend_resources,
         dependencies: [
             glib_dep,
             gobject_dep,

@@ -187,7 +187,7 @@ public class View {
 	 */
 	public void push_map (string key, Map<string, Value?> map) {
 		map.map_iterator ().foreach ((k, v) => {
-			this.push_value ("%s_%s".printf( key, k), v);
+			this.push_value ("%s_%s".printf(       key, k), v);
 			return true;
 		});
 	}
@@ -197,7 +197,7 @@ public class View {
 	 */
 	public void push_string_map (string key, Map<string, string> map) {
 		map.map_iterator ().foreach ((k, v) => {
-			this.push_string ("%s_%s".printf( key, k), v);
+			this.push_string ("%s_%s".printf (key, k), v);
 			return true;
 		});
 	}
@@ -207,7 +207,7 @@ public class View {
 	 */
 	public void push_int_map (string key, Map<string, long> map) {
 		map.map_iterator ().foreach ((k, v) => {
-			this.push_int ("%s_%s".printf( key, k), v);
+			this.push_int ("%s_%s".printf (key, k), v);
 			return true;
 		});
 	}
@@ -303,7 +303,9 @@ public class View {
 	 * @return       true on success, false otherwise
 	 */
 	public bool to_stream (OutputStream output) throws Error {
-		return Ctpl.parser_parse (this.tree, this.environment, new Ctpl.OutputStream (output));
+		Ctpl.parser_parse (this.tree, this.environment, new Ctpl.OutputStream (output));
+		output.close ();
+		return true;
 	}
 
 	/**

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+    <gresource prefix="/dist">
+        <file>bundle.js</file>
+        <file>bundle.css</file>
+    </gresource>
+    <gresource prefix="/static">
+        <file>valum.png</file>
+        <file>valum.svg</file>
+    </gresource>
+</gresources>

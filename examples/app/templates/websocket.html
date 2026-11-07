@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Websocket - Valum</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="WebSocket interactive demo in Valum">
+    <link href="/dist/bundle.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/static/valum.png">
+    <script src="/dist/bundle.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2" style="margin-top: 40px;">
+          <header class="row">
+            <div class="col-md-12">
+              <div class="media">
+                <div class="media-left">
+                  <a href="/"><img class="media-object" src="/static/valum.png" alt="Valum Logo"></a>
+                </div>
+                <div class="media-body media-middle">
+                  <h1 class="media-heading">Valum <small>web micro-framework written in Vala</small></h1>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <div class="row">
+            <div class="col-md-12">
+              <h2>WebSocket <small>interactive demo</small></h2>
+              <p>Interact with the Valum WebSocket endpoint at <code>/websocket</code>.</p>
+
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h3 class="panel-title">
+                    Status: <span id="status" class="label label-warning">Connecting...</span>
+                  </h3>
+                </div>
+                <div class="panel-body">
+                  <div class="input-group">
+                    <input type="text" id="message" class="form-control" value="Hello world!" placeholder="Type a message...">
+                    <span class="input-group-btn">
+                      <button id="send-btn" class="btn btn-primary" onclick="sendMessage()">Send</button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <h4>Messages</h4>
+              <pre id="output" style="height: 180px; overflow-y: auto; background-color: #f7f7f9;"></pre>
+              <p><a href="/" class="btn btn-default">&larr; Back to Home</a></p>
+            </div>
+          </div>
+
+          <footer>
+            <p class="text-center">
+              <small>
+                Built by <a href="https://github.com/antono">@antono</a>,
+                <a href="https://github.com/arteymix">@arteymix</a> and the community!
+              </small>
+            </p>
+          </footer>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      var output = document.getElementById('output');
+      var statusEl = document.getElementById('status');
+      var input = document.getElementById('message');
+      var sendBtn = document.getElementById('send-btn');
+
+      function log(label, text) {
+        output.textContent += '[' + new Date().toLocaleTimeString() + '] ' + label + ': ' + text + '\n';
+        output.scrollTop = output.scrollHeight;
+      }
+
+      var protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      var wsUrl = protocol + '//' + window.location.host + '/websocket';
+      var ws;
+
+      function connect() {
+        log('SYSTEM', 'Connecting to ' + wsUrl + '...');
+        ws = new WebSocket(wsUrl);
+
+        ws.addEventListener('open', function() {
+          statusEl.className = 'label label-success';
+          statusEl.textContent = 'Connected';
+          sendBtn.disabled = false;
+          log('SYSTEM', 'Connection open.');
+        });
+
+        ws.addEventListener('message', function(event) {
+          log('RECEIVED', event.data);
+          console.log('Received:', event.data);
+        });
+
+        ws.addEventListener('close', function(event) {
+          statusEl.className = 'label label-default';
+          statusEl.textContent = 'Closed';
+          sendBtn.disabled = true;
+          log('SYSTEM', 'Connection closed (' + event.code + (event.reason ? ': ' + event.reason : '') + ')');
+        });
+
+        ws.addEventListener('error', function(event) {
+          statusEl.className = 'label label-danger';
+          statusEl.textContent = 'Error';
+          log('ERROR', 'WebSocket error');
+          console.error(event);
+        });
+      }
+
+      function sendMessage() {
+        var text = input.value;
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(text);
+          log('SENT', text);
+        } else {
+          log('WARNING', 'Socket is closed. Reconnecting...');
+          connect();
+        }
+      }
+
+      input.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+          sendMessage();
+        }
+      });
+
+      connect();
+    </script>
+  </body>
+</html>
