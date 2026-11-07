@@ -1,4 +1,4 @@
 [wrap-git]
 directory=vsgi
 url=https://github.com/valum-framework/vsgi.git
-revision=master
+revision=build-on-ubuntu-24-04
