@@ -26,6 +26,23 @@ Server.@new ("http", handler: app).run ({"app", "--address=0.0.0.0:3003", "--for
 
 ## Installation
 
+### Ubuntu / Debian
+
+Install build dependencies on Ubuntu 24.04 LTS (Noble Numbat) or Debian 12 (Bookworm):
+
+```bash
+sudo apt install valac meson ninja-build libglib2.0-dev libsoup2.4-dev
+```
+
+Build and test Valum:
+
+```bash
+meson setup build
+ninja -C build
+meson test -C build --num-processes=1
+sudo ninja -C build install
+```
+
 ### Docker
 
 We maintain [Docker images](https://hub.docker.com/r/valum/valum/) already setup with Valum and the latest LTS version of Ubuntu.

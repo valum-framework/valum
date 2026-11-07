@@ -13,6 +13,15 @@ Packages for RPM and Debian based Linux distributions will be provided for
 stable releases so that the framework can easily be installed in a container or
 production environment.
 
+Ubuntu / Debian
+~~~~~~~~~~~~~~~
+
+Install the required development packages on Ubuntu 24.04 LTS (Noble Numbat) or Debian 12 (Bookworm):
+
+.. code-block:: bash
+
+    sudo apt install valac meson ninja-build libglib2.0-dev libsoup2.4-dev
+
 Fedora
 ~~~~~~
 
@@ -73,15 +82,15 @@ Note that due to Meson design, dependencies must be explicitly provided.
 
     project('app', 'c', 'vala')
 
-    glib = dependency('glib-2.0')
-    gobject = dependency('gobject-2.0')
-    gio = dependency('gio-2.0')
-    soup = dependency('libsoup-2.4')
-    vsgi = subproject('valum').get_variable('vsgi_dep')
-    valum = subproject('valum').get_variable('valum_dep')
+    glib_dep = dependency('glib-2.0')
+    gobject_dep = dependency('gobject-2.0')
+    gio_dep = dependency('gio-2.0')
+    soup_dep = dependency('libsoup-2.4')
+    vsgi_dep = subproject('valum').get_variable('vsgi_dep')
+    valum_dep = subproject('valum').get_variable('valum_dep')
 
     executable('app', 'app.vala',
-               dependencies: [glib, gobject, gio, soup, vsgi, valum])
+               dependencies: [glib_dep, gobject_dep, gio_dep, soup_dep, vsgi_dep, valum_dep])
 
 Alternatively, you can use the ``[wrap-git]`` feature instead of introducing
 and tracking a git submodule. Simply add ``subprojects/valum.wrap`` in your
@@ -145,26 +154,28 @@ Dependencies
 ------------
 
 The following dependencies are minimal to build the framework under Ubuntu
-14.04 LTS and should be satisfied by most recent Linux distributions.
+24.04 LTS and should be satisfied by most recent Linux distributions.
 
 +--------------+----------+
 | Package      | Version  |
 +==============+==========+
-| vala         | >=0.24   |
+| vala         | >=0.56   |
 +--------------+----------+
-| python       | >=3.4    |
+| python       | >=3.8    |
 +--------------+----------+
-| meson        | >=0.46   |
+| meson        | >=0.64   |
 +--------------+----------+
-| ninja        | >=1.6.0  |
+| ninja        | >=1.10   |
 +--------------+----------+
-| glib-2.0     | >=2.56   |
+| glib-2.0     | >=2.80   |
 +--------------+----------+
-| gio-2.0      | >=2.56   |
+| gobject-2.0  | >=2.80   |
 +--------------+----------+
-| gio-unix-2.0 | >=2.56   |
+| gio-2.0      | >=2.80   |
 +--------------+----------+
-| libsoup-2.4  | >=2.62   |
+| gio-unix-2.0 | >=2.80   |
++--------------+----------+
+| libsoup-2.4  | >=2.74   |
 +--------------+----------+
 
 You can also install additional dependencies to build the examples, you will
@@ -208,9 +219,8 @@ Build
 
 .. code-block:: bash
 
-    mkdir build && cd build
-    meson ..
-    ninja # or 'ninja-build' on some distribution
+    meson setup build
+    ninja -C build
 
 Install
 -------
@@ -219,9 +229,9 @@ The framework can be installed for system-wide availability.
 
 .. code-block:: bash
 
-    sudo ninja install
+    sudo ninja -C build install
 
-Once installed, VSGI implementations will be looked up into ``${prefix}/${libdir}/vsgi-0.3/servers``.
+Once installed, VSGI implementations will be looked up into ``${prefix}/${libdir}/vsgi-0.4/servers``.
 This path can be changed by setting the ``VSGI_SERVER_PATH`` environment
 variable.
 
@@ -230,7 +240,7 @@ Run the tests
 
 .. code-block:: bash
 
-    ninja test
+    meson test -C build --num-processes=1
 
 If any of them fail, please `open an issue on GitHub`_ so that we can tackle
 the bug. Include the test logs (e.g. ``build/meson-private/mesonlogs.txt``) and
