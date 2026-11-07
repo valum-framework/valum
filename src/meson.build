@@ -26,23 +26,33 @@ valum_sources = files(
     'valum-static.vala',
     'valum-status.vala',
     'valum-subdomain.vala',
-    'valum-websocket.vala')
-valum_lib = library('valum-' + api_version, valum_sources,
-                    dependencies: [glib_dep, gobject_dep, gio_dep, soup_dep, vsgi_dep],
-                    vala_header: 'valum.h',
-                    install: true,
-                    install_dir: [true, 'include/valum-' + api_version, true])
+    'valum-websocket.vala',
+)
+valum_lib = library(
+    'valum-' + api_version,
+    valum_sources,
+    dependencies: [glib_dep, gobject_dep, gio_dep, soup_dep, vsgi_dep],
+    vala_header: 'valum.h',
+    install: true,
+    install_dir: [true, 'include/valum-' + api_version, true],
+)
 
-install_data('valum-@0@.deps'.format(api_version),
-             install_dir: 'share/vala/vapi')
+install_data(
+    'valum-@0@.deps'.format(api_version),
+    install_dir: 'share/vala/vapi',
+)
 
-valum_dep = declare_dependency(include_directories: include_directories('.'),
-                               link_with: valum_lib)
+valum_dep = declare_dependency(
+    include_directories: include_directories('.'),
+    link_with: valum_lib,
+)
 
 pkgconfig = import('pkgconfig')
-pkgconfig.generate(valum_lib,
-                   version: meson.project_version(),
-                   name: 'Valum',
-                   filebase: 'valum-' + api_version,
-                   description: 'Web micro-framework entirely written in Vala',
-                   subdirs: 'valum-' + api_version)
+pkgconfig.generate(
+    valum_lib,
+    version: meson.project_version(),
+    name: 'Valum',
+    filebase: 'valum-' + api_version,
+    description: 'Web micro-framework entirely written in Vala',
+    subdirs: 'valum-' + api_version,
+)

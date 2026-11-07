@@ -4,10 +4,24 @@ legacy_test_sources = [
     'decode-test.vala',
     'route-test.vala',
     'server-sent-events-test.vala',
-    'subdomain-test.vala']
-test('legacy', executable('legacy-test', legacy_test_sources,
-                          dependencies: [glib_dep, gobject_dep, gio_dep, soup_dep, vsgi_dep, valum_dep]),
-     env: ['G_TEST_SRCDIR=' + meson.current_source_dir()])
+    'subdomain-test.vala',
+]
+test(
+    'legacy',
+    executable(
+        'legacy-test',
+        legacy_test_sources,
+        dependencies: [
+            glib_dep,
+            gobject_dep,
+            gio_dep,
+            soup_dep,
+            vsgi_dep,
+            valum_dep,
+        ],
+    ),
+    env: ['G_TEST_SRCDIR=' + meson.current_source_dir()],
+)
 
 # Valum tests
 valum_tests = [
@@ -19,10 +33,24 @@ valum_tests = [
     'router',
     'rule-route',
     'safely',
-    'status']
+    'status',
+]
 
 foreach name : valum_tests
-    test(name, executable(name + '-test', name + '-test.vala',
-                          dependencies: [glib_dep, gobject_dep, gio_dep, soup_dep, vsgi_dep, valum_dep]),
-         env: ['G_TEST_SRCDIR=' + meson.current_source_dir()])
+    test(
+        name,
+        executable(
+            name + '-test',
+            name + '-test.vala',
+            dependencies: [
+                glib_dep,
+                gobject_dep,
+                gio_dep,
+                soup_dep,
+                vsgi_dep,
+                valum_dep,
+            ],
+        ),
+        env: ['G_TEST_SRCDIR=' + meson.current_source_dir()],
+    )
 endforeach

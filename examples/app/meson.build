@@ -4,10 +4,27 @@ if ctpl_dep.found() and gee_dep.found()
     app_sources = [
         'app.vala',
         'view.vala',
-        gnome.compile_resources('app-resources', 'app.gresource.xml', source_dir: '.')]
-    executable('app', app_sources,
-               dependencies: [glib_dep, gobject_dep, gio_dep, soup_dep, vsgi_dep, valum_dep, ctpl_dep, gee_dep],
-               vala_args: ['--vapidir=' + meson.current_source_dir() + '/vapi'])
+        gnome.compile_resources(
+            'app-resources',
+            'app.gresource.xml',
+            source_dir: '.',
+        ),
+    ]
+    executable(
+        'app',
+        app_sources,
+        dependencies: [
+            glib_dep,
+            gobject_dep,
+            gio_dep,
+            soup_dep,
+            vsgi_dep,
+            valum_dep,
+            ctpl_dep,
+            gee_dep,
+        ],
+        vala_args: ['--vapidir=' + meson.current_source_dir() + '/vapi'],
+    )
 else
     warning('The example will not be built: one of ctpl or gee-0.8 is missing.')
 endif

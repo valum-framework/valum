@@ -1,14 +1,22 @@
-project('valum', 'vala', 'c',
-        version: '0.4.0-dev',
-        license: 'LGPL',
-        meson_version: '>=1.3')
+project(
+    'valum',
+    'vala',
+    'c',
+    version: '0.4.0-dev',
+    license: 'LGPL',
+    meson_version: '>=1.3',
+)
 
 api_version = '0.4'
 
-add_project_arguments(['--enable-experimental',
-                       '--target-glib=2.80',
-                       '--vapidir=' + meson.current_source_dir() / 'vapi'],
-                      language: 'vala')
+add_project_arguments(
+    [
+        '--enable-experimental',
+        '--target-glib=2.80',
+        '--vapidir=' + meson.current_source_dir() / 'vapi',
+    ],
+    language: 'vala',
+)
 
 glib_dep = dependency('glib-2.0', version: '>=2.80')
 gobject_dep = dependency('gobject-2.0', version: '>=2.80')
