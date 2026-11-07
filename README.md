@@ -34,16 +34,6 @@ We maintain [Docker images](https://hub.docker.com/r/valum/valum/) already setup
 docker pull valum/valum
 ```
 
-### Bower
-
-If you use [Meson](http://mesonbuild.com/), you can install Valum as a subproject using [Bower](https://bower.io/):
-
-```
-bower install valum
-```
-
-For other installation procedures, head to the [user documentation](http://valum-framework.readthedocs.org/en/latest/installation.html).
-
 ## Features
 
 Valum has a two layer architecture: VSGI a middleware that abstract away various network protocols under a simple interface and Valum itself, a Web micro-framework that provide all the features needed for writing applications and services. In short it provides:
