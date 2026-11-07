@@ -6,66 +6,6 @@ work is automated with `Meson`_, a build tool written in Python.
 
 .. _Meson: http://mesonbuild.com/
 
-Packages
---------
-
-Packages for RPM and Debian based Linux distributions will be provided for
-stable releases so that the framework can easily be installed in a container or
-production environment.
-
-Ubuntu / Debian
-~~~~~~~~~~~~~~~
-
-Install the required development packages on Ubuntu 24.04 LTS (Noble Numbat) or Debian 12 (Bookworm):
-
-.. code-block:: bash
-
-    sudo apt install valac meson ninja-build libglib2.0-dev libsoup2.4-dev
-
-Fedora
-~~~~~~
-
-RPM packages for Fedora (24, 25 and rawhide) and EPEL 7 (CentOS, RHEL) are
-available from the `arteymix/valum-framework`_ Copr repository.
-
-.. _arteymix/valum-framework: https://copr.fedoraproject.org/coprs/arteymix/valum-framework/
-
-.. code-block:: bash
-
-    dnf copr enable arteymix/valum-framework
-
-The ``valum-0.3`` package contains the shared libraries, ``valum-0.3-devel``
-contains all that is necessary to build an application and ``valum-0.3-doc``
-deliver user and API documentation.
-
-.. code-block:: bash
-
-    dnf install valum-0.3 valum-0.3-devel valum-0.3-doc
-
-Nix
-~~~
-
-.. code-block:: bash
-
-    nix-shell -p valum
-
-Solus
-~~~~~
-
-.. code-block:: bash
-
-    eopkg it valum
-
-Arch Linux (AUR)
-~~~~~~~~~~~~~~~~
-
-.. code-block:: bash
-
-    yaourt valum
-
-Meson
------
-
 If your project uses the Meson build system, you may integrate the framework as
 a subproject. The project must be cloned in the ``subprojects`` folder,
 preferably using a git submodule. Be careful using a tag and not the ``master``
@@ -73,8 +13,8 @@ trunk.
 
 The following variables can be used as dependencies:
 
--   ``vsgi`` for the abstraction layer
--   ``valum`` for the framework
+-   ``vsgi_dep`` for the abstraction layer
+-   ``valum_dep`` for the framework
 
 Note that due to Meson design, dependencies must be explicitly provided.
 
@@ -105,7 +45,6 @@ tree with the following content:
 
 Then, invoking `meson` to configure the project will automatically clone the
 repository and checkout the specified revision.
-
 
 Vagrant
 -------
