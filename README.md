@@ -43,14 +43,6 @@ meson test -C build --num-processes=1
 sudo ninja -C build install
 ```
 
-### Docker
-
-We maintain [Docker images](https://hub.docker.com/r/valum/valum/) already setup with Valum and the latest LTS version of Ubuntu.
-
-```
-docker pull valum/valum
-```
-
 ## Features
 
 Valum has a two layer architecture: VSGI a middleware that abstract away various network protocols under a simple interface and Valum itself, a Web micro-framework that provide all the features needed for writing applications and services. In short it provides:
