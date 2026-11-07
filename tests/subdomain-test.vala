@@ -113,4 +113,3 @@ public void test_subdomain_extract () {
 	assert ("v1" == labels[0]);
 	assert ("api" == labels[1]);
 }
-
