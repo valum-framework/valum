@@ -7,25 +7,51 @@ if valadoc.found()
         vala_defines += '--define=LIBSYSTEMD'
     endif
 
-    valadoc_command = [valadoc, '--package-name', 'valum-@0@'.format(api_version),
-                       '--package-version', meson.project_version(), '--pkg=glib-2.0',
-                       '--pkg=gio-2.0', '--pkg=gio-unix-2.0',
-                       '--pkg=gmodule-2.0', '--pkg=libsoup-2.4', '--pkg=posix', '--pkg=openssl',
-                       '--vapidir=' + join_paths(meson.current_source_dir(), '..', 'vapi'),
-                       '--target-glib=2.40', '--force', '--directory', '@OUTPUT@', '@INPUT@']
+    valadoc_command = [
+        valadoc,
+        '--package-name',
+        'valum-@0@'.format(api_version),
+        '--package-version',
+        meson.project_version(),
+        '--pkg=glib-2.0',
+        '--pkg=gio-2.0',
+        '--pkg=gio-unix-2.0',
+        '--pkg=gmodule-2.0',
+        '--pkg=libsoup-2.4',
+        '--pkg=posix',
+        '--pkg=openssl',
+        '--vapidir=' + meson.current_source_dir() / '..' / 'vapi',
+        '--target-glib=2.80',
+        '--force',
+        '--directory',
+        '@OUTPUT@',
+        '@INPUT@',
+    ]
 
     valadoc_command += vala_defines
 
-    custom_target('API documentation', command: valadoc_command + ['--doclet=html'],
-                 input: subproject('vsgi').get_variable('vsgi_sources') + valum_sources,
-                 output: 'api',
-                 build_by_default: true)
-    install_subdir(meson.current_build_dir() + '/api', install_dir: 'share/doc/valum-@0@'.format(api_version))
-    custom_target('Devhelp book', command: valadoc_command + ['--doclet=devhelp'],
-                 input: subproject('vsgi').get_variable('vsgi_sources') + valum_sources,
-                 output: 'devhelp',
-                 build_by_default: true)
-    install_subdir(meson.current_build_dir() + '/devhelp/valum-@0@'.format(api_version), install_dir: 'share/devhelp/books')
+    custom_target(
+        'API documentation',
+        command: valadoc_command + ['--doclet=html'],
+        input: subproject('vsgi').get_variable('vsgi_sources') + valum_sources,
+        output: 'api',
+        build_by_default: true,
+    )
+    install_subdir(
+        meson.current_build_dir() + '/api',
+        install_dir: 'share/doc/valum-@0@'.format(api_version),
+    )
+    custom_target(
+        'Devhelp book',
+        command: valadoc_command + ['--doclet=devhelp'],
+        input: subproject('vsgi').get_variable('vsgi_sources') + valum_sources,
+        output: 'devhelp',
+        build_by_default: true,
+    )
+    install_subdir(
+        meson.current_build_dir() + '/devhelp/valum-@0@'.format(api_version),
+        install_dir: 'share/devhelp/books',
+    )
 endif
 
 sphinx = find_program('sphinx-build-3', required: false)
@@ -78,12 +104,25 @@ if sphinx.found()
         'vsgi/server/fastcgi.rst',
         'vsgi/server/http.rst',
         'vsgi/server/index.rst',
-        'vsgi/server/scgi.rst']
+        'vsgi/server/scgi.rst',
+    ]
 
-    custom_target('en user documentation',
-                  command: [sphinx, '-W', '-b', 'html', meson.current_source_dir(), '@OUTPUT@'],
-                  input: docs_sources,
-                  output: 'en',
-                  build_by_default: true)
-    install_subdir(meson.current_build_dir() + '/en', install_dir: 'share/doc/valum-@0@/user'.format(api_version))
+    custom_target(
+        'en user documentation',
+        command: [
+            sphinx,
+            '-W',
+            '-b',
+            'html',
+            meson.current_source_dir(),
+            '@OUTPUT@',
+        ],
+        input: docs_sources,
+        output: 'en',
+        build_by_default: true,
+    )
+    install_subdir(
+        meson.current_build_dir() + '/en',
+        install_dir: 'share/doc/valum-@0@/user'.format(api_version),
+    )
 endif

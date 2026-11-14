@@ -6,57 +6,6 @@ work is automated with `Meson`_, a build tool written in Python.
 
 .. _Meson: http://mesonbuild.com/
 
-Packages
---------
-
-Packages for RPM and Debian based Linux distributions will be provided for
-stable releases so that the framework can easily be installed in a container or
-production environment.
-
-Fedora
-~~~~~~
-
-RPM packages for Fedora (24, 25 and rawhide) and EPEL 7 (CentOS, RHEL) are
-available from the `arteymix/valum-framework`_ Copr repository.
-
-.. _arteymix/valum-framework: https://copr.fedoraproject.org/coprs/arteymix/valum-framework/
-
-.. code-block:: bash
-
-    dnf copr enable arteymix/valum-framework
-
-The ``valum-0.3`` package contains the shared libraries, ``valum-0.3-devel``
-contains all that is necessary to build an application and ``valum-0.3-doc``
-deliver user and API documentation.
-
-.. code-block:: bash
-
-    dnf install valum-0.3 valum-0.3-devel valum-0.3-doc
-
-Nix
-~~~
-
-.. code-block:: bash
-
-    nix-shell -p valum
-
-Solus
-~~~~~
-
-.. code-block:: bash
-
-    eopkg it valum
-
-Arch Linux (AUR)
-~~~~~~~~~~~~~~~~
-
-.. code-block:: bash
-
-    yaourt valum
-
-Meson
------
-
 If your project uses the Meson build system, you may integrate the framework as
 a subproject. The project must be cloned in the ``subprojects`` folder,
 preferably using a git submodule. Be careful using a tag and not the ``master``
@@ -64,8 +13,8 @@ trunk.
 
 The following variables can be used as dependencies:
 
--   ``vsgi`` for the abstraction layer
--   ``valum`` for the framework
+-   ``vsgi_dep`` for the abstraction layer
+-   ``valum_dep`` for the framework
 
 Note that due to Meson design, dependencies must be explicitly provided.
 
@@ -73,15 +22,15 @@ Note that due to Meson design, dependencies must be explicitly provided.
 
     project('app', 'c', 'vala')
 
-    glib = dependency('glib-2.0')
-    gobject = dependency('gobject-2.0')
-    gio = dependency('gio-2.0')
-    soup = dependency('libsoup-2.4')
-    vsgi = subproject('valum').get_variable('vsgi_dep')
-    valum = subproject('valum').get_variable('valum_dep')
+    glib_dep = dependency('glib-2.0')
+    gobject_dep = dependency('gobject-2.0')
+    gio_dep = dependency('gio-2.0')
+    soup_dep = dependency('libsoup-2.4')
+    vsgi_dep = subproject('valum').get_variable('vsgi_dep')
+    valum_dep = subproject('valum').get_variable('valum_dep')
 
     executable('app', 'app.vala',
-               dependencies: [glib, gobject, gio, soup, vsgi, valum])
+               dependencies: [glib_dep, gobject_dep, gio_dep, soup_dep, vsgi_dep, valum_dep])
 
 Alternatively, you can use the ``[wrap-git]`` feature instead of introducing
 and tracking a git submodule. Simply add ``subprojects/valum.wrap`` in your
@@ -92,110 +41,37 @@ tree with the following content:
     [wrap-git]
     directory=valum
     url=https://github.com/valum-framework/valum.git
-    revision=v0.3.13
+    revision=master
 
 Then, invoking `meson` to configure the project will automatically clone the
 repository and checkout the specified revision.
-
-Bower
------
-
-If you are using Meson subprojects, Bower can be used to install Valum and
-other dependencies in a very simple way.
-
-In ``.bowerrc`` so that packages lands into the ``subprojects`` directory.
-
-.. code-block:: json
-
-    {
-      "directory": "subprojects"
-    }
-
-In ``bower.json``
-
-.. code-block:: json
-
-    {
-      "name": "foo",
-      "dependencies": {
-        "valum": "^0.3.8"
-      }
-    }
-
-To install or update the dependencies issue the following command:
-
-.. code-block:: bash
-
-    bower install
-
-Docker
-------
-
-To use Valum with `Docker`_, use the provided `valum/valum`_ image. It is based
-on the latest stable Ubuntu.
-
-.. _Docker: http://www.docker.com/
-.. _valum/valum: https://hub.docker.com/r/valum/valum/
-
-.. code-block:: docker
-
-    FROM valum/valum:latest
-
-    WORKDIR /app
-    ADD . .
-
-    RUN valac --pkg=valum-0.3 app.vala
-
-    EXPOSE 3003
-
-    ENTRYPOINT /app/app
-
-Vagrant
--------
-
-You can provision a `Vagrant`_ VM with Valum. There's no ``Vagrantfile``
-provided because each project will likely have it's own setup and deployment
-constraints.
-
-.. _Vagrant: https://www.vagrantup.com/
-
-.. code-block:: bash
-
-    wget https://github.com/valum-framework/valum/archive/v0.3.0.zip
-
-    unzip v0.3.0.zip
-
-    cd valum-0.3.0
-    mkdir build
-    meson --prefix=/usr --buildtype=release build
-    ninja -C build
-    ninja -C build test
-    ninja -C build install
 
 Dependencies
 ------------
 
 The following dependencies are minimal to build the framework under Ubuntu
-14.04 LTS and should be satisfied by most recent Linux distributions.
+24.04 LTS and should be satisfied by most recent Linux distributions.
 
 +--------------+----------+
 | Package      | Version  |
 +==============+==========+
-| vala         | >=0.24   |
+| vala         | >=0.56   |
 +--------------+----------+
-| python       | >=3.4    |
+| python       | >=3.8    |
 +--------------+----------+
-| meson        | >=0.46   |
+| meson        | >=0.64   |
 +--------------+----------+
-| ninja        | >=1.6.0  |
+| ninja        | >=1.10   |
 +--------------+----------+
-| glib-2.0     | >=2.56   |
+| glib-2.0     | >=2.80   |
 +--------------+----------+
-| gio-2.0      | >=2.56   |
+| gobject-2.0  | >=2.80   |
 +--------------+----------+
-| gio-unix-2.0 | >=2.56   |
+| gio-2.0      | >=2.80   |
 +--------------+----------+
-| libsoup-2.4  | >=2.62   |
+| gio-unix-2.0 | >=2.80   |
++--------------+----------+
+| libsoup-2.4  | >=2.74   |
 +--------------+----------+
 
 You can also install additional dependencies to build the examples, you will
@@ -239,9 +115,8 @@ Build
 
 .. code-block:: bash
 
-    mkdir build && cd build
-    meson ..
-    ninja # or 'ninja-build' on some distribution
+    meson setup build
+    ninja -C build
 
 Install
 -------
@@ -250,9 +125,9 @@ The framework can be installed for system-wide availability.
 
 .. code-block:: bash
 
-    sudo ninja install
+    sudo ninja -C build install
 
-Once installed, VSGI implementations will be looked up into ``${prefix}/${libdir}/vsgi-0.3/servers``.
+Once installed, VSGI implementations will be looked up into ``${prefix}/${libdir}/vsgi-0.4/servers``.
 This path can be changed by setting the ``VSGI_SERVER_PATH`` environment
 variable.
 
@@ -261,7 +136,7 @@ Run the tests
 
 .. code-block:: bash
 
-    ninja test
+    meson test -C build --num-processes=1
 
 If any of them fail, please `open an issue on GitHub`_ so that we can tackle
 the bug. Include the test logs (e.g. ``build/meson-private/mesonlogs.txt``) and

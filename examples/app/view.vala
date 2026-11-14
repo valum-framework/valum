@@ -161,15 +161,15 @@ public class View {
 	 * @since 0.1
 	 */
 	public void push_collection (string key, Collection collection) {
-		if (Value.type_compatible (collection.element_type, typeof(long))) {
+		if (Value.type_compatible (collection.element_type, typeof (long))) {
 			this.push_ints (key, ((Collection<long>) collection).to_array ());
 		}
 
-		else if (Value.type_compatible (collection.element_type, typeof(double))) {
+		else if (Value.type_compatible (collection.element_type, typeof (double))) {
 			this.push_floats (key, ((Collection<double>) collection).to_array ());
 		}
 
-		else if (Value.type_compatible (collection.element_type, typeof(string))) {
+		else if (Value.type_compatible (collection.element_type, typeof (string))) {
 			this.push_strings (key, ((Collection<string>) collection).to_array ());
 		}
 
@@ -186,8 +186,8 @@ public class View {
 	 * @since 0.1
 	 */
 	public void push_map (string key, Map<string, Value?> map) {
-		map.map_iterator().foreach((k, v) => {
-			this.push_value ("%s_%s".printf(key, k), v);
+		map.map_iterator ().foreach ((k, v) => {
+			this.push_value ("%s_%s".printf( key, k), v);
 			return true;
 		});
 	}
@@ -196,8 +196,8 @@ public class View {
 	 * @since 0.1
 	 */
 	public void push_string_map (string key, Map<string, string> map) {
-		map.map_iterator().foreach((k, v) => {
-			this.push_string ("%s_%s".printf(key, k), v);
+		map.map_iterator ().foreach ((k, v) => {
+			this.push_string ("%s_%s".printf( key, k), v);
 			return true;
 		});
 	}
@@ -206,8 +206,8 @@ public class View {
 	 * @since 0.1
 	 */
 	public void push_int_map (string key, Map<string, long> map) {
-		map.map_iterator().foreach((k, v) => {
-			this.push_int ("%s_%s".printf(key, k), v);
+		map.map_iterator ().foreach ((k, v) => {
+			this.push_int ("%s_%s".printf( key, k), v);
 			return true;
 		});
 	}
@@ -246,19 +246,19 @@ public class View {
 	 * @since 0.1
 	 */
 	public void push_hashtable (string key, GLib.HashTable<string, Value?> ht) {
-		ht.foreach((k, v) => {
+		ht.foreach ((k, v) => {
 			this.push_value ("%s_%s".printf (key, k), v);
 		});
 	}
 
 	public void push_string_hashtable (string key, GLib.HashTable<string, string> ht) {
-		ht.foreach((k, v) => {
+		ht.foreach ((k, v) => {
 			this.push_string ("%s_%s".printf (key, k), v);
 		});
 	}
 
 	public void push_int_hashtable (string key, GLib.HashTable<string, long> ht) {
-		ht.foreach((k, v) => {
+		ht.foreach ((k, v) => {
 			this.push_int ("%s_%s".printf (key, k), v);
 		});
 	}
@@ -317,6 +317,6 @@ public class View {
 
 		this.to_stream (mem_stream);
 
-		return (string) mem_stream.get_data();
+		return (string) mem_stream.get_data ();
 	}
 }

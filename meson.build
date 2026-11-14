@@ -1,20 +1,28 @@
-project('valum', 'vala', 'c',
-        version: '0.4.0-dev',
-        license: 'LGPL',
-        meson_version: '>=0.46.0')
+project(
+    'valum',
+    'vala',
+    'c',
+    version: '0.4.0-dev',
+    license: 'LGPL',
+    meson_version: '>=1.3',
+)
 
 api_version = '0.4'
 
-add_project_arguments(['--enable-experimental',
-                       '--enable-deprecated',
-                       '--vapidir=' + meson.current_source_dir() + '/vapi'],
-                      language: 'vala')
+add_project_arguments(
+    [
+        '--enable-experimental',
+        '--target-glib=2.80',
+        '--vapidir=' + meson.current_source_dir() / 'vapi',
+    ],
+    language: 'vala',
+)
 
-glib = dependency('glib-2.0', version: '>=2.56')
-gobject = dependency('gobject-2.0', version: '>=2.56')
-gio = dependency('gio-2.0', version: '>=2.56')
-soup = dependency('libsoup-2.4', version: '>=2.62')
-vsgi = dependency('vsgi', fallback: ['vsgi', 'vsgi_dep'])
+glib_dep = dependency('glib-2.0', version: '>=2.80')
+gobject_dep = dependency('gobject-2.0', version: '>=2.80')
+gio_dep = dependency('gio-2.0', version: '>=2.80')
+soup_dep = dependency('libsoup-2.4', version: '>=2.74')
+vsgi_dep = dependency('vsgi')
 
 vala_defines = []
 

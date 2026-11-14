@@ -29,4 +29,3 @@ public class MyApp : Handler {
 		return res.expand_utf8 ("Hello world!");
 	}
 }
-

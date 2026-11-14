@@ -129,4 +129,3 @@ namespace Valum.ServerSentEvents {
 		});
 	}
 }
-
