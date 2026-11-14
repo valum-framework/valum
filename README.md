@@ -1,8 +1,7 @@
 # Valum Web micro-framework
 
-[![Build Status](https://github.com/valum-framework/valum/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/valum-framework/valum/actions/workflows/main.yml)
+[![Build Status](https://github.com/valum-framework/valum/actions/workflows/main.yml/badge.svg)](https://github.com/valum-framework/valum/actions/workflows/main.yml)
 [![Documentation Status](https://readthedocs.org/projects/valum-framework/badge/?version=latest)](https://readthedocs.org/projects/valum-framework/?badge=latest)
-[![codecov.io](https://codecov.io/github/valum-framework/valum/coverage.svg?branch=master)](https://codecov.io/github/valum-framework/valum?branch=master)
 
 Valum is a Web micro-framework entirely written in the
 [Vala](https://wiki.gnome.org/Projects/Vala) programming language.
