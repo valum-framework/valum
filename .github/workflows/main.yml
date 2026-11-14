@@ -23,7 +23,7 @@ jobs:
       - name: Build
         run: |
           mkdir build
-          meson -D b_coverage=true -D enable_examples=true . build
+          meson -D enable_examples=true . build
           ninja -C build -v
 
       - name: Test
