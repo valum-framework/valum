@@ -9,18 +9,20 @@ project(
 
 api_version = '0.4'
 
+min_glib_version = '2.80'
+
 add_project_arguments(
     [
         '--enable-experimental',
-        '--target-glib=2.80',
+        '--target-glib=' + min_glib_version,
         '--vapidir=' + meson.current_source_dir() / 'vapi',
     ],
     language: 'vala',
 )
 
-glib_dep = dependency('glib-2.0', version: '>=2.80')
-gobject_dep = dependency('gobject-2.0', version: '>=2.80')
-gio_dep = dependency('gio-2.0', version: '>=2.80')
+glib_dep = dependency('glib-2.0', version: '>=' + min_glib_version)
+gobject_dep = dependency('gobject-2.0', version: '>=' + min_glib_version)
+gio_dep = dependency('gio-2.0', version: '>=' + min_glib_version)
 soup_dep = dependency('libsoup-2.4', version: '>=2.74')
 vsgi_dep = dependency('vsgi')
 

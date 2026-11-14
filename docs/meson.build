@@ -21,7 +21,7 @@ if valadoc.found()
         '--pkg=posix',
         '--pkg=openssl',
         '--vapidir=' + meson.current_source_dir() / '..' / 'vapi',
-        '--target-glib=2.80',
+        '--target-glib=' + min_glib_version,
         '--force',
         '--directory',
         '@OUTPUT@',
