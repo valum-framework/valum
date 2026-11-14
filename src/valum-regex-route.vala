@@ -68,9 +68,12 @@ namespace Valum {
 				if (captures.length () > 0) {
 					// populate the context parameters
 					foreach (var capture in captures) {
-						var @value = match_info.fetch_named (capture);
-						if (@value != null)
-							context[capture] = @value;
+						int start_pos, end_pos;
+						if (match_info.fetch_named_pos (capture, out start_pos, out end_pos) && start_pos >= 0) {
+							var @value = match_info.fetch_named (capture);
+							if (@value != null)
+								context[capture] = @value;
+						}
 					}
 				}
 				return true;
