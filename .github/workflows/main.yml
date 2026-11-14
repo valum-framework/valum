@@ -23,7 +23,7 @@ jobs:
       - name: Build
         run: |
           mkdir build
-          meson -D b_coverage=true -D enable_examples=true . build
+          meson -D enable_examples=true . build
           ninja -C build -v
 
       - name: Test
@@ -31,11 +31,3 @@ jobs:
           meson test -C build --wrapper valgrind --print-errorlogs --num-processes=1 -v
           DESTDIR=$(mktemp -d) ninja -C build -v install
 
-#     - name: Generate coverage reports
-#       run: ninja -C build -v coverage
-
-#     - name: Report coverage to Codecov
-#       uses: codecov/codecov-action@v2.1.0
-#       with:
-#         directory: build
-#         fail_ci_if_error: true
