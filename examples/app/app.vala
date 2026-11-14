@@ -79,7 +79,6 @@ app.get ("/gzip", sequence ((req, res, next) => {
 	res.convert (new ZlibCompressor (ZlibCompressorFormat.GZIP));
 	return next ();
 }, (req, res) => {
-	print("template rendered");
 	var template = new View.from_resources ("/templates/home.html");
 	return template.to_stream (res.body);
 }));
