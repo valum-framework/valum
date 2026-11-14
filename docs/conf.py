@@ -264,4 +264,4 @@ texinfo_documents = [
 #texinfo_no_detailmenu = False
 
 # External links
-extlinks = {'valadoc': ('http://valadoc.org/%s.html', '')}
+extlinks = {'valadoc': ('https://valadoc.org/%s.html', '%s')}
