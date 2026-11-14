@@ -29,8 +29,18 @@ Note that due to Meson design, dependencies must be explicitly provided.
     vsgi_dep = subproject('valum').get_variable('vsgi_dep')
     valum_dep = subproject('valum').get_variable('valum_dep')
 
-    executable('app', 'app.vala',
-               dependencies: [glib_dep, gobject_dep, gio_dep, soup_dep, vsgi_dep, valum_dep])
+    executable(
+        'app',
+        'app.vala',
+        dependencies: [
+            glib_dep,
+            gobject_dep,
+            gio_dep,
+            soup_dep,
+            vsgi_dep,
+            valum_dep
+        ]
+    )
 
 Alternatively, you can use the ``[wrap-git]`` feature instead of introducing
 and tracking a git submodule. Simply add ``subprojects/valum.wrap`` in your

@@ -74,8 +74,17 @@ as flexible as waf, but it will handle most projects very well.
     vsgi_dep = dependency('vsgi-0.3')   # or subproject('vsgi').get_variable('vsgi_dep')
     valum_dep = dependency('valum-0.3') # or subproject('valum').get_variable('valum_dep')
 
-    executable('app', 'src/app.vala',
-               dependencies: [glib_dep, gobject_dep, gio_dep, soup_dep, vsgi_dep, valum_dep])
+    executable(
+        'app',
+        'src/app.vala',
+        dependencies: [
+            glib_dep,
+            gobject_dep,
+            gio_dep,
+            soup_dep,
+            vsgi_dep,
+            valum_dep
+        ])
 
 .. code-block:: bash
 
@@ -85,39 +94,6 @@ as flexible as waf, but it will handle most projects very well.
 
 To include Valum as a subproject, it is sufficient to clone the repository into
 ``subprojects/valum``.
-
-Building with waf
------------------
-
-It is preferable to use a build system like `waf`_ to automate all this
-process. Get a release of ``waf`` and copy this file under the name ``wscript``
-at the root of your project.
-
-.. _waf: https://code.google.com/p/waf/
-
-.. code-block:: python
-
-    def options(cfg):
-        cfg.load('compiler_c')
-
-    def configure(cfg):
-        cfg.load('compiler_c vala')
-        cfg.check_cfg(package='valum-0.3', uselib_store='VALUM', args='--libs --cflags')
-
-    def build(bld):
-        bld.load('compiler_c vala')
-        bld.program(
-            packages = 'valum-0.3',
-            target   = 'app',
-            source   = 'src/app.vala',
-            use      = 'VALUM')
-
-You should now be able to build by issuing the following commands:
-
-.. code-block:: bash
-
-    ./waf configure
-    ./waf build
 
 Running the example
 -------------------
