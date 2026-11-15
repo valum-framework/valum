@@ -20,6 +20,17 @@ add_project_arguments(
     language: 'vala',
 )
 
+add_project_arguments(
+    [
+        '-Wno-discarded-qualifiers',
+        '-Wno-unused-but-set-variable',
+        '-Wno-unused-function',
+        '-Wno-unused-label',
+        '-Wno-unused-variable',
+    ],
+    language: 'c',
+)
+
 glib_dep = dependency('glib-2.0', version: '>=' + min_glib_version)
 gobject_dep = dependency('gobject-2.0', version: '>=' + min_glib_version)
 gio_dep = dependency('gio-2.0', version: '>=' + min_glib_version)
