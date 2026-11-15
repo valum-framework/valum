@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+    <gresource prefix="templates">
+        <file>home.html</file>
+        <file>404.html</file>
+        <file>websocket.html</file>
+    </gresource>
+</gresources>

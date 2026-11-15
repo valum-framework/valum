@@ -4,11 +4,7 @@ Valum Web micro-framework
 .. raw:: html
 
     <a href="https://github.com/valum-framework/valum/actions/workflows/main.yml">
-        <img src="https://github.com/valum-framework/valum/actions/workflows/main.yml/badge.svg?branch=master" alt="Build Status">
-    </a>
-
-    <a href="https://codecov.io/github/valum-framework/valum?branch=master">
-        <img src="https://codecov.io/github/valum-framework/valum/coverage.svg?branch=master" alt="Coverage via Codecov" />
+        <img src="https://github.com/valum-framework/valum/actions/workflows/main.yml/badge.svg" alt="Build Status">
     </a>
 
 Valum is a Web micro-framework written in Vala and licensed under the LGPLv3.

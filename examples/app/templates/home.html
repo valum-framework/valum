@@ -4,8 +4,9 @@
     <title>Valum</title>
     <meta charset="UTF-8">
     <meta name="description" content="web micro-framework written in Vala">
-    <link rel="stylesheet" href="/static/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/dist/bundle.css">
     <link rel="shortcut icon" href="/static/valum.png">
+    <script src="/dist/bundle.js"></script>
   </head>
   <body>
     <a href="https://github.com/valum-framework/valum">
@@ -21,7 +22,7 @@
             <div class="col-md-12">
               <div class="media">
                 <div class="media-left">
-                  <a href="/"><img class="media-object" src="/static/valum.png"></a>
+                  <a href="/"><img class="media-object" src="/static/valum.png" alt="Valum Logo"></a>
                 </div>
                 <div class="media-body media-middle">
                   <h1 class="media-heading">Valum <small>web micro-framework written in Vala</small></h1>
@@ -57,8 +58,8 @@
             <div class="col-md-8">
               <h3>Project status</h3>
               <p>
-                <a href="https://travis-ci.org/valum-framework/valum">
-                  <img src="https://travis-ci.org/valum-framework/valum.svg?branch=master" alt="Build Status">
+                <a href="https://github.com/valum-framework/valum/actions/workflows/main.yml">
+                  <img src="https://github.com/valum-framework/valum/actions/workflows/main.yml/badge.svg" alt="Build Status">
                 </a>
                 <a href="https://readthedocs.org/projects/valum-framework/?badge=latest">
                   <img src="https://readthedocs.org/projects/valum-framework/badge/?version=latest"
@@ -113,6 +114,7 @@
               <ul class="list-inline">
                 <li><a href="/ctpl/foo/bar">CTPL templating</a></li>
                 <li><a href="/server-sent-events">Server-Sent Events</a></li>
+                <li><a href="/websocket">WebSocket</a></li>
                 <li>
                   <a href="/negotiate">negotiate</a>
                 </li>
@@ -122,7 +124,8 @@
                 <li>
                   <a href="/negotiate-charset">negotiate charset (iso-8859-1)</a>
                 </li>
-                <li><a href="/static/bootstrap/dist/css/bootstrap.min.css">static resources delivery</a></li>
+                <li><a href="/static/valum.svg">static resources delivery</a></li>
+                <li><a href="/dist/bundle.js">bundled resources delivery</a></li>
                 <li><a href="/middleware">class-based middleware</a></li>
               </ul>
               <footer>

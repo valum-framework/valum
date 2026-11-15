@@ -20,6 +20,11 @@ using Valum.ContentNegotiation;
 using Valum.ServerSentEvents;
 using VSGI;
 
+/**
+ * Frontend assets are compiled and made available under a C symbol.
+ */
+extern unowned Resource frontend_get_resource ();
+
 public HandlerCallback respond_with_text (RespondWithCallback<string> respond) {
 	return respond_with<string> (respond, (req, res, next, ctx, text) => {
 		return res.expand_utf8 (text);
@@ -62,6 +67,9 @@ app.get ("/", (req, res, next) => {
 });
 
 app.get ("/async", (req, res) => {
+	HashTable<string, string> @params;
+	res.headers.get_content_type (out @params);
+	res.headers.set_content_type ("type/plain", @params);
 	res.expand_utf8_async.begin ("Hello world!");
 	return true;
 });
@@ -138,10 +146,10 @@ app.scope ("/urlencoded-data", (inner) => {
 		<!DOCTYPE html>
 		<html>
 		  <body>
-			<form method="post">
-			  <textarea name="data"></textarea>
-			  <button type="submit">submit</button>
-			</form>
+		    <form method="post">
+		      <textarea name="data"></textarea>
+		      <button type="submit">submit</button>
+		    </form>
 		  </body>
 		</html>
 		""");
@@ -224,8 +232,8 @@ app.get ("/hello/<id>", (req, res, next, context) => {
 });
 
 app.get ("/users/<int:id>(/<action>)?", (req, res, next, context) => {
-	var id     = context["id"].get_string ();
-	var test   = "action" in context ? context["action"].get_string () : "index";
+	var id = context["id"].get_string ();
+	var test = "action" in context ? context["action"].get_string () : "index";
 	var writer = new DataOutputStream (res.body);
 
 	writer.put_string (@"id\t=> $id\n");
@@ -340,8 +348,14 @@ app.get ("/ctpl/<foo>/<bar>", (req, res, next, context) => {
 });
 
 // serve static resource using a path route parameter
-app.get ("/static/<path:path>", Static.serve_from_file (File.new_for_path ("examples/app/static"),
-                                                        Static.ServeFlags.ENABLE_ETAG));
+app.get ("/static/<path:path>", Static.serve_from_resource (frontend_get_resource (),
+                                                            "/static/",
+                                                            Static.ServeFlags.ENABLE_ETAG));
+
+// serve Webpack-bundled assets
+app.get ("/dist/<path:path>", Static.serve_from_resource (frontend_get_resource (),
+                                                          "/dist/",
+                                                          Static.ServeFlags.ENABLE_ETAG));
 
 app.get ("/server-sent-events", stream_events ((req, send) => {
 	send (null, "now!");
@@ -396,5 +410,12 @@ app.get ("/websocket", websocket ({}, (req, res, next, ctx, ws) => {
 	ws.send_text ("Hello world!");
 	return true;
 }));
+
+app.get ("/websocket", (req, res) => {
+	res.headers.set_content_type ("text/html", null);
+	var stream = resources_open_stream ("/templates/websocket.html", ResourceLookupFlags.NONE);
+	res.body.splice (stream, OutputStreamSpliceFlags.CLOSE_SOURCE);
+	return true;
+});
 
 Server.@new ("http", handler: app).run ();

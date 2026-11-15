@@ -1,4 +1,4 @@
-FROM ubuntu:xenial
+FROM ubuntu:resolute
 
 MAINTAINER Guillaume Poirier-Morency <guillaumepoiriermorency@gmail.com>
 
@@ -8,14 +8,13 @@ RUN apt-get update && apt-get install -y \
     libsoup2.4-dev                       \
     libssl-dev                           \
     ninja-build                          \
-    python3-pip                          \
     unzip                                \
     valac                                \
+    meson                                \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install meson
+ADD . /valum
 
-WORKDIR /valum
-ADD . .
+RUN cd /valum && mkdir build && meson --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu --buildtype=release . build && ninja -C build && ninja -C build test && ninja -C build install
 
-RUN mkdir build && meson --prefix=/usr --buildtype=release . build && ninja -C build && ninja -C build test && ninja -C build install
+RUN rm -rf /valum

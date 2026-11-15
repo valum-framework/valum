@@ -141,4 +141,3 @@ public void test_decode_forward_remaining_encodings () {
 		assert_not_reached ();
 	}
 }
-

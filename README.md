@@ -25,23 +25,22 @@ Server.@new ("http", handler: app).run ({"app", "--address=0.0.0.0:3003", "--for
 
 ## Installation
 
-### Docker
+### Ubuntu / Debian
 
-We maintain [Docker images](https://hub.docker.com/r/valum/valum/) already setup with Valum and the latest LTS version of Ubuntu.
+Install build dependencies on Ubuntu 24.04 LTS (Noble Numbat) or Debian 12 (Bookworm):
 
-```
-docker pull valum/valum
-```
-
-### Bower
-
-If you use [Meson](http://mesonbuild.com/), you can install Valum as a subproject using [Bower](https://bower.io/):
-
-```
-bower install valum
+```bash
+sudo apt install valac meson ninja-build libglib2.0-dev libsoup2.4-dev
 ```
 
-For other installation procedures, head to the [user documentation](http://valum-framework.readthedocs.org/en/latest/installation.html).
+Build and test Valum:
+
+```bash
+meson setup build
+ninja -C build
+meson test -C build --num-processes=1
+sudo ninja -C build install
+```
 
 ## Features
 
